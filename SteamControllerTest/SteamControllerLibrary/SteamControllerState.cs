@@ -60,7 +60,7 @@ namespace SteamControllerTest.SteamControllerLibrary
         public bool DPadUp;
         public bool DPadDown;
         public bool DPadLeft;
-        public bool DpadRight;
+        public bool DPadRight;
         public SteamControllerMotion Motion;
     }
 }

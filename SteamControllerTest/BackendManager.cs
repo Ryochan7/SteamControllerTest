@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Nefarius.ViGEm.Client;
 using SteamControllerTest.SteamControllerLibrary;
 
 namespace SteamControllerTest
@@ -15,6 +16,7 @@ namespace SteamControllerTest
         private List<Mapper> mapperList;
         private SteamControllerEnumerator enumerator;
         private Dictionary<SteamControllerDevice, SteamControllerReader> deviceReadersMap;
+        private ViGEmClient vigemTestClient = null;
 
         public BackendManager()
         {
@@ -25,6 +27,18 @@ namespace SteamControllerTest
 
         public void Start()
         {
+            // Change thread affinity of bus object to not be tied
+            // to GUI thread
+            vbusThr = new Thread(() =>
+            {
+                vigemTestClient = new ViGEmClient();
+            });
+
+            vbusThr.Priority = ThreadPriority.AboveNormal;
+            vbusThr.IsBackground = true;
+            vbusThr.Start();
+            vbusThr.Join(); // Wait for bus object start
+
             Thread temper = new Thread(() =>
             {
                 enumerator.FindControllers();
@@ -42,8 +56,8 @@ namespace SteamControllerTest
                 deviceReadersMap.Add(device, reader);
 
                 Mapper testMapper = new Mapper(device);
-                testMapper.Start(device, reader);
-                //testMapper.Start(vigemTestClient, device, proReader);
+                //testMapper.Start(device, reader);
+                testMapper.Start(vigemTestClient, device, reader);
                 mapperList.Add(testMapper);
             }
         }
@@ -63,8 +77,8 @@ namespace SteamControllerTest
             deviceReadersMap.Clear();
             enumerator.StopControllers();
 
-            //vigemTestClient?.Dispose();
-            //vigemTestClient = null;
+            vigemTestClient?.Dispose();
+            vigemTestClient = null;
         }
     }
 }

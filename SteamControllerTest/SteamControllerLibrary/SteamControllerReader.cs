@@ -131,13 +131,13 @@ namespace SteamControllerTest.SteamControllerLibrary
                         current.LB = (tempByte & 0x08) != 0;
                         current.Y = (tempByte & 0x10) != 0;
                         current.B = (tempByte & 0x20) != 0;
-                        current.A = (tempByte & 0x40) != 0;
-                        current.B = (tempByte & 0x80) != 0;
+                        current.X = (tempByte & 0x40) != 0;
+                        current.A = (tempByte & 0x80) != 0;
 
                         // Buttons
                         tempByte = inputReportBuffer[10];
                         current.DPadUp = (tempByte & 0x01) != 0;
-                        current.DpadRight = (tempByte & 0x02) != 0;
+                        current.DPadRight = (tempByte & 0x02) != 0;
                         current.DPadLeft = (tempByte & 0x04) != 0;
                         current.DPadDown = (tempByte & 0x08) != 0;
                         current.Back = (tempByte & 0x10) != 0;

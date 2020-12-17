@@ -64,6 +64,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Nefarius.ViGEm.Client">
+      <HintPath>libs\x64\Nefarius.ViGEm.Client\Nefarius.ViGEm.Client.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
