@@ -15,7 +15,20 @@ namespace SteamControllerTest
 {
     public class Mapper
     {
-        public struct KeyAssociation
+        public enum DpadDirections : uint
+        {
+            Centered,
+            Up = 1,
+            Right = 2,
+            UpRight = 3,
+            Down = 4,
+            DownRight = 6,
+            Left = 8,
+            UpLeft = 9,
+            DownLeft = 12,
+        }
+
+        public struct ButtonKeyAssociation
         {
             public ushort A;
             public ushort B;
@@ -31,6 +44,15 @@ namespace SteamControllerTest
             public ushort RGrip;
             public ushort LeftTouchClick;
             public ushort RightTouchClick;
+        }
+
+        public struct TouchpadKeyAssociation
+        {
+            public ushort Up;
+            public ushort Down;
+            public ushort Left;
+            public ushort Right;
+            public ushort Click;
         }
 
         private const short STICK_MAX = 30000;
@@ -71,7 +93,11 @@ namespace SteamControllerTest
 
         private bool mouseLBDown;
         private bool mouseRBDown;
-        private KeyAssociation buttonBindings;
+        private ButtonKeyAssociation buttonBindings;
+        private TouchpadKeyAssociation leftTouchBindings;
+        private TouchpadKeyAssociation rightTouchBindings;
+        private DpadDirections currentLeftDir;
+        private DpadDirections previousLeftDir;
 
         private const int TRACKBALL_INIT_FICTION = 10;
         private const int TRACKBALL_MASS = 45;
@@ -135,6 +161,11 @@ namespace SteamControllerTest
             buttonBindings.Guide = (ushort)KeyInterop.VirtualKeyFromKey(Key.Tab);
             buttonBindings.LGrip = (ushort)KeyInterop.VirtualKeyFromKey(Key.X);
             buttonBindings.RGrip = (ushort)KeyInterop.VirtualKeyFromKey(Key.F);
+
+            leftTouchBindings.Up = (ushort)KeyInterop.VirtualKeyFromKey(Key.W);
+            leftTouchBindings.Left = (ushort)KeyInterop.VirtualKeyFromKey(Key.A);
+            leftTouchBindings.Down = (ushort)KeyInterop.VirtualKeyFromKey(Key.S);
+            leftTouchBindings.Right = (ushort)KeyInterop.VirtualKeyFromKey(Key.D);
         }
 
         /*public void Start(SteamControllerDevice device, SteamControllerReader reader)
@@ -386,6 +417,12 @@ namespace SteamControllerTest
             }
             */
 
+            if (current.LeftPad.Touch || previous.LeftPad.Touch)
+            {
+                current.LeftPad.Rotate(-18.0 * Math.PI / 180.0);
+                TouchActionPad(ref current, ref previous);
+            }
+
             TrackballMouseProcess(ref current, ref previous);
 
             if (mouseX != 0.0 || mouseY != 0.0)
@@ -398,12 +435,129 @@ namespace SteamControllerTest
                 // Probably not needed here. Leave as a temporary precaution
                 mouseXRemainder = mouseYRemainder = 0.0;
 
-                //filterX.Filter(0.0, currentRate); // Smooth on output
+                //filterX.Filter(0.0, currentRate); // Smooth on outputz
                 //filterY.Filter(0.0, currentRate); // Smooth on output
             }
 
 
             //outputX360.SubmitReport();
+        }
+
+        private void TouchActionPad(ref SteamControllerState current,
+            ref SteamControllerState previous)
+        {
+            const double CARDINAL_RANGE = 45.0;
+            const double DIAGONAL_RANGE = 45.0;
+            const double CARDINAL_HALF_RANGE = CARDINAL_RANGE / 2.0;
+            //const double CARDINAL_HALF_RANGE = 22.5;
+
+            const double upLeftEnd = 360 - CARDINAL_HALF_RANGE;
+            const double upRightBegin = CARDINAL_HALF_RANGE;
+            const double rightBegin = upRightBegin + DIAGONAL_RANGE;
+            const double downRightBegin = rightBegin + CARDINAL_RANGE;
+            const double downBegin = downRightBegin + DIAGONAL_RANGE;
+            const double downLeftBegin = downBegin + CARDINAL_RANGE;
+            const double leftBegin = downLeftBegin + DIAGONAL_RANGE;
+            const double upLeftBegin = leftBegin + CARDINAL_RANGE;
+
+            double angleRad = Math.Atan2(current.LeftPad.X, current.LeftPad.Y);
+            double angle = (angleRad >= 0 ? angleRad : (2 * Math.PI + angleRad)) * 180 / Math.PI;
+            //Console.WriteLine("{0} {1}", angle, current.LeftPad.Touch);
+            /*double normX = Math.Abs(Math.Cos(tempAngle));
+            double normY = Math.Abs(Math.Sin(tempAngle));
+            int signX = Math.Sign(current.LeftPad.X);
+            int signY = Math.Sign(current.LeftPad.Y);
+            */
+            if (angle == 0.0)
+            {
+                currentLeftDir = DpadDirections.Centered;
+            }
+            else if (angle > upLeftEnd || angle < upRightBegin)
+            {
+                currentLeftDir = DpadDirections.Up;
+            }
+            else if (angle >= upRightBegin && angle < rightBegin)
+            {
+                currentLeftDir = DpadDirections.UpRight;
+            }
+            else if (angle >= rightBegin && angle < downRightBegin)
+            {
+                currentLeftDir = DpadDirections.Right;
+            }
+            else if (angle >= downRightBegin && angle < downBegin)
+            {
+                currentLeftDir = DpadDirections.DownRight;
+            }
+            else if (angle >= downBegin && angle < downLeftBegin)
+            {
+                currentLeftDir = DpadDirections.Down;
+            }
+            else if (angle >= downLeftBegin && angle < leftBegin)
+            {
+                currentLeftDir = DpadDirections.DownLeft;
+            }
+            else if (angle >= leftBegin && angle < upLeftBegin)
+            {
+                currentLeftDir = DpadDirections.Left;
+            }
+            else if (angle >= upLeftBegin && angle <= upLeftEnd)
+            {
+                currentLeftDir = DpadDirections.UpLeft;
+            }
+
+            if (currentLeftDir != previousLeftDir)
+            {
+                DpadDirections xor = previousLeftDir ^ currentLeftDir;
+                DpadDirections remDirs = xor & previousLeftDir;
+                DpadDirections addDirs = xor & currentLeftDir;
+                //Console.WriteLine("RELEASED: {0} CURRENT: {1}", remDirs, currentLeftDir);
+
+                if ((remDirs & DpadDirections.Up) != 0)
+                {
+                    ushort tempKey = leftTouchBindings.Up;
+                    InputMethods.performKeyRelease(tempKey);
+                }
+                else if ((remDirs & DpadDirections.Down) != 0)
+                {
+                    ushort tempKey = leftTouchBindings.Down;
+                    InputMethods.performKeyRelease(tempKey);
+                }
+
+                if ((remDirs & DpadDirections.Left) != 0)
+                {
+                    ushort tempKey = leftTouchBindings.Left;
+                    InputMethods.performKeyRelease(tempKey);
+                }
+                else if ((remDirs & DpadDirections.Right) != 0)
+                {
+                    ushort tempKey = leftTouchBindings.Right;
+                    InputMethods.performKeyRelease(tempKey);
+                }
+
+                if ((addDirs & DpadDirections.Up) != 0)
+                {
+                    ushort tempKey = leftTouchBindings.Up;
+                    InputMethods.performKeyPress(tempKey);
+                }
+                else if ((addDirs & DpadDirections.Down) != 0)
+                {
+                    ushort tempKey = leftTouchBindings.Down;
+                    InputMethods.performKeyPress(tempKey);
+                }
+
+                if ((addDirs & DpadDirections.Left) != 0)
+                {
+                    ushort tempKey = leftTouchBindings.Left;
+                    InputMethods.performKeyPress(tempKey);
+                }
+                else if ((addDirs & DpadDirections.Right) != 0)
+                {
+                    ushort tempKey = leftTouchBindings.Right;
+                    InputMethods.performKeyPress(tempKey);
+                }
+
+                previousLeftDir = currentLeftDir;
+            }
         }
 
         private void TouchDPad(ref SteamControllerState current,
