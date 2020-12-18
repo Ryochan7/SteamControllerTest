@@ -51,6 +51,9 @@ namespace SteamControllerTest
         public double MouseXRemainder { get => mouseXRemainder; set => mouseXRemainder = value; }
         public double MouseYRemainder { get => mouseYRemainder; set => mouseYRemainder = value; }
 
+        private bool mouseLBDown;
+        private bool mouseRBDown;
+
         private const int TRACKBALL_INIT_FICTION = 10;
         private const int TRACKBALL_MASS = 45;
         private const double TRACKBALL_RADIUS = 0.0245;
@@ -156,15 +159,21 @@ namespace SteamControllerTest
             //outputX360.LeftTrigger = current.LT;
             //outputX360.RightTrigger = current.RT;
 
-            if (current.RTClick != previous.RTClick)
+            //if (current.RTClick != previous.RTClick)
+            if ((current.RT > 50 && !mouseLBDown) || (current.RT <= 50 && mouseLBDown))
             {
-                InputMethods.MouseEvent(current.RTClick ? InputMethods.MOUSEEVENTF_LEFTDOWN :
+                mouseLBDown = current.RT > 50;
+                //Console.WriteLine("RT: {0} {1}", current.RT, mouseLBDown);
+                InputMethods.MouseEvent(mouseLBDown ? InputMethods.MOUSEEVENTF_LEFTDOWN :
                     InputMethods.MOUSEEVENTF_LEFTUP);
             }
 
-            if (current.LTClick != previous.LTClick)
+            //if (current.LTClick != previous.LTClick)
+            //if ((current.LT > 50) != (previous.LT <= 50))
+            if ((current.LT > 50 && !mouseRBDown) || (current.LT <= 50 && mouseRBDown))
             {
-                InputMethods.MouseEvent(current.LTClick ? InputMethods.MOUSEEVENTF_RIGHTDOWN :
+                mouseRBDown = current.LT > 50;
+                InputMethods.MouseEvent(mouseRBDown ? InputMethods.MOUSEEVENTF_RIGHTDOWN :
                     InputMethods.MOUSEEVENTF_RIGHTUP);
             }
 

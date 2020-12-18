@@ -102,6 +102,7 @@ namespace SteamControllerTest.SteamControllerLibrary
                         {
                             tempByte = 0;
 
+                            // Repeat previously grabbed state with updated timestamp
                             currentTime = Stopwatch.GetTimestamp();
                             deltaElapsed = currentTime - previousTime;
                             lastElapsed = deltaElapsed * (1.0 / Stopwatch.Frequency) * 1000.0;
@@ -112,6 +113,8 @@ namespace SteamControllerTest.SteamControllerLibrary
 
                             Report?.Invoke(this, device);
                             device.SyncStates();
+
+                            continue;
                         }
                         else if (firstReport)
                         {
