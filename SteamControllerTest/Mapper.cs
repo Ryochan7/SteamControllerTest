@@ -15,6 +15,19 @@ namespace SteamControllerTest
 {
     public class Mapper
     {
+        private const short STICK_MAX = 30000;
+        private const short STICK_MIN = -30000;
+
+        private const int inputResolution = STICK_MAX - STICK_MIN;
+        private const float reciprocalInputResolution = 1 / (float)inputResolution;
+
+        private const ushort STICK_MIDRANGE = inputResolution / 2;
+        private const ushort STICK_NEUTRAL = STICK_MAX - STICK_MIDRANGE;
+
+        private const int X360_STICK_MAX = 32767;
+        private const int X360_STICK_MIN = -32768;
+        private const int OUTPUT_X360_RESOLUTION = X360_STICK_MAX - X360_STICK_MIN;
+
         private ViGEmClient vigemTestClient = null;
         private IXbox360Controller outputX360 = null;
         private Thread contThr;
@@ -120,6 +133,18 @@ namespace SteamControllerTest
                 if (current.DPadRight) tempButtons |= Xbox360Button.Right.Value;
 
                 outputX360.SetButtonsFull(tempButtons);
+            }
+
+            short temp;
+            if (current.LeftPad.Touch)
+            {
+                temp = Math.Min(Math.Max(current.LeftPad.X, STICK_MIN), STICK_MAX);
+                temp = AxisScale(temp, false);
+                outputX360.LeftThumbX = temp;
+
+                temp = Math.Min(Math.Max(current.LeftPad.Y, STICK_MIN), STICK_MAX);
+                temp = AxisScale(temp, false);
+                outputX360.LeftThumbY = temp;
             }
 
             //outputX360.LeftTrigger = current.LT;
@@ -415,6 +440,15 @@ namespace SteamControllerTest
             return dividend - (divisor * (int)(dividend / divisor));
         }
 
+        private short AxisScale(int value, bool flip)
+        {
+            unchecked
+            {
+                float temp = (value - STICK_MIN) * reciprocalInputResolution;
+                if (flip) temp = (temp - 0.5f) * -1.0f + 0.5f;
+                return (short)(temp * OUTPUT_X360_RESOLUTION + X360_STICK_MIN);
+            }
+        }
 
 
         public void Stop()
