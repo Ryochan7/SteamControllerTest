@@ -85,12 +85,33 @@ namespace SteamControllerTest.SteamControllerLibrary
                     HidDevice.ReadStatus res = device.HidDevice.ReadWithFileStream(inputReportBuffer);
                     if (res == HidDevice.ReadStatus.Success)
                     {
-                        if (inputReportBuffer[3] != SteamControllerDevice.SCPacketType.PT_INPUT)
+                        tempByte = inputReportBuffer[3];
+
+                        ref SteamControllerState current = ref device.CurrentStateRef;
+                        ref SteamControllerState previous = ref device.PreviousStateRef;
+
+                        if (tempByte != SteamControllerDevice.SCPacketType.PT_INPUT &&
+                            tempByte != SteamControllerDevice.SCPacketType.PT_IDLE)
                         {
                             Console.WriteLine("Got unexpected input report id 0x{0:X2}. Try again",
                                 inputReportBuffer[3]);
 
                             continue;
+                        }
+                        else if (tempByte == SteamControllerDevice.SCPacketType.PT_IDLE && !firstReport)
+                        {
+                            tempByte = 0;
+
+                            currentTime = Stopwatch.GetTimestamp();
+                            deltaElapsed = currentTime - previousTime;
+                            lastElapsed = deltaElapsed * (1.0 / Stopwatch.Frequency) * 1000.0;
+                            tempTimeElapsed = lastElapsed * .001;
+
+                            current.timeElapsed = tempTimeElapsed;
+                            previousTime = currentTime;
+
+                            Report?.Invoke(this, device);
+                            device.SyncStates();
                         }
                         else if (firstReport)
                         {
@@ -98,10 +119,10 @@ namespace SteamControllerTest.SteamControllerLibrary
                         }
 
                         //Console.WriteLine("Got unexpected input report id 0x{0:X2}. Try again",
-                        //        inputReportBuffer[0]);
+                        //        inputReportBuffer[3]);
 
-                        ref SteamControllerState current = ref device.CurrentStateRef;
-                        ref SteamControllerState previous = ref device.PreviousStateRef;
+                        //ref SteamControllerState current = ref device.CurrentStateRef;
+                        //ref SteamControllerState previous = ref device.PreviousStateRef;
                         tempByte = 0;
 
                         currentTime = Stopwatch.GetTimestamp();
@@ -112,11 +133,16 @@ namespace SteamControllerTest.SteamControllerLibrary
                         current.timeElapsed = tempTimeElapsed;
                         previousTime = currentTime;
 
-                        //Console.WriteLine("GOT INPUT REPORT {0} 0x{1:X2}", res, inputReportBuffer[3]);
+                        /*if (inputReportBuffer[3] != SteamControllerDevice.SCPacketType.PT_INPUT)
+                        {
+                            Console.WriteLine("GOT INPUT REPORT {0} 0x{1:X2}", res, inputReportBuffer[3]);
+                        }
+
                         if (!firstReport)
                         {
                             Console.WriteLine("Poll Time: {0}", tempTimeElapsed);
                         }
+                        */
 
                         //Console.WriteLine("BUTTONS?: {0} {1} {2} {3}", inputReportBuffer[8], inputReportBuffer[9], inputReportBuffer[10], inputReportBuffer[11]);
 
@@ -133,6 +159,12 @@ namespace SteamControllerTest.SteamControllerLibrary
                         current.B = (tempByte & 0x20) != 0;
                         current.X = (tempByte & 0x40) != 0;
                         current.A = (tempByte & 0x80) != 0;
+
+                        /*if (inputReportBuffer[3] != SteamControllerDevice.SCPacketType.PT_IDLE)
+                        {
+                            Console.WriteLine("LKJDLKDLK: {0}", current.A);
+                        }
+                        */
 
                         // Buttons
                         tempByte = inputReportBuffer[10];

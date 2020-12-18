@@ -88,6 +88,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BackendManager.cs" />
+    <Compile Include="InputMethods.cs" />
     <Compile Include="Mapper.cs" />
     <Compile Include="SteamControllerLibrary\SteamControllerDevice.cs" />
     <Compile Include="SteamControllerLibrary\SteamControllerEnumerator.cs" />
