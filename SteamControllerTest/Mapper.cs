@@ -290,6 +290,11 @@ namespace SteamControllerTest
         {
             if (current.RightPad.Touch && !previous.RightPad.Touch)
             {
+                if (trackballActive)
+                {
+                    //Console.WriteLine("CHECKING HERE");
+                }
+
                 // Initial touch
                 Array.Clear(trackballXBuffer, 0, TRACKBALL_BUFFER_LEN);
                 Array.Clear(trackballYBuffer, 0, TRACKBALL_BUFFER_LEN);
@@ -332,8 +337,8 @@ namespace SteamControllerTest
 
                 trackballActive = true;
 
-                ProcessTrackballFrame(ref current, ref previous);
                 //Console.WriteLine("START TRACK {0}", trackballXVel);
+                ProcessTrackballFrame(ref current, ref previous);
             }
             else if (!current.RightPad.Touch && trackballActive)
             {
@@ -442,24 +447,30 @@ namespace SteamControllerTest
                 + (normY * (offset * signY)) : 0;
 
             double throttla = 1.428;
-            double offman = 10;
+            double offman = 20;
 
             double absX = Math.Abs(xMotion);
             if (absX <= normX * offman)
             {
+                //double before = xMotion;
+                //double adjOffman = normX != 0.0 ? normX * offman : offman;
                 xMotion = signX * Math.Pow(absX / offman, throttla) * offman;
+                //Console.WriteLine("Before: {0} After {1}", before, xMotion);
+                //Console.WriteLine(absX / adjOffman);
             }
 
             double absY = Math.Abs(yMotion);
             if (absY <= normY * offman)
             {
+                //double adjOffman = normY != 0.0 ? normY * offman : offman;
                 yMotion = signY * Math.Pow(absY / offman, throttla) * offman;
+                //Console.WriteLine(absY / adjOffman);
             }
 
             mouseX = xMotion; mouseY = yMotion;
         }
 
-        private const double TOUCHPAD_MOUSE_OFFSET = 0.6;
+        private const double TOUCHPAD_MOUSE_OFFSET = 0.8;
         private const double TOUCHPAD_COEFFICIENT = 0.009;
         private void RightTouchMouse(ref SteamControllerState current,
             ref SteamControllerState previous)
