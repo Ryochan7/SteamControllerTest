@@ -127,10 +127,14 @@ namespace SteamControllerTest
                 if (current.LB) tempButtons |= Xbox360Button.LeftShoulder.Value;
                 if (current.RB) tempButtons |= Xbox360Button.RightShoulder.Value;
 
-                if (current.DPadUp) tempButtons |= Xbox360Button.Up.Value;
+                /*if (current.DPadUp) tempButtons |= Xbox360Button.Up.Value;
                 if (current.DPadDown) tempButtons |= Xbox360Button.Down.Value;
                 if (current.DPadLeft) tempButtons |= Xbox360Button.Left.Value;
                 if (current.DPadRight) tempButtons |= Xbox360Button.Right.Value;
+                */
+
+                current.LeftPad.Rotate(-18.0 * Math.PI / 180.0);
+                TouchDPad(ref current, ref previous, ref tempButtons);
 
                 outputX360.SetButtonsFull(tempButtons);
             }
@@ -172,7 +176,6 @@ namespace SteamControllerTest
 
             TrackballMouseProcess(ref current, ref previous);
 
-
             if (mouseX != 0.0 || mouseY != 0.0)
             {
                 //Console.WriteLine("MOVE: {0}, {1}", (int)mouseX, (int)mouseY);
@@ -189,6 +192,86 @@ namespace SteamControllerTest
 
 
             outputX360.SubmitReport();
+        }
+
+        private void TouchDPad(ref SteamControllerState current,
+            ref SteamControllerState previous, ref ushort tempButtons)
+        {
+            const double CARDINAL_RANGE = 45.0;
+            const double DIAGONAL_RANGE = 45.0;
+            //const double CARDINAL_HALF_RANGE = CARDINAL_RANGE / 2.0;
+            const double CARDINAL_HALF_RANGE = 22.5;
+
+            const double upLeftEnd = 360 - CARDINAL_HALF_RANGE;
+            const double upRightBegin = CARDINAL_HALF_RANGE;
+            const double rightBegin = upRightBegin + DIAGONAL_RANGE;
+            const double downRightBegin = rightBegin + CARDINAL_RANGE;
+            const double downBegin = downRightBegin + DIAGONAL_RANGE;
+            const double downLeftBegin = downBegin + CARDINAL_RANGE;
+            const double leftBegin = downLeftBegin + DIAGONAL_RANGE;
+            const double upLeftBegin = leftBegin + CARDINAL_RANGE;
+
+            unchecked
+            {
+                if (current.LeftPad.Touch)
+                {
+                    double angleRad = Math.Atan2(current.LeftPad.X, current.LeftPad.Y);
+                    double angle = (angleRad >= 0 ? angleRad : (2 * Math.PI + angleRad)) * 180 / Math.PI;
+                    //Console.WriteLine(angle);
+                    /*double normX = Math.Abs(Math.Cos(tempAngle));
+                    double normY = Math.Abs(Math.Sin(tempAngle));
+                    int signX = Math.Sign(current.LeftPad.X);
+                    int signY = Math.Sign(current.LeftPad.Y);
+                    */
+                    if (angle == 0.0)
+                    {
+                    }
+                    else if (angle > upLeftEnd || angle < upRightBegin)
+                    {
+                        tempButtons |= Xbox360Button.Up.Value;
+                        //currentDir = DpadDirections.Up;
+                    }
+                    else if (angle >= upRightBegin && angle < rightBegin)
+                    {
+                        tempButtons |= Xbox360Button.Up.Value;
+                        tempButtons |= Xbox360Button.Right.Value;
+                        //currentDir = DpadDirections.UpRight;
+                    }
+                    else if (angle >= rightBegin && angle < downRightBegin)
+                    {
+                        tempButtons |= Xbox360Button.Right.Value;
+                        //currentDir = DpadDirections.Right;
+                    }
+                    else if (angle >= downRightBegin && angle < downBegin)
+                    {
+                        tempButtons |= Xbox360Button.Down.Value;
+                        tempButtons |= Xbox360Button.Right.Value;
+                        //currentDir = DpadDirections.DownRight;
+                    }
+                    else if (angle >= downBegin && angle < downLeftBegin)
+                    {
+                        tempButtons |= Xbox360Button.Down.Value;
+                        //currentDir = DpadDirections.Down;
+                    }
+                    else if (angle >= downLeftBegin && angle < leftBegin)
+                    {
+                        tempButtons |= Xbox360Button.Down.Value;
+                        tempButtons |= Xbox360Button.Left.Value;
+                        //currentDir = DpadDirections.DownLeft;
+                    }
+                    else if (angle >= leftBegin && angle < upLeftBegin)
+                    {
+                        tempButtons |= Xbox360Button.Left.Value;
+                        //currentDir = DpadDirections.Left;
+                    }
+                    else if (angle >= upLeftBegin && angle <= upLeftEnd)
+                    {
+                        tempButtons |= Xbox360Button.Up.Value;
+                        tempButtons |= Xbox360Button.Left.Value;
+                        //currentDir = DpadDirections.UpLeft;
+                    }
+                }
+            }
         }
 
         private void TrackballMouseProcess(ref SteamControllerState current,
@@ -449,7 +532,6 @@ namespace SteamControllerTest
                 return (short)(temp * OUTPUT_X360_RESOLUTION + X360_STICK_MIN);
             }
         }
-
 
         public void Stop()
         {

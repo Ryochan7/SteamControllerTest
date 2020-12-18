@@ -14,6 +14,14 @@ namespace SteamControllerTest.SteamControllerLibrary
             public short Y;
             public bool Touch;
             public bool Click;
+
+            public void Rotate(double rotation)
+            {
+                double sinAngle = Math.Sin(rotation), cosAngle = Math.Cos(rotation);
+                double tempLX = X, tempLY = Y;
+                X = (short)(Math.Min(Math.Max((tempLX * cosAngle) - tempLY * sinAngle, -32768), 32767));
+                Y = (short)(Math.Min(Math.Max((tempLX * sinAngle) + tempLY * cosAngle, -32768), 32767));
+            }
         }
 
         public struct SteamControllerMotion
