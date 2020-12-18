@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using System.Windows.Input;
 using Nefarius.ViGEm.Client;
 using Nefarius.ViGEm.Client.Targets;
 using Nefarius.ViGEm.Client.Targets.Xbox360;
@@ -15,6 +15,24 @@ namespace SteamControllerTest
 {
     public class Mapper
     {
+        public struct KeyAssociation
+        {
+            public ushort A;
+            public ushort B;
+            public ushort X;
+            public ushort Y;
+            public ushort LB;
+            public ushort RB;
+            public ushort Back;
+            public ushort Guide;
+            public ushort Start;
+            public ushort LSClick;
+            public ushort LGrip;
+            public ushort RGrip;
+            public ushort LeftTouchClick;
+            public ushort RightTouchClick;
+        }
+
         private const short STICK_MAX = 30000;
         private const short STICK_MIN = -30000;
 
@@ -53,6 +71,7 @@ namespace SteamControllerTest
 
         private bool mouseLBDown;
         private bool mouseRBDown;
+        private KeyAssociation buttonBindings;
 
         private const int TRACKBALL_INIT_FICTION = 10;
         private const int TRACKBALL_MASS = 45;
@@ -85,6 +104,8 @@ namespace SteamControllerTest
         public void Start(ViGEmClient vigemTestClient,
             SteamControllerDevice device, SteamControllerReader reader)
         {
+            PopulateKeyBindings();
+
             contThr = new Thread(() =>
             {
                 outputX360 = vigemTestClient.CreateXbox360Controller();
@@ -101,6 +122,21 @@ namespace SteamControllerTest
             reader.StartUpdate();
         }
 
+        public void PopulateKeyBindings()
+        {
+            buttonBindings.A = (ushort)KeyInterop.VirtualKeyFromKey(Key.Space);
+            buttonBindings.B = (ushort)KeyInterop.VirtualKeyFromKey(Key.C);
+            buttonBindings.X = (ushort)KeyInterop.VirtualKeyFromKey(Key.R);
+            buttonBindings.Y = (ushort)KeyInterop.VirtualKeyFromKey(Key.E);
+            buttonBindings.LB = (ushort)KeyInterop.VirtualKeyFromKey(Key.Q);
+            buttonBindings.RB = (ushort)KeyInterop.VirtualKeyFromKey(Key.Z);
+            buttonBindings.Back = (ushort)KeyInterop.VirtualKeyFromKey(Key.Tab);
+            buttonBindings.Start = (ushort)KeyInterop.VirtualKeyFromKey(Key.Escape);
+            buttonBindings.Guide = (ushort)KeyInterop.VirtualKeyFromKey(Key.Tab);
+            buttonBindings.LGrip = (ushort)KeyInterop.VirtualKeyFromKey(Key.X);
+            buttonBindings.RGrip = (ushort)KeyInterop.VirtualKeyFromKey(Key.F);
+        }
+
         /*public void Start(SteamControllerDevice device, SteamControllerReader reader)
         {
             this.reader = reader;
@@ -115,33 +151,32 @@ namespace SteamControllerTest
             ref SteamControllerState current = ref device.CurrentStateRef;
             ref SteamControllerState previous = ref device.PreviousStateRef;
 
+            //outputX360.ResetReport();
+            //unchecked
+            //{
+            //    ushort tempButtons = 0;
+            //    if (current.A) tempButtons |= Xbox360Button.A.Value;
+            //    if (current.B) tempButtons |= Xbox360Button.B.Value;
+            //    if (current.X) tempButtons |= Xbox360Button.X.Value;
+            //    if (current.Y) tempButtons |= Xbox360Button.Y.Value;
+            //    if (current.Back) tempButtons |= Xbox360Button.Back.Value;
+            //    if (current.Start) tempButtons |= Xbox360Button.Start.Value;
+            //    if (current.Guide) tempButtons |= Xbox360Button.Guide.Value;
+            //    if (current.LB) tempButtons |= Xbox360Button.LeftShoulder.Value;
+            //    if (current.RB) tempButtons |= Xbox360Button.RightShoulder.Value;
 
-            outputX360.ResetReport();
-            unchecked
-            {
-                ushort tempButtons = 0;
-                if (current.A) tempButtons |= Xbox360Button.A.Value;
-                if (current.B) tempButtons |= Xbox360Button.B.Value;
-                if (current.X) tempButtons |= Xbox360Button.X.Value;
-                if (current.Y) tempButtons |= Xbox360Button.Y.Value;
-                if (current.Back) tempButtons |= Xbox360Button.Back.Value;
-                if (current.Start) tempButtons |= Xbox360Button.Start.Value;
-                if (current.Guide) tempButtons |= Xbox360Button.Guide.Value;
-                if (current.LB) tempButtons |= Xbox360Button.LeftShoulder.Value;
-                if (current.RB) tempButtons |= Xbox360Button.RightShoulder.Value;
+            //    /*if (current.DPadUp) tempButtons |= Xbox360Button.Up.Value;
+            //    if (current.DPadDown) tempButtons |= Xbox360Button.Down.Value;
+            //    if (current.DPadLeft) tempButtons |= Xbox360Button.Left.Value;
+            //    if (current.DPadRight) tempButtons |= Xbox360Button.Right.Value;
+            //    */
 
-                /*if (current.DPadUp) tempButtons |= Xbox360Button.Up.Value;
-                if (current.DPadDown) tempButtons |= Xbox360Button.Down.Value;
-                if (current.DPadLeft) tempButtons |= Xbox360Button.Left.Value;
-                if (current.DPadRight) tempButtons |= Xbox360Button.Right.Value;
-                */
+            //    current.LeftPad.Rotate(-18.0 * Math.PI / 180.0);
+            //    //current.RightPad.Rotate(18.0 * Math.PI / 180.0);
+            //    TouchDPad(ref current, ref previous, ref tempButtons);
 
-                current.LeftPad.Rotate(-18.0 * Math.PI / 180.0);
-                //current.RightPad.Rotate(18.0 * Math.PI / 180.0);
-                TouchDPad(ref current, ref previous, ref tempButtons);
-
-                outputX360.SetButtonsFull(tempButtons);
-            }
+            //    outputX360.SetButtonsFull(tempButtons);
+            //}
 
             short temp;
             /*if (current.LeftPad.Touch)
@@ -156,8 +191,174 @@ namespace SteamControllerTest
             }
             */
 
+            /*
+            temp = Math.Min(Math.Max(current.LX, STICK_MIN), STICK_MAX);
+            temp = AxisScale(temp, false);
+            outputX360.LeftThumbX = temp;
+
+            temp = Math.Min(Math.Max(current.LY, STICK_MIN), STICK_MAX);
+            temp = AxisScale(temp, false);
+            outputX360.LeftThumbY = temp;
+            //*/
+
             //outputX360.LeftTrigger = current.LT;
             //outputX360.RightTrigger = current.RT;
+
+            if (current.A != previous.A)
+            {
+                ushort tempKey = buttonBindings.A;
+                if (current.A)
+                {
+                    InputMethods.performKeyPress(tempKey);
+                }
+                else
+                {
+                    InputMethods.performKeyRelease(tempKey);
+                }
+            }
+
+            if (current.B != previous.B)
+            {
+                ushort tempKey = buttonBindings.B;
+                if (current.B)
+                {
+                    InputMethods.performKeyPress(tempKey);
+                }
+                else
+                {
+                    InputMethods.performKeyRelease(tempKey);
+                }
+            }
+
+            if (current.X != previous.X)
+            {
+                ushort tempKey = buttonBindings.X;
+                if (current.X)
+                {
+                    InputMethods.performKeyPress(tempKey);
+                }
+                else
+                {
+                    InputMethods.performKeyRelease(tempKey);
+                }
+            }
+
+            if (current.Y != previous.Y)
+            {
+                ushort tempKey = buttonBindings.Y;
+                if (current.Y)
+                {
+                    InputMethods.performKeyPress(tempKey);
+                }
+                else
+                {
+                    InputMethods.performKeyRelease(tempKey);
+                }
+            }
+
+            if (current.LB != previous.LB)
+            {
+                ushort tempKey = buttonBindings.LB;
+                if (current.LB)
+                {
+                    InputMethods.performKeyPress(tempKey);
+                }
+                else
+                {
+                    InputMethods.performKeyRelease(tempKey);
+                }
+            }
+
+            if (current.RB != previous.RB)
+            {
+                ushort tempKey = buttonBindings.RB;
+                if (current.RB)
+                {
+                    InputMethods.performKeyPress(tempKey);
+                }
+                else
+                {
+                    InputMethods.performKeyRelease(tempKey);
+                }
+            }
+
+            if (current.LGrip != previous.LGrip)
+            {
+                ushort tempKey = buttonBindings.LGrip;
+                if (current.LGrip)
+                {
+                    InputMethods.performKeyPress(tempKey);
+                }
+                else
+                {
+                    InputMethods.performKeyRelease(tempKey);
+                }
+            }
+
+            if (current.RGrip != previous.RGrip)
+            {
+                ushort tempKey = buttonBindings.RGrip;
+                if (current.RGrip)
+                {
+                    InputMethods.performKeyPress(tempKey);
+                }
+                else
+                {
+                    InputMethods.performKeyRelease(tempKey);
+                }
+            }
+
+            if (current.Back != previous.Back)
+            {
+                ushort tempKey = buttonBindings.Back;
+                if (current.Back)
+                {
+                    InputMethods.performKeyPress(tempKey);
+                }
+                else
+                {
+                    InputMethods.performKeyRelease(tempKey);
+                }
+            }
+
+            if (current.Start != previous.Start)
+            {
+                ushort tempKey = buttonBindings.Start;
+                if (current.Start)
+                {
+                    InputMethods.performKeyPress(tempKey);
+                }
+                else
+                {
+                    InputMethods.performKeyRelease(tempKey);
+                }
+            }
+
+            if (current.Guide != previous.Guide)
+            {
+                ushort tempKey = buttonBindings.Guide;
+                if (current.Guide)
+                {
+                    InputMethods.performKeyPress(tempKey);
+                }
+                else
+                {
+                    InputMethods.performKeyRelease(tempKey);
+                }
+            }
+
+            if (current.LSClick != previous.LSClick)
+            {
+                ushort tempKey = buttonBindings.LSClick;
+                if (current.LSClick)
+                {
+                    InputMethods.performKeyPress(tempKey);
+                }
+                else
+                {
+                    InputMethods.performKeyRelease(tempKey);
+                }
+            }
 
             //if (current.RTClick != previous.RTClick)
             if ((current.RT > 50 && !mouseLBDown) || (current.RT <= 50 && mouseLBDown))
@@ -202,7 +403,7 @@ namespace SteamControllerTest
             }
 
 
-            outputX360.SubmitReport();
+            //outputX360.SubmitReport();
         }
 
         private void TouchDPad(ref SteamControllerState current,
