@@ -208,12 +208,16 @@ namespace SteamControllerTest.SteamControllerLibrary
                                 // Only Touchpad is active
                                 current.LeftPad.X = tempAxisX;
                                 current.LeftPad.Y = tempAxisY;
+                                current.LX = 0;
+                                current.LY = 0;
                             }
                             else
                             {
                                 // Only LS is active
                                 current.LX = tempAxisX;
                                 current.LY = tempAxisY;
+                                current.LeftPad.X = 0;
+                                current.LeftPad.Y = 0;
                             }
                         }
                         else
