@@ -162,8 +162,11 @@ namespace SteamControllerTest.SteamControllerLibrary
 
         private void Configure()
         {
+            int timeout = 600;
+            int ledLevel = 90;
             byte[] gyroAndTimeoutFeatureData = new byte[FEATURE_REPORT_LEN];
-            gyroAndTimeoutFeatureData[1] = gyroAndTimeoutFeatureData[2] = SCPacketType.PT_CONFIGURE;
+            gyroAndTimeoutFeatureData[1] = SCPacketType.PT_CONFIGURE;
+            gyroAndTimeoutFeatureData[2] = SCPacketLength.PL_CONFIGURE;
             gyroAndTimeoutFeatureData[3] = SCConfigType.CT_CONFIGURE;
             gyroAndTimeoutFeatureData[4] = 0; // Idle Timeout
             gyroAndTimeoutFeatureData[5] = 0; // Idle Timeout
@@ -176,9 +179,9 @@ namespace SteamControllerTest.SteamControllerLibrary
 
             byte[] ledsFeatureData = new byte[FEATURE_REPORT_LEN];
             ledsFeatureData[1] = SCPacketType.PT_CONFIGURE;
-            ledsFeatureData[2] = SCPacketType.PT_LED;
+            ledsFeatureData[2] = SCPacketLength.PL_LED;
             ledsFeatureData[3] = SCConfigType.CT_LED;
-            ledsFeatureData[4] = 0x80; // LED Level?
+            ledsFeatureData[4] = (byte)(Math.Min(Math.Max(ledLevel, 0), 100)); // LED Level (0-100?)
             hidDevice.WriteFeatureReport(ledsFeatureData);
         }
 
