@@ -134,13 +134,14 @@ namespace SteamControllerTest
                 */
 
                 current.LeftPad.Rotate(-18.0 * Math.PI / 180.0);
+                //current.RightPad.Rotate(18.0 * Math.PI / 180.0);
                 TouchDPad(ref current, ref previous, ref tempButtons);
 
                 outputX360.SetButtonsFull(tempButtons);
             }
 
             short temp;
-            if (current.LeftPad.Touch)
+            /*if (current.LeftPad.Touch)
             {
                 temp = Math.Min(Math.Max(current.LeftPad.X, STICK_MIN), STICK_MAX);
                 temp = AxisScale(temp, false);
@@ -150,6 +151,7 @@ namespace SteamControllerTest
                 temp = AxisScale(temp, false);
                 outputX360.LeftThumbY = temp;
             }
+            */
 
             //outputX360.LeftTrigger = current.LT;
             //outputX360.RightTrigger = current.RT;
