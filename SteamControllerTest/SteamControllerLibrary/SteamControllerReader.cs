@@ -140,12 +140,14 @@ namespace SteamControllerTest.SteamControllerLibrary
                         {
                             Console.WriteLine("GOT INPUT REPORT {0} 0x{1:X2}", res, inputReportBuffer[3]);
                         }
+                        */
 
+                        /*
                         if (!firstReport)
                         {
                             Console.WriteLine("Poll Time: {0}", tempTimeElapsed);
                         }
-                        */
+                        //*/
 
                         //Console.WriteLine("BUTTONS?: {0} {1} {2} {3}", inputReportBuffer[8], inputReportBuffer[9], inputReportBuffer[10], inputReportBuffer[11]);
 
