@@ -423,6 +423,7 @@ namespace SteamControllerTest
                 TouchActionPad(ref current, ref previous);
             }
 
+            current.RightPad.Rotate(8.0 * Math.PI / 180.0);
             TrackballMouseProcess(ref current, ref previous);
 
             if (mouseX != 0.0 || mouseY != 0.0)
@@ -446,8 +447,8 @@ namespace SteamControllerTest
         private void TouchActionPad(ref SteamControllerState current,
             ref SteamControllerState previous)
         {
-            const double CARDINAL_RANGE = 45.0;
-            const double DIAGONAL_RANGE = 45.0;
+            const double DIAGONAL_RANGE = 55.0;
+            const double CARDINAL_RANGE = 90.0 - DIAGONAL_RANGE;
             const double CARDINAL_HALF_RANGE = CARDINAL_RANGE / 2.0;
             //const double CARDINAL_HALF_RANGE = 22.5;
 

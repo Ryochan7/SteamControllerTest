@@ -100,6 +100,11 @@ namespace SteamControllerTest.SteamControllerLibrary
                         }
                         else if (tempByte == SteamControllerDevice.SCPacketType.PT_IDLE && !firstReport)
                         {
+                            continue;
+                        }
+                        /*
+                        else if (tempByte == SteamControllerDevice.SCPacketType.PT_IDLE && !firstReport)
+                        {
                             tempByte = 0;
 
                             // Repeat previously grabbed state with updated timestamp
@@ -116,6 +121,7 @@ namespace SteamControllerTest.SteamControllerLibrary
 
                             continue;
                         }
+                        */
                         else if (firstReport)
                         {
                             Console.WriteLine("CAN READ REPORTS. NICE");
