@@ -289,7 +289,13 @@ namespace SteamControllerTest
 
             if (current.LB != previous.LB)
             {
-                ushort tempKey = buttonBindings.LB;
+                if (current.LB)
+                {
+                    // Wheel Up
+                    InputMethods.MouseWheel(128, 0);
+                }
+
+                /*ushort tempKey = buttonBindings.LB;
                 if (current.LB)
                 {
                     InputMethods.performKeyPress(tempKey);
@@ -298,11 +304,18 @@ namespace SteamControllerTest
                 {
                     InputMethods.performKeyRelease(tempKey);
                 }
+                */
             }
 
             if (current.RB != previous.RB)
             {
-                ushort tempKey = buttonBindings.RB;
+                if (current.RB)
+                {
+                    // Wheel Down
+                    InputMethods.MouseWheel(-128, 0);
+                }
+
+                /*ushort tempKey = buttonBindings.RB;
                 if (current.RB)
                 {
                     InputMethods.performKeyPress(tempKey);
@@ -311,6 +324,7 @@ namespace SteamControllerTest
                 {
                     InputMethods.performKeyRelease(tempKey);
                 }
+                */
             }
 
             if (current.LGrip != previous.LGrip)
