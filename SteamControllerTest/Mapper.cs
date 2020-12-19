@@ -461,49 +461,60 @@ namespace SteamControllerTest
             const double leftBegin = downLeftBegin + DIAGONAL_RANGE;
             const double upLeftBegin = leftBegin + CARDINAL_RANGE;
 
-            double angleRad = Math.Atan2(current.LeftPad.X, current.LeftPad.Y);
-            double angle = (angleRad >= 0 ? angleRad : (2 * Math.PI + angleRad)) * 180 / Math.PI;
-            //Console.WriteLine("{0} {1}", angle, current.LeftPad.Touch);
-            /*double normX = Math.Abs(Math.Cos(tempAngle));
-            double normY = Math.Abs(Math.Sin(tempAngle));
-            int signX = Math.Sign(current.LeftPad.X);
-            int signY = Math.Sign(current.LeftPad.Y);
-            */
-            if (angle == 0.0)
+            const int deadzoneSquared = 8000 * 8000;
+
+            int dist = (current.LeftPad.X * current.LeftPad.X) + (current.LeftPad.Y * current.LeftPad.Y);
+            if (dist < deadzoneSquared)
             {
                 currentLeftDir = DpadDirections.Centered;
             }
-            else if (angle > upLeftEnd || angle < upRightBegin)
+            else
             {
-                currentLeftDir = DpadDirections.Up;
-            }
-            else if (angle >= upRightBegin && angle < rightBegin)
-            {
-                currentLeftDir = DpadDirections.UpRight;
-            }
-            else if (angle >= rightBegin && angle < downRightBegin)
-            {
-                currentLeftDir = DpadDirections.Right;
-            }
-            else if (angle >= downRightBegin && angle < downBegin)
-            {
-                currentLeftDir = DpadDirections.DownRight;
-            }
-            else if (angle >= downBegin && angle < downLeftBegin)
-            {
-                currentLeftDir = DpadDirections.Down;
-            }
-            else if (angle >= downLeftBegin && angle < leftBegin)
-            {
-                currentLeftDir = DpadDirections.DownLeft;
-            }
-            else if (angle >= leftBegin && angle < upLeftBegin)
-            {
-                currentLeftDir = DpadDirections.Left;
-            }
-            else if (angle >= upLeftBegin && angle <= upLeftEnd)
-            {
-                currentLeftDir = DpadDirections.UpLeft;
+                double angleRad = Math.Atan2(current.LeftPad.X, current.LeftPad.Y);
+                double angle = (angleRad >= 0 ? angleRad : (2 * Math.PI + angleRad)) * 180 / Math.PI;
+                //Console.WriteLine("{0} {1}", angle, current.LeftPad.Touch);
+                /*double normX = Math.Abs(Math.Cos(tempAngle));
+                double normY = Math.Abs(Math.Sin(tempAngle));
+                int signX = Math.Sign(current.LeftPad.X);
+                int signY = Math.Sign(current.LeftPad.Y);
+                */
+
+                if (angle == 0.0)
+                {
+                    currentLeftDir = DpadDirections.Centered;
+                }
+                else if (angle > upLeftEnd || angle < upRightBegin)
+                {
+                    currentLeftDir = DpadDirections.Up;
+                }
+                else if (angle >= upRightBegin && angle < rightBegin)
+                {
+                    currentLeftDir = DpadDirections.UpRight;
+                }
+                else if (angle >= rightBegin && angle < downRightBegin)
+                {
+                    currentLeftDir = DpadDirections.Right;
+                }
+                else if (angle >= downRightBegin && angle < downBegin)
+                {
+                    currentLeftDir = DpadDirections.DownRight;
+                }
+                else if (angle >= downBegin && angle < downLeftBegin)
+                {
+                    currentLeftDir = DpadDirections.Down;
+                }
+                else if (angle >= downLeftBegin && angle < leftBegin)
+                {
+                    currentLeftDir = DpadDirections.DownLeft;
+                }
+                else if (angle >= leftBegin && angle < upLeftBegin)
+                {
+                    currentLeftDir = DpadDirections.Left;
+                }
+                else if (angle >= upLeftBegin && angle <= upLeftEnd)
+                {
+                    currentLeftDir = DpadDirections.UpLeft;
+                }
             }
 
             if (currentLeftDir != previousLeftDir)
@@ -803,7 +814,7 @@ namespace SteamControllerTest
                 + (normY * (offset * signY)) : 0;
 
             double throttla = 1.428;
-            double offman = 20;
+            double offman = 24;
 
             double absX = Math.Abs(xMotion);
             if (absX <= normX * offman)
@@ -827,7 +838,7 @@ namespace SteamControllerTest
         }
 
         private const double TOUCHPAD_MOUSE_OFFSET = 0.8;
-        private const double TOUCHPAD_COEFFICIENT = 0.009;
+        private const double TOUCHPAD_COEFFICIENT = 0.012;
         private void RightTouchMouse(ref SteamControllerState current,
             ref SteamControllerState previous)
         {
