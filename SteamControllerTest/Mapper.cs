@@ -435,7 +435,7 @@ namespace SteamControllerTest
                 // Probably not needed here. Leave as a temporary precaution
                 mouseXRemainder = mouseYRemainder = 0.0;
 
-                //filterX.Filter(0.0, currentRate); // Smooth on outputz
+                //filterX.Filter(0.0, currentRate); // Smooth on output
                 //filterY.Filter(0.0, currentRate); // Smooth on output
             }
 
