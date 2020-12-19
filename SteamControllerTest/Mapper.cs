@@ -132,16 +132,16 @@ namespace SteamControllerTest
         {
             PopulateKeyBindings();
 
-            contThr = new Thread(() =>
-            {
-                outputX360 = vigemTestClient.CreateXbox360Controller();
-                outputX360.AutoSubmitReport = false;
-                outputX360.Connect();
-            });
-            contThr.Priority = ThreadPriority.Normal;
-            contThr.IsBackground = true;
-            contThr.Start();
-            contThr.Join(); // Wait for bus object start
+            //contThr = new Thread(() =>
+            //{
+            //    outputX360 = vigemTestClient.CreateXbox360Controller();
+            //    outputX360.AutoSubmitReport = false;
+            //    outputX360.Connect();
+            //});
+            //contThr.Priority = ThreadPriority.Normal;
+            //contThr.IsBackground = true;
+            //contThr.Start();
+            //contThr.Join(); // Wait for bus object start
 
             this.reader = reader;
             reader.Report += ControllerReader_Report;
@@ -589,10 +589,10 @@ namespace SteamControllerTest
         private void TouchDPad(ref SteamControllerState current,
             ref SteamControllerState previous, ref ushort tempButtons)
         {
-            const double CARDINAL_RANGE = 45.0;
-            const double DIAGONAL_RANGE = 45.0;
-            //const double CARDINAL_HALF_RANGE = CARDINAL_RANGE / 2.0;
-            const double CARDINAL_HALF_RANGE = 22.5;
+            const double DIAGONAL_RANGE = 55.0;
+            const double CARDINAL_RANGE = 90.0 - DIAGONAL_RANGE;
+            const double CARDINAL_HALF_RANGE = CARDINAL_RANGE / 2.0;
+            //const double CARDINAL_HALF_RANGE = 22.5;
 
             const double upLeftEnd = 360 - CARDINAL_HALF_RANGE;
             const double upRightBegin = CARDINAL_HALF_RANGE;
@@ -603,64 +603,70 @@ namespace SteamControllerTest
             const double leftBegin = downLeftBegin + DIAGONAL_RANGE;
             const double upLeftBegin = leftBegin + CARDINAL_RANGE;
 
+            const int deadzoneSquared = 8000 * 8000;
+
             unchecked
             {
                 if (current.LeftPad.Touch)
                 {
-                    double angleRad = Math.Atan2(current.LeftPad.X, current.LeftPad.Y);
-                    double angle = (angleRad >= 0 ? angleRad : (2 * Math.PI + angleRad)) * 180 / Math.PI;
-                    //Console.WriteLine(angle);
-                    /*double normX = Math.Abs(Math.Cos(tempAngle));
-                    double normY = Math.Abs(Math.Sin(tempAngle));
-                    int signX = Math.Sign(current.LeftPad.X);
-                    int signY = Math.Sign(current.LeftPad.Y);
-                    */
-                    if (angle == 0.0)
+                    int dist = (current.LeftPad.X * current.LeftPad.X) + (current.LeftPad.Y * current.LeftPad.Y);
+                    if (dist > deadzoneSquared)
                     {
-                    }
-                    else if (angle > upLeftEnd || angle < upRightBegin)
-                    {
-                        tempButtons |= Xbox360Button.Up.Value;
-                        //currentDir = DpadDirections.Up;
-                    }
-                    else if (angle >= upRightBegin && angle < rightBegin)
-                    {
-                        tempButtons |= Xbox360Button.Up.Value;
-                        tempButtons |= Xbox360Button.Right.Value;
-                        //currentDir = DpadDirections.UpRight;
-                    }
-                    else if (angle >= rightBegin && angle < downRightBegin)
-                    {
-                        tempButtons |= Xbox360Button.Right.Value;
-                        //currentDir = DpadDirections.Right;
-                    }
-                    else if (angle >= downRightBegin && angle < downBegin)
-                    {
-                        tempButtons |= Xbox360Button.Down.Value;
-                        tempButtons |= Xbox360Button.Right.Value;
-                        //currentDir = DpadDirections.DownRight;
-                    }
-                    else if (angle >= downBegin && angle < downLeftBegin)
-                    {
-                        tempButtons |= Xbox360Button.Down.Value;
-                        //currentDir = DpadDirections.Down;
-                    }
-                    else if (angle >= downLeftBegin && angle < leftBegin)
-                    {
-                        tempButtons |= Xbox360Button.Down.Value;
-                        tempButtons |= Xbox360Button.Left.Value;
-                        //currentDir = DpadDirections.DownLeft;
-                    }
-                    else if (angle >= leftBegin && angle < upLeftBegin)
-                    {
-                        tempButtons |= Xbox360Button.Left.Value;
-                        //currentDir = DpadDirections.Left;
-                    }
-                    else if (angle >= upLeftBegin && angle <= upLeftEnd)
-                    {
-                        tempButtons |= Xbox360Button.Up.Value;
-                        tempButtons |= Xbox360Button.Left.Value;
-                        //currentDir = DpadDirections.UpLeft;
+                        double angleRad = Math.Atan2(current.LeftPad.X, current.LeftPad.Y);
+                        double angle = (angleRad >= 0 ? angleRad : (2 * Math.PI + angleRad)) * 180 / Math.PI;
+                        //Console.WriteLine(angle);
+                        /*double normX = Math.Abs(Math.Cos(tempAngle));
+                        double normY = Math.Abs(Math.Sin(tempAngle));
+                        int signX = Math.Sign(current.LeftPad.X);
+                        int signY = Math.Sign(current.LeftPad.Y);
+                        */
+                        if (angle == 0.0)
+                        {
+                        }
+                        else if (angle > upLeftEnd || angle < upRightBegin)
+                        {
+                            tempButtons |= Xbox360Button.Up.Value;
+                            //currentDir = DpadDirections.Up;
+                        }
+                        else if (angle >= upRightBegin && angle < rightBegin)
+                        {
+                            tempButtons |= Xbox360Button.Up.Value;
+                            tempButtons |= Xbox360Button.Right.Value;
+                            //currentDir = DpadDirections.UpRight;
+                        }
+                        else if (angle >= rightBegin && angle < downRightBegin)
+                        {
+                            tempButtons |= Xbox360Button.Right.Value;
+                            //currentDir = DpadDirections.Right;
+                        }
+                        else if (angle >= downRightBegin && angle < downBegin)
+                        {
+                            tempButtons |= Xbox360Button.Down.Value;
+                            tempButtons |= Xbox360Button.Right.Value;
+                            //currentDir = DpadDirections.DownRight;
+                        }
+                        else if (angle >= downBegin && angle < downLeftBegin)
+                        {
+                            tempButtons |= Xbox360Button.Down.Value;
+                            //currentDir = DpadDirections.Down;
+                        }
+                        else if (angle >= downLeftBegin && angle < leftBegin)
+                        {
+                            tempButtons |= Xbox360Button.Down.Value;
+                            tempButtons |= Xbox360Button.Left.Value;
+                            //currentDir = DpadDirections.DownLeft;
+                        }
+                        else if (angle >= leftBegin && angle < upLeftBegin)
+                        {
+                            tempButtons |= Xbox360Button.Left.Value;
+                            //currentDir = DpadDirections.Left;
+                        }
+                        else if (angle >= upLeftBegin && angle <= upLeftEnd)
+                        {
+                            tempButtons |= Xbox360Button.Up.Value;
+                            tempButtons |= Xbox360Button.Left.Value;
+                            //currentDir = DpadDirections.UpLeft;
+                        }
                     }
                 }
             }
