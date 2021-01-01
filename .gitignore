@@ -360,3 +360,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+!SteamControllerTest/libs/x64/
+!SteamControllerTest/libs/x86/
