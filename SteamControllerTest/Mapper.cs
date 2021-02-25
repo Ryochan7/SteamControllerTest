@@ -132,16 +132,16 @@ namespace SteamControllerTest
         {
             PopulateKeyBindings();
 
-            contThr = new Thread(() =>
-            {
-                outputX360 = vigemTestClient.CreateXbox360Controller();
-                outputX360.AutoSubmitReport = false;
-                outputX360.Connect();
-            });
-            contThr.Priority = ThreadPriority.Normal;
-            contThr.IsBackground = true;
-            contThr.Start();
-            contThr.Join(); // Wait for bus object start
+            //contThr = new Thread(() =>
+            //{
+            //    outputX360 = vigemTestClient.CreateXbox360Controller();
+            //    outputX360.AutoSubmitReport = false;
+            //    outputX360.Connect();
+            //});
+            //contThr.Priority = ThreadPriority.Normal;
+            //contThr.IsBackground = true;
+            //contThr.Start();
+            //contThr.Join(); // Wait for bus object start
 
             this.reader = reader;
             reader.Report += ControllerReader_Report;
