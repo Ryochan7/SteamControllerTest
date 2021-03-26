@@ -857,7 +857,7 @@ namespace SteamControllerTest
             mouseX = xMotion; mouseY = yMotion;
         }
 
-        private const double TOUCHPAD_MOUSE_OFFSET = 0.8;
+        private const double TOUCHPAD_MOUSE_OFFSET = 0.4;
         private const double TOUCHPAD_COEFFICIENT = 0.012;
         private void RightTouchMouse(ref SteamControllerState current,
             ref SteamControllerState previous)
