@@ -105,6 +105,11 @@ namespace SteamControllerTest.SteamControllerLibrary
         {
             // Just assume USB for now
             ConnectionType result = ConnectionType.USB;
+            if (device.Attributes.ProductId == 0x1142)
+            {
+                result = ConnectionType.SCDongle;
+            }
+
             return result;
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -8,8 +9,10 @@ using System.Windows.Input;
 using Nefarius.ViGEm.Client;
 using Nefarius.ViGEm.Client.Targets;
 using Nefarius.ViGEm.Client.Targets.Xbox360;
+using Sensorit.Base;
 
 using SteamControllerTest.SteamControllerLibrary;
+using FakerInputWrapper;
 
 namespace SteamControllerTest
 {
@@ -117,6 +120,19 @@ namespace SteamControllerTest
         private double trackballDXRemain = 0.0;
         private double trackballDYRemain = 0.0;
 
+        private OneEuroFilter filterX = new OneEuroFilter(4.0, 0.9);
+        private OneEuroFilter filterY = new OneEuroFilter(4.0, 0.9);
+        private double currentRate = 0.0;
+
+        private FakerInput fakerInput = new FakerInput();
+        private KeyboardReport keyboardReport = new KeyboardReport();
+        private RelativeMouseReport mouseReport = new RelativeMouseReport();
+        private KeyboardEnhancedReport mediaKeyboardReport = new KeyboardEnhancedReport();
+
+        private bool keyboardSync = false;
+        private bool keyboardEnhancedSync = false;
+        //private bool mouseSync = false;
+
         public Mapper(SteamControllerDevice device)
         {
             this.device = device;
@@ -130,6 +146,9 @@ namespace SteamControllerTest
         public void Start(ViGEmClient vigemTestClient,
             SteamControllerDevice device, SteamControllerReader reader)
         {
+            bool checkConnect = fakerInput.Connect();
+            Debug.WriteLine(checkConnect);
+
             PopulateKeyBindings();
 
             //contThr = new Thread(() =>
@@ -150,22 +169,48 @@ namespace SteamControllerTest
 
         public void PopulateKeyBindings()
         {
-            buttonBindings.A = (ushort)KeyInterop.VirtualKeyFromKey(Key.Space);
-            buttonBindings.B = (ushort)KeyInterop.VirtualKeyFromKey(Key.C);
-            buttonBindings.X = (ushort)KeyInterop.VirtualKeyFromKey(Key.R);
-            buttonBindings.Y = (ushort)KeyInterop.VirtualKeyFromKey(Key.E);
+            /*buttonBindings.A = (ushort)KeyInterop.VirtualKeyFromKey(Key.Space);
+            buttonBindings.B = (ushort)KeyInterop.VirtualKeyFromKey(Key.S);
+            buttonBindings.X = (ushort)KeyInterop.VirtualKeyFromKey(Key.Return);
+            buttonBindings.Y = (ushort)KeyInterop.VirtualKeyFromKey(Key.R);
             buttonBindings.LB = (ushort)KeyInterop.VirtualKeyFromKey(Key.Q);
             buttonBindings.RB = (ushort)KeyInterop.VirtualKeyFromKey(Key.Z);
             buttonBindings.Back = (ushort)KeyInterop.VirtualKeyFromKey(Key.Tab);
             buttonBindings.Start = (ushort)KeyInterop.VirtualKeyFromKey(Key.Escape);
             buttonBindings.Guide = (ushort)KeyInterop.VirtualKeyFromKey(Key.Tab);
             buttonBindings.LGrip = (ushort)KeyInterop.VirtualKeyFromKey(Key.X);
-            buttonBindings.RGrip = (ushort)KeyInterop.VirtualKeyFromKey(Key.F);
+            //buttonBindings.RGrip = (ushort)KeyInterop.VirtualKeyFromKey(Key.F);
+            buttonBindings.RGrip = (ushort)KeyInterop.VirtualKeyFromKey(Key.VolumeMute);
+            */
 
-            leftTouchBindings.Up = (ushort)KeyInterop.VirtualKeyFromKey(Key.W);
+            /*leftTouchBindings.Up = (ushort)KeyInterop.VirtualKeyFromKey(Key.W);
             leftTouchBindings.Left = (ushort)KeyInterop.VirtualKeyFromKey(Key.A);
             leftTouchBindings.Down = (ushort)KeyInterop.VirtualKeyFromKey(Key.S);
             leftTouchBindings.Right = (ushort)KeyInterop.VirtualKeyFromKey(Key.D);
+            */
+
+            //leftTouchBindings.Up = (ushort)KeyInterop.VirtualKeyFromKey(Key.Up);
+            //leftTouchBindings.Left = (ushort)KeyInterop.VirtualKeyFromKey(Key.Left);
+            //leftTouchBindings.Down = (ushort)KeyInterop.VirtualKeyFromKey(Key.Down);
+            //leftTouchBindings.Right = (ushort)KeyInterop.VirtualKeyFromKey(Key.Right);
+
+            buttonBindings.A = (ushort)KeyboardKey.Spacebar;
+            buttonBindings.B = (ushort)KeyboardKey.S;
+            buttonBindings.X = (ushort)KeyboardKey.Enter;
+            buttonBindings.Y = (ushort)KeyboardKey.R;
+            buttonBindings.LB = (ushort)KeyboardKey.Q;
+            buttonBindings.RB = (ushort)KeyboardKey.Z;
+            buttonBindings.Back = (ushort)KeyboardKey.Tab;
+            buttonBindings.Start = (ushort)KeyboardKey.Escape;
+            buttonBindings.Guide = (ushort)KeyboardKey.Tab;
+            buttonBindings.LGrip = (ushort)KeyboardKey.X;
+            //buttonBindings.RGrip = (ushort)KeyboardKey.F;
+            buttonBindings.RGrip = (ushort)EnhancedKey.Mute;
+
+            leftTouchBindings.Up = (ushort)KeyboardKey.UpArrow;
+            leftTouchBindings.Left = (ushort)KeyboardKey.LeftArrow;
+            leftTouchBindings.Down = (ushort)KeyboardKey.DownArrow;
+            leftTouchBindings.Right = (ushort)KeyboardKey.RightArrow;
         }
 
         /*public void Start(SteamControllerDevice device, SteamControllerReader reader)
@@ -181,6 +226,7 @@ namespace SteamControllerTest
         {
             ref SteamControllerState current = ref device.CurrentStateRef;
             ref SteamControllerState previous = ref device.PreviousStateRef;
+            mouseSync = keyboardSync = keyboardEnhancedSync = false;
 
             //outputX360.ResetReport();
             //unchecked
@@ -210,6 +256,7 @@ namespace SteamControllerTest
             //}
 
             short temp;
+            currentRate = current.timeElapsed;
             /*if (current.LeftPad.Touch)
             {
                 temp = Math.Min(Math.Max(current.LeftPad.X, STICK_MIN), STICK_MAX);
@@ -240,12 +287,18 @@ namespace SteamControllerTest
                 ushort tempKey = buttonBindings.A;
                 if (current.A)
                 {
-                    InputMethods.performKeyPress(tempKey);
+                    keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    //keyboardReport.KeyDown(KeyboardKey.Spacebar);
+                    //InputMethods.performKeyPress(tempKey);
                 }
                 else
                 {
-                    InputMethods.performKeyRelease(tempKey);
+                    keyboardReport.KeyUp((KeyboardKey)tempKey);
+                    //keyboardReport.KeyUp(KeyboardKey.Spacebar);
+                    //InputMethods.performKeyRelease(tempKey);
                 }
+
+                keyboardSync = true;
             }
 
             if (current.B != previous.B)
@@ -253,12 +306,18 @@ namespace SteamControllerTest
                 ushort tempKey = buttonBindings.B;
                 if (current.B)
                 {
-                    InputMethods.performKeyPress(tempKey);
+                    keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    //keyboardReport.KeyDown(KeyboardKey.S);
+                    //InputMethods.performKeyPress(tempKey);
                 }
                 else
                 {
-                    InputMethods.performKeyRelease(tempKey);
+                    keyboardReport.KeyUp((KeyboardKey)tempKey);
+                    //keyboardReport.KeyUp(KeyboardKey.S);
+                    //InputMethods.performKeyRelease(tempKey);
                 }
+
+                keyboardSync = true;
             }
 
             if (current.X != previous.X)
@@ -266,12 +325,16 @@ namespace SteamControllerTest
                 ushort tempKey = buttonBindings.X;
                 if (current.X)
                 {
-                    InputMethods.performKeyPress(tempKey);
+                    keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    //InputMethods.performKeyPress(tempKey);
                 }
                 else
                 {
-                    InputMethods.performKeyRelease(tempKey);
+                    keyboardReport.KeyUp((KeyboardKey)tempKey);
+                    //InputMethods.performKeyRelease(tempKey);
                 }
+
+                keyboardSync = true;
             }
 
             if (current.Y != previous.Y)
@@ -279,12 +342,18 @@ namespace SteamControllerTest
                 ushort tempKey = buttonBindings.Y;
                 if (current.Y)
                 {
-                    InputMethods.performKeyPress(tempKey);
+                    keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    //keyboardReport.KeyDown(KeyboardKey.R);
+                    //InputMethods.performKeyPress(tempKey);
                 }
                 else
                 {
-                    InputMethods.performKeyRelease(tempKey);
+                    keyboardReport.KeyUp((KeyboardKey)tempKey);
+                    //keyboardReport.KeyUp(KeyboardKey.R);
+                    //InputMethods.performKeyRelease(tempKey);
                 }
+
+                keyboardSync = true;
             }
 
             if (current.LB != previous.LB)
@@ -292,7 +361,10 @@ namespace SteamControllerTest
                 if (current.LB)
                 {
                     // Wheel Up
-                    InputMethods.MouseWheel(128, 0);
+                    //InputMethods.MouseWheel(128, 0);
+                    //int click = 1;
+                    mouseReport.WheelPosition = 1;
+                    mouseSync = true;
                 }
 
                 /*ushort tempKey = buttonBindings.LB;
@@ -312,7 +384,10 @@ namespace SteamControllerTest
                 if (current.RB)
                 {
                     // Wheel Down
-                    InputMethods.MouseWheel(-128, 0);
+                    //InputMethods.MouseWheel(-128, 0);
+                    int click = -1;
+                    mouseReport.WheelPosition = (byte)click;
+                    mouseSync = true;
                 }
 
                 /*ushort tempKey = buttonBindings.RB;
@@ -332,12 +407,18 @@ namespace SteamControllerTest
                 ushort tempKey = buttonBindings.LGrip;
                 if (current.LGrip)
                 {
-                    InputMethods.performKeyPress(tempKey);
+                    keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    //keyboardReport.KeyDown(KeyboardKey.X);
+                    //InputMethods.performKeyPress(tempKey);
                 }
                 else
                 {
-                    InputMethods.performKeyRelease(tempKey);
+                    keyboardReport.KeyUp((KeyboardKey)tempKey);
+                    //keyboardReport.KeyUp(KeyboardKey.X);
+                    //InputMethods.performKeyRelease(tempKey);
                 }
+
+                keyboardSync = true;
             }
 
             if (current.RGrip != previous.RGrip)
@@ -345,12 +426,16 @@ namespace SteamControllerTest
                 ushort tempKey = buttonBindings.RGrip;
                 if (current.RGrip)
                 {
-                    InputMethods.performKeyPress(tempKey);
+                    mediaKeyboardReport.KeyDown(EnhancedKey.Mute);
+                    //InputMethods.performKeyPress(tempKey);
                 }
                 else
                 {
-                    InputMethods.performKeyRelease(tempKey);
+                    mediaKeyboardReport.KeyUp(EnhancedKey.Mute);
+                    //InputMethods.performKeyRelease(tempKey);
                 }
+
+                keyboardEnhancedSync = true;
             }
 
             if (current.Back != previous.Back)
@@ -358,12 +443,16 @@ namespace SteamControllerTest
                 ushort tempKey = buttonBindings.Back;
                 if (current.Back)
                 {
-                    InputMethods.performKeyPress(tempKey);
+                    keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    //InputMethods.performKeyPress(tempKey);
                 }
                 else
                 {
-                    InputMethods.performKeyRelease(tempKey);
+                    keyboardReport.KeyUp((KeyboardKey)tempKey);
+                    //InputMethods.performKeyRelease(tempKey);
                 }
+
+                keyboardSync = true;
             }
 
             if (current.Start != previous.Start)
@@ -371,12 +460,18 @@ namespace SteamControllerTest
                 ushort tempKey = buttonBindings.Start;
                 if (current.Start)
                 {
-                    InputMethods.performKeyPress(tempKey);
+                    keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    //keyboardReport.KeyDown(KeyboardKey.Escape);
+                    //InputMethods.performKeyPress(tempKey);
                 }
                 else
                 {
-                    InputMethods.performKeyRelease(tempKey);
+                    keyboardReport.KeyUp((KeyboardKey)tempKey);
+                    //keyboardReport.KeyUp(KeyboardKey.Escape);
+                    //InputMethods.performKeyRelease(tempKey);
                 }
+
+                keyboardSync = true;
             }
 
             if (current.Guide != previous.Guide)
@@ -384,12 +479,16 @@ namespace SteamControllerTest
                 ushort tempKey = buttonBindings.Guide;
                 if (current.Guide)
                 {
-                    InputMethods.performKeyPress(tempKey);
+                    keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    //InputMethods.performKeyPress(tempKey);
                 }
                 else
                 {
-                    InputMethods.performKeyRelease(tempKey);
+                    keyboardReport.KeyUp((KeyboardKey)tempKey);
+                    //InputMethods.performKeyRelease(tempKey);
                 }
+
+                keyboardSync = true;
             }
 
             if (current.LSClick != previous.LSClick)
@@ -397,12 +496,16 @@ namespace SteamControllerTest
                 ushort tempKey = buttonBindings.LSClick;
                 if (current.LSClick)
                 {
-                    InputMethods.performKeyPress(tempKey);
+                    keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    //InputMethods.performKeyPress(tempKey);
                 }
                 else
                 {
-                    InputMethods.performKeyRelease(tempKey);
+                    keyboardReport.KeyUp((KeyboardKey)tempKey);
+                    //InputMethods.performKeyRelease(tempKey);
                 }
+
+                keyboardSync = true;
             }
 
             //if (current.RTClick != previous.RTClick)
@@ -410,8 +513,18 @@ namespace SteamControllerTest
             {
                 mouseLBDown = current.RT > 50;
                 //Console.WriteLine("RT: {0} {1}", current.RT, mouseLBDown);
-                InputMethods.MouseEvent(mouseLBDown ? InputMethods.MOUSEEVENTF_LEFTDOWN :
-                    InputMethods.MOUSEEVENTF_LEFTUP);
+                if (mouseLBDown)
+                {
+                    mouseReport.ButtonDown(FakerInputWrapper.MouseButton.LeftButton);
+                }
+                else
+                {
+                    mouseReport.ButtonUp(FakerInputWrapper.MouseButton.LeftButton);
+                }
+
+                mouseSync = true;
+                //InputMethods.MouseEvent(mouseLBDown ? InputMethods.MOUSEEVENTF_LEFTDOWN :
+                //    InputMethods.MOUSEEVENTF_LEFTUP);
             }
 
             //if (current.LTClick != previous.LTClick)
@@ -419,8 +532,18 @@ namespace SteamControllerTest
             if ((current.LT > 50 && !mouseRBDown) || (current.LT <= 50 && mouseRBDown))
             {
                 mouseRBDown = current.LT > 50;
-                InputMethods.MouseEvent(mouseRBDown ? InputMethods.MOUSEEVENTF_RIGHTDOWN :
-                    InputMethods.MOUSEEVENTF_RIGHTUP);
+                if (mouseRBDown)
+                {
+                    mouseReport.ButtonDown(FakerInputWrapper.MouseButton.RightButton);
+                }
+                else
+                {
+                    mouseReport.ButtonUp(FakerInputWrapper.MouseButton.RightButton);
+                }
+
+                mouseSync = true;
+                //InputMethods.MouseEvent(mouseRBDown ? InputMethods.MOUSEEVENTF_RIGHTDOWN :
+                //    InputMethods.MOUSEEVENTF_RIGHTUP);
             }
 
             /*if (current.RightPad.Touch && previous.RightPad.Touch)
@@ -450,11 +573,27 @@ namespace SteamControllerTest
                 // Probably not needed here. Leave as a temporary precaution
                 mouseXRemainder = mouseYRemainder = 0.0;
 
-                //filterX.Filter(0.0, currentRate); // Smooth on output
-                //filterY.Filter(0.0, currentRate); // Smooth on output
+                filterX.Filter(0.0, 1.0 / currentRate); // Smooth on output
+                filterY.Filter(0.0, 1.0 / currentRate); // Smooth on output
             }
 
+            if (keyboardSync)
+            {
+                fakerInput.UpdateKeyboard(keyboardReport);
+            }
 
+            if (keyboardEnhancedSync)
+            {
+                fakerInput.UpdateKeyboardEnhanced(mediaKeyboardReport);
+            }
+
+            if (mouseSync)
+            {
+                //fakerInput.UpdateAbsoluteMouse(new AbsoluteMouseReport() { MouseX = 30000, MouseY = 20000, });
+                fakerInput.UpdateRelativeMouse(mouseReport);
+                mouseReport.ResetMousePos();
+            }
+            
             //outputX360.SubmitReport();
         }
 
@@ -541,45 +680,61 @@ namespace SteamControllerTest
                 if ((remDirs & DpadDirections.Up) != 0)
                 {
                     ushort tempKey = leftTouchBindings.Up;
-                    InputMethods.performKeyRelease(tempKey);
+                    //InputMethods.performKeyRelease(tempKey);
+                    keyboardReport.KeyUp((KeyboardKey)tempKey);
+                    keyboardSync = true;
                 }
                 else if ((remDirs & DpadDirections.Down) != 0)
                 {
                     ushort tempKey = leftTouchBindings.Down;
-                    InputMethods.performKeyRelease(tempKey);
+                    //InputMethods.performKeyRelease(tempKey);
+                    keyboardReport.KeyUp((KeyboardKey)tempKey);
+                    keyboardSync = true;
                 }
 
                 if ((remDirs & DpadDirections.Left) != 0)
                 {
                     ushort tempKey = leftTouchBindings.Left;
-                    InputMethods.performKeyRelease(tempKey);
+                    //InputMethods.performKeyRelease(tempKey);
+                    keyboardReport.KeyUp((KeyboardKey)tempKey);
+                    keyboardSync = true;
                 }
                 else if ((remDirs & DpadDirections.Right) != 0)
                 {
                     ushort tempKey = leftTouchBindings.Right;
-                    InputMethods.performKeyRelease(tempKey);
+                    //InputMethods.performKeyRelease(tempKey);
+                    keyboardReport.KeyUp((KeyboardKey)tempKey);
+                    keyboardSync = true;
                 }
 
                 if ((addDirs & DpadDirections.Up) != 0)
                 {
                     ushort tempKey = leftTouchBindings.Up;
-                    InputMethods.performKeyPress(tempKey);
+                    //InputMethods.performKeyPress(tempKey);
+                    keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    keyboardSync = true;
                 }
                 else if ((addDirs & DpadDirections.Down) != 0)
                 {
                     ushort tempKey = leftTouchBindings.Down;
-                    InputMethods.performKeyPress(tempKey);
+                    //InputMethods.performKeyPress(tempKey);
+                    keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    keyboardSync = true;
                 }
 
                 if ((addDirs & DpadDirections.Left) != 0)
                 {
                     ushort tempKey = leftTouchBindings.Left;
-                    InputMethods.performKeyPress(tempKey);
+                    //InputMethods.performKeyPress(tempKey);
+                    keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    keyboardSync = true;
                 }
                 else if ((addDirs & DpadDirections.Right) != 0)
                 {
                     ushort tempKey = leftTouchBindings.Right;
-                    InputMethods.performKeyPress(tempKey);
+                    //InputMethods.performKeyPress(tempKey);
+                    keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    keyboardSync = true;
                 }
 
                 previousLeftDir = currentLeftDir;
@@ -722,10 +877,14 @@ namespace SteamControllerTest
                 y_out /= finalWeight;
                 trackballYVel = y_out;
 
-                trackballActive = true;
+                double dist = Math.Sqrt(trackballXVel * trackballXVel + trackballYVel * trackballYVel);
+                if (dist >= 1.0)
+                {
+                    trackballActive = true;
 
-                //Console.WriteLine("START TRACK {0}", trackballXVel);
-                ProcessTrackballFrame(ref current, ref previous);
+                    //Debug.WriteLine("START TRACK {0}", dist);
+                    ProcessTrackballFrame(ref current, ref previous);
+                }
             }
             else if (!current.RightPad.Touch && trackballActive)
             {
@@ -792,7 +951,7 @@ namespace SteamControllerTest
 
         private void TouchMoveMouse(int dx, int dy, ref SteamControllerState current)
         {
-            const int deadZone = 22;
+            const int deadZone = 18;
 
             double tempAngle = Math.Atan2(-dy, dx);
             double normX = Math.Abs(Math.Cos(tempAngle));
@@ -834,7 +993,7 @@ namespace SteamControllerTest
                 + (normY * (offset * signY)) : 0;
 
             double throttla = 1.428;
-            double offman = 24;
+            double offman = 10;
 
             double absX = Math.Abs(xMotion);
             if (absX <= normX * offman)
@@ -857,7 +1016,7 @@ namespace SteamControllerTest
             mouseX = xMotion; mouseY = yMotion;
         }
 
-        private const double TOUCHPAD_MOUSE_OFFSET = 0.4;
+        private const double TOUCHPAD_MOUSE_OFFSET = 0.375;
         private const double TOUCHPAD_COEFFICIENT = 0.012;
         private void RightTouchMouse(ref SteamControllerState current,
             ref SteamControllerState previous)
@@ -903,25 +1062,29 @@ namespace SteamControllerTest
 
                 //mouseX = filterX.Filter(mouseX, 1.0 / 0.016);
                 //mouseY = filterY.Filter(mouseY, 1.0 / 0.016);
-                //mouseX = filterX.Filter(mouseX, currentRate);
-                //mouseY = filterY.Filter(mouseY, currentRate);
+                mouseX = filterX.Filter(mouseX, 1.0 / currentRate);
+                mouseY = filterY.Filter(mouseY, 1.0 / currentRate);
 
-                double mouseXTemp = mouseX - (remainderCutoff(mouseX * 1000.0, 1.0) / 1000.0);
+                double mouseXTemp = mouseX - (remainderCutoff(mouseX * 100.0, 1.0) / 100.0);
                 int mouseXInt = (int)(mouseXTemp);
                 mouseXRemainder = mouseXTemp - mouseXInt;
 
-                double mouseYTemp = mouseY - (remainderCutoff(mouseY * 1000.0, 1.0) / 1000.0);
+                double mouseYTemp = mouseY - (remainderCutoff(mouseY * 100.0, 1.0) / 100.0);
                 int mouseYInt = (int)(mouseYTemp);
                 mouseYRemainder = mouseYTemp - mouseYInt;
-                InputMethods.MoveCursorBy(mouseXInt, mouseYInt);
+                mouseReport.MouseX = (short)mouseXInt;
+                mouseReport.MouseY = (short)mouseYInt;
+                mouseSync = true;
+                //fakerInput.UpdateRelativeMouse(mouseReport);
+                //InputMethods.MoveCursorBy(mouseXInt, mouseYInt);
             }
             else
             {
                 mouseXRemainder = mouseYRemainder = 0.0;
                 //mouseX = filterX.Filter(0.0, 1.0 / 0.016);
                 //mouseY = filterY.Filter(0.0, 1.0 / 0.016);
-                //filterX.Filter(mouseX, currentRate);
-                //filterY.Filter(mouseY, currentRate);
+                filterX.Filter(mouseX, 1.0 / currentRate);
+                filterY.Filter(mouseY, 1.0 / currentRate);
             }
 
             mouseX = mouseY = 0.0;
@@ -945,6 +1108,9 @@ namespace SteamControllerTest
         public void Stop()
         {
             reader.StopUpdate();
+            fakerInput.UpdateKeyboard(new KeyboardReport());
+            fakerInput.Disconnect();
+            fakerInput.Free();
 
             quit = true;
 

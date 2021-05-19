@@ -11,6 +11,7 @@ namespace SteamControllerTest.SteamControllerLibrary
     {
         private const int STEAM_CONTROLLER_VENDOR_ID = 0x28DE;
         private const int STEAM_CONTROLLER_PRODUCT_ID = 0x1102;
+        //private const int STEAM_WIRELESS_CONTROLLER_PRODUCT_ID = 0x1142;
 
         private Dictionary<string, SteamControllerDevice> foundDevices;
 

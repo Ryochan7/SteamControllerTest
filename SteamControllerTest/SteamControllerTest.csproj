@@ -31,6 +31,9 @@
     <Reference Include="Nefarius.ViGEm.Client">
       <HintPath>..\libs\$(Platform)\Nefarius.ViGEm.Client\Nefarius.ViGEm.Client.dll</HintPath>
     </Reference>
+    <Reference Include="FakerInputWrapper">
+      <HintPath>..\libs\$(Platform)\FakerInputWrapper.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
