@@ -32,8 +32,14 @@
       <HintPath>..\libs\$(Platform)\Nefarius.ViGEm.Client\Nefarius.ViGEm.Client.dll</HintPath>
     </Reference>
     <Reference Include="FakerInputWrapper">
-      <HintPath>..\libs\$(Platform)\FakerInputWrapper.dll</HintPath>
+      <HintPath>..\libs\$(Platform)\FakerInputWrapper\FakerInputWrapper.dll</HintPath>
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="libs\x64\FakerInputWrapper\FakerInputDll.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>FakerInputDll.dll</Link>
+    </None>
+  </ItemGroup>
 </Project>
