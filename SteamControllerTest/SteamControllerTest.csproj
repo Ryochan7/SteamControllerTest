@@ -19,7 +19,11 @@
     <ErrorReport>none</ErrorReport>
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>WIN64;</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <DefineConstants>TRACE;WIN64</DefineConstants>
   </PropertyGroup>
   
   <ItemGroup>

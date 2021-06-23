@@ -103,9 +103,11 @@ namespace SteamControllerTest.SteamControllerLibrary
 
         public static ConnectionType DetermineConnectionType(HidDevice device)
         {
-            // Just assume USB for now
+            // Initially assume a USB connection
             ConnectionType result = ConnectionType.USB;
-            if (device.Attributes.ProductId == 0x1142)
+            if (device.Attributes.ProductId ==
+                SteamControllerEnumerator.STEAM_DONGLE_CONTROLLER_PRODUCT_ID)
+            //if (device.Attributes.ProductId == 0x1142)
             {
                 result = ConnectionType.SCDongle;
             }

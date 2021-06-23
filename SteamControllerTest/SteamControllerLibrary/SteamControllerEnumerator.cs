@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HidLibrary;
 
 namespace SteamControllerTest.SteamControllerLibrary
@@ -11,7 +8,7 @@ namespace SteamControllerTest.SteamControllerLibrary
     {
         private const int STEAM_CONTROLLER_VENDOR_ID = 0x28DE;
         private const int STEAM_CONTROLLER_PRODUCT_ID = 0x1102;
-        //private const int STEAM_WIRELESS_CONTROLLER_PRODUCT_ID = 0x1142;
+        public const int STEAM_DONGLE_CONTROLLER_PRODUCT_ID = 0x1142;
 
         private Dictionary<string, SteamControllerDevice> foundDevices;
 
@@ -22,8 +19,10 @@ namespace SteamControllerTest.SteamControllerLibrary
 
         public void FindControllers()
         {
+            int endpointIdx = 1;
+
             IEnumerable<HidDevice> hDevices = HidDevices.Enumerate(STEAM_CONTROLLER_VENDOR_ID,
-                STEAM_CONTROLLER_PRODUCT_ID);
+                STEAM_CONTROLLER_PRODUCT_ID, STEAM_DONGLE_CONTROLLER_PRODUCT_ID);
             hDevices = hDevices.Where(hDevice => hDevice.Capabilities.Usage == 1);
             List<HidDevice> tempList = hDevices.ToList();
 
@@ -36,9 +35,22 @@ namespace SteamControllerTest.SteamControllerLibrary
 
                 if (hDevice.IsOpen)
                 {
-                    //string serial = hDevice.readSerial();
-                    SteamControllerDevice tempDev = new SteamControllerDevice(hDevice);
-                    foundDevices.Add(hDevice.DevicePath, tempDev);
+                    //string serial = hDevice.ReadSerial();
+                    if (hDevice.Attributes.ProductId == STEAM_CONTROLLER_PRODUCT_ID)
+                    {
+                        SteamControllerDevice tempDev = new SteamControllerDevice(hDevice);
+                        foundDevices.Add(hDevice.DevicePath, tempDev);
+                    }
+                    else if (hDevice.Attributes.ProductId == STEAM_DONGLE_CONTROLLER_PRODUCT_ID)
+                    {
+                        // Only care about interface 1 for this test
+                        if (endpointIdx == 1)
+                        {
+                            SteamControllerDevice tempDev = new SteamControllerDevice(hDevice);
+                            foundDevices.Add(hDevice.DevicePath, tempDev);
+                            endpointIdx++;
+                        }
+                    }
                 }
             }
         }
