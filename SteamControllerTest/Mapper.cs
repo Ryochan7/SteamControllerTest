@@ -207,10 +207,14 @@ namespace SteamControllerTest
             //buttonBindings.RGrip = (ushort)KeyboardKey.F;
             buttonBindings.RGrip = (ushort)EnhancedKey.Mute;
 
-            leftTouchBindings.Up = (ushort)KeyboardKey.UpArrow;
-            leftTouchBindings.Left = (ushort)KeyboardKey.LeftArrow;
-            leftTouchBindings.Down = (ushort)KeyboardKey.DownArrow;
-            leftTouchBindings.Right = (ushort)KeyboardKey.RightArrow;
+            leftTouchBindings.Up = (ushort)KeyboardKey.W;
+            leftTouchBindings.Left = (ushort)KeyboardKey.A;
+            leftTouchBindings.Down = (ushort)KeyboardKey.S;
+            leftTouchBindings.Right = (ushort)KeyboardKey.D;
+            //leftTouchBindings.Up = (ushort)KeyboardKey.UpArrow;
+            //leftTouchBindings.Left = (ushort)KeyboardKey.LeftArrow;
+            //leftTouchBindings.Down = (ushort)KeyboardKey.DownArrow;
+            //leftTouchBindings.Right = (ushort)KeyboardKey.RightArrow;
         }
 
         /*public void Start(SteamControllerDevice device, SteamControllerReader reader)
@@ -600,7 +604,7 @@ namespace SteamControllerTest
         private void TouchActionPad(ref SteamControllerState current,
             ref SteamControllerState previous)
         {
-            const double DIAGONAL_RANGE = 55.0;
+            const double DIAGONAL_RANGE = 50.0;
             const double CARDINAL_RANGE = 90.0 - DIAGONAL_RANGE;
             const double CARDINAL_HALF_RANGE = CARDINAL_RANGE / 2.0;
             //const double CARDINAL_HALF_RANGE = 22.5;
