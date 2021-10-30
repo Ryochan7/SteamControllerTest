@@ -71,6 +71,9 @@ namespace SteamControllerTest
         private const int X360_STICK_MIN = -32768;
         private const int OUTPUT_X360_RESOLUTION = X360_STICK_MAX - X360_STICK_MIN;
 
+        private const int LT_DEADZONE = 80;
+        private const int RT_DEADZONE = 80;
+
         private ViGEmClient vigemTestClient = null;
         private IXbox360Controller outputX360 = null;
         private Thread contThr;
@@ -102,11 +105,13 @@ namespace SteamControllerTest
         private DpadDirections currentLeftDir;
         private DpadDirections previousLeftDir;
 
-        private const int TRACKBALL_INIT_FICTION = 10;
+        private const int TRACKBALL_INIT_FRICTION = 10;
+        private const int TRACKBALL_JOY_FRICTION = 8;
         private const int TRACKBALL_MASS = 45;
         private const double TRACKBALL_RADIUS = 0.0245;
 
         private double TRACKBALL_INERTIA = 2.0 * (TRACKBALL_MASS * TRACKBALL_RADIUS * TRACKBALL_RADIUS) / 5.0;
+        //private double TRACKBALL_SCALE = 0.000023;
         private double TRACKBALL_SCALE = 0.000023;
         private const int TRACKBALL_BUFFER_LEN = 8;
         private double[] trackballXBuffer = new double[TRACKBALL_BUFFER_LEN];
@@ -120,8 +125,10 @@ namespace SteamControllerTest
         private double trackballDXRemain = 0.0;
         private double trackballDYRemain = 0.0;
 
-        private OneEuroFilter filterX = new OneEuroFilter(4.0, 0.9);
-        private OneEuroFilter filterY = new OneEuroFilter(4.0, 0.9);
+        private OneEuroFilter filterX = new OneEuroFilter(1.0, 0.5);
+        private OneEuroFilter filterY = new OneEuroFilter(1.0, 0.5);
+        //private OneEuroFilter filterX = new OneEuroFilter(2.0, 0.8);
+        //private OneEuroFilter filterY = new OneEuroFilter(2.0, 0.8);
         private double currentRate = 0.0;
 
         private FakerInput fakerInput = new FakerInput();
@@ -137,7 +144,8 @@ namespace SteamControllerTest
         {
             this.device = device;
 
-            trackballAccel = TRACKBALL_RADIUS * TRACKBALL_INIT_FICTION / TRACKBALL_INERTIA;
+            //trackballAccel = TRACKBALL_RADIUS * TRACKBALL_INIT_FRICTION / TRACKBALL_INERTIA;
+            trackballAccel = TRACKBALL_RADIUS * TRACKBALL_JOY_FRICTION / TRACKBALL_INERTIA;
         }
 
         //public void Start(ViGEmClient vigemTestClient,
@@ -147,20 +155,20 @@ namespace SteamControllerTest
             SteamControllerDevice device, SteamControllerReader reader)
         {
             bool checkConnect = fakerInput.Connect();
-            Debug.WriteLine(checkConnect);
+            //Trace.WriteLine(checkConnect);
 
             PopulateKeyBindings();
 
-            //contThr = new Thread(() =>
-            //{
-            //    outputX360 = vigemTestClient.CreateXbox360Controller();
-            //    outputX360.AutoSubmitReport = false;
-            //    outputX360.Connect();
-            //});
-            //contThr.Priority = ThreadPriority.Normal;
-            //contThr.IsBackground = true;
-            //contThr.Start();
-            //contThr.Join(); // Wait for bus object start
+            contThr = new Thread(() =>
+            {
+                outputX360 = vigemTestClient.CreateXbox360Controller();
+                outputX360.AutoSubmitReport = false;
+                outputX360.Connect();
+            });
+            contThr.Priority = ThreadPriority.Normal;
+            contThr.IsBackground = true;
+            contThr.Start();
+            contThr.Join(); // Wait for bus object start
 
             this.reader = reader;
             reader.Report += ControllerReader_Report;
@@ -195,9 +203,9 @@ namespace SteamControllerTest
             //leftTouchBindings.Right = (ushort)KeyInterop.VirtualKeyFromKey(Key.Right);
 
             buttonBindings.A = (ushort)KeyboardKey.Spacebar;
-            buttonBindings.B = (ushort)KeyboardKey.S;
-            buttonBindings.X = (ushort)KeyboardKey.Enter;
-            buttonBindings.Y = (ushort)KeyboardKey.R;
+            buttonBindings.B = (ushort)KeyboardKey.C;
+            buttonBindings.X = (ushort)KeyboardKey.R;
+            buttonBindings.Y = (ushort)KeyboardKey.E;
             buttonBindings.LB = (ushort)KeyboardKey.Q;
             buttonBindings.RB = (ushort)KeyboardKey.Z;
             buttonBindings.Back = (ushort)KeyboardKey.Tab;
@@ -205,7 +213,7 @@ namespace SteamControllerTest
             buttonBindings.Guide = (ushort)KeyboardKey.Tab;
             buttonBindings.LGrip = (ushort)KeyboardKey.X;
             //buttonBindings.RGrip = (ushort)KeyboardKey.F;
-            buttonBindings.RGrip = (ushort)EnhancedKey.Mute;
+            buttonBindings.RGrip = (ushort)KeyboardKey.Spacebar;
 
             leftTouchBindings.Up = (ushort)KeyboardKey.W;
             leftTouchBindings.Left = (ushort)KeyboardKey.A;
@@ -232,35 +240,36 @@ namespace SteamControllerTest
             ref SteamControllerState previous = ref device.PreviousStateRef;
             mouseSync = keyboardSync = keyboardEnhancedSync = false;
 
-            //outputX360.ResetReport();
-            //unchecked
-            //{
-            //    ushort tempButtons = 0;
-            //    if (current.A) tempButtons |= Xbox360Button.A.Value;
-            //    if (current.B) tempButtons |= Xbox360Button.B.Value;
-            //    if (current.X) tempButtons |= Xbox360Button.X.Value;
-            //    if (current.Y) tempButtons |= Xbox360Button.Y.Value;
-            //    if (current.Back) tempButtons |= Xbox360Button.Back.Value;
-            //    if (current.Start) tempButtons |= Xbox360Button.Start.Value;
-            //    if (current.Guide) tempButtons |= Xbox360Button.Guide.Value;
-            //    if (current.LB) tempButtons |= Xbox360Button.LeftShoulder.Value;
-            //    if (current.RB) tempButtons |= Xbox360Button.RightShoulder.Value;
+            outputX360.ResetReport();
+            unchecked
+            {
+                ushort tempButtons = 0;
+                if (current.A) tempButtons |= Xbox360Button.A.Value;
+                if (current.B) tempButtons |= Xbox360Button.B.Value;
+                if (current.X) tempButtons |= Xbox360Button.X.Value;
+                if (current.Y) tempButtons |= Xbox360Button.Y.Value;
+                if (current.Back) tempButtons |= Xbox360Button.Back.Value;
+                if (current.Start) tempButtons |= Xbox360Button.Start.Value;
+                if (current.Guide) tempButtons |= Xbox360Button.Guide.Value;
+                if (current.LB) tempButtons |= Xbox360Button.LeftShoulder.Value;
+                if (current.RB) tempButtons |= Xbox360Button.RightShoulder.Value;
 
-            //    /*if (current.DPadUp) tempButtons |= Xbox360Button.Up.Value;
-            //    if (current.DPadDown) tempButtons |= Xbox360Button.Down.Value;
-            //    if (current.DPadLeft) tempButtons |= Xbox360Button.Left.Value;
-            //    if (current.DPadRight) tempButtons |= Xbox360Button.Right.Value;
-            //    */
+                /*if (current.DPadUp) tempButtons |= Xbox360Button.Up.Value;
+                if (current.DPadDown) tempButtons |= Xbox360Button.Down.Value;
+                if (current.DPadLeft) tempButtons |= Xbox360Button.Left.Value;
+                if (current.DPadRight) tempButtons |= Xbox360Button.Right.Value;
+                */
 
-            //    current.LeftPad.Rotate(-18.0 * Math.PI / 180.0);
-            //    //current.RightPad.Rotate(18.0 * Math.PI / 180.0);
-            //    TouchDPad(ref current, ref previous, ref tempButtons);
+                current.LeftPad.Rotate(-18.0 * Math.PI / 180.0);
+                current.RightPad.Rotate(8.0 * Math.PI / 180.0);
+                TouchDPad(ref current, ref previous, ref tempButtons);
 
-            //    outputX360.SetButtonsFull(tempButtons);
-            //}
+                outputX360.SetButtonsFull(tempButtons);
+            }
 
             short temp;
             currentRate = current.timeElapsed;
+            //Console.WriteLine(currentRate);
             /*if (current.LeftPad.Touch)
             {
                 temp = Math.Min(Math.Max(current.LeftPad.X, STICK_MIN), STICK_MAX);
@@ -273,7 +282,8 @@ namespace SteamControllerTest
             }
             */
 
-            /*
+            //*
+            // Normal Left Stick
             temp = Math.Min(Math.Max(current.LX, STICK_MIN), STICK_MAX);
             temp = AxisScale(temp, false);
             outputX360.LeftThumbX = temp;
@@ -283,322 +293,542 @@ namespace SteamControllerTest
             outputX360.LeftThumbY = temp;
             //*/
 
-            //outputX360.LeftTrigger = current.LT;
-            //outputX360.RightTrigger = current.RT;
+            // Right Touchpad Mouse-like Joystick
+            outputX360.RightThumbX = 0;
+            outputX360.RightThumbY = 0;
+            //TouchMouseJoystickPad(ref current, ref previous, ref outputX360);
+            TrackballMouseJoystickProcess(ref current, ref previous, ref outputX360);
 
-            if (current.A != previous.A)
+            outputX360.LeftTrigger = current.LT;
+            outputX360.RightTrigger = current.RT;
+
+            //if (current.A != previous.A)
+            //{
+            //    ushort tempKey = buttonBindings.A;
+            //    if (current.A)
+            //    {
+            //        keyboardReport.KeyDown((KeyboardKey)tempKey);
+            //        //keyboardReport.KeyDown(KeyboardKey.Spacebar);
+            //        //InputMethods.performKeyPress(tempKey);
+            //    }
+            //    else
+            //    {
+            //        keyboardReport.KeyUp((KeyboardKey)tempKey);
+            //        //keyboardReport.KeyUp(KeyboardKey.Spacebar);
+            //        //InputMethods.performKeyRelease(tempKey);
+            //    }
+
+            //    keyboardSync = true;
+            //}
+
+            //if (current.B != previous.B)
+            //{
+            //    ushort tempKey = buttonBindings.B;
+            //    if (current.B)
+            //    {
+            //        keyboardReport.KeyDown((KeyboardKey)tempKey);
+            //        //keyboardReport.KeyDown(KeyboardKey.S);
+            //        //InputMethods.performKeyPress(tempKey);
+            //    }
+            //    else
+            //    {
+            //        keyboardReport.KeyUp((KeyboardKey)tempKey);
+            //        //keyboardReport.KeyUp(KeyboardKey.S);
+            //        //InputMethods.performKeyRelease(tempKey);
+            //    }
+
+            //    keyboardSync = true;
+            //}
+
+            //if (current.X != previous.X)
+            //{
+            //    ushort tempKey = buttonBindings.X;
+            //    if (current.X)
+            //    {
+            //        keyboardReport.KeyDown((KeyboardKey)tempKey);
+            //        //InputMethods.performKeyPress(tempKey);
+            //    }
+            //    else
+            //    {
+            //        keyboardReport.KeyUp((KeyboardKey)tempKey);
+            //        //InputMethods.performKeyRelease(tempKey);
+            //    }
+
+            //    keyboardSync = true;
+            //}
+
+            //if (current.Y != previous.Y)
+            //{
+            //    ushort tempKey = buttonBindings.Y;
+            //    if (current.Y)
+            //    {
+            //        keyboardReport.KeyDown((KeyboardKey)tempKey);
+            //        //keyboardReport.KeyDown(KeyboardKey.R);
+            //        //InputMethods.performKeyPress(tempKey);
+            //    }
+            //    else
+            //    {
+            //        keyboardReport.KeyUp((KeyboardKey)tempKey);
+            //        //keyboardReport.KeyUp(KeyboardKey.R);
+            //        //InputMethods.performKeyRelease(tempKey);
+            //    }
+
+            //    keyboardSync = true;
+            //}
+
+            //if (current.LB != previous.LB)
+            //{
+            //    if (current.LB)
+            //    {
+            //        // Wheel Up
+            //        //InputMethods.MouseWheel(128, 0);
+            //        //int click = 1;
+            //        mouseReport.WheelPosition = 1;
+            //        mouseSync = true;
+            //    }
+
+            //    /*ushort tempKey = buttonBindings.LB;
+            //    if (current.LB)
+            //    {
+            //        InputMethods.performKeyPress(tempKey);
+            //    }
+            //    else
+            //    {
+            //        InputMethods.performKeyRelease(tempKey);
+            //    }
+            //    */
+            //}
+
+            //if (current.RB != previous.RB)
+            //{
+            //    if (current.RB)
+            //    {
+            //        // Wheel Down
+            //        //InputMethods.MouseWheel(-128, 0);
+            //        int click = -1;
+            //        mouseReport.WheelPosition = (byte)click;
+            //        mouseSync = true;
+            //    }
+
+            //    /*ushort tempKey = buttonBindings.RB;
+            //    if (current.RB)
+            //    {
+            //        InputMethods.performKeyPress(tempKey);
+            //    }
+            //    else
+            //    {
+            //        InputMethods.performKeyRelease(tempKey);
+            //    }
+            //    */
+            //}
+
+            //if (current.LGrip != previous.LGrip)
+            //{
+            //    ushort tempKey = buttonBindings.LGrip;
+            //    if (current.LGrip)
+            //    {
+            //        keyboardReport.KeyDown((KeyboardKey)tempKey);
+            //        //keyboardReport.KeyDown(KeyboardKey.X);
+            //        //InputMethods.performKeyPress(tempKey);
+            //    }
+            //    else
+            //    {
+            //        keyboardReport.KeyUp((KeyboardKey)tempKey);
+            //        //keyboardReport.KeyUp(KeyboardKey.X);
+            //        //InputMethods.performKeyRelease(tempKey);
+            //    }
+
+            //    keyboardSync = true;
+            //}
+
+            //if (current.RGrip != previous.RGrip)
+            //{
+            //    ushort tempKey = buttonBindings.RGrip;
+            //    if (current.RGrip)
+            //    {
+            //        keyboardReport.KeyDown((KeyboardKey)tempKey);
+            //        //InputMethods.performKeyPress(tempKey);
+            //    }
+            //    else
+            //    {
+            //        keyboardReport.KeyUp((KeyboardKey)tempKey);
+            //        //InputMethods.performKeyRelease(tempKey);
+            //    }
+
+            //    keyboardSync = true;
+            //    //keyboardEnhancedSync = true;
+            //}
+
+            //if (current.Back != previous.Back)
+            //{
+            //    ushort tempKey = buttonBindings.Back;
+            //    if (current.Back)
+            //    {
+            //        keyboardReport.KeyDown((KeyboardKey)tempKey);
+            //        //InputMethods.performKeyPress(tempKey);
+            //    }
+            //    else
+            //    {
+            //        keyboardReport.KeyUp((KeyboardKey)tempKey);
+            //        //InputMethods.performKeyRelease(tempKey);
+            //    }
+
+            //    keyboardSync = true;
+            //}
+
+            //if (current.Start != previous.Start)
+            //{
+            //    ushort tempKey = buttonBindings.Start;
+            //    if (current.Start)
+            //    {
+            //        keyboardReport.KeyDown((KeyboardKey)tempKey);
+            //        //keyboardReport.KeyDown(KeyboardKey.Escape);
+            //        //InputMethods.performKeyPress(tempKey);
+            //    }
+            //    else
+            //    {
+            //        keyboardReport.KeyUp((KeyboardKey)tempKey);
+            //        //keyboardReport.KeyUp(KeyboardKey.Escape);
+            //        //InputMethods.performKeyRelease(tempKey);
+            //    }
+
+            //    keyboardSync = true;
+            //}
+
+            //if (current.Guide != previous.Guide)
+            //{
+            //    ushort tempKey = buttonBindings.Guide;
+            //    if (current.Guide)
+            //    {
+            //        keyboardReport.KeyDown((KeyboardKey)tempKey);
+            //        //InputMethods.performKeyPress(tempKey);
+            //    }
+            //    else
+            //    {
+            //        keyboardReport.KeyUp((KeyboardKey)tempKey);
+            //        //InputMethods.performKeyRelease(tempKey);
+            //    }
+
+            //    keyboardSync = true;
+            //}
+
+            //if (current.LSClick != previous.LSClick)
+            //{
+            //    ushort tempKey = buttonBindings.LSClick;
+            //    if (current.LSClick)
+            //    {
+            //        keyboardReport.KeyDown((KeyboardKey)tempKey);
+            //        //InputMethods.performKeyPress(tempKey);
+            //    }
+            //    else
+            //    {
+            //        keyboardReport.KeyUp((KeyboardKey)tempKey);
+            //        //InputMethods.performKeyRelease(tempKey);
+            //    }
+
+            //    keyboardSync = true;
+            //}
+
+            ////if (current.RTClick != previous.RTClick)
+            //if ((current.RT > RT_DEADZONE && !mouseLBDown) || (current.RT <= RT_DEADZONE && mouseLBDown))
+            //{
+            //    mouseLBDown = current.RT > RT_DEADZONE;
+            //    //Console.WriteLine("RT: {0} {1}", current.RT, mouseLBDown);
+            //    if (mouseLBDown)
+            //    {
+            //        mouseReport.ButtonDown(FakerInputWrapper.MouseButton.LeftButton);
+            //    }
+            //    else
+            //    {
+            //        mouseReport.ButtonUp(FakerInputWrapper.MouseButton.LeftButton);
+            //    }
+
+            //    mouseSync = true;
+            //    //InputMethods.MouseEvent(mouseLBDown ? InputMethods.MOUSEEVENTF_LEFTDOWN :
+            //    //    InputMethods.MOUSEEVENTF_LEFTUP);
+            //}
+
+            ////if (current.LTClick != previous.LTClick)
+            ////if ((current.LT > 50) != (previous.LT <= 50))
+            //if ((current.LT > LT_DEADZONE && !mouseRBDown) || (current.LT <= LT_DEADZONE && mouseRBDown))
+            //{
+            //    mouseRBDown = current.LT > LT_DEADZONE;
+            //    if (mouseRBDown)
+            //    {
+            //        mouseReport.ButtonDown(FakerInputWrapper.MouseButton.RightButton);
+            //    }
+            //    else
+            //    {
+            //        mouseReport.ButtonUp(FakerInputWrapper.MouseButton.RightButton);
+            //    }
+
+            //    mouseSync = true;
+            //    //InputMethods.MouseEvent(mouseRBDown ? InputMethods.MOUSEEVENTF_RIGHTDOWN :
+            //    //    InputMethods.MOUSEEVENTF_RIGHTUP);
+            //}
+
+            ///*if (current.RightPad.Touch && previous.RightPad.Touch)
+            //{
+            //    // Process normal mouse
+            //    RightTouchMouse(ref current, ref previous);
+            //    Console.WriteLine("NORMAL");
+            //}
+            //*/
+
+            //if (current.LeftPad.Touch || previous.LeftPad.Touch)
+            //{
+            //    current.LeftPad.Rotate(-18.0 * Math.PI / 180.0);
+            //    TouchActionPad(ref current, ref previous);
+            //}
+
+            //current.RightPad.Rotate(8.0 * Math.PI / 180.0);
+            //TrackballMouseProcess(ref current, ref previous);
+
+            //if (mouseX != 0.0 || mouseY != 0.0)
+            //{
+            //    //Console.WriteLine("MOVE: {0}, {1}", (int)mouseX, (int)mouseY);
+            //    GenerateMouseMoveEvent();
+            //}
+            //else
+            //{
+            //    // Probably not needed here. Leave as a temporary precaution
+            //    mouseXRemainder = mouseYRemainder = 0.0;
+
+            //    filterX.Filter(0.0, 1.0 / currentRate); // Smooth on output
+            //    filterY.Filter(0.0, 1.0 / currentRate); // Smooth on output
+            //}
+
+            //if (keyboardSync)
+            //{
+            //    fakerInput.UpdateKeyboard(keyboardReport);
+            //}
+
+            //if (keyboardEnhancedSync)
+            //{
+            //    fakerInput.UpdateKeyboardEnhanced(mediaKeyboardReport);
+            //}
+
+            //if (mouseSync)
+            //{
+            //    //fakerInput.UpdateAbsoluteMouse(new AbsoluteMouseReport() { MouseX = 30000, MouseY = 20000, });
+            //    fakerInput.UpdateRelativeMouse(mouseReport);
+            //    mouseReport.ResetMousePos();
+            //}
+            
+            outputX360.SubmitReport();
+        }
+
+        private void TouchMouseJoystickPad(int dx, int dy,
+            ref SteamControllerState current,
+            ref SteamControllerState previous, ref IXbox360Controller xbox)
+        {
+            const int deadZone = 60;
+            const int maxDeadZoneAxial = 200;
+            const int minDeadZoneAxial = 40;
+
+            //int dx = 0;
+            //if (current.RightPad.Touch)
+            //    dx = current.RightPad.X - previous.RightPad.X;
+
+            //int dy = 0;
+            //if (current.RightPad.Touch)
+            //    dy = (current.RightPad.Y - previous.RightPad.Y);
+
+            //Trace.WriteLine(current.RightPad.Y);
+
+            int maxDirX = dx >= 0 ? 32767 : -32768;
+            int maxDirY = dy >= 0 ? 32767 : -32768;
+
+            double tempAngle = Math.Atan2(dy, dx);
+            double normX = Math.Abs(Math.Cos(tempAngle));
+            double normY = Math.Abs(Math.Sin(tempAngle));
+            int signX = Math.Sign(dx);
+            int signY = Math.Sign(dy);
+
+            //double timeElapsed = current.timeElapsed;
+            // Base speed 8 ms
+            //double tempDouble = timeElapsed * 125.0;
+
+            int maxValX = signX * 550;
+            int maxValY = signY * 550;
+
+            double xratio = 0.0, yratio = 0.0;
+            double antiX = 0.52 * normX;
+            double antiY = 0.52 * normY;
+
+            int deadzoneX = (int)Math.Abs(normX * deadZone);
+            int radialDeadZoneY = (int)(Math.Abs(normY * deadZone));
+            //int deadzoneY = (int)(Math.Abs(normY * deadZone));
+
+            int absDX = Math.Abs(dx);
+            int absDY = Math.Abs(dy);
+
+            // Check for radial dead zone first
+            double mag = (dx * dx) + (dy * dy);
+            if (mag <= (deadZone * deadZone))
             {
-                ushort tempKey = buttonBindings.A;
-                if (current.A)
-                {
-                    keyboardReport.KeyDown((KeyboardKey)tempKey);
-                    //keyboardReport.KeyDown(KeyboardKey.Spacebar);
-                    //InputMethods.performKeyPress(tempKey);
-                }
-                else
-                {
-                    keyboardReport.KeyUp((KeyboardKey)tempKey);
-                    //keyboardReport.KeyUp(KeyboardKey.Spacebar);
-                    //InputMethods.performKeyRelease(tempKey);
-                }
-
-                keyboardSync = true;
+                dx = 0;
+                dy = 0;
             }
-
-            if (current.B != previous.B)
-            {
-                ushort tempKey = buttonBindings.B;
-                if (current.B)
-                {
-                    keyboardReport.KeyDown((KeyboardKey)tempKey);
-                    //keyboardReport.KeyDown(KeyboardKey.S);
-                    //InputMethods.performKeyPress(tempKey);
-                }
-                else
-                {
-                    keyboardReport.KeyUp((KeyboardKey)tempKey);
-                    //keyboardReport.KeyUp(KeyboardKey.S);
-                    //InputMethods.performKeyRelease(tempKey);
-                }
-
-                keyboardSync = true;
-            }
-
-            if (current.X != previous.X)
-            {
-                ushort tempKey = buttonBindings.X;
-                if (current.X)
-                {
-                    keyboardReport.KeyDown((KeyboardKey)tempKey);
-                    //InputMethods.performKeyPress(tempKey);
-                }
-                else
-                {
-                    keyboardReport.KeyUp((KeyboardKey)tempKey);
-                    //InputMethods.performKeyRelease(tempKey);
-                }
-
-                keyboardSync = true;
-            }
-
-            if (current.Y != previous.Y)
-            {
-                ushort tempKey = buttonBindings.Y;
-                if (current.Y)
-                {
-                    keyboardReport.KeyDown((KeyboardKey)tempKey);
-                    //keyboardReport.KeyDown(KeyboardKey.R);
-                    //InputMethods.performKeyPress(tempKey);
-                }
-                else
-                {
-                    keyboardReport.KeyUp((KeyboardKey)tempKey);
-                    //keyboardReport.KeyUp(KeyboardKey.R);
-                    //InputMethods.performKeyRelease(tempKey);
-                }
-
-                keyboardSync = true;
-            }
-
-            if (current.LB != previous.LB)
-            {
-                if (current.LB)
-                {
-                    // Wheel Up
-                    //InputMethods.MouseWheel(128, 0);
-                    //int click = 1;
-                    mouseReport.WheelPosition = 1;
-                    mouseSync = true;
-                }
-
-                /*ushort tempKey = buttonBindings.LB;
-                if (current.LB)
-                {
-                    InputMethods.performKeyPress(tempKey);
-                }
-                else
-                {
-                    InputMethods.performKeyRelease(tempKey);
-                }
-                */
-            }
-
-            if (current.RB != previous.RB)
-            {
-                if (current.RB)
-                {
-                    // Wheel Down
-                    //InputMethods.MouseWheel(-128, 0);
-                    int click = -1;
-                    mouseReport.WheelPosition = (byte)click;
-                    mouseSync = true;
-                }
-
-                /*ushort tempKey = buttonBindings.RB;
-                if (current.RB)
-                {
-                    InputMethods.performKeyPress(tempKey);
-                }
-                else
-                {
-                    InputMethods.performKeyRelease(tempKey);
-                }
-                */
-            }
-
-            if (current.LGrip != previous.LGrip)
-            {
-                ushort tempKey = buttonBindings.LGrip;
-                if (current.LGrip)
-                {
-                    keyboardReport.KeyDown((KeyboardKey)tempKey);
-                    //keyboardReport.KeyDown(KeyboardKey.X);
-                    //InputMethods.performKeyPress(tempKey);
-                }
-                else
-                {
-                    keyboardReport.KeyUp((KeyboardKey)tempKey);
-                    //keyboardReport.KeyUp(KeyboardKey.X);
-                    //InputMethods.performKeyRelease(tempKey);
-                }
-
-                keyboardSync = true;
-            }
-
-            if (current.RGrip != previous.RGrip)
-            {
-                ushort tempKey = buttonBindings.RGrip;
-                if (current.RGrip)
-                {
-                    mediaKeyboardReport.KeyDown(EnhancedKey.Mute);
-                    //InputMethods.performKeyPress(tempKey);
-                }
-                else
-                {
-                    mediaKeyboardReport.KeyUp(EnhancedKey.Mute);
-                    //InputMethods.performKeyRelease(tempKey);
-                }
-
-                keyboardEnhancedSync = true;
-            }
-
-            if (current.Back != previous.Back)
-            {
-                ushort tempKey = buttonBindings.Back;
-                if (current.Back)
-                {
-                    keyboardReport.KeyDown((KeyboardKey)tempKey);
-                    //InputMethods.performKeyPress(tempKey);
-                }
-                else
-                {
-                    keyboardReport.KeyUp((KeyboardKey)tempKey);
-                    //InputMethods.performKeyRelease(tempKey);
-                }
-
-                keyboardSync = true;
-            }
-
-            if (current.Start != previous.Start)
-            {
-                ushort tempKey = buttonBindings.Start;
-                if (current.Start)
-                {
-                    keyboardReport.KeyDown((KeyboardKey)tempKey);
-                    //keyboardReport.KeyDown(KeyboardKey.Escape);
-                    //InputMethods.performKeyPress(tempKey);
-                }
-                else
-                {
-                    keyboardReport.KeyUp((KeyboardKey)tempKey);
-                    //keyboardReport.KeyUp(KeyboardKey.Escape);
-                    //InputMethods.performKeyRelease(tempKey);
-                }
-
-                keyboardSync = true;
-            }
-
-            if (current.Guide != previous.Guide)
-            {
-                ushort tempKey = buttonBindings.Guide;
-                if (current.Guide)
-                {
-                    keyboardReport.KeyDown((KeyboardKey)tempKey);
-                    //InputMethods.performKeyPress(tempKey);
-                }
-                else
-                {
-                    keyboardReport.KeyUp((KeyboardKey)tempKey);
-                    //InputMethods.performKeyRelease(tempKey);
-                }
-
-                keyboardSync = true;
-            }
-
-            if (current.LSClick != previous.LSClick)
-            {
-                ushort tempKey = buttonBindings.LSClick;
-                if (current.LSClick)
-                {
-                    keyboardReport.KeyDown((KeyboardKey)tempKey);
-                    //InputMethods.performKeyPress(tempKey);
-                }
-                else
-                {
-                    keyboardReport.KeyUp((KeyboardKey)tempKey);
-                    //InputMethods.performKeyRelease(tempKey);
-                }
-
-                keyboardSync = true;
-            }
-
-            //if (current.RTClick != previous.RTClick)
-            if ((current.RT > 50 && !mouseLBDown) || (current.RT <= 50 && mouseLBDown))
-            {
-                mouseLBDown = current.RT > 50;
-                //Console.WriteLine("RT: {0} {1}", current.RT, mouseLBDown);
-                if (mouseLBDown)
-                {
-                    mouseReport.ButtonDown(FakerInputWrapper.MouseButton.LeftButton);
-                }
-                else
-                {
-                    mouseReport.ButtonUp(FakerInputWrapper.MouseButton.LeftButton);
-                }
-
-                mouseSync = true;
-                //InputMethods.MouseEvent(mouseLBDown ? InputMethods.MOUSEEVENTF_LEFTDOWN :
-                //    InputMethods.MOUSEEVENTF_LEFTUP);
-            }
-
-            //if (current.LTClick != previous.LTClick)
-            //if ((current.LT > 50) != (previous.LT <= 50))
-            if ((current.LT > 50 && !mouseRBDown) || (current.LT <= 50 && mouseRBDown))
-            {
-                mouseRBDown = current.LT > 50;
-                if (mouseRBDown)
-                {
-                    mouseReport.ButtonDown(FakerInputWrapper.MouseButton.RightButton);
-                }
-                else
-                {
-                    mouseReport.ButtonUp(FakerInputWrapper.MouseButton.RightButton);
-                }
-
-                mouseSync = true;
-                //InputMethods.MouseEvent(mouseRBDown ? InputMethods.MOUSEEVENTF_RIGHTDOWN :
-                //    InputMethods.MOUSEEVENTF_RIGHTUP);
-            }
-
-            /*if (current.RightPad.Touch && previous.RightPad.Touch)
-            {
-                // Process normal mouse
-                RightTouchMouse(ref current, ref previous);
-                Console.WriteLine("NORMAL");
-            }
-            */
-
-            if (current.LeftPad.Touch || previous.LeftPad.Touch)
-            {
-                current.LeftPad.Rotate(-18.0 * Math.PI / 180.0);
-                TouchActionPad(ref current, ref previous);
-            }
-
-            current.RightPad.Rotate(8.0 * Math.PI / 180.0);
-            TrackballMouseProcess(ref current, ref previous);
-
-            if (mouseX != 0.0 || mouseY != 0.0)
-            {
-                //Console.WriteLine("MOVE: {0}, {1}", (int)mouseX, (int)mouseY);
-                GenerateMouseMoveEvent();
-            }
+            // Past radial. Check for bowtie
             else
             {
-                // Probably not needed here. Leave as a temporary precaution
-                mouseXRemainder = mouseYRemainder = 0.0;
+                //Trace.WriteLine($"X ({dx}) | Y ({dy})");
 
-                filterX.Filter(0.0, 1.0 / currentRate); // Smooth on output
-                filterY.Filter(0.0, 1.0 / currentRate); // Smooth on output
+                // X axis calculated with scaled radial
+                if (absDX > deadzoneX)
+                {
+                    dx -= signX * deadzoneX;
+                    dx = (dx < 0 && dx < maxValX) ? maxValX :
+                        (dx > 0 && dx > maxValX) ? maxValX : dx;
+                }
+                else
+                {
+                    dx = 0;
+                }
+
+                if (absDY > radialDeadZoneY)
+                {
+                    dy -= signY * radialDeadZoneY;
+                    dy = (dy < 0 && dy < maxValY) ? maxValY :
+                        (dy > 0 && dy > maxValY) ? maxValY : dy;
+                }
+                else
+                {
+                    dy = 0;
+                }
+
+                // Need to adjust Y axis dead zone based on X axis input. Bowtie
+                //int deadzoneY = Math.Max(radialDeadZoneY,
+                //    (int)(Math.Min(1.0, absDX / (double)maxValX) * maxDeadZoneAxialY));
+                double tempRangeRatioX = Math.Abs(dx) / Math.Abs((double)maxValX);
+                double tempRangeRatioY = Math.Abs(dy) / Math.Abs((double)maxValY);
+
+                int axialDeadX = (int)((maxDeadZoneAxial - minDeadZoneAxial) *
+                    Math.Min(1.0, tempRangeRatioY) + minDeadZoneAxial);
+                int deadzoneY = (int)((maxDeadZoneAxial - minDeadZoneAxial) *
+                    Math.Min(1.0, tempRangeRatioX) + minDeadZoneAxial);
+
+                //Trace.WriteLine($"Axial {axialDeadX} DX: {dx}");
+                //Trace.WriteLine(deadzoneY);
+                //int deadzoneY = Math.Min(maxValX, Math.Abs(dx)) * maxDeadZoneAxialY;
+                //if (absDY > radialDeadZoneY)
+                //{
+                //    dy -= signY * radialDeadZoneY;
+                //    dy = (dy < 0 && dy < maxValY) ? maxValY :
+                //        (dy > 0 && dy > maxValY) ? maxValY : dy;
+                //}
+                //else if (absDY > deadzoneY)
+
+                if (Math.Abs(dx) > axialDeadX)
+                {
+                    dx -= signX * axialDeadX;
+                    double newMaxValX = Math.Abs(maxValX) - axialDeadX;
+                    double scaleX = Math.Abs(dx) / (double)(newMaxValX);
+                    dx = (int)(maxValX * scaleX);
+                    //Trace.WriteLine($"{scaleX} {dx}");
+                }
+                else
+                {
+                    dx = 0;
+                    //Trace.WriteLine("dx zero");
+                }
+
+                if (Math.Abs(dy) > deadzoneY)
+                {
+                    dy -= signY * deadzoneY;
+                    double newMaxValY = Math.Abs(maxValY) - deadzoneY;
+                    double scaleY = Math.Abs(dy) / (double)(newMaxValY);
+                    dy = (int)(maxValY * scaleY);
+                }
+                else
+                {
+                    dy = 0;
+                }
+
+                /*
+                if (absDY > deadzoneY)
+                {
+                    int newMaxValY = signY * (Math.Abs(maxValY) - deadzoneY);
+                    dy -= signY * deadzoneY;
+                    //dy = (dy < 0 && dy < maxValY) ? maxValY :
+                    //    (dy > 0 && dy > maxValY) ? maxValY : dy;
+                    dy = (dy < 0 && dy < newMaxValY) ? newMaxValY :
+                          (dy > 0 && dy > newMaxValY) ? newMaxValY : dy;
+
+                    double scaleY;
+                    if (dy == newMaxValY)
+                    {
+                        scaleY = 1.0;
+                    }
+                    else
+                    {
+                        scaleY = (double)(dy - 0.0) / (double)(newMaxValY - 0.0);
+                    }
+                    //scaleY = (Math.Abs(newMaxValY) - Math.Abs(dy)) /
+                    //    (double)(Math.Abs(maxValY) - 0);
+                    dy = (int)(scaleY * maxValY);
+                    
+                    //Trace.WriteLine($"SCALE: ({scaleY}) | NEW: ({newMaxValY}) | DY({dy})");
+                }
+                else
+                {
+                    dy = 0;
+                }
+                //*/
             }
 
-            if (keyboardSync)
+            if (dx != 0) xratio = dx / (double)maxValX;
+            if (dy != 0) yratio = dy / (double)maxValY;
+
+            double maxOutRatio = 1.0;
+            double maxOutXRatio = Math.Abs(Math.Cos(tempAngle)) * maxOutRatio;
+            double maxOutYRatio = Math.Abs(Math.Sin(tempAngle)) * maxOutRatio;
+
+            //Trace.WriteLine($"{maxOutXRatio} {maxOutYRatio}");
+            // Expand output a bit
+            maxOutXRatio = Math.Min(maxOutXRatio / 0.95, 1.0);
+            // Expand output a bit
+            maxOutYRatio = Math.Min(maxOutYRatio / 0.95, 1.0);
+
+            xratio = Math.Min(Math.Max(xratio, 0.0), maxOutXRatio);
+            yratio = Math.Min(Math.Max(yratio, 0.0), maxOutYRatio);
+
+            //Trace.WriteLine($"X ({dx}) | Y ({dy})");
+
+            //double maxOutRatio = 0.98;
+            //// Expand output a bit. Likely not going to get a straight line with Gyro
+            //double maxOutXRatio = Math.Min(normX / 1.0, 1.0) * maxOutRatio;
+            //double maxOutYRatio = Math.Min(normY / 1.0, 1.0) * maxOutRatio;
+
+            //xratio = Math.Min(Math.Max(xratio, 0.0), maxOutXRatio);
+            //yratio = Math.Min(Math.Max(yratio, 0.0), maxOutYRatio);
+
+            // QuadOut
+            xratio = 1.0 - ((1.0 - xratio) * (1.0 - xratio));
+            yratio = 1.0 - ((1.0 - yratio) * (1.0 - yratio));
+
+            double xNorm = 0.0, yNorm = 0.0;
+            if (xratio != 0.0)
             {
-                fakerInput.UpdateKeyboard(keyboardReport);
+                xNorm = (1.0 - antiX) * xratio + antiX;
             }
 
-            if (keyboardEnhancedSync)
+            if (yratio != 0.0)
             {
-                fakerInput.UpdateKeyboardEnhanced(mediaKeyboardReport);
+                yNorm = (1.0 - antiY) * yratio + antiY;
             }
 
-            if (mouseSync)
-            {
-                //fakerInput.UpdateAbsoluteMouse(new AbsoluteMouseReport() { MouseX = 30000, MouseY = 20000, });
-                fakerInput.UpdateRelativeMouse(mouseReport);
-                mouseReport.ResetMousePos();
-            }
-            
-            //outputX360.SubmitReport();
+
+            short axisXOut = (short)filterX.Filter(xNorm * maxDirX,
+                1.0 / currentRate);
+            short axisYOut = (short)filterY.Filter(yNorm * maxDirY,
+                1.0 / currentRate);
+
+            //Trace.WriteLine($"OutX ({axisXOut}) | OutY ({axisYOut})");
+
+            xbox.RightThumbX = axisXOut;
+            xbox.RightThumbY = axisYOut;
         }
 
         private void TouchActionPad(ref SteamControllerState current,
@@ -898,8 +1128,97 @@ namespace SteamControllerTest
             }
         }
 
+        private void TrackballMouseJoystickProcess(ref SteamControllerState current,
+            ref SteamControllerState previous, ref IXbox360Controller xbox)
+        {
+            if (current.RightPad.Touch && !previous.RightPad.Touch)
+            {
+                if (trackballActive)
+                {
+                    //Console.WriteLine("CHECKING HERE");
+                }
+
+                // Initial touch
+                Array.Clear(trackballXBuffer, 0, TRACKBALL_BUFFER_LEN);
+                Array.Clear(trackballYBuffer, 0, TRACKBALL_BUFFER_LEN);
+                trackballXVel = 0.0;
+                trackballYVel = 0.0;
+                trackballActive = false;
+                trackballBufferTail = 0;
+                trackballBufferHead = 0;
+                trackballDXRemain = 0.0;
+                trackballDYRemain = 0.0;
+
+                //Console.WriteLine("INITIAL");
+            }
+            else if (current.RightPad.Touch && previous.RightPad.Touch)
+            {
+                // Process normal mouse
+                //RightTouchMouse(ref current, ref previous);
+                //Console.WriteLine("NORMAL");
+                RightTouchMouseJoystick(ref current, ref previous, ref xbox);
+
+            }
+            else if (!current.RightPad.Touch && previous.RightPad.Touch)
+            {
+                // Initially released. Calculate velocity and start Trackball
+                double currentWeight = 1.0;
+                double finalWeight = 0.0;
+                double x_out = 0.0, y_out = 0.0;
+                int idx = -1;
+                for (int i = 0; i < TRACKBALL_BUFFER_LEN && idx != trackballBufferHead; i++)
+                {
+                    idx = (trackballBufferTail - i - 1 + TRACKBALL_BUFFER_LEN) % TRACKBALL_BUFFER_LEN;
+                    x_out += trackballXBuffer[idx] * currentWeight;
+                    y_out += trackballYBuffer[idx] * currentWeight;
+                    finalWeight += currentWeight;
+                    currentWeight *= 1.0;
+                }
+
+                x_out /= finalWeight;
+                trackballXVel = x_out;
+                y_out /= finalWeight;
+                trackballYVel = y_out;
+
+                double dist = Math.Sqrt(trackballXVel * trackballXVel + trackballYVel * trackballYVel);
+                if (dist >= 1.0)
+                {
+                    trackballActive = true;
+
+                    //Debug.WriteLine("START TRACK {0}", dist);
+                    ProcessTrackballJoystickFrame(ref current, ref previous, ref xbox);
+                }
+            }
+            else if (!current.RightPad.Touch && trackballActive)
+            {
+                //Console.WriteLine("CONTINUE TRACK");
+                // Trackball Running
+                ProcessTrackballJoystickFrame(ref current, ref previous, ref xbox);
+            }
+        }
+
+        private void RightTouchMouseJoystick(ref SteamControllerState current,
+            ref SteamControllerState previous, ref IXbox360Controller xbox)
+        {
+            int dx = current.RightPad.X - previous.RightPad.X;
+            int dy = -(current.RightPad.Y - previous.RightPad.Y);
+            //int rawDeltaX = dx, rawDeltaY = dy;
+
+            //Console.WriteLine("DELTA X: {0} Y: {1}", dx, dy);
+
+            // Fill trackball entry
+            int iIndex = trackballBufferTail;
+            trackballXBuffer[iIndex] = (dx * TRACKBALL_SCALE) / current.timeElapsed;
+            trackballYBuffer[iIndex] = (dy * TRACKBALL_SCALE) / current.timeElapsed;
+            trackballBufferTail = (iIndex + 1) % TRACKBALL_BUFFER_LEN;
+            if (trackballBufferHead == trackballBufferTail)
+                trackballBufferHead = (trackballBufferHead + 1) % TRACKBALL_BUFFER_LEN;
+
+            TouchMouseJoystickPad(dx, -dy, ref current, ref previous, ref xbox);
+        }
+
         private void ProcessTrackballFrame(ref SteamControllerState current,
-            ref SteamControllerState previous)
+            ref SteamControllerState _)
         {
             double tempAngle = Math.Atan2(-trackballYVel, trackballXVel);
             double normX = Math.Abs(Math.Cos(tempAngle));
@@ -953,9 +1272,66 @@ namespace SteamControllerTest
             }
         }
 
+        private void ProcessTrackballJoystickFrame(ref SteamControllerState current,
+            ref SteamControllerState previous, ref IXbox360Controller xbox)
+        {
+            double tempAngle = Math.Atan2(-trackballYVel, trackballXVel);
+            double normX = Math.Abs(Math.Cos(tempAngle));
+            double normY = Math.Abs(Math.Sin(tempAngle));
+            int signX = Math.Sign(trackballXVel);
+            int signY = Math.Sign(trackballYVel);
+
+            double trackXvDecay = Math.Min(Math.Abs(trackballXVel), trackballAccel * current.timeElapsed * normX);
+            double trackYvDecay = Math.Min(Math.Abs(trackballYVel), trackballAccel * current.timeElapsed * normY);
+            double xVNew = trackballXVel - (trackXvDecay * signX);
+            double yVNew = trackballYVel - (trackYvDecay * signY);
+            double xMotion = (xVNew * current.timeElapsed) / TRACKBALL_SCALE;
+            double yMotion = (yVNew * current.timeElapsed) / TRACKBALL_SCALE;
+            if (xMotion != 0.0)
+            {
+                xMotion += trackballDXRemain;
+            }
+            else
+            {
+                trackballDXRemain = 0.0;
+            }
+
+            int dx = (int)xMotion;
+            trackballDXRemain = xMotion - dx;
+
+            if (yMotion != 0.0)
+            {
+                yMotion += trackballDYRemain;
+            }
+            else
+            {
+                trackballDYRemain = 0.0;
+            }
+
+            int dy = (int)yMotion;
+            trackballDYRemain = yMotion - dy;
+
+            trackballXVel = xVNew;
+            trackballYVel = yVNew;
+
+            //Console.WriteLine("DX: {0} DY: {1}", dx, dy);
+
+            if (dx == 0 && dy == 0)
+            {
+                trackballActive = false;
+                //Console.WriteLine("ENDING TRACK");
+            }
+            else
+            {
+                TouchMouseJoystickPad(dx, -dy, ref current, ref previous, ref xbox);
+            }
+        }
+
         private void TouchMoveMouse(int dx, int dy, ref SteamControllerState current)
         {
-            const int deadZone = 18;
+            //const int deadZone = 18;
+            //const int deadZone = 12;
+			const int deadZone = 8;
 
             double tempAngle = Math.Atan2(-dy, dx);
             double normX = Math.Abs(Math.Cos(tempAngle));
@@ -997,7 +1373,9 @@ namespace SteamControllerTest
                 + (normY * (offset * signY)) : 0;
 
             double throttla = 1.428;
-            double offman = 10;
+            //double offman = 10;
+            //double throttla = 1.4;
+            double offman = 12;
 
             double absX = Math.Abs(xMotion);
             if (absX <= normX * offman)
@@ -1021,7 +1399,8 @@ namespace SteamControllerTest
         }
 
         private const double TOUCHPAD_MOUSE_OFFSET = 0.375;
-        private const double TOUCHPAD_COEFFICIENT = 0.012;
+        //private const double TOUCHPAD_COEFFICIENT = 0.012;
+        private const double TOUCHPAD_COEFFICIENT = 0.012 * 1.1;
         private void RightTouchMouse(ref SteamControllerState current,
             ref SteamControllerState previous)
         {
