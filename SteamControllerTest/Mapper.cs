@@ -253,6 +253,8 @@ namespace SteamControllerTest
                 if (current.Guide) tempButtons |= Xbox360Button.Guide.Value;
                 if (current.LB) tempButtons |= Xbox360Button.LeftShoulder.Value;
                 if (current.RB) tempButtons |= Xbox360Button.RightShoulder.Value;
+                if (current.LSClick) tempButtons |= Xbox360Button.LeftThumb.Value;
+                if (current.RightPad.Click) tempButtons |= Xbox360Button.RightThumb.Value;
 
                 /*if (current.DPadUp) tempButtons |= Xbox360Button.Up.Value;
                 if (current.DPadDown) tempButtons |= Xbox360Button.Down.Value;
@@ -622,8 +624,8 @@ namespace SteamControllerTest
             ref SteamControllerState current,
             ref SteamControllerState previous, ref IXbox360Controller xbox)
         {
-            const int deadZone = 60;
-            const int maxDeadZoneAxial = 200;
+            const int deadZone = 200;
+            const int maxDeadZoneAxial = 150;
             const int minDeadZoneAxial = 40;
 
             //int dx = 0;
@@ -649,12 +651,12 @@ namespace SteamControllerTest
             // Base speed 8 ms
             //double tempDouble = timeElapsed * 125.0;
 
-            int maxValX = signX * 550;
-            int maxValY = signY * 550;
+            int maxValX = signX * 500;
+            int maxValY = signY * 500;
 
             double xratio = 0.0, yratio = 0.0;
-            double antiX = 0.52 * normX;
-            double antiY = 0.52 * normY;
+            double antiX = 0.50 * normX;
+            double antiY = 0.50 * normY;
 
             int deadzoneX = (int)Math.Abs(normX * deadZone);
             int radialDeadZoneY = (int)(Math.Abs(normY * deadZone));
@@ -676,11 +678,11 @@ namespace SteamControllerTest
                 //Trace.WriteLine($"X ({dx}) | Y ({dy})");
 
                 // X axis calculated with scaled radial
-                if (absDX > deadzoneX)
+                /*if (absDX > deadzoneX)
                 {
                     dx -= signX * deadzoneX;
-                    dx = (dx < 0 && dx < maxValX) ? maxValX :
-                        (dx > 0 && dx > maxValX) ? maxValX : dx;
+                    //dx = (dx < 0 && dx < maxValX) ? maxValX :
+                    //    (dx > 0 && dx > maxValX) ? maxValX : dx;
                 }
                 else
                 {
@@ -690,19 +692,20 @@ namespace SteamControllerTest
                 if (absDY > radialDeadZoneY)
                 {
                     dy -= signY * radialDeadZoneY;
-                    dy = (dy < 0 && dy < maxValY) ? maxValY :
-                        (dy > 0 && dy > maxValY) ? maxValY : dy;
+                    //dy = (dy < 0 && dy < maxValY) ? maxValY :
+                    //    (dy > 0 && dy > maxValY) ? maxValY : dy;
                 }
                 else
                 {
                     dy = 0;
                 }
+                */
 
                 // Need to adjust Y axis dead zone based on X axis input. Bowtie
                 //int deadzoneY = Math.Max(radialDeadZoneY,
                 //    (int)(Math.Min(1.0, absDX / (double)maxValX) * maxDeadZoneAxialY));
-                double tempRangeRatioX = Math.Abs(dx) / Math.Abs((double)maxValX);
-                double tempRangeRatioY = Math.Abs(dy) / Math.Abs((double)maxValY);
+                double tempRangeRatioX = absDX / Math.Abs((double)maxValX);
+                double tempRangeRatioY = absDY / Math.Abs((double)maxValY);
 
                 int axialDeadX = (int)((maxDeadZoneAxial - minDeadZoneAxial) *
                     Math.Min(1.0, tempRangeRatioY) + minDeadZoneAxial);
@@ -722,10 +725,14 @@ namespace SteamControllerTest
 
                 if (Math.Abs(dx) > axialDeadX)
                 {
-                    dx -= signX * axialDeadX;
-                    double newMaxValX = Math.Abs(maxValX) - axialDeadX;
+                    int tempUseDeadX = deadzoneX > axialDeadX ? deadzoneX : axialDeadX;
+                    dx -= signX * tempUseDeadX;
+                    double newMaxValX = Math.Abs(maxValX) - tempUseDeadX;
                     double scaleX = Math.Abs(dx) / (double)(newMaxValX);
                     dx = (int)(maxValX * scaleX);
+
+                    dx = (dx < 0 && dx < maxValX) ? maxValX :
+                        (dx > 0 && dx > maxValX) ? maxValX : dx;
                     //Trace.WriteLine($"{scaleX} {dx}");
                 }
                 else
@@ -736,10 +743,14 @@ namespace SteamControllerTest
 
                 if (Math.Abs(dy) > deadzoneY)
                 {
-                    dy -= signY * deadzoneY;
-                    double newMaxValY = Math.Abs(maxValY) - deadzoneY;
+                    int tempUseDeadY = radialDeadZoneY > deadzoneY ? radialDeadZoneY : deadzoneY;
+                    dy -= signY * tempUseDeadY;
+                    double newMaxValY = Math.Abs(maxValY) - tempUseDeadY;
                     double scaleY = Math.Abs(dy) / (double)(newMaxValY);
                     dy = (int)(maxValY * scaleY);
+
+                    dy = (dy < 0 && dy < maxValY) ? maxValY :
+                        (dy > 0 && dy > maxValY) ? maxValY : dy;
                 }
                 else
                 {
