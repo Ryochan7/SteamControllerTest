@@ -253,7 +253,8 @@ namespace SteamControllerTest
                 if (current.Guide) tempButtons |= Xbox360Button.Guide.Value;
                 if (current.LB) tempButtons |= Xbox360Button.LeftShoulder.Value;
                 if (current.RB) tempButtons |= Xbox360Button.RightShoulder.Value;
-                if (current.LSClick) tempButtons |= Xbox360Button.LeftThumb.Value;
+                //if (current.LSClick) tempButtons |= Xbox360Button.LeftThumb.Value;
+                if (current.LeftPad.Click) tempButtons |= Xbox360Button.LeftThumb.Value;
                 if (current.RightPad.Click) tempButtons |= Xbox360Button.RightThumb.Value;
 
                 /*if (current.DPadUp) tempButtons |= Xbox360Button.Up.Value;
@@ -264,7 +265,9 @@ namespace SteamControllerTest
 
                 current.LeftPad.Rotate(-18.0 * Math.PI / 180.0);
                 current.RightPad.Rotate(8.0 * Math.PI / 180.0);
-                TouchDPad(ref current, ref previous, ref tempButtons);
+                //TouchDPad(ref current, ref previous, ref tempButtons);
+                //TouchJoystick(ref current, ref previous, ref outputX360);
+                JoyDPad(ref current, ref previous, ref tempButtons);
 
                 outputX360.SetButtonsFull(tempButtons);
             }
@@ -284,7 +287,7 @@ namespace SteamControllerTest
             }
             */
 
-            //*
+            /*
             // Normal Left Stick
             temp = Math.Min(Math.Max(current.LX, STICK_MIN), STICK_MAX);
             temp = AxisScale(temp, false);
@@ -294,6 +297,8 @@ namespace SteamControllerTest
             temp = AxisScale(temp, false);
             outputX360.LeftThumbY = temp;
             //*/
+
+            TouchJoystick(ref current, ref previous, ref outputX360);
 
             // Right Touchpad Mouse-like Joystick
             outputX360.RightThumbX = 0;
@@ -986,10 +991,159 @@ namespace SteamControllerTest
             }
         }
 
-        private void TouchDPad(ref SteamControllerState current,
+        private void JoyDPad(ref SteamControllerState current,
             ref SteamControllerState previous, ref ushort tempButtons)
         {
             const double DIAGONAL_RANGE = 55.0;
+            const double CARDINAL_RANGE = 90.0 - DIAGONAL_RANGE;
+            const double CARDINAL_HALF_RANGE = CARDINAL_RANGE / 2.0;
+            //const double CARDINAL_HALF_RANGE = 22.5;
+
+            const double upLeftEnd = 360 - CARDINAL_HALF_RANGE;
+            const double upRightBegin = CARDINAL_HALF_RANGE;
+            const double rightBegin = upRightBegin + DIAGONAL_RANGE;
+            const double downRightBegin = rightBegin + CARDINAL_RANGE;
+            const double downBegin = downRightBegin + DIAGONAL_RANGE;
+            const double downLeftBegin = downBegin + CARDINAL_RANGE;
+            const double leftBegin = downLeftBegin + DIAGONAL_RANGE;
+            const double upLeftBegin = leftBegin + CARDINAL_RANGE;
+
+            const int deadzone = 8000;
+            const int deadzoneSquared = 8000 * 8000;
+
+            unchecked
+            {
+                int dist = (current.LX * current.LX) + (current.LY * current.LY);
+                if (dist > deadzoneSquared)
+                {
+                    //Trace.WriteLine(current.LY);
+                    double angleRad = Math.Atan2(current.LX, current.LY);
+                    double angle = (angleRad >= 0 ? angleRad : (2 * Math.PI + angleRad)) * 180 / Math.PI;
+
+                    if (angle == 0.0)
+                    {
+                        tempButtons |= Xbox360Button.Up.Value;
+                    }
+                    else if (angle > upLeftEnd || angle < upRightBegin)
+                    {
+                        tempButtons |= Xbox360Button.Up.Value;
+                        //currentDir = DpadDirections.Up;
+                    }
+                    else if (angle >= upRightBegin && angle < rightBegin)
+                    {
+                        tempButtons |= Xbox360Button.Up.Value;
+                        tempButtons |= Xbox360Button.Right.Value;
+                        //currentDir = DpadDirections.UpRight;
+                    }
+                    else if (angle >= rightBegin && angle < downRightBegin)
+                    {
+                        tempButtons |= Xbox360Button.Right.Value;
+                        //currentDir = DpadDirections.Right;
+                    }
+                    else if (angle >= downRightBegin && angle < downBegin)
+                    {
+                        tempButtons |= Xbox360Button.Down.Value;
+                        tempButtons |= Xbox360Button.Right.Value;
+                        //currentDir = DpadDirections.DownRight;
+                    }
+                    else if (angle >= downBegin && angle < downLeftBegin)
+                    {
+                        tempButtons |= Xbox360Button.Down.Value;
+                        //currentDir = DpadDirections.Down;
+                    }
+                    else if (angle >= downLeftBegin && angle < leftBegin)
+                    {
+                        tempButtons |= Xbox360Button.Down.Value;
+                        tempButtons |= Xbox360Button.Left.Value;
+                        //currentDir = DpadDirections.DownLeft;
+                    }
+                    else if (angle >= leftBegin && angle < upLeftBegin)
+                    {
+                        tempButtons |= Xbox360Button.Left.Value;
+                        //currentDir = DpadDirections.Left;
+                    }
+                    else if (angle >= upLeftBegin && angle <= upLeftEnd)
+                    {
+                        tempButtons |= Xbox360Button.Up.Value;
+                        tempButtons |= Xbox360Button.Left.Value;
+                        //currentDir = DpadDirections.UpLeft;
+                    }
+                }
+            }
+        }
+
+        private void TouchJoystick(ref SteamControllerState current,
+            ref SteamControllerState previous, ref IXbox360Controller xbox)
+        {
+            const int deadzone = 8000;
+            const int deadzoneSquared = 8000 * 8000;
+
+            unchecked
+            {
+                if (current.LeftPad.Touch)
+                {
+                    int dist = (current.LeftPad.X * current.LeftPad.X) + (current.LeftPad.Y * current.LeftPad.Y);
+                    if (dist > deadzoneSquared)
+                    {
+                        double angleRad = Math.Atan2(current.LeftPad.Y, current.LeftPad.X);
+                        //double angle = (angleRad >= 0 ? angleRad : (2 * Math.PI + angleRad)) * 180 / Math.PI;
+                        double normX = Math.Abs(Math.Cos(angleRad));
+                        double normY = Math.Abs(Math.Sin(angleRad));
+
+                        int xVal = current.LeftPad.X;
+                        int yVal = current.LeftPad.Y;
+
+                        int maxDirX = xVal >= 0 ? 32767 : -32768;
+                        int maxDirY = yVal >= 0 ? 32767 : -32768;
+                        int maxZoneX = xVal >= 0 ? 30000 : -30000;
+                        int maxZoneY = yVal >= 0 ? 30000 : -30000;
+                        int absDX = Math.Abs(xVal);
+                        int absDY = Math.Abs(yVal);
+                        int signX = Math.Sign(xVal);
+                        int signY = Math.Sign(yVal);
+
+                        //Trace.WriteLine(yVal);
+
+                        xVal = Math.Clamp(xVal, -30000, 30000);
+                        yVal = Math.Clamp(yVal, -30000, 30000);
+
+                        int deadzoneX = (int)(normX * deadzone * signX);
+                        int radialDeadZoneY = (int)(normY * deadzone * signY);
+
+                        double xratio = (xVal - deadzoneX) / (double)(maxZoneX - deadzoneX);
+                        double yratio = (yVal - radialDeadZoneY) / (double)(maxZoneY - radialDeadZoneY);
+
+                        //Trace.WriteLine($"{yratio} {radialDeadZoneY} {maxDirY}");
+
+                        const double antidead = 0.24;
+                        double antiX = antidead * normX;
+                        double antiY = antidead * normY;
+
+                        double xNorm = 0.0, yNorm = 0.0;
+                        if (xratio != 0.0)
+                        {
+                            xNorm = (1.0 - antiX) * xratio + antiX;
+                        }
+
+                        if (yratio != 0.0)
+                        {
+                            yNorm = (1.0 - antiY) * yratio + antiY;
+                        }
+
+                        short axisXOut = (short)(xNorm * maxDirX);
+                        short axisYOut = (short)(yNorm * maxDirY);
+
+                        xbox.LeftThumbX = axisXOut;
+                        xbox.LeftThumbY = axisYOut;
+                    }
+                }
+            }
+        }
+
+        private void TouchDPad(ref SteamControllerState current,
+            ref SteamControllerState previous, ref ushort tempButtons)
+        {
+            const double DIAGONAL_RANGE = 10.0;
             const double CARDINAL_RANGE = 90.0 - DIAGONAL_RANGE;
             const double CARDINAL_HALF_RANGE = CARDINAL_RANGE / 2.0;
             //const double CARDINAL_HALF_RANGE = 22.5;
