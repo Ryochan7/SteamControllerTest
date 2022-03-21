@@ -1008,8 +1008,8 @@ namespace SteamControllerTest
             const double leftBegin = downLeftBegin + DIAGONAL_RANGE;
             const double upLeftBegin = leftBegin + CARDINAL_RANGE;
 
-            const int deadzone = 8000;
-            const int deadzoneSquared = 8000 * 8000;
+            const int deadzone = 16000;
+            const int deadzoneSquared = deadzone * deadzone;
 
             unchecked
             {
@@ -1075,8 +1075,8 @@ namespace SteamControllerTest
         private void TouchJoystick(ref SteamControllerState current,
             ref SteamControllerState previous, ref IXbox360Controller xbox)
         {
-            const int deadzone = 8000;
-            const int deadzoneSquared = 8000 * 8000;
+            const int deadzone = 12000;
+            const int deadzoneSquared = deadzone * deadzone;
 
             unchecked
             {
