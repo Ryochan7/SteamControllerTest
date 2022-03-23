@@ -639,6 +639,8 @@ namespace SteamControllerTest
             {
                 keyboardReport.KeyUp((KeyboardKey)key);
             }
+
+            keyboardSync = true;
         }
 
         private void TouchMouseJoystickPad(int dx, int dy,
