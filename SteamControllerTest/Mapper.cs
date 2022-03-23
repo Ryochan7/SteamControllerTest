@@ -652,7 +652,7 @@ namespace SteamControllerTest
             ref SteamControllerState current,
             ref SteamControllerState previous, ref IXbox360Controller xbox)
         {
-            const int deadZone = 220;
+            const int deadZone = 150;
             const int maxDeadZoneAxial = 130;
             const int minDeadZoneAxial = 20;
 
@@ -679,12 +679,12 @@ namespace SteamControllerTest
             // Base speed 8 ms
             //double tempDouble = timeElapsed * 125.0;
 
-            int maxValX = signX * 400;
-            int maxValY = signY * 400;
+            int maxValX = signX * 430;
+            int maxValY = signY * 430;
 
             double xratio = 0.0, yratio = 0.0;
-            double antiX = 0.40 * normX;
-            double antiY = 0.40 * normY;
+            double antiX = 0.30 * normX;
+            double antiY = 0.30 * normY;
 
             int deadzoneX = (int)Math.Abs(normX * deadZone);
             int radialDeadZoneY = (int)(Math.Abs(normY * deadZone));
