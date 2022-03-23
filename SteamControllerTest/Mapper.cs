@@ -132,10 +132,12 @@ namespace SteamControllerTest
         //private OneEuroFilter filterY = new OneEuroFilter(2.0, 0.8);
         private double currentRate = 0.0;
 
-        private FakerInput fakerInput = new FakerInput();
-        private KeyboardReport keyboardReport = new KeyboardReport();
-        private RelativeMouseReport mouseReport = new RelativeMouseReport();
-        private KeyboardEnhancedReport mediaKeyboardReport = new KeyboardEnhancedReport();
+        //private FakerInput fakerInput = new FakerInput();
+        //private KeyboardReport keyboardReport = new KeyboardReport();
+        //private RelativeMouseReport mouseReport = new RelativeMouseReport();
+        //private KeyboardEnhancedReport mediaKeyboardReport = new KeyboardEnhancedReport();
+
+        private FakerInputHandler fakerInputHandler = new FakerInputHandler();
 
         private bool keyboardSync = false;
         private bool keyboardEnhancedSync = false;
@@ -155,7 +157,8 @@ namespace SteamControllerTest
         public void Start(ViGEmClient vigemTestClient,
             SteamControllerDevice device, SteamControllerReader reader)
         {
-            bool checkConnect = fakerInput.Connect();
+            //bool checkConnect = fakerInput.Connect();
+            bool checkConnect = fakerInputHandler.Connect();
             //Trace.WriteLine(checkConnect);
 
             PopulateKeyBindings();
@@ -633,11 +636,13 @@ namespace SteamControllerTest
         {
             if (pressed)
             {
-                keyboardReport.KeyDown((KeyboardKey)key);
+                //keyboardReport.KeyDown((KeyboardKey)key);
+                fakerInputHandler.PerformKeyPress(key);
             }
             else
             {
-                keyboardReport.KeyUp((KeyboardKey)key);
+                fakerInputHandler.PerformKeyRelease(key);
+                //keyboardReport.KeyUp((KeyboardKey)key);
             }
 
             keyboardSync = true;
@@ -647,9 +652,9 @@ namespace SteamControllerTest
             ref SteamControllerState current,
             ref SteamControllerState previous, ref IXbox360Controller xbox)
         {
-            const int deadZone = 200;
-            const int maxDeadZoneAxial = 150;
-            const int minDeadZoneAxial = 40;
+            const int deadZone = 220;
+            const int maxDeadZoneAxial = 130;
+            const int minDeadZoneAxial = 20;
 
             //int dx = 0;
             //if (current.RightPad.Touch)
@@ -674,12 +679,12 @@ namespace SteamControllerTest
             // Base speed 8 ms
             //double tempDouble = timeElapsed * 125.0;
 
-            int maxValX = signX * 460;
-            int maxValY = signY * 460;
+            int maxValX = signX * 400;
+            int maxValY = signY * 400;
 
             double xratio = 0.0, yratio = 0.0;
-            double antiX = 0.45 * normX;
-            double antiY = 0.45 * normY;
+            double antiX = 0.40 * normX;
+            double antiY = 0.40 * normY;
 
             int deadzoneX = (int)Math.Abs(normX * deadZone);
             int radialDeadZoneY = (int)(Math.Abs(normY * deadZone));
@@ -949,14 +954,16 @@ namespace SteamControllerTest
                 {
                     ushort tempKey = leftTouchBindings.Up;
                     //InputMethods.performKeyRelease(tempKey);
-                    keyboardReport.KeyUp((KeyboardKey)tempKey);
+                    //keyboardReport.KeyUp((KeyboardKey)tempKey);
+                    fakerInputHandler.PerformKeyRelease(tempKey);
                     keyboardSync = true;
                 }
                 else if ((remDirs & DpadDirections.Down) != 0)
                 {
                     ushort tempKey = leftTouchBindings.Down;
                     //InputMethods.performKeyRelease(tempKey);
-                    keyboardReport.KeyUp((KeyboardKey)tempKey);
+                    fakerInputHandler.PerformKeyRelease(tempKey);
+                    //keyboardReport.KeyUp((KeyboardKey)tempKey);
                     keyboardSync = true;
                 }
 
@@ -964,14 +971,16 @@ namespace SteamControllerTest
                 {
                     ushort tempKey = leftTouchBindings.Left;
                     //InputMethods.performKeyRelease(tempKey);
-                    keyboardReport.KeyUp((KeyboardKey)tempKey);
+                    //keyboardReport.KeyUp((KeyboardKey)tempKey);
+                    fakerInputHandler.PerformKeyRelease(tempKey);
                     keyboardSync = true;
                 }
                 else if ((remDirs & DpadDirections.Right) != 0)
                 {
                     ushort tempKey = leftTouchBindings.Right;
                     //InputMethods.performKeyRelease(tempKey);
-                    keyboardReport.KeyUp((KeyboardKey)tempKey);
+                    //keyboardReport.KeyUp((KeyboardKey)tempKey);
+                    fakerInputHandler.PerformKeyRelease(tempKey);
                     keyboardSync = true;
                 }
 
@@ -979,14 +988,16 @@ namespace SteamControllerTest
                 {
                     ushort tempKey = leftTouchBindings.Up;
                     //InputMethods.performKeyPress(tempKey);
-                    keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    //keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    fakerInputHandler.PerformKeyPress(tempKey);
                     keyboardSync = true;
                 }
                 else if ((addDirs & DpadDirections.Down) != 0)
                 {
                     ushort tempKey = leftTouchBindings.Down;
                     //InputMethods.performKeyPress(tempKey);
-                    keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    //keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    fakerInputHandler.PerformKeyPress(tempKey);
                     keyboardSync = true;
                 }
 
@@ -994,14 +1005,16 @@ namespace SteamControllerTest
                 {
                     ushort tempKey = leftTouchBindings.Left;
                     //InputMethods.performKeyPress(tempKey);
-                    keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    //keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    fakerInputHandler.PerformKeyPress(tempKey);
                     keyboardSync = true;
                 }
                 else if ((addDirs & DpadDirections.Right) != 0)
                 {
                     ushort tempKey = leftTouchBindings.Right;
                     //InputMethods.performKeyPress(tempKey);
-                    keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    //keyboardReport.KeyDown((KeyboardKey)tempKey);
+                    fakerInputHandler.PerformKeyPress(tempKey);
                     keyboardSync = true;
                 }
 
@@ -1638,8 +1651,9 @@ namespace SteamControllerTest
                 double mouseYTemp = mouseY - (remainderCutoff(mouseY * 100.0, 1.0) / 100.0);
                 int mouseYInt = (int)(mouseYTemp);
                 mouseYRemainder = mouseYTemp - mouseYInt;
-                mouseReport.MouseX = (short)mouseXInt;
-                mouseReport.MouseY = (short)mouseYInt;
+                //mouseReport.MouseX = (short)mouseXInt;
+                //mouseReport.MouseY = (short)mouseYInt;
+                fakerInputHandler.MoveRelativeMouse(mouseXInt, mouseYInt);
                 mouseSync = true;
                 //fakerInput.UpdateRelativeMouse(mouseReport);
                 //InputMethods.MoveCursorBy(mouseXInt, mouseYInt);
@@ -1674,9 +1688,10 @@ namespace SteamControllerTest
         public void Stop()
         {
             reader.StopUpdate();
-            fakerInput.UpdateKeyboard(new KeyboardReport());
-            fakerInput.Disconnect();
-            fakerInput.Free();
+            fakerInputHandler.Disconnect();
+            //fakerInput.UpdateKeyboard(new KeyboardReport());
+            //fakerInput.Disconnect();
+            //fakerInput.Free();
 
             quit = true;
 
