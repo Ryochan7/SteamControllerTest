@@ -13,6 +13,7 @@ using Sensorit.Base;
 
 using SteamControllerTest.SteamControllerLibrary;
 using FakerInputWrapper;
+using System.Runtime.CompilerServices;
 
 namespace SteamControllerTest
 {
@@ -106,7 +107,7 @@ namespace SteamControllerTest
         private DpadDirections previousLeftDir;
 
         private const int TRACKBALL_INIT_FRICTION = 10;
-        private const int TRACKBALL_JOY_FRICTION = 8;
+        private const int TRACKBALL_JOY_FRICTION = 7;
         private const int TRACKBALL_MASS = 45;
         private const double TRACKBALL_RADIUS = 0.0245;
 
@@ -256,6 +257,8 @@ namespace SteamControllerTest
                 //if (current.LSClick) tempButtons |= Xbox360Button.LeftThumb.Value;
                 if (current.LeftPad.Click) tempButtons |= Xbox360Button.LeftThumb.Value;
                 if (current.RightPad.Click) tempButtons |= Xbox360Button.RightThumb.Value;
+                if (current.LGrip) tempButtons |= Xbox360Button.A.Value;
+                if (current.RGrip) tempButtons |= Xbox360Button.X.Value;
 
                 /*if (current.DPadUp) tempButtons |= Xbox360Button.Up.Value;
                 if (current.DPadDown) tempButtons |= Xbox360Button.Down.Value;
@@ -625,6 +628,19 @@ namespace SteamControllerTest
             outputX360.SubmitReport();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ProcessOutputButtonKey(ushort key, bool pressed)
+        {
+            if (pressed)
+            {
+                keyboardReport.KeyDown((KeyboardKey)key);
+            }
+            else
+            {
+                keyboardReport.KeyUp((KeyboardKey)key);
+            }
+        }
+
         private void TouchMouseJoystickPad(int dx, int dy,
             ref SteamControllerState current,
             ref SteamControllerState previous, ref IXbox360Controller xbox)
@@ -656,12 +672,12 @@ namespace SteamControllerTest
             // Base speed 8 ms
             //double tempDouble = timeElapsed * 125.0;
 
-            int maxValX = signX * 500;
-            int maxValY = signY * 500;
+            int maxValX = signX * 460;
+            int maxValY = signY * 460;
 
             double xratio = 0.0, yratio = 0.0;
-            double antiX = 0.50 * normX;
-            double antiY = 0.50 * normY;
+            double antiX = 0.45 * normX;
+            double antiY = 0.45 * normY;
 
             int deadzoneX = (int)Math.Abs(normX * deadZone);
             int radialDeadZoneY = (int)(Math.Abs(normY * deadZone));
