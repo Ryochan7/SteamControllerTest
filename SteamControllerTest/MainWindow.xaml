@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SteamControllerTest"
         mc:Ignorable="d"
-        Title="MainWindow" Height="300" Width="600">
+        Title="MainWindow" Height="300" Width="600" Closed="Window_Closed">
     <Grid>
         <Button x:Name="startBtn" Content="Start" Click="Button_Click" />
     </Grid>

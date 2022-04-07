@@ -85,7 +85,9 @@ namespace SteamControllerTest.SteamControllerLibrary
                     HidDevice.ReadStatus res = device.HidDevice.ReadWithFileStream(inputReportBuffer);
                     if (res == HidDevice.ReadStatus.Success)
                     {
+                        //Trace.WriteLine(string.Format("{0}", string.Join(" ", inputReportBuffer)));
                         tempByte = inputReportBuffer[3];
+                        //Trace.WriteLine($"{inputReportBuffer[0]} {inputReportBuffer[2]} {inputReportBuffer[3]}");
 
                         ref SteamControllerState current = ref device.CurrentStateRef;
                         ref SteamControllerState previous = ref device.PreviousStateRef;
@@ -250,17 +252,31 @@ namespace SteamControllerTest.SteamControllerLibrary
                         current.RightPad.X = (short)((inputReportBuffer[22] << 8) | inputReportBuffer[21]);
                         current.RightPad.Y = (short)((inputReportBuffer[24] << 8) | inputReportBuffer[23]);
 
-                        //Console.WriteLine("X: {0} Y: {1}", tempAxisX, tempAxisY);
+                        //Trace.WriteLine(string.Format("X: {0} Y: {1} {2}", current.RightPad.X, current.RightPad.Y, current.RightPad.Touch));
 
-                        current.Motion.AccelX = (short)(-1 * (inputReportBuffer[30] << 8) | inputReportBuffer[29]);
+                        current.Motion.AccelX = (short)(-1 * ((inputReportBuffer[30] << 8) | inputReportBuffer[29]));
                         current.Motion.AccelY = (short)((inputReportBuffer[32] << 8) | inputReportBuffer[31]);
                         current.Motion.AccelZ = (short)((inputReportBuffer[34] << 8) | inputReportBuffer[33]);
 
-                        current.Motion.GyroPitch = (short)(-1 * (inputReportBuffer[36] << 8) | inputReportBuffer[35]);
-                        current.Motion.GyroRoll = (short)(-1 * (inputReportBuffer[38] << 8) | inputReportBuffer[37]);
-                        current.Motion.GyroYaw = (short)(-1 * (inputReportBuffer[40] << 8) | inputReportBuffer[39]);
+                        current.Motion.AccelXG = current.Motion.AccelX / SteamControllerState.SteamControllerMotion.D_ACC_RES_PER_G;
+                        current.Motion.AccelYG = current.Motion.AccelY / SteamControllerState.SteamControllerMotion.D_ACC_RES_PER_G;
+                        current.Motion.AccelZG = current.Motion.AccelZ / SteamControllerState.SteamControllerMotion.D_ACC_RES_PER_G;
 
-                        //Console.WriteLine("AccelZ: {0}", current.Motion.AccelZ);
+                        current.Motion.GyroPitch = (short)(-1 * ((inputReportBuffer[36] << 8) | inputReportBuffer[35]));
+                        current.Motion.GyroPitch = (short)(current.Motion.GyroPitch - device.gyroCalibOffsets[SteamControllerDevice.IMU_PITCH_IDX]);
+
+                        current.Motion.GyroRoll = (short)(-1 * ((inputReportBuffer[38] << 8) | inputReportBuffer[37]));
+                        current.Motion.GyroRoll = (short)(current.Motion.GyroRoll - device.gyroCalibOffsets[SteamControllerDevice.IMU_ROLL_IDX]);
+
+                        current.Motion.GyroYaw = (short)(-1 * ((inputReportBuffer[40] << 8) | inputReportBuffer[39]));
+                        current.Motion.GyroYaw = (short)(current.Motion.GyroYaw - device.gyroCalibOffsets[SteamControllerDevice.IMU_YAW_IDX]);
+
+                        current.Motion.AngGyroPitch = current.Motion.GyroPitch * SteamControllerState.SteamControllerMotion.GYRO_RES_IN_DEG_SEC_RATIO;
+                        current.Motion.AngGyroRoll = current.Motion.GyroRoll * SteamControllerState.SteamControllerMotion.GYRO_RES_IN_DEG_SEC_RATIO;
+                        current.Motion.AngGyroYaw = current.Motion.GyroYaw * SteamControllerState.SteamControllerMotion.GYRO_RES_IN_DEG_SEC_RATIO;
+
+                        //Trace.WriteLine($"TEST: {inputReportBuffer[41]}");
+                        //Trace.WriteLine(string.Format("Yaw: {0}", current.Motion.GyroYaw));
 
                         Report?.Invoke(this, device);
                         device.SyncStates();

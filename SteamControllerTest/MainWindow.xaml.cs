@@ -35,5 +35,10 @@ namespace SteamControllerTest
 
             startBtn.IsEnabled = false;
         }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Application.Current.Shutdown(0);
+        }
     }
 }

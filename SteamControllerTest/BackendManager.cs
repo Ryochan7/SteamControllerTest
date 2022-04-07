@@ -17,9 +17,13 @@ namespace SteamControllerTest
         private SteamControllerEnumerator enumerator;
         private Dictionary<SteamControllerDevice, SteamControllerReader> deviceReadersMap;
         private ViGEmClient vigemTestClient = null;
+        private string profileFile;
 
-        public BackendManager()
+        public event EventHandler<Mapper.RequestOSDArgs> RequestOSD;
+
+        public BackendManager(string profileFile)
         {
+            this.profileFile = profileFile;
             mapperList = new List<Mapper>();
             enumerator = new SteamControllerEnumerator();
             deviceReadersMap = new Dictionary<SteamControllerDevice, SteamControllerReader>();
@@ -55,11 +59,17 @@ namespace SteamControllerTest
                 device.SetOperational();
                 deviceReadersMap.Add(device, reader);
 
-                Mapper testMapper = new Mapper(device);
+                Mapper testMapper = new Mapper(device, profileFile);
                 //testMapper.Start(device, reader);
                 testMapper.Start(vigemTestClient, device, reader);
+                testMapper.RequestOSD += TestMapper_RequestOSD;
                 mapperList.Add(testMapper);
             }
+        }
+
+        private void TestMapper_RequestOSD(object sender, Mapper.RequestOSDArgs e)
+        {
+            RequestOSD?.Invoke(this, e);
         }
 
         public void Stop()

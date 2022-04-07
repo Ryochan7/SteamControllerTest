@@ -26,15 +26,22 @@ namespace SteamControllerTest.SteamControllerLibrary
 
         public struct SteamControllerMotion
         {
+            // Base calibration of 2G
+            public const int ACC_RES_PER_G = 16384;
+            public const double D_ACC_RES_PER_G = ACC_RES_PER_G;
+            public const int GYRO_RES_IN_DEG_SEC_NUMER = 2000;
+            // Not sure I agree with the ratio used for steam-gyro-for-cemuhook. Use different denom
+            public const double GYRO_RES_IN_DEG_SEC_RATIO = GYRO_RES_IN_DEG_SEC_NUMER / 65535.0;
+
             public short AccelX;
             public short AccelY;
             public short AccelZ;
-            //public double AccelXG, AccelYG, AccelZG;
+            public double AccelXG, AccelYG, AccelZG;
 
             public short GyroYaw;
             public short GyroPitch;
             public short GyroRoll;
-            //public double AngGyroYaw, AngGyroPitch, AngGyroRoll;
+            public double AngGyroYaw, AngGyroPitch, AngGyroRoll;
 
             // TODO: STUB
             public void Populate()

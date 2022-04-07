@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,8 +25,16 @@ namespace SteamControllerTest
         //public Mapper Mapper { get => mapper; }
         public BackendManager Manager { get => manager; }
 
+        private OSDTest osdTestWindow;
+
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            if (e.Args.Length != 1 && !File.Exists(e.Args[0]))
+            {
+                Application.Current.Shutdown();
+                return;
+            }
+
             try
             {
                 Process.GetCurrentProcess().PriorityClass =
@@ -47,7 +56,8 @@ namespace SteamControllerTest
 
             testThread = new Thread(() =>
             {
-                manager = new BackendManager();
+                manager = new BackendManager(e.Args[0]);
+                manager.RequestOSD += Manager_RequestOSD;
                 //manager.Start();
                 //mapper = new Mapper();
                 //mapper.Start();
@@ -56,11 +66,29 @@ namespace SteamControllerTest
             testThread.IsBackground = true;
             testThread.Start();
             testThread.Join();
+
+            MainWindow window = new MainWindow();
+            MainWindow = window;
+            osdTestWindow = new OSDTest();
+
+            window.Show();
+        }
+
+        private void Manager_RequestOSD(object sender, Mapper.RequestOSDArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                Trace.WriteLine("Attempt to display OSD");
+                osdTestWindow.DisplayOSD(e.Message);
+            });
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
-            manager.Stop();
+            manager?.Stop();
+
+            osdTestWindow.Close();
+            osdTestWindow = null;
         }
     }
 }

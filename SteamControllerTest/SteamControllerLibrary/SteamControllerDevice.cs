@@ -55,9 +55,9 @@ namespace SteamControllerTest.SteamControllerLibrary
 
         public struct StickAxisData
         {
-            public ushort max;
-            public ushort mid;
-            public ushort min;
+            public short max;
+            public short mid;
+            public short min;
         };
 
         public enum ConnectionType : uint
@@ -66,6 +66,10 @@ namespace SteamControllerTest.SteamControllerLibrary
             SCDongle,
             Bluetooth,
         }
+
+        public const int IMU_XAXIS_IDX = 0, IMU_YAW_IDX = 0;
+        public const int IMU_YAXIS_IDX = 1, IMU_PITCH_IDX = 1;
+        public const int IMU_ZAXIS_IDX = 2, IMU_ROLL_IDX = 2;
 
         private ConnectionType conType;
 
@@ -95,10 +99,19 @@ namespace SteamControllerTest.SteamControllerLibrary
         private SCControllerState controllerModeState;
         public SCControllerState ControllerModeState { get => controllerModeState; }
 
+        private double baseElapsedReference;
+        public double BaseElapsedReference
+        {
+            get => baseElapsedReference;
+        }
+
+        public short[] gyroCalibOffsets = new short[3];
+
         public SteamControllerDevice(HidDevice device)
         {
             hidDevice = device;
             conType = DetermineConnectionType(hidDevice);
+            baseElapsedReference = 125.0;
         }
 
         public static ConnectionType DetermineConnectionType(HidDevice device)
@@ -127,9 +140,9 @@ namespace SteamControllerTest.SteamControllerLibrary
                 hidDevice.OpenFileStream(OutputReportLen);
             }
 
-            ReadSerial();
             ClearMappings();
             Configure();
+            ReadSerial();
 
             controllerModeState = SCControllerState.SS_READY;
             modeChangeDone = true;
@@ -170,7 +183,7 @@ namespace SteamControllerTest.SteamControllerLibrary
         private void Configure()
         {
             int timeout = 600;
-            int ledLevel = 90;
+            int ledLevel = 30;
             byte[] gyroAndTimeoutFeatureData = new byte[FEATURE_REPORT_LEN];
             gyroAndTimeoutFeatureData[1] = SCPacketType.PT_CONFIGURE;
             gyroAndTimeoutFeatureData[2] = SCPacketLength.PL_CONFIGURE;

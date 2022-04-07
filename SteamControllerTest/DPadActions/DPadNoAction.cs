@@ -1,0 +1,55 @@
+﻿using SteamControllerTest.ActionUtil;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SteamControllerTest.DPadActions
+{
+    public class DPadNoAction : DPadMapAction
+    {
+        public DPadNoAction()
+        {
+        }
+
+        public DPadNoAction(DPadNoAction parentAction)
+        {
+            if (parentAction != null)
+            {
+                this.parentAction = parentAction;
+                parentAction.hasLayeredAction = true;
+                mappingId = parentAction.mappingId;
+            }
+        }
+
+        public override void Prepare(Mapper mapper, DpadDirections value, bool alterState = true)
+        {
+        }
+
+        public override void Event(Mapper mapper)
+        {
+        }
+
+        public override void Release(Mapper mapper, bool resetState = true)
+        {
+        }
+
+        public override DPadMapAction DuplicateAction()
+        {
+            return new DPadNoAction(this);
+        }
+
+        public override void SoftCopyFromParent(DPadMapAction parentAction)
+        {
+            if (parentAction is DPadNoAction tempNoAction)
+            {
+                base.SoftCopyFromParent(parentAction);
+
+                this.parentAction = parentAction;
+                tempNoAction.hasLayeredAction = true;
+                mappingId = tempNoAction.mappingId;
+            }
+        }
+    }
+}
