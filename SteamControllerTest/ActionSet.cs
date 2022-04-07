@@ -8,6 +8,8 @@ using SteamControllerTest.ButtonActions;
 using SteamControllerTest.DPadActions;
 using SteamControllerTest.GyroActions;
 using SteamControllerTest.StickActions;
+using SteamControllerTest.TouchpadActions;
+using SteamControllerTest.TriggerActions;
 
 namespace SteamControllerTest
 {
@@ -168,6 +170,12 @@ namespace SteamControllerTest
                                 case InputBindingMeta.InputControlType.Gyro:
                                     activeCompositeLayer.gyroActionDict[mapId] = currentMapAction as GyroMapAction;
                                     break;
+                                case InputBindingMeta.InputControlType.Touchpad:
+                                    activeCompositeLayer.touchpadActionDict[mapId] = currentMapAction as TouchpadMapAction;
+                                    break;
+                                case InputBindingMeta.InputControlType.Trigger:
+                                    activeCompositeLayer.triggerActionDict[mapId] = currentMapAction as TriggerMapAction;
+                                    break;
                                 default:
                                     break;
                             }
@@ -261,6 +269,12 @@ namespace SteamControllerTest
                                         break;
                                     case InputBindingMeta.InputControlType.Gyro:
                                         activeCompositeLayer.gyroActionDict[tempBaseAction.MappingId] = tempBaseAction as GyroMapAction;
+                                        break;
+                                    case InputBindingMeta.InputControlType.Touchpad:
+                                        activeCompositeLayer.touchpadActionDict[tempBaseAction.MappingId] = tempBaseAction as TouchpadMapAction;
+                                        break;
+                                    case InputBindingMeta.InputControlType.Trigger:
+                                        activeCompositeLayer.triggerActionDict[tempBaseAction.MappingId] = tempBaseAction as TriggerMapAction;
                                         break;
                                     default:
                                         break;
