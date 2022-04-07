@@ -64,6 +64,8 @@ namespace SteamControllerTest
         [JsonProperty(Required = Required.Always)]
         public DateTime CreationDate { get => tempProfile.CreationDate; set => tempProfile.CreationDate = value; }
 
+        public string ControllerType { get => tempProfile.ControllerType; set => tempProfile.ControllerType = value; }
+
         private List<ActionSetSerializer> actionSets = new List<ActionSetSerializer>();
         [JsonProperty(Required = Required.Always, PropertyName = "ActionSets")]
         public List<ActionSetSerializer> ActionSets

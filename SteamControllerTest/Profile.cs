@@ -38,6 +38,9 @@ namespace SteamControllerTest
         protected DateTime creationDate;
         public DateTime CreationDate { get => creationDate; set => creationDate = value; }
 
+        protected string controllerType;
+        public string ControllerType { get => controllerType; set => controllerType = value; }
+
         protected int leftStickRotation;
         public int LeftStickRotation { get => leftStickRotation; set => leftStickRotation = value; }
 
