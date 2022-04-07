@@ -3381,15 +3381,21 @@ namespace SteamControllerTest
         public void Stop()
         {
             reader.StopUpdate();
+
+            quit = true;
+
+            actionProfile.CurrentActionSet.ReleaseActions(this);
+
+            SyncKeyboard();
+            SyncMouseButtons();
+
+            outputX360?.Disconnect();
+            outputX360 = null;
+
             fakerInputHandler.Disconnect();
             //fakerInput.UpdateKeyboard(new KeyboardReport());
             //fakerInput.Disconnect();
             //fakerInput.Free();
-
-            quit = true;
-
-            outputX360?.Disconnect();
-            outputX360 = null;
         }
     }
 }
