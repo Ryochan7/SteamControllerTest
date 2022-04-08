@@ -627,6 +627,99 @@ namespace SteamControllerTest
         }
     }
 
+    public class TriggerDualStageActionSerializer : MapActionSerializer
+    {
+        public class TriggerDualStageSettings
+        {
+            private TriggerDualStageAction triggerDualAction;
+
+            public double DeadZone
+            {
+                get => triggerDualAction.DeadMod.DeadZone;
+                set
+                {
+                    triggerDualAction.DeadMod.DeadZone = Math.Clamp(value, 0.0, 1.0);
+                    DeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler DeadZoneChanged;
+
+            public double MaxZone
+            {
+                get => triggerDualAction.DeadMod.MaxZone;
+                set
+                {
+                    triggerDualAction.DeadMod.MaxZone = Math.Clamp(value, 0.0, 1.0);
+                    MaxZoneChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler MaxZoneChanged;
+
+            public TriggerDualStageAction.DualStageMode DualStageMode
+            {
+                get => triggerDualAction.TriggerStateMode;
+                set
+                {
+                    triggerDualAction.TriggerStateMode = value;
+                    DualStageModeChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler DualStageModeChanged;
+
+            public TriggerDualStageSettings(TriggerDualStageAction action)
+            {
+                triggerDualAction = action;
+            }
+        }
+
+        private TriggerDualStageAction triggerDualAction = new TriggerDualStageAction();
+
+        private TriggerDualStageSettings settings;
+        public TriggerDualStageSettings Settings
+        {
+            get => settings;
+            set => settings = value;
+        }
+
+        // Deserialize
+        public TriggerDualStageActionSerializer() : base()
+        {
+            mapAction = triggerDualAction;
+            settings = new TriggerDualStageSettings(triggerDualAction);
+
+            NameChanged += TriggerDualStageActionSerializer_NameChanged;
+            settings.DeadZoneChanged += Settings_DeadZoneChanged;
+            settings.MaxZoneChanged += Settings_MaxZoneChanged;
+        }
+
+        private void Settings_MaxZoneChanged(object sender, EventArgs e)
+        {
+            triggerDualAction.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.MAX_ZONE);
+        }
+
+        private void Settings_DeadZoneChanged(object sender, EventArgs e)
+        {
+            triggerDualAction.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.DEAD_ZONE);
+        }
+
+        private void TriggerDualStageActionSerializer_NameChanged(object sender, EventArgs e)
+        {
+            triggerDualAction.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.NAME);
+        }
+
+        // Pre-serialize ctor
+        public TriggerDualStageActionSerializer(ActionLayer tempLayer, MapAction mapAction) :
+            base(tempLayer, mapAction)
+        {
+            if (mapAction is TriggerDualStageAction temp)
+            {
+                triggerDualAction = temp;
+                mapAction = triggerDualAction;
+                settings = new TriggerDualStageSettings(triggerDualAction);
+            }
+        }
+    }
+
     public class TriggerButtonActionSerializer : MapActionSerializer
     {
         private TriggerButtonAction trigBtnAction = new TriggerButtonAction();
@@ -3861,6 +3954,11 @@ namespace SteamControllerTest
                     JsonConvert.PopulateObject(j.ToString(), triggerButtonActInstance);
                     resultInstance = triggerButtonActInstance;
                     break;
+                case "TriggerDualStageAction":
+                    TriggerTranslateActionSerializer triggerDualActInstance = new TriggerTranslateActionSerializer();
+                    JsonConvert.PopulateObject(j.ToString(), triggerDualActInstance);
+                    resultInstance = triggerDualActInstance;
+                    break;
                 case "TouchStickTranslateAction":
                     TouchpadStickActionSerializer touchStickActInstance = new TouchpadStickActionSerializer();
                     JsonConvert.PopulateObject(j.ToString(), touchStickActInstance);
@@ -3978,6 +4076,10 @@ namespace SteamControllerTest
                 case "TriggerButtonAction":
                     TriggerButtonActionSerializer triggerBtnActSerializer = new TriggerButtonActionSerializer(current.TempLayer, tempMapAction);
                     serializer.Serialize(writer, triggerBtnActSerializer);
+                    break;
+                case "TriggerDualStageAction":
+                    TriggerDualStageActionSerializer triggerDualActSerializer = new TriggerDualStageActionSerializer(current.TempLayer, tempMapAction);
+                    serializer.Serialize(writer, triggerDualActSerializer);
                     break;
                 case "TouchStickTranslateAction":
                     TouchpadStickActionSerializer touchStickActSerializer = new TouchpadStickActionSerializer(current.TempLayer, tempMapAction);
