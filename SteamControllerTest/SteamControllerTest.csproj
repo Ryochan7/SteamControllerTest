@@ -56,4 +56,8 @@
   <ItemGroup>
     <Folder Include="AxisActions\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Media\Images\holyterry.png" />
+  </ItemGroup>
 </Project>
