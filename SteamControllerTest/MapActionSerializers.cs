@@ -1170,6 +1170,71 @@ namespace SteamControllerTest
         }
     }
 
+    public class TouchpadAbsActionSerializer : MapActionSerializer
+    {
+        public class TouchpadAbsActionSettings
+        {
+            private TouchpadAbsAction touchAbsAct;
+
+            public double DeadZone
+            {
+                get => touchAbsAct.DeadMod.DeadZone;
+                set
+                {
+                    touchAbsAct.DeadMod.DeadZone = Math.Clamp(value, 0.0, 1.0);
+                    DeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler DeadZoneChanged;
+
+            public TouchpadAbsActionSettings(TouchpadAbsAction action)
+            {
+                touchAbsAct = action;
+            }
+        }
+
+        private TouchpadAbsActionSettings settings;
+        public TouchpadAbsActionSettings Settings
+        {
+            get => settings;
+            set => settings = value;
+        }
+
+        private TouchpadAbsAction touchAbsAct = new TouchpadAbsAction();
+
+        // Deserialize
+        public TouchpadAbsActionSerializer() : base()
+        {
+            mapAction = touchAbsAct;
+            settings = new TouchpadAbsActionSettings(touchAbsAct);
+
+            NameChanged += TouchpadAbsActionSerializer_NameChanged;
+            settings.DeadZoneChanged += Settings_DeadZoneChanged;
+        }
+
+        // Serialize ctor
+        public TouchpadAbsActionSerializer(ActionLayer tempLayer, MapAction action) :
+            base(tempLayer, action)
+        {
+            if (action is TouchpadAbsAction temp)
+            {
+                touchAbsAct = temp;
+                mapAction = touchAbsAct;
+                settings = new TouchpadAbsActionSettings(touchAbsAct);
+            }
+        }
+
+        private void Settings_DeadZoneChanged(object sender, EventArgs e)
+        {
+            touchAbsAct.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.DEAD_ZONE);
+        }
+
+        private void TouchpadAbsActionSerializer_NameChanged(object sender, EventArgs e)
+        {
+            touchAbsAct.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.NAME);
+        }
+    }
+
     public class AxisDirButtonSerializer : MapActionSerializer
     {
         private ButtonActions.AxisDirButton axisDirButton =
@@ -1983,6 +2048,7 @@ namespace SteamControllerTest
             set => settings = value;
         }
 
+        // Deserialize
         public StickTranslateSerializer() : base()
         {
             mapAction = stickTransAct;
@@ -3716,6 +3782,11 @@ namespace SteamControllerTest
                     JsonConvert.PopulateObject(j.ToString(), touchActionPadInstance);
                     resultInstance = touchActionPadInstance;
                     break;
+                case "TouchAbsPadAction":
+                    TouchpadAbsActionSerializer touchAbsActionInstance = new TouchpadAbsActionSerializer();
+                    JsonConvert.PopulateObject(j.ToString(), touchAbsActionInstance);
+                    resultInstance = touchAbsActionInstance;
+                    break;
                 case "DPadAction":
                     DpadActionSerializer dpadActSerializer = new DpadActionSerializer();
                     JsonConvert.PopulateObject(j.ToString(), dpadActSerializer);
@@ -3824,6 +3895,10 @@ namespace SteamControllerTest
                 case "TouchActionPadAction":
                     TouchpadActionPadSerializer touchActionPadSerializer = new TouchpadActionPadSerializer(current.TempLayer, tempMapAction);
                     serializer.Serialize(writer, touchActionPadSerializer);
+                    break;
+                case "TouchAbsPadAction":
+                    TouchpadAbsActionSerializer touchAbsActSerializer = new TouchpadAbsActionSerializer(current.TempLayer, tempMapAction);
+                    serializer.Serialize(writer, touchAbsActSerializer);
                     break;
                 case "DPadAction":
                     DpadActionSerializer dpadActSerializer = new DpadActionSerializer(current.TempLayer, tempMapAction);
