@@ -243,13 +243,16 @@ namespace SteamControllerTest.TouchpadActions
 
             //Console.WriteLine("DELTA X: {0} Y: {1}", dx, dy);
 
-            // Fill trackball entry
-            int iIndex = trackData.trackballBufferTail;
-            trackData.trackballXBuffer[iIndex] = (dx * TRACKBALL_SCALE) / touchFrame.timeElapsed;
-            trackData.trackballYBuffer[iIndex] = (dy * TRACKBALL_SCALE) / touchFrame.timeElapsed;
-            trackData.trackballBufferTail = (iIndex + 1) % TRACKBALL_BUFFER_LEN;
-            if (trackData.trackballBufferHead == trackData.trackballBufferTail)
-                trackData.trackballBufferHead = (trackData.trackballBufferHead + 1) % TRACKBALL_BUFFER_LEN;
+            if (trackballEnabled)
+            {
+                // Fill trackball entry
+                int iIndex = trackData.trackballBufferTail;
+                trackData.trackballXBuffer[iIndex] = (dx * TRACKBALL_SCALE) / touchFrame.timeElapsed;
+                trackData.trackballYBuffer[iIndex] = (dy * TRACKBALL_SCALE) / touchFrame.timeElapsed;
+                trackData.trackballBufferTail = (iIndex + 1) % TRACKBALL_BUFFER_LEN;
+                if (trackData.trackballBufferHead == trackData.trackballBufferTail)
+                    trackData.trackballBufferHead = (trackData.trackballBufferHead + 1) % TRACKBALL_BUFFER_LEN;
+            }
 
             TouchMoveMouse(dx, dy, ref touchFrame);
         }
