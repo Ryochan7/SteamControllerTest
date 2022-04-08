@@ -1172,6 +1172,31 @@ namespace SteamControllerTest
 
     public class TouchpadAbsActionSerializer : MapActionSerializer
     {
+        public class OuterRingBinding
+        {
+            private string actionDirName;
+            [JsonProperty("Name", Required = Required.Default)]
+            public string ActionDirName
+            {
+                get => actionDirName;
+                set => actionDirName = value;
+            }
+
+            private List<ActionFuncSerializer> actionFuncSerializers =
+                new List<ActionFuncSerializer>();
+            [JsonProperty("Functions", Required = Required.Always)]
+            public List<ActionFuncSerializer> ActionFuncSerializers
+            {
+                get => actionFuncSerializers;
+                set
+                {
+                    actionFuncSerializers = value;
+                    ActionFuncSerializersChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler ActionFuncSerializersChanged;
+        }
+
         public class TouchpadAbsActionSettings
         {
             private TouchpadAbsAction touchAbsAct;
@@ -1187,11 +1212,61 @@ namespace SteamControllerTest
             }
             public event EventHandler DeadZoneChanged;
 
+            [JsonProperty("UseOuterRing")]
+            public bool UseOuterRing
+            {
+                get => touchAbsAct.UseRingButton;
+                set
+                {
+                    touchAbsAct.UseRingButton = value;
+                    UseOuterRingChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler UseOuterRingChanged;
+
+            [JsonProperty("OuterRingDeadZone")]
+            public double OuterRingDeadZone
+            {
+                get => touchAbsAct.OuterRingDeadZone;
+                set
+                {
+                    touchAbsAct.OuterRingDeadZone = value;
+                    OuterRingDeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler OuterRingDeadZoneChanged;
+
+            [JsonProperty("UseAsOuterRing")]
+            public bool UseAsOuterRing
+            {
+                get => touchAbsAct.UseAsOuterRing;
+                set
+                {
+                    touchAbsAct.UseAsOuterRing = value;
+                    UseAsOuterRingChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler UseAsOuterRingChanged;
+
             public TouchpadAbsActionSettings(TouchpadAbsAction action)
             {
                 touchAbsAct = action;
             }
         }
+
+        private OuterRingBinding ringBinding;
+
+        [JsonProperty("OuterRingBinding")]
+        public OuterRingBinding RingBinding
+        {
+            get => ringBinding;
+            set
+            {
+                ringBinding = value;
+                RingBindingChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler RingBindingChanged;
 
         private TouchpadAbsActionSettings settings;
         public TouchpadAbsActionSettings Settings
@@ -1209,7 +1284,11 @@ namespace SteamControllerTest
             settings = new TouchpadAbsActionSettings(touchAbsAct);
 
             NameChanged += TouchpadAbsActionSerializer_NameChanged;
+            RingBindingChanged += TouchpadAbsActionSerializer_RingBindingChanged;
             settings.DeadZoneChanged += Settings_DeadZoneChanged;
+            settings.UseAsOuterRingChanged += Settings_UseAsOuterRingChanged;
+            settings.UseOuterRingChanged += Settings_UseOuterRingChanged;
+            settings.OuterRingDeadZoneChanged += Settings_OuterRingDeadZoneChanged;
         }
 
         // Serialize ctor
@@ -1232,6 +1311,26 @@ namespace SteamControllerTest
         private void TouchpadAbsActionSerializer_NameChanged(object sender, EventArgs e)
         {
             touchAbsAct.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.NAME);
+        }
+
+        private void Settings_OuterRingDeadZoneChanged(object sender, EventArgs e)
+        {
+            touchAbsAct.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.OUTER_RING_DEAD_ZONE);
+        }
+
+        private void Settings_UseOuterRingChanged(object sender, EventArgs e)
+        {
+            touchAbsAct.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.USE_OUTER_RING);
+        }
+
+        private void Settings_UseAsOuterRingChanged(object sender, EventArgs e)
+        {
+            touchAbsAct.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.USE_AS_OUTER_RING);
+        }
+
+        private void TouchpadAbsActionSerializer_RingBindingChanged(object sender, EventArgs e)
+        {
+            touchAbsAct.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.OUTER_RING_BUTTON);
         }
     }
 

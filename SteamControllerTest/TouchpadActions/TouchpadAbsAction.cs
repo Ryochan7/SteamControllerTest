@@ -1,4 +1,5 @@
-﻿using SteamControllerTest.StickModifiers;
+﻿using SteamControllerTest.ButtonActions;
+using SteamControllerTest.StickModifiers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +15,11 @@ namespace SteamControllerTest.TouchpadActions
             public const string NAME = "Name";
             public const string DEAD_ZONE = "DeadZone";
 
-            //public const string OUTER_RING_BUTTON = "OuterRingButton";
+            public const string OUTER_RING_BUTTON = "OuterRingButton";
 
-            //public const string USE_OUTER_RING = "UseOuterRing";
-            //public const string OUTER_RING_DEAD_ZONE = "OuterRingDeadZone";
-            //public const string USE_AS_OUTER_RING = "UseAsOuterRing";
+            public const string USE_OUTER_RING = "UseOuterRing";
+            public const string OUTER_RING_DEAD_ZONE = "OuterRingDeadZone";
+            public const string USE_AS_OUTER_RING = "UseAsOuterRing";
         }
 
         private HashSet<string> fullPropertySet = new HashSet<string>()
@@ -26,10 +27,10 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.NAME,
             PropertyKeyStrings.DEAD_ZONE,
 
-            //PropertyKeyStrings.OUTER_RING_BUTTON,
-            //PropertyKeyStrings.USE_OUTER_RING,
-            //PropertyKeyStrings.OUTER_RING_DEAD_ZONE,
-            //PropertyKeyStrings.USE_AS_OUTER_RING,
+            PropertyKeyStrings.OUTER_RING_BUTTON,
+            PropertyKeyStrings.USE_OUTER_RING,
+            PropertyKeyStrings.OUTER_RING_DEAD_ZONE,
+            PropertyKeyStrings.USE_AS_OUTER_RING,
         };
 
         public struct AbsCoordRange
@@ -58,6 +59,22 @@ namespace SteamControllerTest.TouchpadActions
         // Specify the input state of the button
         private bool inputStatus;
 
+        private AxisDirButton ringButton = new AxisDirButton();
+        private AxisDirButton usedRingButton = null;
+
+        /// <summary>
+        /// Used to determine outer ring mode or inner ring mode. Will change to using an Enum later
+        /// </summary>
+        private bool outerRing;
+        /// <summary>
+        /// Specify whether to interpret a ring binging at all
+        /// </summary>
+        private bool useRingButton;
+        /// <summary>
+        /// Displacement threshold when a ring binding should execute
+        /// </summary>
+        private double outerRingDeadZone = 1.0;
+
         private StickDeadZone deadMod;
         private AbsCoordRange absRange;
 
@@ -72,6 +89,16 @@ namespace SteamControllerTest.TouchpadActions
         {
             get => ref absRange;
         }
+
+        public AxisDirButton RingButton
+        {
+            get => ringButton;
+            set => ringButton = value;
+        }
+
+        public bool UseAsOuterRing { get => outerRing; set => outerRing = value; }
+        public bool UseRingButton { get => useRingButton; set => useRingButton = value; }
+        public double OuterRingDeadZone { get => outerRingDeadZone; set => outerRingDeadZone = value; }
 
         public TouchpadAbsAction()
         {
@@ -186,17 +213,36 @@ namespace SteamControllerTest.TouchpadActions
 
                 //Trace.WriteLine($"Test Abs Mouse: IN ({xNorm}, {yNorm}) OUT ({xMotion}, {yMotion})");
 
+                usedRingButton = ringButton;
+
                 active = true;
                 activeEvent = true;
             }
             else
             {
                 inputStatus = false;
+
+                usedRingButton = ringButton;
             }
         }
 
         public override void Event(Mapper mapper)
         {
+            if (useRingButton && usedRingButton != null)
+            {
+                double dist = Math.Sqrt((xNorm * xNorm) + (yNorm * yNorm));
+                bool activeMod = outerRing ? (dist > outerRingDeadZone ? true : false) :
+                    (dist > 0.0 && dist <= outerRingDeadZone ? true : false);
+
+                // Treat as boolean button for now
+                usedRingButton.Prepare(mapper, activeMod);
+                //usedRingButton.PrepareAnalog(mapper, dist);
+                if (usedRingButton.active)
+                {
+                    usedRingButton.Event(mapper);
+                }
+            }
+
             //if (xMotion != 0.0 || yMotion != 0.0)
             {
                 mapper.AbsMouseX = xMotion; mapper.AbsMouseY = yMotion;
@@ -212,6 +258,11 @@ namespace SteamControllerTest.TouchpadActions
             xNorm = yNorm = 0.0;
             xMotion = yMotion = 0.0;
             fuzzXNorm = fuzzYNorm = 0.0;
+
+            if (useRingButton && usedRingButton != null)
+            {
+                usedRingButton.Release(mapper, resetState);
+            }
 
             mapper.AbsMouseX = xMotion; mapper.AbsMouseY = yMotion;
             mapper.AbsMouseSync = true;
@@ -251,6 +302,18 @@ namespace SteamControllerTest.TouchpadActions
                             break;
                         case PropertyKeyStrings.DEAD_ZONE:
                             deadMod.DeadZone = tempAbsAction.deadMod.DeadZone;
+                            break;
+                        case PropertyKeyStrings.OUTER_RING_BUTTON:
+                            ringButton = tempAbsAction.ringButton;
+                            break;
+                        case PropertyKeyStrings.USE_OUTER_RING:
+                            useRingButton = tempAbsAction.useRingButton;
+                            break;
+                        case PropertyKeyStrings.OUTER_RING_DEAD_ZONE:
+                            outerRingDeadZone = tempAbsAction.outerRingDeadZone;
+                            break;
+                        case PropertyKeyStrings.USE_AS_OUTER_RING:
+                            outerRing = tempAbsAction.outerRing;
                             break;
                         default:
                             break;
