@@ -278,6 +278,11 @@ namespace SteamControllerTest.SteamControllerLibrary
                         //Trace.WriteLine($"TEST: {inputReportBuffer[41]}");
                         //Trace.WriteLine(string.Format("Yaw: {0}", current.Motion.GyroYaw));
 
+                        current.Motion.QuaternionX = (short)(-1 * ((inputReportBuffer[42] << 8) | inputReportBuffer[41]));
+                        current.Motion.QuaternionY = (short)(-1 * ((inputReportBuffer[44] << 8) | inputReportBuffer[43]));
+                        current.Motion.QuaternionZ = (short)(-1 * ((inputReportBuffer[46] << 8) | inputReportBuffer[45]));
+                        current.Motion.QuaternionW = (short)(-1 * ((inputReportBuffer[48] << 8) | inputReportBuffer[47]));
+
                         Report?.Invoke(this, device);
                         device.SyncStates();
 

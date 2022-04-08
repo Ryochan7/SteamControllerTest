@@ -43,6 +43,11 @@ namespace SteamControllerTest.SteamControllerLibrary
             public short GyroRoll;
             public double AngGyroYaw, AngGyroPitch, AngGyroRoll;
 
+            public short QuaternionX;
+            public short QuaternionY;
+            public short QuaternionZ;
+            public short QuaternionW;
+
             // TODO: STUB
             public void Populate()
             {
