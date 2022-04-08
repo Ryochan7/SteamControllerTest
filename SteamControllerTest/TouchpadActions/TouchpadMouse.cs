@@ -85,7 +85,18 @@ namespace SteamControllerTest.TouchpadActions
 
         public override void Prepare(Mapper mapper, ref TouchEventFrame touchFrame, bool alterState = true)
         {
-            TrackballMouseProcess(mapper, ref touchFrame);
+            if (trackballEnabled)
+            {
+                TrackballMouseProcess(mapper, ref touchFrame);
+            }
+            else if (!trackballEnabled && touchFrame.Touch)
+            {
+                ref TouchEventFrame previousTouchFrame =
+                    ref mapper.GetPreviousTouchEventFrame(touchpadDefinition.touchCode);
+
+                // Process normal mouse
+                ProcessTouchMouse(mapper, ref touchFrame, ref previousTouchFrame);
+            }
 
             active = activeEvent = true;
         }
@@ -126,6 +137,12 @@ namespace SteamControllerTest.TouchpadActions
                 {
                     // Re-evaluate trackball friction with parent action setting
                     tempMouseAction.CalcTrackAccel();
+                }
+
+                if (parentAction != null &&
+                    trackballEnabled != tempMouseAction.trackballEnabled)
+                {
+                    trackData.PurgeData();
                 }
             }
         }
