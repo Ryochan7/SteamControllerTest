@@ -22,7 +22,7 @@
               {
                 "OutputStick": "X360_LS",
                 "DeadZone": 0.05,
-                "AntiDeadZone": 0.24,
+                "AntiDeadZone": 0.35,
                 "Rotation": 0
               }
             },
@@ -429,6 +429,29 @@
               }
             }
           ]
+        },
+        {
+          "Index": "1",
+          "Name": "Test Layer",
+          "Description": "Action Layer",
+          "MappedActions": [
+            {
+              "Id": "0",
+              "Name": "X360 X Button",
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "GamepadControl",
+                      "PadOutput": "X360_X"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         }
       ]
     }
@@ -505,6 +528,16 @@
         {
           "Input": "Stick",
           "Action": "17"
+        }
+      ]
+    },
+    {
+      "ActionSet": "0",
+      "ActionLayer": "1",
+      "InputMappings": [
+        {
+          "Input": "Y",
+          "Action": "0"
         }
       ]
     }
