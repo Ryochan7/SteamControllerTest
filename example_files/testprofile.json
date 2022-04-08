@@ -1,6 +1,6 @@
 {
-  "Name": "XInput Test",
-  "Description": "X360",
+  "Name": "Dark Messiah",
+  "Description": "Dark Messiah",
   "Creator": "ryochan7",
   "CreationDate": "2022-04-07T16:23:39+0000",
   "ActionSets": [
@@ -339,40 +339,10 @@
             },
             {
               "Id": "17",
-              "Name": "StickDPAD",
+              "Name": "Stick Mouse Wheel",
               "ActionMode": "StickPadAction",
               "Bindings":
               {
-                "Up":
-                {
-                    "Name": "Dpad Up",
-                    "Functions": [
-                      {
-                        "Type": "NormalPress",
-                        "OutputActions": [
-                          {
-                            "Type": "GamepadControl",
-                            "PadOutput": "X360_DPAD_UP"
-                          }
-                        ]
-                      }
-                    ]
-                },
-                "Down":
-                {
-                    "Name": "Dpad Down",
-                    "Functions": [
-                      {
-                        "Type": "NormalPress",
-                        "OutputActions": [
-                          {
-                            "Type": "GamepadControl",
-                            "PadOutput": "X360_DPAD_DOWN"
-                          }
-                        ]
-                      }
-                    ]
-                },
                 "Left":
                 {
                     "Name": "Dpad Left",
@@ -381,8 +351,8 @@
                         "Type": "NormalPress",
                         "OutputActions": [
                           {
-                            "Type": "GamepadControl",
-                            "PadOutput": "X360_DPAD_LEFT"
+                            "Type": "MouseWheel",
+                            "Code": "WheelUp"
                           }
                         ]
                       }
@@ -396,8 +366,8 @@
                         "Type": "NormalPress",
                         "OutputActions": [
                           {
-                            "Type": "GamepadControl",
-                            "PadOutput": "X360_DPAD_RIGHT"
+                            "Type": "MouseWheel",
+                            "Code": "WheelDown"
                           }
                         ]
                       }
