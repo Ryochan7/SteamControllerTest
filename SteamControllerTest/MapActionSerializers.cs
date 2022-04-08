@@ -672,7 +672,33 @@ namespace SteamControllerTest
             }
         }
 
+        public class StageButtonBinding
+        {
+            private string actionDirName;
+            [JsonProperty("Name", Required = Required.Default)]
+            public string ActionDirName
+            {
+                get => actionDirName;
+                set => actionDirName = value;
+            }
+
+            private List<ActionFuncSerializer> actionFuncSerializers =
+                new List<ActionFuncSerializer>();
+            [JsonProperty("Functions", Required = Required.Always)]
+            public List<ActionFuncSerializer> ActionFuncSerializers
+            {
+                get => actionFuncSerializers;
+                set
+                {
+                    actionFuncSerializers = value;
+                    ActionFuncSerializersChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler ActionFuncSerializersChanged;
+        }
+
         private TriggerDualStageAction triggerDualAction = new TriggerDualStageAction();
+
 
         private TriggerDualStageSettings settings;
         public TriggerDualStageSettings Settings
@@ -681,6 +707,30 @@ namespace SteamControllerTest
             set => settings = value;
         }
 
+        private StageButtonBinding softPullStageButton = new StageButtonBinding();
+        public StageButtonBinding SoftPull
+        {
+            get => softPullStageButton;
+            set
+            {
+                softPullStageButton = value;
+                SoftPullChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SoftPullChanged;
+
+        private StageButtonBinding fullPullStageButton = new StageButtonBinding();
+        public StageButtonBinding FullPull
+        {
+            get => fullPullStageButton;
+            set
+            {
+                fullPullStageButton = value;
+                FullPullChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler FullPullChanged;
+
         // Deserialize
         public TriggerDualStageActionSerializer() : base()
         {
@@ -688,8 +738,20 @@ namespace SteamControllerTest
             settings = new TriggerDualStageSettings(triggerDualAction);
 
             NameChanged += TriggerDualStageActionSerializer_NameChanged;
+            SoftPullChanged += TriggerDualStageActionSerializer_SoftPullChanged;
+            FullPullChanged += TriggerDualStageActionSerializer_FullPullChanged;
             settings.DeadZoneChanged += Settings_DeadZoneChanged;
             settings.MaxZoneChanged += Settings_MaxZoneChanged;
+        }
+
+        private void TriggerDualStageActionSerializer_FullPullChanged(object sender, EventArgs e)
+        {
+            triggerDualAction.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.FULLPULL_BUTTON);
+        }
+
+        private void TriggerDualStageActionSerializer_SoftPullChanged(object sender, EventArgs e)
+        {
+            triggerDualAction.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.SOFTPULL_BUTTON);
         }
 
         private void Settings_MaxZoneChanged(object sender, EventArgs e)
@@ -714,9 +776,56 @@ namespace SteamControllerTest
             if (mapAction is TriggerDualStageAction temp)
             {
                 triggerDualAction = temp;
-                mapAction = triggerDualAction;
+                //mapAction = triggerDualAction;
                 settings = new TriggerDualStageSettings(triggerDualAction);
+
+                softPullStageButton.ActionDirName = triggerDualAction.SoftPullActButton.Name;
+                fullPullStageButton.ActionDirName = triggerDualAction.FullPullActButton.Name;
+
+                PopulateFuncs();
             }
+        }
+
+        // Deserialize
+        public override void PopulateMap()
+        {
+            triggerDualAction.SoftPullActButton.ActionFuncs.Clear();
+            triggerDualAction.FullPullActButton.ActionFuncs.Clear();
+
+            AxisDirButton tempButton = triggerDualAction.SoftPullActButton;
+            foreach(ActionFuncSerializer serializer in softPullStageButton.ActionFuncSerializers)
+            {
+                serializer.PopulateFunc();
+                tempButton.ActionFuncs.Add(serializer.ActionFunc);
+            }
+            tempButton.Name = softPullStageButton.ActionDirName;
+
+            tempButton = triggerDualAction.FullPullActButton;
+            foreach (ActionFuncSerializer serializer in fullPullStageButton.ActionFuncSerializers)
+            {
+                serializer.PopulateFunc();
+                tempButton.ActionFuncs.Add(serializer.ActionFunc);
+            }
+            tempButton.Name = fullPullStageButton.ActionDirName;
+        }
+
+        public void PopulateFuncs()
+        {
+            List<ActionFuncSerializer> tempFuncs = new List<ActionFuncSerializer>();
+            foreach(ActionFunc tempFunc in triggerDualAction.SoftPullActButton.ActionFuncs)
+            {
+                tempFuncs.Add(new ActionFuncSerializer(tempFunc));
+            }
+            softPullStageButton.ActionFuncSerializers.AddRange(tempFuncs);
+
+            tempFuncs.Clear();
+
+            foreach (ActionFunc tempFunc in triggerDualAction.FullPullActButton.ActionFuncs)
+            {
+                tempFuncs.Add(new ActionFuncSerializer(tempFunc));
+            }
+
+            fullPullStageButton.ActionFuncSerializers.AddRange(tempFuncs);
         }
     }
 
@@ -3955,7 +4064,7 @@ namespace SteamControllerTest
                     resultInstance = triggerButtonActInstance;
                     break;
                 case "TriggerDualStageAction":
-                    TriggerTranslateActionSerializer triggerDualActInstance = new TriggerTranslateActionSerializer();
+                    TriggerDualStageActionSerializer triggerDualActInstance = new TriggerDualStageActionSerializer();
                     JsonConvert.PopulateObject(j.ToString(), triggerDualActInstance);
                     resultInstance = triggerDualActInstance;
                     break;

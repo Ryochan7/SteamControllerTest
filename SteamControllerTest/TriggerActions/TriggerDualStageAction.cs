@@ -16,6 +16,8 @@ namespace SteamControllerTest.TriggerActions
             public const string NAME = "Name";
             public const string DEAD_ZONE = "DeadZone";
             public const string MAX_ZONE = "MaxZone";
+            public const string SOFTPULL_BUTTON = "SoftPullButton";
+            public const string FULLPULL_BUTTON = "FullPullButton";
             //public const string ANTIDEAD_ZONE = "AntiDeadZone";
             //public const string OUTPUT_TRIGGER = "OutputTrigger";
         }
@@ -25,6 +27,8 @@ namespace SteamControllerTest.TriggerActions
             PropertyKeyStrings.NAME,
             PropertyKeyStrings.DEAD_ZONE,
             PropertyKeyStrings.MAX_ZONE,
+            PropertyKeyStrings.SOFTPULL_BUTTON,
+            PropertyKeyStrings.FULLPULL_BUTTON,
             //PropertyKeyStrings.ANTIDEAD_ZONE,
             //PropertyKeyStrings.OUTPUT_TRIGGER,
         };
@@ -71,6 +75,8 @@ namespace SteamControllerTest.TriggerActions
 
         private AxisDirButton softPullActButton = new AxisDirButton();
         private AxisDirButton fullPullActButton = new AxisDirButton();
+        private bool useParentSoftPullBtn;
+        private bool useParentFullPullBtn;
 
         public AxisDirButton SoftPullActButton
         {
@@ -180,9 +186,22 @@ namespace SteamControllerTest.TriggerActions
 
         public override void SoftRelease(Mapper mapper, MapAction checkAction, bool resetState = true)
         {
-            // Just call Release for now
-            //base.SoftRelease(mapper, checkAction, resetState);
-            Release(mapper, resetState);
+            if (softPullActActive && !useParentSoftPullBtn)
+            {
+                softPullActButton.Release(mapper, resetState);
+            }
+
+            if (fullPullActActive && !useParentFullPullBtn)
+            {
+                fullPullActButton.Release(mapper, resetState);
+            }
+
+            axisNorm = 0.0;
+            currentActiveButtons = ActiveZoneButtons.None;
+            previousActiveButtons = currentActiveButtons;
+            ResetStageState();
+            outputActive = false;
+            active = activeEvent = false;
         }
 
         public override void SoftCopyFromParent(TriggerMapAction parentAction)
@@ -211,6 +230,14 @@ namespace SteamControllerTest.TriggerActions
                             break;
                         case PropertyKeyStrings.MAX_ZONE:
                             deadMod.MaxZone = tempDualTrigAction.deadMod.MaxZone;
+                            break;
+                        case PropertyKeyStrings.SOFTPULL_BUTTON:
+                            softPullActButton = tempDualTrigAction.softPullActButton;
+                            useParentSoftPullBtn = true;
+                            break;
+                        case PropertyKeyStrings.FULLPULL_BUTTON:
+                            fullPullActButton = tempDualTrigAction.fullPullActButton;
+                            useParentFullPullBtn = true;
                             break;
                         default:
                             break;
