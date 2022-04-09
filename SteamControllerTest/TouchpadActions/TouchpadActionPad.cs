@@ -25,7 +25,7 @@ namespace SteamControllerTest.TouchpadActions
             public const string PAD_DIR_DOWNLEFT = "DirDownLeft";
             public const string PAD_DIR_DOWNRIGHT = "DirDownRight";
 
-            //public const string OUTER_RING_BUTTON = "OuterRingButton";
+            public const string OUTER_RING_BUTTON = "OuterRingButton";
 
             public const string PAD_MODE = "PadMode";
             //public const string DEAD_ZONE_TYPE = "DeadZoneType";
@@ -35,9 +35,9 @@ namespace SteamControllerTest.TouchpadActions
             public const string DIAGONAL_RANGE = "DiagonalRange";
             public const string REQUIRES_CLICK = "RequiresClick";
 
-            //public const string USE_OUTER_RING = "UseOuterRing";
-            //public const string OUTER_RING_DEAD_ZONE = "OuterRingDeadZone";
-            //public const string USE_AS_OUTER_RING = "UseAsOuterRing";
+            public const string USE_OUTER_RING = "UseOuterRing";
+            public const string OUTER_RING_DEAD_ZONE = "OuterRingDeadZone";
+            public const string USE_AS_OUTER_RING = "UseAsOuterRing";
         }
 
         private HashSet<string> fullPropertySet = new HashSet<string>()
@@ -55,10 +55,10 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.PAD_DIR_UPRIGHT,
             PropertyKeyStrings.PAD_DIR_DOWNLEFT,
             PropertyKeyStrings.PAD_DIR_DOWNRIGHT,
-            //PropertyKeyStrings.OUTER_RING_BUTTON,
-            //PropertyKeyStrings.USE_OUTER_RING,
-            //PropertyKeyStrings.OUTER_RING_DEAD_ZONE,
-            //PropertyKeyStrings.USE_AS_OUTER_RING,
+            PropertyKeyStrings.OUTER_RING_BUTTON,
+            PropertyKeyStrings.USE_OUTER_RING,
+            PropertyKeyStrings.OUTER_RING_DEAD_ZONE,
+            PropertyKeyStrings.USE_AS_OUTER_RING,
             //PropertyKeyStrings.ROTATION,
             PropertyKeyStrings.DIAGONAL_RANGE,
             PropertyKeyStrings.REQUIRES_CLICK,
@@ -101,6 +101,37 @@ namespace SteamControllerTest.TouchpadActions
         private int[] tmpBtnDirs = new int[2];
         private List<ButtonAction> removeBtnCandidates = new List<ButtonAction>();
 
+        /* Possibly group values in a class */
+        /// <summary>
+        /// Virtual direction button that takes the vector magnitude as its value
+        /// </summary>
+        //private AxisDirButton ringButton = new AxisDirButton(new OutputActionData(OutputActionData.ActionType.Keyboard, KeyInterop.VirtualKeyFromKey(Key.Z), 0));
+        private AxisDirButton ringButton = new AxisDirButton();
+        private AxisDirButton usedRingButton = null;
+
+        /// <summary>
+        /// Used to determine outer ring mode or inner ring mode. Will change to using an Enum later
+        /// </summary>
+        private bool outerRing;
+        /// <summary>
+        /// Specify whether to interpret a ring binging at all
+        /// </summary>
+        private bool useRingButton;
+
+        private const double DEFAULT_OUTER_RING_DEAD_ZONE = 0.7;
+        /// <summary>
+        /// Displacement threshold when a ring binding should execute
+        /// </summary>
+        private double outerRingDeadZone = 1.0;
+        public AxisDirButton RingButton
+        {
+            get => ringButton;
+            set => ringButton = value;
+        }
+        public bool UseAsOuterRing { get => outerRing; set => outerRing = value; }
+        public bool UseRingButton { get => useRingButton; set => useRingButton = value; }
+        public double OuterRingDeadZone { get => outerRingDeadZone; set => outerRingDeadZone = value; }
+
         public DPadMode CurrentMode { get => currentMode; set => currentMode = value; }
         public ButtonAction[] EventCodes4 { get => usedEventButtonsList; set => usedEventButtonsList = value; }
 
@@ -112,8 +143,6 @@ namespace SteamControllerTest.TouchpadActions
             set => diagonalRange = value;
         }
 
-        private bool[] useParentDataDraft2 = new bool[13];
-
         private StickDeadZone deadMod;
         public StickDeadZone DeadMod
         {
@@ -121,6 +150,9 @@ namespace SteamControllerTest.TouchpadActions
         }
 
         private bool requiresClick;
+
+        private bool[] useParentDataDraft2 = new bool[13];
+        private bool useParentRingButton;
 
         public TouchpadActionPad()
         {
@@ -170,6 +202,7 @@ namespace SteamControllerTest.TouchpadActions
             activeEvent = true;
             inputStatus = currentDir != DpadDirections.Centered;
             usedFuncList = usedEventButtonsList;
+            usedRingButton = ringButton;
         }
 
         public override void Event(Mapper mapper)
@@ -410,6 +443,30 @@ namespace SteamControllerTest.TouchpadActions
                             tmpActiveBtns.Remove(data);
                         }
                     }
+                }
+            }
+
+
+            if (useRingButton && usedRingButton != null)
+            //if (checkRingButton)
+            {
+                //Trace.WriteLine("IN CHECK");
+                double dist = Math.Sqrt((xNorm * xNorm) + (yNorm * yNorm));
+                bool activeMod = outerRing ? (dist > outerRingDeadZone ? true : false) :
+                    (dist > 0.0 && dist <= outerRingDeadZone ? true : false);
+
+                //ringButton.PrepareAnalog(mapper, dist);
+                //if (ringButton.active)
+                //{
+                //    ringButton.Event(mapper);
+                //}
+
+                // Treat as boolean button for now
+                usedRingButton.Prepare(mapper, activeMod);
+                //usedRingButton.PrepareAnalog(mapper, dist);
+                if (usedRingButton.active)
+                {
+                    usedRingButton.Event(mapper);
                 }
             }
 
@@ -707,10 +764,10 @@ namespace SteamControllerTest.TouchpadActions
         {
             if (active || tmpActiveBtns.Count > 0)
             {
-                //if (useRingButton && usedRingButton != null)
-                //{
-                //    usedRingButton.Release(mapper, resetState);
-                //}
+                if (useRingButton && usedRingButton != null)
+                {
+                    usedRingButton.Release(mapper, resetState);
+                }
 
                 foreach (KeyValuePair<ButtonAction, DpadDirections> pair in tmpActiveBtns)
                 {
@@ -743,6 +800,18 @@ namespace SteamControllerTest.TouchpadActions
             if (active || tmpActiveBtns.Count > 0)
             {
                 TouchpadActionPad checkStickAction = checkAction as TouchpadActionPad;
+
+                if (useRingButton && usedRingButton != null)
+                {
+                    if (!useParentRingButton)
+                    {
+                        usedRingButton.Release(mapper, resetState);
+                    }
+                    else if (checkStickAction.usedRingButton != usedRingButton)
+                    {
+                        usedRingButton.Release(mapper, resetState);
+                    }
+                }
 
                 foreach (KeyValuePair<ButtonAction, DpadDirections> pair in tmpActiveBtns)
                 {
@@ -1005,6 +1074,19 @@ namespace SteamControllerTest.TouchpadActions
                                 useParentDataDraft2[tempDir] = true;
                             }
 
+                            break;
+                        case PropertyKeyStrings.OUTER_RING_BUTTON:
+                            ringButton = tempPadAction.ringButton;
+                            useParentRingButton = true;
+                            break;
+                        case PropertyKeyStrings.USE_OUTER_RING:
+                            useRingButton = tempPadAction.useRingButton;
+                            break;
+                        case PropertyKeyStrings.OUTER_RING_DEAD_ZONE:
+                            outerRingDeadZone = tempPadAction.outerRingDeadZone;
+                            break;
+                        case PropertyKeyStrings.USE_AS_OUTER_RING:
+                            outerRing = tempPadAction.outerRing;
                             break;
                         default:
                             break;

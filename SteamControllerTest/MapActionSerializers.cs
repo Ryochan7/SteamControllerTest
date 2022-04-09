@@ -981,6 +981,42 @@ namespace SteamControllerTest
             }
             public event EventHandler DiagonalRangeChanged;
 
+            [JsonProperty("UseOuterRing")]
+            public bool UseOuterRing
+            {
+                get => touchActionPadAction.UseRingButton;
+                set
+                {
+                    touchActionPadAction.UseRingButton = value;
+                    UseOuterRingChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler UseOuterRingChanged;
+
+            [JsonProperty("OuterRingDeadZone")]
+            public double OuterRingDeadZone
+            {
+                get => touchActionPadAction.OuterRingDeadZone;
+                set
+                {
+                    touchActionPadAction.OuterRingDeadZone = value;
+                    OuterRingDeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler OuterRingDeadZoneChanged;
+
+            [JsonProperty("UseAsOuterRing")]
+            public bool UseAsOuterRing
+            {
+                get => touchActionPadAction.UseAsOuterRing;
+                set
+                {
+                    touchActionPadAction.UseAsOuterRing = value;
+                    UseAsOuterRingChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler UseAsOuterRingChanged;
+
             public TouchpadActionPadSettings(TouchpadActionPad action)
             {
                 touchActionPadAction = action;
@@ -996,6 +1032,20 @@ namespace SteamControllerTest
             get => dictPadBindings;
             set => dictPadBindings = value;
         }
+
+        private TouchPadDirBinding ringBinding;
+
+        [JsonProperty("OuterRingBinding")]
+        public TouchPadDirBinding RingBinding
+        {
+            get => ringBinding;
+            set
+            {
+                ringBinding = value;
+                RingBindingChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler RingBindingChanged;
 
         private TouchpadActionPad touchActionPadAction = new TouchpadActionPad();
 
@@ -1013,9 +1063,33 @@ namespace SteamControllerTest
             settings = new TouchpadActionPadSettings(touchActionPadAction);
 
             NameChanged += TouchpadActionPadSerializer_NameChanged;
+            RingBindingChanged += TouchpadActionPadSerializer_RingBindingChanged;
             settings.DeadZoneChanged += Settings_DeadZoneChanged;
             settings.DiagonalRangeChanged += Settings_DiagonalRangeChanged;
             settings.PadModeChanged += Settings_PadModeChanged;
+            settings.UseOuterRingChanged += Settings_UseOuterRingChanged;
+            settings.UseAsOuterRingChanged += Settings_UseAsOuterRingChanged;
+            settings.OuterRingDeadZoneChanged += Settings_OuterRingDeadZoneChanged;
+        }
+
+        private void Settings_OuterRingDeadZoneChanged(object sender, EventArgs e)
+        {
+            touchActionPadAction.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.OUTER_RING_DEAD_ZONE);
+        }
+
+        private void Settings_UseAsOuterRingChanged(object sender, EventArgs e)
+        {
+            touchActionPadAction.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.USE_AS_OUTER_RING);
+        }
+
+        private void Settings_UseOuterRingChanged(object sender, EventArgs e)
+        {
+            touchActionPadAction.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.USE_OUTER_RING);
+        }
+
+        private void TouchpadActionPadSerializer_RingBindingChanged(object sender, EventArgs e)
+        {
+            touchActionPadAction.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.OUTER_RING_BUTTON);
         }
 
         private void Settings_PadModeChanged(object sender, EventArgs e)
@@ -1105,15 +1179,15 @@ namespace SteamControllerTest
                     });
             }
 
-            //if (stickPadAct.RingButton != null)
-            //{
-            //    ringBinding = new StickPadDirBinding();
-            //    ringBinding.ActionDirName = stickPadAct.RingButton.Name;
-            //    foreach (ActionFunc tempFunc in stickPadAct.RingButton.ActionFuncs)
-            //    {
-            //        ringBinding.ActionFuncSerializers.Add(new ActionFuncSerializer(tempFunc));
-            //    }
-            //}
+            if (touchActionPadAction.RingButton != null)
+            {
+                ringBinding = new TouchPadDirBinding();
+                ringBinding.ActionDirName = touchActionPadAction.RingButton.Name;
+                foreach (ActionFunc tempFunc in touchActionPadAction.RingButton.ActionFuncs)
+                {
+                    ringBinding.ActionFuncSerializers.Add(new ActionFuncSerializer(tempFunc));
+                }
+            }
         }
 
         // Post-deserialize
@@ -1157,19 +1231,19 @@ namespace SteamControllerTest
                 }
             }
 
-            //if (ringBinding != null)
-            //{
-            //    stickPadAct.RingButton.Name = ringBinding.ActionDirName;
-            //    List<ActionFuncSerializer> tempSerializers = ringBinding.ActionFuncSerializers;
-            //    foreach (ActionFuncSerializer serializer in tempSerializers)
-            //    {
-            //        serializer.PopulateFunc();
-            //        stickPadAct.RingButton.ActionFuncs.Add(serializer.ActionFunc);
-            //    }
+            if (ringBinding != null)
+            {
+                touchActionPadAction.RingButton.Name = ringBinding.ActionDirName;
+                List<ActionFuncSerializer> tempSerializers = ringBinding.ActionFuncSerializers;
+                foreach (ActionFuncSerializer serializer in tempSerializers)
+                {
+                    serializer.PopulateFunc();
+                    touchActionPadAction.RingButton.ActionFuncs.Add(serializer.ActionFunc);
+                }
 
-            //    stickPadAct.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.OUTER_RING_BUTTON);
-            //    //stickPadAct.RingButton.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.OUTER_RING_BUTTON);
-            //}
+                touchActionPadAction.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.OUTER_RING_BUTTON);
+                //stickPadAct.RingButton.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.OUTER_RING_BUTTON);
+            }
         }
 
         public void FlagBtnChangedDirection(TouchpadActionPad.DpadDirections dir,
