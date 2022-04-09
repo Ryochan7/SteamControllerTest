@@ -981,6 +981,17 @@ namespace SteamControllerTest
             }
             public event EventHandler PadModeChanged;
 
+            public StickDeadZone.DeadZoneTypes DeadZoneType
+            {
+                get => touchActionPadAction.DeadMod.DeadZoneType;
+                set
+                {
+                    touchActionPadAction.DeadMod.DeadZoneType = value;
+                    DeadZoneTypeChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler DeadZoneTypeChanged;
+
             public int DiagonalRange
             {
                 get => touchActionPadAction.DiagonalRange;
@@ -1088,12 +1099,18 @@ namespace SteamControllerTest
             RingBindingChanged += TouchpadActionPadSerializer_RingBindingChanged;
             settings.DeadZoneChanged += Settings_DeadZoneChanged;
             settings.MaxZoneChanged += Settings_MaxZoneChanged;
+            settings.DeadZoneTypeChanged += Settings_DeadZoneTypeChanged;
             settings.DiagonalRangeChanged += Settings_DiagonalRangeChanged;
             settings.PadModeChanged += Settings_PadModeChanged;
             settings.RotationChanged += Settings_RotationChanged;
             settings.UseOuterRingChanged += Settings_UseOuterRingChanged;
             settings.UseAsOuterRingChanged += Settings_UseAsOuterRingChanged;
             settings.OuterRingDeadZoneChanged += Settings_OuterRingDeadZoneChanged;
+        }
+
+        private void Settings_DeadZoneTypeChanged(object sender, EventArgs e)
+        {
+            touchActionPadAction.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.DEAD_ZONE_TYPE);
         }
 
         private void Settings_RotationChanged(object sender, EventArgs e)
