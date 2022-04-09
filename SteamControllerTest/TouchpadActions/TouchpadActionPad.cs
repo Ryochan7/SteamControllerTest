@@ -30,8 +30,8 @@ namespace SteamControllerTest.TouchpadActions
             public const string PAD_MODE = "PadMode";
             //public const string DEAD_ZONE_TYPE = "DeadZoneType";
             public const string DEAD_ZONE = "DeadZone";
-            //public const string MAX_ZONE = "MaxZone";
-            //public const string ROTATION = "Rotation";
+            public const string MAX_ZONE = "MaxZone";
+            public const string ROTATION = "Rotation";
             public const string DIAGONAL_RANGE = "DiagonalRange";
             public const string REQUIRES_CLICK = "RequiresClick";
 
@@ -46,7 +46,7 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.PAD_MODE,
             //PropertyKeyStrings.DEAD_ZONE_TYPE,
             PropertyKeyStrings.DEAD_ZONE,
-            //PropertyKeyStrings.MAX_ZONE,
+            PropertyKeyStrings.MAX_ZONE,
             PropertyKeyStrings.PAD_DIR_UP,
             PropertyKeyStrings.PAD_DIR_DOWN,
             PropertyKeyStrings.PAD_DIR_LEFT,
@@ -59,7 +59,7 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.USE_OUTER_RING,
             PropertyKeyStrings.OUTER_RING_DEAD_ZONE,
             PropertyKeyStrings.USE_AS_OUTER_RING,
-            //PropertyKeyStrings.ROTATION,
+            PropertyKeyStrings.ROTATION,
             PropertyKeyStrings.DIAGONAL_RANGE,
             PropertyKeyStrings.REQUIRES_CLICK,
         };
@@ -135,6 +135,13 @@ namespace SteamControllerTest.TouchpadActions
         public DPadMode CurrentMode { get => currentMode; set => currentMode = value; }
         public ButtonAction[] EventCodes4 { get => usedEventButtonsList; set => usedEventButtonsList = value; }
 
+        private int rotation;
+        public int Rotation
+        {
+            get => rotation;
+            set => rotation = value;
+        }
+
         private const int DEFAULT_DIAGONAL_RANGE = 45;
         private int diagonalRange = DEFAULT_DIAGONAL_RANGE;
         public int DiagonalRange
@@ -164,9 +171,15 @@ namespace SteamControllerTest.TouchpadActions
         {
             xNorm = 0.0; yNorm = 0.0;
 
-            int axisXMid = touchpadDefinition.xAxis.mid, axisYMid = touchpadDefinition.yAxis.mid;
             int axisXVal = touchFrame.X;
             int axisYVal = touchFrame.Y;
+            if (rotation != 0)
+            {
+                TouchpadMethods.RotatedCoordinates(rotation, axisXVal, axisYVal,
+                    touchpadDefinition, out axisXVal, out axisYVal);
+            }
+
+            int axisXMid = touchpadDefinition.xAxis.mid, axisYMid = touchpadDefinition.yAxis.mid;
             int axisXDir = axisXVal - axisXMid, axisYDir = axisYVal - axisYMid;
             bool xNegative = axisXDir < 0;
             bool yNegative = axisYDir < 0;
@@ -1002,6 +1015,9 @@ namespace SteamControllerTest.TouchpadActions
                         case PropertyKeyStrings.DEAD_ZONE:
                             deadMod.DeadZone = tempPadAction.deadMod.DeadZone;
                             break;
+                        case PropertyKeyStrings.MAX_ZONE:
+                            deadMod.MaxZone = tempPadAction.deadMod.MaxZone;
+                            break;
                         case PropertyKeyStrings.PAD_MODE:
                             currentMode = tempPadAction.currentMode;
                             break;
@@ -1010,6 +1026,9 @@ namespace SteamControllerTest.TouchpadActions
                             break;
                         case PropertyKeyStrings.REQUIRES_CLICK:
                             requiresClick = tempPadAction.requiresClick;
+                            break;
+                        case PropertyKeyStrings.ROTATION:
+                            rotation = tempPadAction.rotation;
                             break;
                         case PropertyKeyStrings.PAD_DIR_UP:
                             {

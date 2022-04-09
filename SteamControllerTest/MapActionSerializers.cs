@@ -959,6 +959,17 @@ namespace SteamControllerTest
             }
             public event EventHandler DeadZoneChanged;
 
+            public double MaxZone
+            {
+                get => touchActionPadAction.DeadMod.MaxZone;
+                set
+                {
+                    touchActionPadAction.DeadMod.MaxZone = Math.Clamp(value, 0.0, 1.0);
+                    MaxZoneChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler MaxZoneChanged;
+
             public TouchpadActionPad.DPadMode PadMode
             {
                 get => touchActionPadAction.CurrentMode;
@@ -980,6 +991,17 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler DiagonalRangeChanged;
+
+            public int Rotation
+            {
+                get => touchActionPadAction.Rotation;
+                set
+                {
+                    touchActionPadAction.Rotation = value;
+                    RotationChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler RotationChanged;
 
             [JsonProperty("UseOuterRing")]
             public bool UseOuterRing
@@ -1065,11 +1087,23 @@ namespace SteamControllerTest
             NameChanged += TouchpadActionPadSerializer_NameChanged;
             RingBindingChanged += TouchpadActionPadSerializer_RingBindingChanged;
             settings.DeadZoneChanged += Settings_DeadZoneChanged;
+            settings.MaxZoneChanged += Settings_MaxZoneChanged;
             settings.DiagonalRangeChanged += Settings_DiagonalRangeChanged;
             settings.PadModeChanged += Settings_PadModeChanged;
+            settings.RotationChanged += Settings_RotationChanged;
             settings.UseOuterRingChanged += Settings_UseOuterRingChanged;
             settings.UseAsOuterRingChanged += Settings_UseAsOuterRingChanged;
             settings.OuterRingDeadZoneChanged += Settings_OuterRingDeadZoneChanged;
+        }
+
+        private void Settings_RotationChanged(object sender, EventArgs e)
+        {
+            touchActionPadAction.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.ROTATION);
+        }
+
+        private void Settings_MaxZoneChanged(object sender, EventArgs e)
+        {
+            touchActionPadAction.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.MAX_ZONE);
         }
 
         private void Settings_OuterRingDeadZoneChanged(object sender, EventArgs e)
