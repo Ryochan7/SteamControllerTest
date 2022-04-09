@@ -18,6 +18,8 @@ namespace SteamControllerTest.TriggerActions
             public const string MAX_ZONE = "MaxZone";
             public const string SOFTPULL_BUTTON = "SoftPullButton";
             public const string FULLPULL_BUTTON = "FullPullButton";
+            public const string DUALSTAGE_MODE = "DualStageMode";
+            public const string HIPFIRE_DELAY = "HipFireDelay";
             //public const string ANTIDEAD_ZONE = "AntiDeadZone";
             //public const string OUTPUT_TRIGGER = "OutputTrigger";
         }
@@ -29,6 +31,8 @@ namespace SteamControllerTest.TriggerActions
             PropertyKeyStrings.MAX_ZONE,
             PropertyKeyStrings.SOFTPULL_BUTTON,
             PropertyKeyStrings.FULLPULL_BUTTON,
+            PropertyKeyStrings.DUALSTAGE_MODE,
+            PropertyKeyStrings.HIPFIRE_DELAY,
             //PropertyKeyStrings.ANTIDEAD_ZONE,
             //PropertyKeyStrings.OUTPUT_TRIGGER,
         };
@@ -238,6 +242,12 @@ namespace SteamControllerTest.TriggerActions
                         case PropertyKeyStrings.FULLPULL_BUTTON:
                             fullPullActButton = tempDualTrigAction.fullPullActButton;
                             useParentFullPullBtn = true;
+                            break;
+                        case PropertyKeyStrings.DUALSTAGE_MODE:
+                            triggerStageMode = tempDualTrigAction.triggerStageMode;
+                            break;
+                        case PropertyKeyStrings.HIPFIRE_DELAY:
+                            hipFireMs = tempDualTrigAction.hipFireMs;
                             break;
                         default:
                             break;

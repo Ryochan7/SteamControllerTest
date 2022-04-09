@@ -666,6 +666,17 @@ namespace SteamControllerTest
             }
             public event EventHandler DualStageModeChanged;
 
+            public int HipFireDelay
+            {
+                get => triggerDualAction.HipFireMS;
+                set
+                {
+                    triggerDualAction.HipFireMS = value;
+                    HipFireDelayChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler HipFireDelayChanged;
+
             public TriggerDualStageSettings(TriggerDualStageAction action)
             {
                 triggerDualAction = action;
@@ -742,6 +753,18 @@ namespace SteamControllerTest
             FullPullChanged += TriggerDualStageActionSerializer_FullPullChanged;
             settings.DeadZoneChanged += Settings_DeadZoneChanged;
             settings.MaxZoneChanged += Settings_MaxZoneChanged;
+            settings.DualStageModeChanged += Settings_DualStageModeChanged;
+            settings.HipFireDelayChanged += Settings_HipFireDelayChanged;
+        }
+
+        private void Settings_HipFireDelayChanged(object sender, EventArgs e)
+        {
+            triggerDualAction.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.HIPFIRE_DELAY);
+        }
+
+        private void Settings_DualStageModeChanged(object sender, EventArgs e)
+        {
+            triggerDualAction.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.DUALSTAGE_MODE);
         }
 
         private void TriggerDualStageActionSerializer_FullPullChanged(object sender, EventArgs e)
