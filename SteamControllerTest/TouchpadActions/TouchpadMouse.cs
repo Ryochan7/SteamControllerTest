@@ -103,11 +103,10 @@ namespace SteamControllerTest.TouchpadActions
 
         public override void Event(Mapper mapper)
         {
-            mapper.MouseX = xMotion; mapper.MouseY = yMotion;
-            mapper.MouseSync = true;
-
             if (xMotion != 0.0 || yMotion != 0.0)
             {
+                mapper.MouseX = xMotion; mapper.MouseY = yMotion;
+                mapper.MouseSync = true;
                 active = true;
             }
             else
