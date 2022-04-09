@@ -959,6 +959,17 @@ namespace SteamControllerTest
             }
             public event EventHandler DeadZoneChanged;
 
+            public TouchpadActionPad.DPadMode PadMode
+            {
+                get => touchActionPadAction.CurrentMode;
+                set
+                {
+                    touchActionPadAction.CurrentMode = value;
+                    PadModeChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler PadModeChanged;
+
             public int DiagonalRange
             {
                 get => touchActionPadAction.DiagonalRange;
@@ -1004,6 +1015,12 @@ namespace SteamControllerTest
             NameChanged += TouchpadActionPadSerializer_NameChanged;
             settings.DeadZoneChanged += Settings_DeadZoneChanged;
             settings.DiagonalRangeChanged += Settings_DiagonalRangeChanged;
+            settings.PadModeChanged += Settings_PadModeChanged;
+        }
+
+        private void Settings_PadModeChanged(object sender, EventArgs e)
+        {
+            touchActionPadAction.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_MODE);
         }
 
         private void Settings_DiagonalRangeChanged(object sender, EventArgs e)

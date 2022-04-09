@@ -27,7 +27,7 @@ namespace SteamControllerTest.TouchpadActions
 
             //public const string OUTER_RING_BUTTON = "OuterRingButton";
 
-            //public const string PAD_MODE = "PadMode";
+            public const string PAD_MODE = "PadMode";
             //public const string DEAD_ZONE_TYPE = "DeadZoneType";
             public const string DEAD_ZONE = "DeadZone";
             //public const string MAX_ZONE = "MaxZone";
@@ -43,7 +43,7 @@ namespace SteamControllerTest.TouchpadActions
         private HashSet<string> fullPropertySet = new HashSet<string>()
         {
             PropertyKeyStrings.NAME,
-            //PropertyKeyStrings.PAD_MODE,
+            PropertyKeyStrings.PAD_MODE,
             //PropertyKeyStrings.DEAD_ZONE_TYPE,
             PropertyKeyStrings.DEAD_ZONE,
             //PropertyKeyStrings.MAX_ZONE,
@@ -932,6 +932,9 @@ namespace SteamControllerTest.TouchpadActions
                             break;
                         case PropertyKeyStrings.DEAD_ZONE:
                             deadMod.DeadZone = tempPadAction.deadMod.DeadZone;
+                            break;
+                        case PropertyKeyStrings.PAD_MODE:
+                            currentMode = tempPadAction.currentMode;
                             break;
                         case PropertyKeyStrings.DIAGONAL_RANGE:
                             diagonalRange = tempPadAction.diagonalRange;
