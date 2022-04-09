@@ -1152,7 +1152,7 @@ namespace SteamControllerTest
                         tempDirButton.ActionFuncs.Add(serializer.ActionFunc);
                     }
 
-                    //FlagBtnChangedDirection(dir, stickPadAct);
+                    FlagBtnChangedDirection(dir, touchActionPadAction);
                     tempDirButton = null;
                 }
             }
@@ -1172,38 +1172,38 @@ namespace SteamControllerTest
             //}
         }
 
-        public void FlagBtnChangedDirection(StickPadAction.DpadDirections dir,
+        public void FlagBtnChangedDirection(TouchpadActionPad.DpadDirections dir,
             TouchpadActionPad action)
         {
-            //switch (dir)
-            //{
-            //    case StickPadAction.DpadDirections.Up:
-            //        action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_UP);
-            //        break;
-            //    case StickPadAction.DpadDirections.Down:
-            //        action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_DOWN);
-            //        break;
-            //    case StickPadAction.DpadDirections.Left:
-            //        action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_LEFT);
-            //        break;
-            //    case StickPadAction.DpadDirections.Right:
-            //        action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_RIGHT);
-            //        break;
-            //    case StickPadAction.DpadDirections.UpLeft:
-            //        action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_UPLEFT);
-            //        break;
-            //    case StickPadAction.DpadDirections.UpRight:
-            //        action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_UPRIGHT);
-            //        break;
-            //    case StickPadAction.DpadDirections.DownLeft:
-            //        action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_DOWNLEFT);
-            //        break;
-            //    case StickPadAction.DpadDirections.DownRight:
-            //        action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_DOWNRIGHT);
-            //        break;
-            //    default:
-            //        break;
-            //}
+            switch (dir)
+            {
+                case TouchpadActionPad.DpadDirections.Up:
+                    action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_UP);
+                    break;
+                case TouchpadActionPad.DpadDirections.Down:
+                    action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_DOWN);
+                    break;
+                case TouchpadActionPad.DpadDirections.Left:
+                    action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_LEFT);
+                    break;
+                case TouchpadActionPad.DpadDirections.Right:
+                    action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_RIGHT);
+                    break;
+                case TouchpadActionPad.DpadDirections.UpLeft:
+                    action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_UPLEFT);
+                    break;
+                case TouchpadActionPad.DpadDirections.UpRight:
+                    action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_UPRIGHT);
+                    break;
+                case TouchpadActionPad.DpadDirections.DownLeft:
+                    action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_DOWNLEFT);
+                    break;
+                case TouchpadActionPad.DpadDirections.DownRight:
+                    action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_DOWNRIGHT);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 

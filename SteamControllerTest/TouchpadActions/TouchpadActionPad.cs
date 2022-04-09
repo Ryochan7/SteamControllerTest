@@ -15,15 +15,15 @@ namespace SteamControllerTest.TouchpadActions
         {
             public const string NAME = "Name";
 
-            //public const string PAD_DIR_UP = "DirUp";
-            //public const string PAD_DIR_DOWN = "DirDown";
-            //public const string PAD_DIR_LEFT = "DirLeft";
-            //public const string PAD_DIR_RIGHT = "DirRight";
+            public const string PAD_DIR_UP = "DirUp";
+            public const string PAD_DIR_DOWN = "DirDown";
+            public const string PAD_DIR_LEFT = "DirLeft";
+            public const string PAD_DIR_RIGHT = "DirRight";
 
-            //public const string PAD_DIR_UPLEFT = "DirUpLeft";
-            //public const string PAD_DIR_UPRIGHT = "DirUpRight";
-            //public const string PAD_DIR_DOWNLEFT = "DirDownLeft";
-            //public const string PAD_DIR_DOWNRIGHT = "DirDownRight";
+            public const string PAD_DIR_UPLEFT = "DirUpLeft";
+            public const string PAD_DIR_UPRIGHT = "DirUpRight";
+            public const string PAD_DIR_DOWNLEFT = "DirDownLeft";
+            public const string PAD_DIR_DOWNRIGHT = "DirDownRight";
 
             //public const string OUTER_RING_BUTTON = "OuterRingButton";
 
@@ -47,14 +47,14 @@ namespace SteamControllerTest.TouchpadActions
             //PropertyKeyStrings.DEAD_ZONE_TYPE,
             PropertyKeyStrings.DEAD_ZONE,
             //PropertyKeyStrings.MAX_ZONE,
-            //PropertyKeyStrings.PAD_DIR_UP,
-            //PropertyKeyStrings.PAD_DIR_DOWN,
-            //PropertyKeyStrings.PAD_DIR_LEFT,
-            //PropertyKeyStrings.PAD_DIR_RIGHT,
-            //PropertyKeyStrings.PAD_DIR_UPLEFT,
-            //PropertyKeyStrings.PAD_DIR_UPRIGHT,
-            //PropertyKeyStrings.PAD_DIR_DOWNLEFT,
-            //PropertyKeyStrings.PAD_DIR_DOWNRIGHT,
+            PropertyKeyStrings.PAD_DIR_UP,
+            PropertyKeyStrings.PAD_DIR_DOWN,
+            PropertyKeyStrings.PAD_DIR_LEFT,
+            PropertyKeyStrings.PAD_DIR_RIGHT,
+            PropertyKeyStrings.PAD_DIR_UPLEFT,
+            PropertyKeyStrings.PAD_DIR_UPRIGHT,
+            PropertyKeyStrings.PAD_DIR_DOWNLEFT,
+            PropertyKeyStrings.PAD_DIR_DOWNRIGHT,
             //PropertyKeyStrings.OUTER_RING_BUTTON,
             //PropertyKeyStrings.USE_OUTER_RING,
             //PropertyKeyStrings.OUTER_RING_DEAD_ZONE,
@@ -941,6 +941,70 @@ namespace SteamControllerTest.TouchpadActions
                             break;
                         case PropertyKeyStrings.REQUIRES_CLICK:
                             requiresClick = tempPadAction.requiresClick;
+                            break;
+                        case PropertyKeyStrings.PAD_DIR_UP:
+                            {
+                                int tempDir = (int)DpadDirections.Up;
+                                usedEventButtonsList[tempDir] = tempPadAction.usedEventButtonsList[tempDir];
+                                useParentDataDraft2[tempDir] = true;
+                            }
+
+                            break;
+                        case PropertyKeyStrings.PAD_DIR_DOWN:
+                            {
+                                int tempDir = (int)DpadDirections.Down;
+                                usedEventButtonsList[tempDir] = tempPadAction.usedEventButtonsList[tempDir];
+                                useParentDataDraft2[tempDir] = true;
+                            }
+
+                            break;
+                        case PropertyKeyStrings.PAD_DIR_LEFT:
+                            {
+                                int tempDir = (int)DpadDirections.Left;
+                                usedEventButtonsList[tempDir] = tempPadAction.usedEventButtonsList[tempDir];
+                                useParentDataDraft2[tempDir] = true;
+                            }
+
+                            break;
+                        case PropertyKeyStrings.PAD_DIR_RIGHT:
+                            {
+                                int tempDir = (int)DpadDirections.Right;
+                                usedEventButtonsList[tempDir] = tempPadAction.usedEventButtonsList[tempDir];
+                                useParentDataDraft2[tempDir] = true;
+                            }
+
+                            break;
+                        case PropertyKeyStrings.PAD_DIR_UPLEFT:
+                            {
+                                int tempDir = (int)DpadDirections.UpLeft;
+                                usedEventButtonsList[tempDir] = tempPadAction.usedEventButtonsList[tempDir];
+                                useParentDataDraft2[tempDir] = true;
+                            }
+
+                            break;
+                        case PropertyKeyStrings.PAD_DIR_UPRIGHT:
+                            {
+                                int tempDir = (int)DpadDirections.UpRight;
+                                usedEventButtonsList[tempDir] = tempPadAction.usedEventButtonsList[tempDir];
+                                useParentDataDraft2[tempDir] = true;
+                            }
+
+                            break;
+                        case PropertyKeyStrings.PAD_DIR_DOWNLEFT:
+                            {
+                                int tempDir = (int)DpadDirections.DownLeft;
+                                usedEventButtonsList[tempDir] = tempPadAction.usedEventButtonsList[tempDir];
+                                useParentDataDraft2[tempDir] = true;
+                            }
+
+                            break;
+                        case PropertyKeyStrings.PAD_DIR_DOWNRIGHT:
+                            {
+                                int tempDir = (int)DpadDirections.DownRight;
+                                usedEventButtonsList[tempDir] = tempPadAction.usedEventButtonsList[tempDir];
+                                useParentDataDraft2[tempDir] = true;
+                            }
+
                             break;
                         default:
                             break;
