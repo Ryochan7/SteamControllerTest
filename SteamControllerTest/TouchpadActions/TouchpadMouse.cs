@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SteamControllerTest.StickModifiers;
 
 namespace SteamControllerTest.TouchpadActions
 {
@@ -11,7 +12,7 @@ namespace SteamControllerTest.TouchpadActions
         public class PropertyKeyStrings
         {
             public const string NAME = "Name";
-            //public const string DEAD_ZONE = "DeadZone";
+            public const string DEAD_ZONE = "DeadZone";
             public const string TRACKBALL_MODE = "Trackball";
             public const string TRACKBALL_FRICTION = "TrackballFriction";
         }
@@ -19,7 +20,7 @@ namespace SteamControllerTest.TouchpadActions
         private HashSet<string> fullPropertySet = new HashSet<string>()
         {
             PropertyKeyStrings.NAME,
-            //PropertyKeyStrings.DEAD_ZONE,
+            PropertyKeyStrings.DEAD_ZONE,
             PropertyKeyStrings.TRACKBALL_MODE,
             PropertyKeyStrings.TRACKBALL_FRICTION,
         };
@@ -27,6 +28,13 @@ namespace SteamControllerTest.TouchpadActions
         private double xNorm = 0.0, yNorm = 0.0;
         private double xMotion;
         private double yMotion;
+
+        private int deadZone;
+        public int DeadZone
+        {
+            get => deadZone;
+            set => deadZone = value;
+        }
 
         private const int TRACKBALL_INIT_FRICTION = 10;
         private const int TRACKBALL_JOY_FRICTION = 7;
@@ -40,6 +48,8 @@ namespace SteamControllerTest.TouchpadActions
         //private double TRACKBALL_SCALE = 0.000023;
         private double TRACKBALL_SCALE = 0.000023;
         private const int TRACKBALL_BUFFER_LEN = 8;
+
+        private const int DEFAULT_DEADZONE = 8;
 
         private class TrackballVelData
         {
@@ -81,6 +91,7 @@ namespace SteamControllerTest.TouchpadActions
             trackData = new TrackballVelData();
             //trackData.trackballAccel = TRACKBALL_RADIUS * TRACKBALL_JOY_FRICTION / TRACKBALL_INERTIA;
             trackData.trackballAccel = TRACKBALL_RADIUS * trackballFriction / TRACKBALL_INERTIA;
+            deadZone = DEFAULT_DEADZONE;
         }
 
         public override void Prepare(Mapper mapper, ref TouchEventFrame touchFrame, bool alterState = true)
@@ -260,7 +271,8 @@ namespace SteamControllerTest.TouchpadActions
         {
             //const int deadZone = 18;
             //const int deadZone = 12;
-            const int deadZone = 8;
+            //const int deadZone = 8;
+            int deadZone = this.deadZone;
 
             double tempAngle = Math.Atan2(-dy, dx);
             double normX = Math.Abs(Math.Cos(tempAngle));
@@ -405,9 +417,9 @@ namespace SteamControllerTest.TouchpadActions
                         case PropertyKeyStrings.NAME:
                             name = tempMouseAction.name;
                             break;
-                        //case PropertyKeyStrings.DEAD_ZONE:
-                        //    deadMod.DeadZone = tempStickAction.deadMod.DeadZone;
-                        //    break;
+                        case PropertyKeyStrings.DEAD_ZONE:
+                            deadZone = tempMouseAction.deadZone;
+                            break;
                         case PropertyKeyStrings.TRACKBALL_MODE:
                             trackballEnabled = tempMouseAction.trackballEnabled;
                             // Copy parent ref

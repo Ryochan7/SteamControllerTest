@@ -1334,13 +1334,41 @@ namespace SteamControllerTest
 
     public class TouchpadMouseSerializer : MapActionSerializer
     {
+        public class TouchpadMouseSettings
+        {
+            private TouchpadMouse touchMouseAct;
+
+            public int DeadZone
+            {
+                get => touchMouseAct.DeadZone;
+                set
+                {
+                    touchMouseAct.DeadZone = value;
+                    DeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler DeadZoneChanged;
+
+            public TouchpadMouseSettings(TouchpadMouse action)
+            {
+                touchMouseAct = action;
+            }
+        }
+
         private TouchpadMouse touchMouseAction = new TouchpadMouse();
+
+        private TouchpadMouseSettings settings;
+        public TouchpadMouseSettings Settings
+        {
+            get => settings;
+            set => settings = value;
+        }
 
         // Deserialize
         public TouchpadMouseSerializer() : base()
         {
             mapAction = touchMouseAction;
-            //settings = new TouchStickActionSettings(touchMouseAction);
+            settings = new TouchpadMouseSettings(touchMouseAction);
         }
 
         // Pre-serialize
@@ -1351,7 +1379,7 @@ namespace SteamControllerTest
             {
                 touchMouseAction = temp;
                 this.mapAction = touchMouseAction;
-                //settings = new TouchStickActionSettings(touchMouseAction);
+                settings = new TouchpadMouseSettings(touchMouseAction);
             }
         }
     }
