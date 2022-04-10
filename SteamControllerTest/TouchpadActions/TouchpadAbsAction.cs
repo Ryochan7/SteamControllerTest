@@ -14,6 +14,7 @@ namespace SteamControllerTest.TouchpadActions
         {
             public const string NAME = "Name";
             public const string DEAD_ZONE = "DeadZone";
+            public const string SNAP_TO_CENTER_RELEASE = "SnapToCenterRelease";
 
             public const string OUTER_RING_BUTTON = "OuterRingButton";
 
@@ -26,7 +27,7 @@ namespace SteamControllerTest.TouchpadActions
         {
             PropertyKeyStrings.NAME,
             PropertyKeyStrings.DEAD_ZONE,
-
+            PropertyKeyStrings.SNAP_TO_CENTER_RELEASE,
             PropertyKeyStrings.OUTER_RING_BUTTON,
             PropertyKeyStrings.USE_OUTER_RING,
             PropertyKeyStrings.OUTER_RING_DEAD_ZONE,
@@ -61,6 +62,7 @@ namespace SteamControllerTest.TouchpadActions
 
         private AxisDirButton ringButton = new AxisDirButton();
         private AxisDirButton usedRingButton = null;
+        private bool useParentRingButton;
 
         /// <summary>
         /// Used to determine outer ring mode or inner ring mode. Will change to using an Enum later
@@ -83,6 +85,13 @@ namespace SteamControllerTest.TouchpadActions
         private double yMotion;
         private double fuzzXNorm;
         private double fuzzYNorm;
+
+        private bool snapToCenterRelease = true;
+        public bool SnapToCenterRelease
+        {
+            get => snapToCenterRelease;
+            set => snapToCenterRelease = value;
+        }
 
         public StickDeadZone DeadMod { get => deadMod; }
         public ref AbsCoordRange AbsMouseRange
@@ -136,7 +145,7 @@ namespace SteamControllerTest.TouchpadActions
 
             bool isActive = xNorm != 0.0 || yNorm != 0.0;
             bool inSafeZone = isActive;
-            if (inSafeZone || wasActive)
+            if (inSafeZone || (wasActive && snapToCenterRelease))
             {
                 inputStatus = isActive;
 
@@ -273,8 +282,17 @@ namespace SteamControllerTest.TouchpadActions
 
         public override void SoftRelease(Mapper mapper, MapAction checkAction, bool resetState = true)
         {
-            // Just call main Release method for now
-            Release(mapper, resetState);
+            xNorm = yNorm = 0.0;
+            xMotion = yMotion = 0.0;
+            fuzzXNorm = fuzzYNorm = 0.0;
+
+            if (useRingButton && usedRingButton != null && !useParentRingButton)
+            {
+                usedRingButton.Release(mapper, resetState);
+            }
+
+            active = false;
+            activeEvent = false;
         }
 
         public override void SoftCopyFromParent(TouchpadMapAction parentAction)
@@ -305,6 +323,7 @@ namespace SteamControllerTest.TouchpadActions
                             break;
                         case PropertyKeyStrings.OUTER_RING_BUTTON:
                             ringButton = tempAbsAction.ringButton;
+                            useParentRingButton = true;
                             break;
                         case PropertyKeyStrings.USE_OUTER_RING:
                             useRingButton = tempAbsAction.useRingButton;
@@ -314,6 +333,9 @@ namespace SteamControllerTest.TouchpadActions
                             break;
                         case PropertyKeyStrings.USE_AS_OUTER_RING:
                             outerRing = tempAbsAction.outerRing;
+                            break;
+                        case PropertyKeyStrings.SNAP_TO_CENTER_RELEASE:
+                            snapToCenterRelease = tempAbsAction.snapToCenterRelease;
                             break;
                         default:
                             break;

@@ -1615,6 +1615,17 @@ namespace SteamControllerTest
             }
             public event EventHandler UseAsOuterRingChanged;
 
+            public bool SnapToCenterOnRelease
+            {
+                get => touchAbsAct.SnapToCenterRelease;
+                set
+                {
+                    touchAbsAct.SnapToCenterRelease = value;
+                    SnapToCenterOnReleaseChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler SnapToCenterOnReleaseChanged;
+
             public TouchpadAbsActionSettings(TouchpadAbsAction action)
             {
                 touchAbsAct = action;
@@ -1656,6 +1667,12 @@ namespace SteamControllerTest
             settings.UseAsOuterRingChanged += Settings_UseAsOuterRingChanged;
             settings.UseOuterRingChanged += Settings_UseOuterRingChanged;
             settings.OuterRingDeadZoneChanged += Settings_OuterRingDeadZoneChanged;
+            settings.SnapToCenterOnReleaseChanged += Settings_SnapToCenterOnReleaseChanged;
+        }
+
+        private void Settings_SnapToCenterOnReleaseChanged(object sender, EventArgs e)
+        {
+            touchAbsAct.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.SNAP_TO_CENTER_RELEASE);
         }
 
         // Serialize ctor
