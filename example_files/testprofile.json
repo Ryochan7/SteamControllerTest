@@ -315,15 +315,15 @@
             },
             {
               "Id": "15",
-              "Name": "Reload",
+              "Name": "Use Quick Slots",
               "ActionMode": "ButtonAction",
               "Functions": [
                 {
                   "Type": "NormalPress",
                   "OutputActions": [
                     {
-                      "Type": "Keyboard",
-                      "Code": "R"
+                      "Type": "HoldActionLayer",
+                      "Layer": "1"
                     }
                   ]
                 }
@@ -490,6 +490,153 @@
               }
             }
           ]
+        },
+        {
+          "Index": "1",
+          "Name": "Quick Slots",
+          "Description": "Slots",
+          "MappedActions": [
+            {
+              "Id": "0",
+              "Name": "A Button",
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "Keyboard",
+                      "Code": "N7"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": "1",
+              "Name": "X360 B Button",
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "Keyboard",
+                      "Code": "N6"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": "2",
+              "Name": "X360 X Button",
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "Keyboard",
+                      "Code": "N8"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": "3",
+              "Name": "X360 Y Button",
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "Keyboard",
+                      "Code": "N5"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": "4",
+              "Name": "RightTouchpad Spells",
+              "ActionMode": "TouchActionPadAction",
+              "Bindings":
+              {
+                "Up":
+                {
+                  "Name": "Slot 1",
+                  "Functions": [
+                    {
+                      "Type": "NormalPress",
+                      "OutputActions": [
+                        {
+                          "Type": "Keyboard",
+                          "Code": "N1"
+                          }
+                        ]
+                      }
+                    ]
+                },
+                "Down":
+                {
+                  "Name": "Slot 3",
+                  "Functions": [
+                    {
+                      "Type": "NormalPress",
+                      "OutputActions": [
+                        {
+                          "Type": "Keyboard",
+                          "Code": "N3"
+                          }
+                        ]
+                      }
+                    ]
+                },
+                "Left":
+                {
+                  "Name": "Slot 4",
+                  "Functions": [
+                    {
+                      "Type": "NormalPress",
+                      "OutputActions": [
+                        {
+                          "Type": "Keyboard",
+                          "Code": "N4"
+                          }
+                        ]
+                      }
+                    ]
+                },
+                "Right":
+                {
+                  "Name": "Slot 2",
+                  "Functions": [
+                    {
+                      "Type": "NormalPress",
+                      "OutputActions": [
+                        {
+                          "Type": "Keyboard",
+                          "Code": "N2"
+                          }
+                        ]
+                      }
+                    ]
+                }
+              },
+              "Settings":
+              {
+                "DeadZone": 0.10,
+                "DiagonalRange": 30,
+                "Rotation": 0,
+                "PadMode": "FourWayCardinal",
+                "RequiresClick": false
+              }
+            },
+          ]
         }
       ]
     }
@@ -568,7 +715,32 @@
           "Action": "17"
         }
       ]
+    },
+    {
+      "ActionSet": "0",
+      "ActionLayer": "1",
+      "InputMappings": [
+        {
+          "Input": "A",
+          "Action": "0",
+        },
+        {
+          "Input": "B",
+          "Action": "1",
+        },
+        {
+          "Input": "X",
+          "Action": "2",
+        },
+        {
+          "Input": "Y",
+          "Action": "3",
+        },
+        {
+          "Input": "RightTouchpad",
+          "Action": "4",
+        }
+      ]
     }
   ]
 }
-
