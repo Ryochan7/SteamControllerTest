@@ -204,18 +204,22 @@
             {
               "Id": "9",
               "Name": "X360 LT Button",
-              "ActionMode": "TriggerButtonAction",
-              "Functions": [
-                {
-                  "Type": "NormalPress",
-                  "OutputActions": [
-                    {
-                      "Type": "MouseButton",
-                      "Code": "RightButton"
-                    }
-                  ]
-                }
-              ],
+              "ActionMode": "TriggerDualStageAction",
+              "SoftPull":
+              {
+                "Name": "Soft Pull",
+                "Functions": [
+                  {
+                    "Type": "NormalPress",
+                    "OutputActions": [
+                      {
+                        "Type": "MouseButton",
+                        "Code": "RightButton"
+                      }
+                    ]
+                  }
+                ]
+              },
               "Settings":
               {
                   "DeadZone": 0.2
@@ -224,18 +228,22 @@
             {
               "Id": "10",
               "Name": "X360 RT Button",
-              "ActionMode": "TriggerButtonAction",
-              "Functions": [
-                {
-                  "Type": "NormalPress",
-                  "OutputActions": [
-                    {
-                      "Type": "MouseButton",
-                      "Code": "LeftButton"
-                    }
-                  ]
-                }
-              ],
+              "ActionMode": "TriggerDualStageAction",
+              "SoftPull":
+              {
+                "Name": "Soft Pull",
+                "Functions": [
+                  {
+                    "Type": "NormalPress",
+                    "OutputActions": [
+                      {
+                        "Type": "MouseButton",
+                        "Code": "LeftButton"
+                      }
+                    ]
+                  }
+                ]
+              },
               "Settings":
               {
                 "DeadZone": "0.2"
