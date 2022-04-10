@@ -39,6 +39,10 @@ namespace SteamControllerTest.TouchpadActions
         public abstract void Prepare(Mapper mapper, ref TouchEventFrame touchFrame, bool alterState = true);
         public virtual void SoftCopyFromParent(TouchpadMapAction parentAction)
         {
+            name = parentAction.name;
+            mappingId = parentAction.mappingId;
+            this.parentAction = parentAction;
+            this.touchpadDefinition = new TouchpadDefinition(parentAction.touchpadDefinition);
         }
     }
 }

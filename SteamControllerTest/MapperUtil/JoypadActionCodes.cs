@@ -94,4 +94,13 @@ namespace SteamControllerTest.MapperUtil
         public const int MOUSE_XBUTTON1 = 6;
         public const int MOUSE_XBUTTON2 = 7;
     }
+
+    public enum MouseWheelCodes : uint
+    {
+        None = 0,
+        WheelUp,
+        WheelDown,
+        WheelLeft,
+        WheelRight,
+    }
 }

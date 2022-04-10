@@ -3031,6 +3031,54 @@ namespace SteamControllerTest
             activeMouseButtons.Clear();
         }
 
+        public void RunEventFromAnalog(OutputActionData actionData, bool pressed, double outputNorm,
+            bool fullRelease = true)
+        {
+            switch(actionData.OutputType)
+            {
+                case OutputActionData.ActionType.MouseWheel:
+                    {
+                        if (pressed && !actionData.activatedEvent)
+                        {
+                            int vWheel = 0; int hWheel = 0;
+                            switch (actionData.OutputCode)
+                            {
+                                case 1: // Wheel Up
+                                        //vWheel = 120;
+                                    vWheel = (int)(1 * outputNorm);
+                                    break;
+                                case 2: // Wheel Down
+                                        //vWheel = -120;
+                                    vWheel = (int)(-1 * outputNorm);
+                                    break;
+                                case 3: // Wheel Left
+                                        //hWheel = 120;
+                                    hWheel = (int)(1 * outputNorm);
+                                    break;
+                                case 4: // Wheel Right
+                                        //hWheel = -120;
+                                    hWheel = (int)(-1 * outputNorm);
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            fakerInputHandler.PerformMouseWheelEvent(vWheel, hWheel);
+                            //InputMethods.MouseWheel(vWheel, hWheel);
+                            actionData.activatedEvent = true;
+                        }
+                        else if (!pressed)
+                        {
+                            actionData.activatedEvent = false;
+                        }
+                    }
+
+                    break;
+                default:
+                    break;
+            }
+        }
+
         public void RunEventFromButton(OutputActionData actionData, bool pressed, bool fullRelease = true)
         {
             switch (actionData.OutputType)

@@ -1449,6 +1449,26 @@ namespace SteamControllerTest
         }
     }
 
+    public class TouchpadCircularSerializer : MapActionSerializer
+    {
+        private TouchpadCircular touchCircAct = new TouchpadCircular();
+
+        public TouchpadCircularSerializer() : base()
+        {
+            mapAction = touchCircAct;
+        }
+
+        public TouchpadCircularSerializer(ActionLayer tempLayer, MapAction mapAction) :
+            base(tempLayer, mapAction)
+        {
+            if (mapAction is TouchpadCircular temp)
+            {
+                touchCircAct = temp;
+                this.mapAction = touchCircAct;
+            }
+        }
+    }
+
     public class TouchpadStickActionSerializer : MapActionSerializer
     {
         public class TouchStickActionSettings
@@ -4303,6 +4323,11 @@ namespace SteamControllerTest
                     JsonConvert.PopulateObject(j.ToString(), touchAbsActionInstance);
                     resultInstance = touchAbsActionInstance;
                     break;
+                case "TouchCircularAction":
+                    TouchpadCircularSerializer touchCircActInstance = new TouchpadCircularSerializer();
+                    JsonConvert.PopulateObject(j.ToString(), touchCircActInstance);
+                    resultInstance = touchCircActInstance;
+                    break;
                 case "DPadAction":
                     DpadActionSerializer dpadActSerializer = new DpadActionSerializer();
                     JsonConvert.PopulateObject(j.ToString(), dpadActSerializer);
@@ -4419,6 +4444,10 @@ namespace SteamControllerTest
                 case "TouchAbsPadAction":
                     TouchpadAbsActionSerializer touchAbsActSerializer = new TouchpadAbsActionSerializer(current.TempLayer, tempMapAction);
                     serializer.Serialize(writer, touchAbsActSerializer);
+                    break;
+                case "TouchCircularAction":
+                    TouchpadCircularSerializer touchCircActSerializer = new TouchpadCircularSerializer(current.TempLayer, tempMapAction);
+                    serializer.Serialize(writer, touchCircActSerializer);
                     break;
                 case "DPadAction":
                     DpadActionSerializer dpadActSerializer = new DpadActionSerializer(current.TempLayer, tempMapAction);
