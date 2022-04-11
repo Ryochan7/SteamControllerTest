@@ -45,12 +45,19 @@ namespace SteamControllerTest.TouchpadActions
         private ClickDirection currentClickDir;
         private ClickDirection previousClickDir;
 
-        private OutputActionData clockwiseOutputAction;
-        private OutputActionData counterClockwiseOutputAction;
-
         private TouchpadCircularButton clockwiseBtn;
         private TouchpadCircularButton counterClockwiseBtn;
         private TouchpadCircularButton activeCircBtn;
+
+        public TouchpadCircularButton ClockWiseBtn
+        {
+            get => clockwiseBtn;
+        }
+
+        public TouchpadCircularButton CounterClockwiseBtn
+        {
+            get => counterClockwiseBtn;
+        }
 
         private bool[] useParentCircButtons = new bool[2];
 
@@ -58,15 +65,11 @@ namespace SteamControllerTest.TouchpadActions
 
         public TouchpadCircular()
         {
-            this.clockwiseOutputAction =
+            OutputActionData clockwiseOutputAction =
                 new OutputActionData(OutputActionData.ActionType.MouseWheel, (int)MouseWheelCodes.WheelDown);
-            //clockwiseOutputAction.useNotches = true;
-            //clockwiseOutputAction.useAnalog = false;
 
-            this.counterClockwiseOutputAction =
+            OutputActionData counterClockwiseOutputAction =
                 new OutputActionData(OutputActionData.ActionType.MouseWheel, (int)MouseWheelCodes.WheelUp);
-            //counterClockwiseOutputAction.useNotches = true;
-            //counterClockwiseOutputAction.useAnalog = false;
 
             clockwiseBtn = new TouchpadCircularButton();
             clockwiseBtn.ActionFuncs.AddRange(new ActionFunc[]

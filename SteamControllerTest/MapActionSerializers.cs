@@ -1451,13 +1451,86 @@ namespace SteamControllerTest
 
     public class TouchpadCircularSerializer : MapActionSerializer
     {
+        public class TouchpadCircBtnBinding
+        {
+            private string actionDirName;
+            [JsonProperty("Name", Required = Required.Default)]
+            public string ActionDirName
+            {
+                get => actionDirName;
+                set => actionDirName = value;
+            }
+
+            private List<ActionFuncSerializer> actionFuncSerializers =
+                new List<ActionFuncSerializer>();
+            [JsonProperty("Functions", Required = Required.Always)]
+            public List<ActionFuncSerializer> ActionFuncSerializers
+            {
+                get => actionFuncSerializers;
+                set
+                {
+                    actionFuncSerializers = value;
+                    ActionFuncSerializersChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler ActionFuncSerializersChanged;
+        }
+
+        public class TouchpadCircularSettings
+        {
+            private TouchpadCircular touchCircAct;
+
+            public TouchpadCircularSettings(TouchpadCircular action)
+            {
+                touchCircAct = action;
+            }
+        }
+
         private TouchpadCircular touchCircAct = new TouchpadCircular();
 
+        private TouchpadCircBtnBinding clockwiseBinding;
+        public TouchpadCircBtnBinding Clockwise
+        {
+            get => clockwiseBinding;
+            set
+            {
+                clockwiseBinding = value;
+                ClockwiseChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        private event EventHandler ClockwiseChanged;
+
+        private TouchpadCircBtnBinding counterClockwiseBinding;
+        public TouchpadCircBtnBinding CounterClockwise
+        {
+            get => counterClockwiseBinding;
+            set
+            {
+                counterClockwiseBinding = value;
+                CounterClockwiseChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        private event EventHandler CounterClockwiseChanged;
+
+        private TouchpadCircularSettings settings;
+        public TouchpadCircularSettings Settings
+        {
+            get => settings;
+            set => settings = value;
+        }
+
+        // Deserialize
         public TouchpadCircularSerializer() : base()
         {
             mapAction = touchCircAct;
+            settings = new TouchpadCircularSettings(touchCircAct);
+
+            NameChanged += TouchpadCircularSerializer_NameChanged;
+            ClockwiseChanged += TouchpadCircularSerializer_ClockwiseChanged;
+            CounterClockwiseChanged += TouchpadCircularSerializer_CounterClockwiseChanged;
         }
 
+        // Serialize
         public TouchpadCircularSerializer(ActionLayer tempLayer, MapAction mapAction) :
             base(tempLayer, mapAction)
         {
@@ -1465,7 +1538,85 @@ namespace SteamControllerTest
             {
                 touchCircAct = temp;
                 this.mapAction = touchCircAct;
+                settings = new TouchpadCircularSettings(touchCircAct);
+
+                PopulateFuncs();
             }
+        }
+
+        // Post-deserialize
+        public override void PopulateMap()
+        {
+            touchCircAct.ClockWiseBtn.ActionFuncs.Clear();
+            touchCircAct.CounterClockwiseBtn.ActionFuncs.Clear();
+
+            TouchpadCircularButton tempBtn = null;
+
+            if (clockwiseBinding != null)
+            {
+                tempBtn = touchCircAct.ClockWiseBtn;
+                tempBtn.Name = clockwiseBinding.ActionDirName;
+                foreach (ActionFuncSerializer serializer in clockwiseBinding.ActionFuncSerializers)
+                {
+                    serializer.PopulateFunc();
+                    tempBtn.ActionFuncs.Add(serializer.ActionFunc);
+                }
+
+                touchCircAct.ChangedProperties.Add(TouchpadCircular.PropertyKeyStrings.SCROLL_BUTTON_1);
+                tempBtn = null;
+            }
+
+            if (counterClockwiseBinding != null)
+            {
+                tempBtn = touchCircAct.CounterClockwiseBtn;
+                tempBtn.Name = counterClockwiseBinding.ActionDirName;
+                foreach (ActionFuncSerializer serializer in counterClockwiseBinding.ActionFuncSerializers)
+                {
+                    serializer.PopulateFunc();
+                    tempBtn.ActionFuncs.Add(serializer.ActionFunc);
+                }
+
+                touchCircAct.ChangedProperties.Add(TouchpadCircular.PropertyKeyStrings.SCROLL_BUTTON_2);
+                tempBtn = null;
+            }
+        }
+
+        // Pre-serialize
+        public void PopulateFuncs()
+        {
+            List<ActionFuncSerializer> tempFuncs = new List<ActionFuncSerializer>();
+
+            clockwiseBinding = new TouchpadCircBtnBinding();
+            clockwiseBinding.ActionDirName = touchCircAct.ClockWiseBtn.Name;
+            foreach(ActionFunc tempFunc in touchCircAct.ClockWiseBtn.ActionFuncs)
+            {
+                tempFuncs.Add(new ActionFuncSerializer(tempFunc));
+            }
+            clockwiseBinding.ActionFuncSerializers.AddRange(tempFuncs);
+
+            tempFuncs.Clear();
+            counterClockwiseBinding = new TouchpadCircBtnBinding();
+            counterClockwiseBinding.ActionDirName = touchCircAct.CounterClockwiseBtn.Name;
+            foreach (ActionFunc tempFunc in touchCircAct.CounterClockwiseBtn.ActionFuncs)
+            {
+                tempFuncs.Add(new ActionFuncSerializer(tempFunc));
+            }
+            counterClockwiseBinding.ActionFuncSerializers.AddRange(tempFuncs);
+        }
+
+        private void TouchpadCircularSerializer_CounterClockwiseChanged(object sender, EventArgs e)
+        {
+            touchCircAct.ChangedProperties.Add(TouchpadCircular.PropertyKeyStrings.SCROLL_BUTTON_2);
+        }
+
+        private void TouchpadCircularSerializer_ClockwiseChanged(object sender, EventArgs e)
+        {
+            touchCircAct.ChangedProperties.Add(TouchpadCircular.PropertyKeyStrings.SCROLL_BUTTON_1);
+        }
+
+        private void TouchpadCircularSerializer_NameChanged(object sender, EventArgs e)
+        {
+            touchCircAct.ChangedProperties.Add(TouchpadCircular.PropertyKeyStrings.NAME);
         }
     }
 
