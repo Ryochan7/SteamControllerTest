@@ -187,7 +187,8 @@
             },
             {
               "Id": "8",
-              "Name": "X360 RB Button",
+              "Name": "Devil Trigger",
+              "__CommentBinding": "RShoulder",
               "ActionMode": "ButtonAction",
               "Functions": [
                 {
@@ -195,7 +196,7 @@
                   "OutputActions": [
                     {
                       "Type": "Keyboard",
-                      "Code": "R"
+                      "Code": "V"
                     }
                   ]
                 }
