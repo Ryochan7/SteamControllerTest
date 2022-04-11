@@ -579,6 +579,8 @@ namespace SteamControllerTest
                                                 {
                                                     (tempAction as TouchpadMapAction).SoftCopyFromParent(tempParentTouchAction);
                                                 }
+
+                                                touchAct.PrepareActions();
                                             }
 
                                             break;

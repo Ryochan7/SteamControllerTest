@@ -42,6 +42,12 @@ namespace SteamControllerTest.MapperUtil
 
         private ActionType outputType;
 
+        public struct NotchResultData
+        {
+            public double notches;
+            public bool useAnalog;
+        }
+
         private int outputCode;
         private int outputCodeAlias;
         // Hold string as stored in the profile
@@ -61,6 +67,10 @@ namespace SteamControllerTest.MapperUtil
         private int changeToSet = -1;
         private SetChangeCondition changeCondition;
         public bool checkTick;
+
+        public bool useNotches;
+        public double currentNotches;
+
         // Flag to have process stop processing output actions in an ActionFunc sequence
         public bool breakSequence;
         private bool tickTimerActive;
@@ -171,7 +181,7 @@ namespace SteamControllerTest.MapperUtil
             secondData.changeCondition = ChangeCondition;
             secondData.durationMs = durationMs;
             secondData.effectiveDurationMs = effectiveDurationMs;
-    }
+        }
 
         public bool ProcessTick()
         {
@@ -237,6 +247,28 @@ namespace SteamControllerTest.MapperUtil
             return active;
         }
 
+        public NotchResultData ProcessNotches()
+        {
+            NotchResultData result = new NotchResultData();
+            switch (outputType)
+            {
+                case ActionType.Keyboard:
+                case ActionType.MouseButton:
+                    result.notches = 1.0;
+                    currentNotches -= 1.0;
+                    break;
+                case ActionType.MouseWheel:
+                    result.notches = (int)currentNotches;
+                    result.useAnalog = true;
+                    currentNotches = currentNotches - result.notches;
+                    break;
+                default:
+                    break;
+            }
+
+            return result;
+        }
+
         public void Release()
         {
             if (elapsed.IsRunning)
@@ -251,6 +283,7 @@ namespace SteamControllerTest.MapperUtil
             effectiveDurationMs = durationMs;
             skipRelease = false;
             waitForRelease = false;
+            currentNotches = 0.0;
         }
     }
 }

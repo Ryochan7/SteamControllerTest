@@ -348,12 +348,35 @@ namespace SteamControllerTest.ButtonActions
                             foreach (OutputActionData action in func.OutputActions)
                             {
                                 //Console.WriteLine("JAMIES CRYING");
-                                if (!action.checkTick)
+                                if (action.useNotches)
+                                {
+                                    WrapNotchesProcess(action);
+                                    if (!action.activatedEvent && action.currentNotches >= 1.0)
+                                    {
+                                        OutputActionData.NotchResultData notchData = action.ProcessNotches();
+                                        if (notchData.useAnalog)
+                                        {
+                                            mapper.RunEventFromAnalog(action, true, notchData.notches);
+                                        }
+                                        else
+                                        {
+                                            mapper.RunEventFromButton(action, true);
+                                        }
+                                    }
+                                    else if (action.activatedEvent)
+                                    {
+                                        mapper.RunEventFromButton(action, false);
+                                    }
+
+                                    action.firstRun = false;
+                                    //action.activatedEvent = action.currentNotches != 0.0;
+                                }
+                                else if (!action.checkTick)
                                 {
                                     mapper.RunEventFromButton(action, status);
                                     action.firstRun = false;
                                 }
-                                else
+                                else if (action.checkTick)
                                 {
                                     WrapTickProcess(action);
                                     if (action.ProcessTick())
@@ -393,6 +416,7 @@ namespace SteamControllerTest.ButtonActions
                                 }
 
                                 action.firstRun = false;
+                                action.Release();
                             }
 
                             func.Release(mapper);
@@ -1158,6 +1182,10 @@ namespace SteamControllerTest.ButtonActions
         }
 
         public virtual void WrapTickProcess(OutputActionData action)
+        {
+        }
+
+        public virtual void WrapNotchesProcess(OutputActionData action)
         {
         }
 

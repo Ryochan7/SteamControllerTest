@@ -44,5 +44,9 @@ namespace SteamControllerTest.TouchpadActions
             this.parentAction = parentAction;
             this.touchpadDefinition = new TouchpadDefinition(parentAction.touchpadDefinition);
         }
+
+        public virtual void PrepareActions()
+        {
+        }
     }
 }

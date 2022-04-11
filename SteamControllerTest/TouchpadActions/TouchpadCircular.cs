@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 //using System.Diagnostics;
 using SteamControllerTest.MapperUtil;
 using SteamControllerTest.StickModifiers;
+using SteamControllerTest.ButtonActions;
+using SteamControllerTest.ActionUtil;
 
 namespace SteamControllerTest.TouchpadActions
 {
@@ -14,11 +16,15 @@ namespace SteamControllerTest.TouchpadActions
         public class PropertyKeyStrings
         {
             public const string NAME = "Name";
+            public const string SCROLL_BUTTON_1 = "ScrollButton1";
+            public const string SCROLL_BUTTON_2 = "ScrollButton2";
         }
 
         private HashSet<string> fullPropertySet = new HashSet<string>()
         {
             PropertyKeyStrings.NAME,
+            PropertyKeyStrings.SCROLL_BUTTON_1,
+            PropertyKeyStrings.SCROLL_BUTTON_2,
         };
 
         private enum ClickDirection
@@ -35,15 +41,18 @@ namespace SteamControllerTest.TouchpadActions
         private double currentAngleRad;
         //private double remainderAngle;
         private double travelAngleChangeRad;
-        private bool click;
+        private bool activeTicks;
         private ClickDirection currentClickDir;
+        private ClickDirection previousClickDir;
 
         private OutputActionData clockwiseOutputAction;
         private OutputActionData counterClockwiseOutputAction;
-        //public OutputActionData OutputAction
-        //{
-        //    get => outputAction;
-        //}
+
+        private TouchpadCircularButton clockwiseBtn;
+        private TouchpadCircularButton counterClockwiseBtn;
+        private TouchpadCircularButton activeCircBtn;
+
+        private bool[] useParentCircButtons = new bool[2];
 
         private StickDeadZone deadMod;
 
@@ -51,9 +60,25 @@ namespace SteamControllerTest.TouchpadActions
         {
             this.clockwiseOutputAction =
                 new OutputActionData(OutputActionData.ActionType.MouseWheel, (int)MouseWheelCodes.WheelDown);
+            //clockwiseOutputAction.useNotches = true;
+            //clockwiseOutputAction.useAnalog = false;
 
             this.counterClockwiseOutputAction =
                 new OutputActionData(OutputActionData.ActionType.MouseWheel, (int)MouseWheelCodes.WheelUp);
+            //counterClockwiseOutputAction.useNotches = true;
+            //counterClockwiseOutputAction.useAnalog = false;
+
+            clockwiseBtn = new TouchpadCircularButton();
+            clockwiseBtn.ActionFuncs.AddRange(new ActionFunc[]
+            {
+                new NormalPressFunc(clockwiseOutputAction)
+            });
+
+            counterClockwiseBtn = new TouchpadCircularButton();
+            counterClockwiseBtn.ActionFuncs.AddRange(new ActionFunc[]
+            {
+                new NormalPressFunc(counterClockwiseOutputAction),
+            });
 
             deadMod = new StickDeadZone(DEFAULT_DEADZONE, 1.0, 0.0);
         }
@@ -61,6 +86,7 @@ namespace SteamControllerTest.TouchpadActions
         public override void Prepare(Mapper mapper, ref TouchEventFrame touchFrame, bool alterState = true)
         {
             active = false;
+            previousClickDir = currentClickDir;
 
             ref TouchEventFrame previousTouchFrame =
                     ref mapper.GetPreviousTouchEventFrame(touchpadDefinition.touchCode);
@@ -130,7 +156,7 @@ namespace SteamControllerTest.TouchpadActions
                 {
                     //Trace.WriteLine("UP IN HERE");
                     active = true;
-                    click = true;
+                    activeTicks = true;
 
                     currentClickDir = diffAngle > 0 ? ClickDirection.Clockwise : ClickDirection.CounterClockwise;
                     //travelAngleChangeRad = travelAngleChangeRad > 0 ?
@@ -144,27 +170,48 @@ namespace SteamControllerTest.TouchpadActions
                 travelAngleChangeRad = 0;
             }
 
+            active = true;
             activeEvent = true;
         }
 
         public override void Event(Mapper mapper)
         {
-            if (click)
+            // Check for previously activated output actions
+            if (previousClickDir != currentClickDir || !activeTicks)
+            {
+                if (activeCircBtn != null)
+                {
+                    activeCircBtn.PrepareCircular(mapper, 0.0);
+                    activeCircBtn.Event(mapper);
+                }
+
+                activeCircBtn = null;
+            }
+
+            if (activeTicks)
             {
                 //Trace.WriteLine($"OUTPUT EVENT {DateTime.UtcNow.ToString("fff")}");
 
-                OutputActionData tempAction =
-                    currentClickDir == ClickDirection.Clockwise ? clockwiseOutputAction : counterClockwiseOutputAction;
+                //OutputActionData tempAction =
+                //    currentClickDir == ClickDirection.Clockwise ? clockwiseOutputAction : counterClockwiseOutputAction;
 
-                int speed = (int)(Math.Abs(travelAngleChangeRad) / CLICK_RAD_THRESHOLD);
+                //int ticksSpeed = (int)(Math.Abs(travelAngleChangeRad) / CLICK_RAD_THRESHOLD);
 
-                mapper.RunEventFromAnalog(tempAction, true, speed);
-                tempAction.activatedEvent = false;
+                //mapper.RunEventFromAnalog(tempAction, true, ticksSpeed);
+                //tempAction.activatedEvent = false;
+
+                TouchpadCircularButton tempBtn =
+                    currentClickDir == ClickDirection.Clockwise ? clockwiseBtn : counterClockwiseBtn;
+
+                int ticksSpeed = (int)(Math.Abs(travelAngleChangeRad) / CLICK_RAD_THRESHOLD);
+                tempBtn.PrepareCircular(mapper, ticksSpeed);
+                tempBtn.Event(mapper);
+                activeCircBtn = tempBtn;
 
                 travelAngleChangeRad = travelAngleChangeRad > 0 ?
-                    travelAngleChangeRad - (speed * CLICK_RAD_THRESHOLD) : travelAngleChangeRad + (speed * CLICK_RAD_THRESHOLD);
+                    travelAngleChangeRad - (ticksSpeed * CLICK_RAD_THRESHOLD) : travelAngleChangeRad + (ticksSpeed * CLICK_RAD_THRESHOLD);
 
-                click = false;
+                activeTicks = false;
             }
 
             active = false;
@@ -173,6 +220,11 @@ namespace SteamControllerTest.TouchpadActions
 
         public override void Release(Mapper mapper, bool resetState = true)
         {
+            if (activeCircBtn != null && activeCircBtn.active)
+            {
+                activeCircBtn.Release(mapper, resetState);
+            }
+
             startAngleRad = 0;
             currentAngleRad = 0;
             travelAngleChangeRad = 0;
@@ -182,7 +234,11 @@ namespace SteamControllerTest.TouchpadActions
 
         public override void SoftRelease(Mapper mapper, MapAction checkAction, bool resetState = true)
         {
-            // Do nothing. Keep current state data
+            if (activeCircBtn != null && activeCircBtn.active &&
+                !useParentCircButtons[(int)currentClickDir])
+            {
+                activeCircBtn.Release(mapper, resetState);
+            }
         }
 
         public override void SoftCopyFromParent(TouchpadMapAction parentAction)
@@ -203,11 +259,23 @@ namespace SteamControllerTest.TouchpadActions
                         case PropertyKeyStrings.NAME:
                             name = tempCirleAction.name;
                             break;
+                        case PropertyKeyStrings.SCROLL_BUTTON_1:
+                            useParentCircButtons[0] = true;
+                            break;
+                        case PropertyKeyStrings.SCROLL_BUTTON_2:
+                            useParentCircButtons[1] = true;
+                            break;
                         default:
                             break;
                     }
                 }
             }
+        }
+
+        public override void PrepareActions()
+        {
+            counterClockwiseBtn.PrepareActions();
+            counterClockwiseBtn.PrepareActions();
         }
     }
 }
