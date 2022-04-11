@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+//using System.Diagnostics;
 using SteamControllerTest.StickModifiers;
 
 namespace SteamControllerTest.TouchpadActions
@@ -179,7 +180,7 @@ namespace SteamControllerTest.TouchpadActions
             {
                 if (trackData.trackballActive)
                 {
-                    //Console.WriteLine("CHECKING HERE");
+                    //Trace.WriteLine("CHECKING HERE");
                 }
 
                 // Initial touch
@@ -193,7 +194,7 @@ namespace SteamControllerTest.TouchpadActions
                 trackData.trackballDXRemain = 0.0;
                 trackData.trackballDYRemain = 0.0;
 
-                //Console.WriteLine("INITIAL");
+                //Trace.WriteLine("INITIAL");
             }
             else if (touchFrame.Touch && previousTouchFrame.Touch)
             {
@@ -229,6 +230,11 @@ namespace SteamControllerTest.TouchpadActions
 
                     //Debug.WriteLine("START TRACK {0}", dist);
                     ProcessTrackballFrame(ref touchFrame);
+                }
+                else
+                {
+                    //Debug.WriteLine("LESS THAN {0}", dist);
+                    trackData.PurgeData();
                 }
             }
             else if (!touchFrame.Touch && trackData.trackballActive)
