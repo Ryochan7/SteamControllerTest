@@ -630,7 +630,7 @@
               },
               "Settings":
               {
-                "DeadZone": 0.10,
+                "DeadZone": 0.20,
                 "DiagonalRange": 30,
                 "Rotation": 0,
                 "PadMode": "FourWayCardinal",
