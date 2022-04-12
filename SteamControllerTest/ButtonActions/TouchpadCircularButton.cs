@@ -91,11 +91,11 @@ namespace SteamControllerTest.ButtonActions
                 case OutputActionData.ActionType.GamepadControl:
                     {
                         //action.currentNotches += this.notches;
-                        double currentNotches = (int)action.currentNotches;
+                        //double currentNotches = (int)action.currentNotches;
                         if (!action.activatedEvent && action.currentNotches >= 1.0)
                         {
                             mapper.RunEventFromButton(action, true);
-                            action.currentNotches = action.currentNotches - currentNotches;
+                            action.currentNotches -= 1.0;
                         }
                         else if (action.activatedEvent)
                         {
