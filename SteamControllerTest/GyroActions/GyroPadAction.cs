@@ -210,7 +210,7 @@ namespace SteamControllerTest.GyroActions
 
                     if (data != null)
                     {
-                        data.PrepareAnalog(mapper, 0.0);
+                        data.PrepareAnalog(mapper, 0.0, 0.0);
                         data.Event(mapper);
                         //mapper.RunEventFromButton(data, false);
 
@@ -271,7 +271,7 @@ namespace SteamControllerTest.GyroActions
                     if (tmpBtnActions[0] != null)
                     {
                         data = tmpBtnActions[0];
-                        data.PrepareAnalog(mapper, 0.0);
+                        data.PrepareAnalog(mapper, 0.0, 0.0);
                         data.Event(mapper);
                         //mapper.RunEventFromButton(tmpCodes[0], false);
                         if (!data.active)
@@ -284,7 +284,7 @@ namespace SteamControllerTest.GyroActions
                     if (tmpBtnActions[1] != null)
                     {
                         data = tmpBtnActions[1];
-                        data.PrepareAnalog(mapper, 0.0);
+                        data.PrepareAnalog(mapper, 0.0, 0.0);
                         data.Event(mapper);
                         //mapper.RunEventFromButton(tmpCodes[1], false);
 
@@ -324,7 +324,7 @@ namespace SteamControllerTest.GyroActions
 
                     if (data != null)
                     {
-                        data.PrepareAnalog(mapper, ButtonAxisValue(data));
+                        data.PrepareAnalog(mapper, ButtonAxisValue(data), ButtonAxisUnitValue(data));
                         data.Event(mapper);
                         //mapper.RunEventFromButton(data, true);
 
@@ -390,7 +390,7 @@ namespace SteamControllerTest.GyroActions
                     if (tmpBtnActions[0] != null)
                     {
                         data = tmpBtnActions[0];
-                        data.PrepareAnalog(mapper, ButtonAxisValue(data));
+                        data.PrepareAnalog(mapper, ButtonAxisValue(data), ButtonAxisUnitValue(data));
                         data.Event(mapper);
                         //mapper.RunEventFromButton(tmpCodes[0], true);
 
@@ -403,7 +403,7 @@ namespace SteamControllerTest.GyroActions
                     if (tmpBtnActions[1] != null)
                     {
                         data = tmpBtnActions[1];
-                        data.PrepareAnalog(mapper, ButtonAxisValue(data));
+                        data.PrepareAnalog(mapper, ButtonAxisValue(data), ButtonAxisUnitValue(data));
                         data.Event(mapper);
                         //mapper.RunEventFromButton(tmpCodes[1], true);
 
@@ -545,7 +545,7 @@ namespace SteamControllerTest.GyroActions
                     AxisDirButton data = eventCodes4[currentDirNum];
                     if (data != null)
                     {
-                        data.PrepareAnalog(mapper, 0.0);
+                        data.PrepareAnalog(mapper, 0.0, 0.0);
                         data.Event(mapper);
                         //mapper.RunEventFromButton(data, false);
                     }
@@ -561,7 +561,7 @@ namespace SteamControllerTest.GyroActions
                         AxisDirButton data = eventCodes4[currentDirNum];
                         if (data != null)
                         {
-                            data.PrepareAnalog(mapper, 0.0);
+                            data.PrepareAnalog(mapper, 0.0, 0.0);
                             data.Event(mapper);
                         }
                         //OutputActionData data = eventCodes[currentDirNum];
@@ -621,7 +621,7 @@ namespace SteamControllerTest.GyroActions
             if (tmpBtnActions[0] != null)
             {
                 data = tmpBtnActions[0];
-                data.PrepareAnalog(mapper, 0.0);
+                data.PrepareAnalog(mapper, 0.0, 0.0);
                 data.Event(mapper);
                 //mapper.RunEventFromButton(tmpCodes[0], false);
 
@@ -635,7 +635,7 @@ namespace SteamControllerTest.GyroActions
             if (tmpBtnActions[1] != null)
             {
                 data = tmpBtnActions[1];
-                data.PrepareAnalog(mapper, 0.0);
+                data.PrepareAnalog(mapper, 0.0, 0.0);
                 data.Event(mapper);
                 //mapper.RunEventFromButton(tmpCodes[1], false);
 
@@ -735,6 +735,43 @@ namespace SteamControllerTest.GyroActions
                     break;
                 case AxisDirButton.AxisDirection.XY:
                     result = Math.Sqrt((xNorm * xNorm) + (yNorm * yNorm));
+                    break;
+                default:
+                    break;
+            }
+
+            result = Math.Abs(result);
+            return result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private double ButtonAxisUnitValue(AxisDirButton button)
+        {
+            double result = 0.0;
+
+            double angle = Math.Atan2(-yNorm, xNorm);
+            double angCos = Math.Abs(Math.Cos(angle)),
+                angSin = Math.Abs(Math.Sin(angle));
+
+            switch (button.Direction)
+            {
+                case AxisDirButton.AxisDirection.None:
+                    break;
+                case AxisDirButton.AxisDirection.XNeg:
+                    result = angCos;
+                    break;
+                case AxisDirButton.AxisDirection.XPos:
+                    result = angCos;
+                    break;
+                case AxisDirButton.AxisDirection.YNeg:
+                    result = angSin;
+                    break;
+                case AxisDirButton.AxisDirection.YPos:
+                    result = angSin;
+                    break;
+                case AxisDirButton.AxisDirection.XY:
+                    // Treat XY as a single unit vector
+                    result = 1.0;
                     break;
                 default:
                     break;

@@ -24,8 +24,10 @@ namespace SteamControllerTest.ButtonActions
         private double currentValue;
         private AxisDirection direction;
         private double lastWheelDistance;
+        private double axisUnit;
 
         public override double ButtonDistance => currentValue;
+        public override double AxisUnit => axisUnit;
 
         public AxisDirection Direction
         {
@@ -61,13 +63,15 @@ namespace SteamControllerTest.ButtonActions
             analog = true;
         }
 
-        public override void PrepareAnalog(Mapper mapper, double axisNorm, bool alterState = true)
+        public override void PrepareAnalog(Mapper mapper, double axisNorm, double axisUnit,
+            bool alterState = true)
         {
             bool previousStatus = status;
             currentValue = axisNorm;
             active = true;
             activeEvent = true;
             status = currentValue != 0.0;
+            this.axisUnit = axisUnit;
             if (alterState)
             {
                 stateData.wasActive = stateData.state;

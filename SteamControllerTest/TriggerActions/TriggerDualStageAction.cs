@@ -146,7 +146,7 @@ namespace SteamControllerTest.TriggerActions
             bool wasSoftPullActive = (previousActiveButtons & ActiveZoneButtons.SoftPull) != 0;
             if (softPullActActive)
             {
-                softPullActButton.PrepareAnalog(mapper, axisNorm);
+                softPullActButton.PrepareAnalog(mapper, axisNorm, 1.0);
                 if (softPullActButton.active) softPullActButton.Event(mapper);
             }
             else if (wasSoftPullActive)
@@ -157,7 +157,7 @@ namespace SteamControllerTest.TriggerActions
             bool wasFullPullActive = (previousActiveButtons & ActiveZoneButtons.FullPull) != 0;
             if (fullPullActActive)
             {
-                fullPullActButton.PrepareAnalog(mapper, axisNorm);
+                fullPullActButton.PrepareAnalog(mapper, axisNorm, 1.0);
                 if (fullPullActButton.active) fullPullActButton.Event(mapper);
             }
             else if (wasFullPullActive)

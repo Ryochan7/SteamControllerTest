@@ -11,6 +11,7 @@ namespace SteamControllerTest.ButtonActions
     public class AxisButtonAction : ButtonAction
     {
         private double value;
+        private double axisUnit;
 
         public override double ButtonDistance
         {
@@ -55,12 +56,14 @@ namespace SteamControllerTest.ButtonActions
             base.Prepare(mapper, status, alterState);
         }
 
-        public override void PrepareAnalog(Mapper mapper, double axisValue, bool alterState = true)
+        public override void PrepareAnalog(Mapper mapper, double axisValue, double axisUnit,
+            bool alterState = true)
         {
             if (value != axisValue)
             {
                 status = value != 0.0;
                 value = axisValue;
+                this.axisUnit = axisUnit;
                 Prepare(mapper, status, alterState);
 
                 active = true;

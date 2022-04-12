@@ -2772,7 +2772,8 @@ namespace SteamControllerTest
 
         public void GamepadFromAxisInput(OutputActionData data, double norm)
         {
-            data.activatedEvent = true;
+            bool active = norm != 0.0 ? true : false;
+            data.activatedEvent = active;
 
             switch (data.JoypadCode)
             {
@@ -2801,6 +2802,67 @@ namespace SteamControllerTest
                     intermediateState.Dirty = true;
                     break;
 
+                case JoypadActionCodes.BtnDPadUp:
+                    intermediateState.DpadUp = active;
+                    intermediateState.Dirty = true;
+                    break;
+                case JoypadActionCodes.BtnDPadDown:
+                    intermediateState.DpadDown = active;
+                    intermediateState.Dirty = true;
+                    break;
+                case JoypadActionCodes.BtnDPadLeft:
+                    intermediateState.DpadLeft = active;
+                    intermediateState.Dirty = true;
+                    break;
+                case JoypadActionCodes.BtnDPadRight:
+                    intermediateState.DpadRight = active;
+                    intermediateState.Dirty = true;
+                    break;
+
+                case JoypadActionCodes.BtnNorth:
+                    intermediateState.BtnNorth = active;
+                    intermediateState.Dirty = true;
+                    break;
+                case JoypadActionCodes.BtnEast:
+                    intermediateState.BtnEast = active;
+                    intermediateState.Dirty = true;
+                    break;
+                case JoypadActionCodes.BtnSouth:
+                    intermediateState.BtnSouth = active;
+                    intermediateState.Dirty = true;
+                    break;
+                case JoypadActionCodes.BtnWest:
+                    intermediateState.BtnWest = active;
+                    intermediateState.Dirty = true;
+                    break;
+                case JoypadActionCodes.BtnMode:
+                    intermediateState.BtnMode = active;
+                    intermediateState.Dirty = true;
+                    break;
+                case JoypadActionCodes.BtnStart:
+                    intermediateState.BtnStart = active;
+                    intermediateState.Dirty = true;
+                    break;
+                case JoypadActionCodes.BtnSelect:
+                    intermediateState.BtnSelect = active;
+                    intermediateState.Dirty = true;
+                    break;
+                case JoypadActionCodes.BtnLShoulder:
+                    intermediateState.BtnLShoulder = active;
+                    intermediateState.Dirty = true;
+                    break;
+                case JoypadActionCodes.BtnRShoulder:
+                    intermediateState.BtnRShoulder = active;
+                    intermediateState.Dirty = true;
+                    break;
+                case JoypadActionCodes.BtnThumbL:
+                    intermediateState.BtnThumbL = active;
+                    intermediateState.Dirty = true;
+                    break;
+                case JoypadActionCodes.BtnThumbR:
+                    intermediateState.BtnThumbR = active;
+                    intermediateState.Dirty = true;
+                    break;
                 default:
                     break;
             }
@@ -3033,8 +3095,117 @@ namespace SteamControllerTest
             activeMouseButtons.Clear();
         }
 
-        public void RunEventFromAnalog(OutputActionData actionData, bool pressed, double outputNorm,
+        public void RunEventFromRelative(OutputActionData actionData, bool pressed, double outputValue,
             bool fullRelease = true)
+        {
+            switch (actionData.OutputType)
+            {
+                case OutputActionData.ActionType.MouseWheel:
+                    if (pressed && !actionData.activatedEvent)
+                    {
+                        int vWheel = 0; int hWheel = 0;
+                        double absValue = Math.Abs(outputValue);
+                        switch (actionData.OutputCode)
+                        {
+                            case 1: // Wheel Up
+                                    //vWheel = 120;
+                                vWheel = (int)(1 * absValue);
+                                break;
+                            case 2: // Wheel Down
+                                    //vWheel = -120;
+                                vWheel = (int)(-1 * absValue);
+                                break;
+                            case 3: // Wheel Left
+                                    //hWheel = 120;
+                                hWheel = (int)(1 * absValue);
+                                break;
+                            case 4: // Wheel Right
+                                    //hWheel = -120;
+                                hWheel = (int)(-1 * absValue);
+                                break;
+                            default:
+                                break;
+                        }
+
+                        fakerInputHandler.PerformMouseWheelEvent(vWheel, hWheel);
+                        //InputMethods.MouseWheel(vWheel, hWheel);
+                        actionData.activatedEvent = true;
+                    }
+                    else if (!pressed)
+                    {
+                        actionData.activatedEvent = false;
+                    }
+
+                    break;
+                case OutputActionData.ActionType.RelativeMouse:
+                    {
+                        if (pressed)
+                        {
+                            double distance = 0.0;
+                            double absValue = Math.Abs(outputValue);
+                            bool xDir = false;
+                            bool yDir = false;
+                            switch (actionData.mouseDir)
+                            {
+                                case OutputActionData.RelativeMouseDir.MouseUp:
+                                    distance = -1.0 * absValue;
+                                    xDir = false;
+                                    yDir = true;
+                                    break;
+                                case OutputActionData.RelativeMouseDir.MouseDown:
+                                    distance = 1.0 * absValue;
+                                    xDir = false;
+                                    yDir = true;
+                                    break;
+                                case OutputActionData.RelativeMouseDir.MouseLeft:
+                                    distance = -1.0 * absValue;
+                                    xDir = true;
+                                    yDir = false;
+                                    break;
+                                case OutputActionData.RelativeMouseDir.MouseRight:
+                                    distance = 1.0 * absValue;
+                                    xDir = true;
+                                    yDir = false;
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            int xSpeed = actionData.extraSettings.mouseXSpeed;
+                            int ySpeed = actionData.extraSettings.mouseYSpeed;
+
+                            const int MOUSESPEEDFACTOR = 20;
+                            const double MOUSE_VELOCITY_OFFSET = 0.013;
+                            double timeDelta = CurrentLatency;
+                            int mouseVelocity = xDir ? xSpeed * MOUSESPEEDFACTOR : ySpeed * MOUSESPEEDFACTOR;
+                            double mouseOffset = MOUSE_VELOCITY_OFFSET * mouseVelocity;
+                            double tempMouseOffset = mouseOffset;
+
+                            if (xDir)
+                            {
+                                double xMotion = ((mouseVelocity - tempMouseOffset) * timeDelta * distance + (mouseOffset * timeDelta));
+                                MouseX = xMotion;
+                                MouseSync = true;
+                            }
+                            else if (yDir)
+                            {
+                                double yMotion = ((mouseVelocity - tempMouseOffset) * timeDelta * distance + (mouseOffset * timeDelta));
+                                MouseY = yMotion;
+                                MouseSync = true;
+                            }
+                            //xMotion = ((mouseVelocity - tempMouseOffsetX) * timeDelta * absXNorm + (tempMouseOffsetX * timeDelta)) * xSign;
+                            //yMotion = ((mouseVelocity - tempMouseOffsetY) * timeDelta * absYNorm + (tempMouseOffsetY * timeDelta)) * -ySign;
+                        }
+                    }
+
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public void RunEventFromAnalog(OutputActionData actionData, bool pressed, double outputNorm,
+            double axisUnit, bool fullRelease = true)
         {
             switch(actionData.OutputType)
             {
@@ -3076,6 +3247,136 @@ namespace SteamControllerTest
                     }
 
                     break;
+                case OutputActionData.ActionType.Keyboard:
+                    {
+                        if (pressed)
+                        {
+                            if (!actionData.activatedEvent)
+                            {
+                                activeKeys.Add(actionData.OutputCode);
+                                actionData.activatedEvent = true;
+                            }
+                        }
+                        else
+                        {
+                            if (actionData.activatedEvent)
+                            {
+                                releasedKeys.Add(actionData.OutputCode);
+                                actionData.activatedEvent = false;
+                            }
+                        }
+                    }
+
+                    break;
+                case OutputActionData.ActionType.MouseButton:
+                    {
+                        switch (actionData.OutputCode)
+                        {
+                            case MouseButtonCodes.MOUSE_LEFT_BUTTON:
+                            case MouseButtonCodes.MOUSE_MIDDLE_BUTTON:
+                            case MouseButtonCodes.MOUSE_RIGHT_BUTTON:
+                                if (pressed)
+                                {
+                                    if (!currentMouseButtons.Contains(actionData.OutputCode))
+                                    {
+                                        activeMouseButtons.Add(actionData.OutputCode);
+                                        actionData.activatedEvent = true;
+                                    }
+                                }
+                                else
+                                {
+                                    if (currentMouseButtons.Contains(actionData.OutputCode))
+                                    {
+                                        releasedMouseButtons.Add(actionData.OutputCode);
+                                        actionData.activatedEvent = false;
+                                    }
+                                }
+
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+                    break;
+                case OutputActionData.ActionType.RelativeMouse:
+                    {
+                        if (pressed)
+                        {
+                            double distance = 0.0;
+                            double absNorm = Math.Abs(outputNorm);
+                            bool xDir = false;
+                            bool yDir = false;
+                            switch (actionData.mouseDir)
+                            {
+                                case OutputActionData.RelativeMouseDir.MouseUp:
+                                    distance = -1.0 * absNorm;
+                                    xDir = false;
+                                    yDir = true;
+                                    break;
+                                case OutputActionData.RelativeMouseDir.MouseDown:
+                                    distance = 1.0 * absNorm;
+                                    xDir = false;
+                                    yDir = true;
+                                    break;
+                                case OutputActionData.RelativeMouseDir.MouseLeft:
+                                    distance = -1.0 * absNorm;
+                                    xDir = true;
+                                    yDir = false;
+                                    break;
+                                case OutputActionData.RelativeMouseDir.MouseRight:
+                                    distance = 1.0 * absNorm;
+                                    xDir = true;
+                                    yDir = false;
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            int xSpeed = actionData.extraSettings.mouseXSpeed;
+                            int ySpeed = actionData.extraSettings.mouseYSpeed;
+
+                            const int MOUSESPEEDFACTOR = 20;
+                            const double MOUSE_VELOCITY_OFFSET = 0.013;
+                            double timeDelta = CurrentLatency;
+                            int mouseVelocity = xDir ? xSpeed * MOUSESPEEDFACTOR : ySpeed * MOUSESPEEDFACTOR;
+                            double mouseOffset = MOUSE_VELOCITY_OFFSET * mouseVelocity;
+                            double tempMouseOffset = axisUnit * mouseOffset;
+
+                            if (xDir)
+                            {
+                                double xMotion = ((mouseVelocity - tempMouseOffset) * timeDelta * distance + (mouseOffset * timeDelta));
+                                MouseX = xMotion;
+                                MouseSync = true;
+                            }
+                            else if (yDir)
+                            {
+                                double yMotion = ((mouseVelocity - tempMouseOffset) * timeDelta * distance + (mouseOffset * timeDelta));
+                                MouseY = yMotion;
+                                MouseSync = true;
+                            }
+                            //xMotion = ((mouseVelocity - tempMouseOffsetX) * timeDelta * absXNorm + (tempMouseOffsetX * timeDelta)) * xSign;
+                            //yMotion = ((mouseVelocity - tempMouseOffsetY) * timeDelta * absYNorm + (tempMouseOffsetY * timeDelta)) * -ySign;
+                        }
+                    }
+
+                    break;
+                case OutputActionData.ActionType.GamepadControl:
+                    {
+                        //actionData.activatedEvent = pressed;
+                        GamepadFromAxisInput(actionData, outputNorm);
+                    }
+
+                    break;
+                case OutputActionData.ActionType.SwitchSet:
+                case OutputActionData.ActionType.SwitchActionLayer:
+                case OutputActionData.ActionType.ApplyActionLayer:
+                case OutputActionData.ActionType.RemoveActionLayer:
+                case OutputActionData.ActionType.HoldActionLayer:
+                    RunEventFromButton(actionData, pressed);
+                    break;
+                case OutputActionData.ActionType.Empty:
+                    break;
                 default:
                     break;
             }
@@ -3103,9 +3404,9 @@ namespace SteamControllerTest
                                 actionData.activatedEvent = false;
                             }
                         }
-
-                        break;
                     }
+
+                    break;
                 case OutputActionData.ActionType.MouseButton:
                     {
                         switch (actionData.OutputCode)
@@ -3175,6 +3476,69 @@ namespace SteamControllerTest
 
                         break;
                     }
+                case OutputActionData.ActionType.RelativeMouse:
+                    {
+                        if (pressed)
+                        {
+                            double distance = 0.0;
+                            bool xDir = false;
+                            bool yDir = false;
+                            switch (actionData.mouseDir)
+                            {
+                                case OutputActionData.RelativeMouseDir.MouseUp:
+                                    distance = -1.0;
+                                    xDir = false;
+                                    yDir = true;
+                                    break;
+                                case OutputActionData.RelativeMouseDir.MouseDown:
+                                    distance = 1.0;
+                                    xDir = false;
+                                    yDir = true;
+                                    break;
+                                case OutputActionData.RelativeMouseDir.MouseLeft:
+                                    distance = -1.0;
+                                    xDir = true;
+                                    yDir = false;
+                                    break;
+                                case OutputActionData.RelativeMouseDir.MouseRight:
+                                    distance = 1.0;
+                                    xDir = true;
+                                    yDir = false;
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            int xSpeed = actionData.extraSettings.mouseXSpeed;
+                            int ySpeed = actionData.extraSettings.mouseYSpeed;
+
+                            const int MOUSESPEEDFACTOR = 20;
+                            const double MOUSE_VELOCITY_OFFSET = 0.013;
+                            double timeDelta = CurrentLatency;
+                            int mouseXVelocity = xSpeed * MOUSESPEEDFACTOR;
+                            int mouseYVelocity = ySpeed * MOUSESPEEDFACTOR;
+                            double mouseXOffset = MOUSE_VELOCITY_OFFSET * mouseXVelocity;
+                            double mouseYOffset = MOUSE_VELOCITY_OFFSET * mouseYVelocity;
+
+                            if (xDir)
+                            {
+                                double xMotion = ((mouseXVelocity - mouseXOffset) * timeDelta * distance + (mouseXOffset * timeDelta));
+                                MouseX = xMotion;
+                                MouseSync = true;
+                            }
+
+                            if (yDir)
+                            {
+                                double yMotion = ((mouseYVelocity - mouseYOffset) * timeDelta * distance + (mouseYOffset * timeDelta));
+                                MouseY = yMotion;
+                                MouseSync = true;
+                            }
+                            //xMotion = ((mouseVelocity - tempMouseOffsetX) * timeDelta * absXNorm + (tempMouseOffsetX * timeDelta)) * xSign;
+                            //yMotion = ((mouseVelocity - tempMouseOffsetY) * timeDelta * absYNorm + (tempMouseOffsetY * timeDelta)) * -ySign;
+                        }
+                    }
+
+                    break;
                 case OutputActionData.ActionType.GamepadControl:
                     actionData.activatedEvent = pressed;
                     GamepadFromButtonInput(actionData, pressed);

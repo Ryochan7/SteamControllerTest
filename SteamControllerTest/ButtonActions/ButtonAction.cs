@@ -61,6 +61,16 @@ namespace SteamControllerTest.ButtonActions
             }
         }
 
+        public override double AxisUnit
+        {
+            get
+            {
+                double result = 0.0;
+                if (status) result = 1.0;
+                return result;
+            }
+        }
+
         // Specify the input state of the button
         protected bool status;
 
@@ -348,32 +358,45 @@ namespace SteamControllerTest.ButtonActions
                             foreach (OutputActionData action in func.OutputActions)
                             {
                                 //Console.WriteLine("JAMIES CRYING");
-                                if (action.useNotches)
+
+                                //if (useNotches)
+                                //{
+                                //    WrapNotchesProcess(action);
+                                //    if (!action.activatedEvent && action.currentNotches >= 1.0)
+                                //    {
+                                //        OutputActionData.NotchResultData notchData = action.ProcessNotches();
+                                //        if (notchData.useAnalog)
+                                //        {
+                                //            mapper.RunEventFromAnalog(action, true, notchData.notches, 1.0);
+                                //        }
+                                //        else
+                                //        {
+                                //            mapper.RunEventFromButton(action, true);
+                                //        }
+                                //    }
+                                //    else if (action.activatedEvent)
+                                //    {
+                                //        mapper.RunEventFromButton(action, false);
+                                //    }
+
+                                //    action.firstRun = false;
+                                //    //action.activatedEvent = action.currentNotches != 0.0;
+                                //}
+                                if (!action.checkTick)
                                 {
-                                    WrapNotchesProcess(action);
-                                    if (!action.activatedEvent && action.currentNotches >= 1.0)
+                                    if (processAction)
                                     {
-                                        OutputActionData.NotchResultData notchData = action.ProcessNotches();
-                                        if (notchData.useAnalog)
-                                        {
-                                            mapper.RunEventFromAnalog(action, true, notchData.notches);
-                                        }
-                                        else
-                                        {
-                                            mapper.RunEventFromButton(action, true);
-                                        }
+                                        ProcessAction(mapper, action);
                                     }
-                                    else if (action.activatedEvent)
+                                    else if (analog)
                                     {
-                                        mapper.RunEventFromButton(action, false);
+                                        mapper.RunEventFromAnalog(action, status, ButtonDistance, AxisUnit);
+                                    }
+                                    else
+                                    {
+                                        mapper.RunEventFromButton(action, status);
                                     }
 
-                                    action.firstRun = false;
-                                    //action.activatedEvent = action.currentNotches != 0.0;
-                                }
-                                else if (!action.checkTick)
-                                {
-                                    mapper.RunEventFromButton(action, status);
                                     action.firstRun = false;
                                 }
                                 else if (action.checkTick)
@@ -381,7 +404,19 @@ namespace SteamControllerTest.ButtonActions
                                     WrapTickProcess(action);
                                     if (action.ProcessTick())
                                     {
-                                        mapper.RunEventFromButton(action, status);
+                                        if (processAction)
+                                        {
+                                            ProcessAction(mapper, action);
+                                        }
+                                        else if (analog)
+                                        {
+                                            mapper.RunEventFromAnalog(action, status, ButtonDistance, AxisUnit);
+                                        }
+                                        else
+                                        {
+                                            mapper.RunEventFromButton(action, status);
+                                        }
+
                                         action.firstRun = false;
                                         action.EffectiveDurationMs = (int)(action.DurationMs / ButtonDistance);
                                     }
@@ -637,7 +672,19 @@ namespace SteamControllerTest.ButtonActions
                                 Trace.WriteLine("MADE IT HERE");
                                 foreach (OutputActionData action in func.OutputActions)
                                 {
-                                    mapper.RunEventFromButton(action, true);
+                                    if (processAction)
+                                    {
+                                        ProcessAction(mapper, action);
+                                    }
+                                    else if (analog)
+                                    {
+                                        mapper.RunEventFromAnalog(action, true, ButtonDistance, AxisUnit);
+                                    }
+                                    else
+                                    {
+                                        mapper.RunEventFromButton(action, true);
+                                    }
+
                                     //mapper.PendingReleaseActions.Add(action);
                                     action.firstRun = true;
                                     if (action.checkTick) action.Release();
@@ -1177,7 +1224,8 @@ namespace SteamControllerTest.ButtonActions
             //}
         }
 
-        public override void PrepareAnalog(Mapper mapper, double axisValue, bool alterState = true)
+        public override void PrepareAnalog(Mapper mapper, double axisValue, double axisUnit,
+            bool alterState = true)
         {
         }
 

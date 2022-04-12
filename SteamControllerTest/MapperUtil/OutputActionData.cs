@@ -48,6 +48,14 @@ namespace SteamControllerTest.MapperUtil
             public bool useAnalog;
         }
 
+        public enum RelativeMouseDir
+        {
+            MouseUp,
+            MouseDown,
+            MouseLeft,
+            MouseRight,
+        }
+
         private int outputCode;
         private int outputCodeAlias;
         // Hold string as stored in the profile
@@ -67,6 +75,7 @@ namespace SteamControllerTest.MapperUtil
         private int changeToSet = -1;
         private SetChangeCondition changeCondition;
         public bool checkTick;
+        public RelativeMouseDir mouseDir;
 
         public bool useNotches;
         public double currentNotches;
@@ -136,6 +145,13 @@ namespace SteamControllerTest.MapperUtil
             if (type == ActionType.Keyboard)
             {
                 repeat = false;
+            }
+            else if (type == ActionType.RelativeMouse)
+            {
+                if (Enum.TryParse(code.ToString(), out RelativeMouseDir tempDir))
+                {
+                    mouseDir = tempDir;
+                }
             }
         }
 
@@ -254,6 +270,7 @@ namespace SteamControllerTest.MapperUtil
             {
                 case ActionType.Keyboard:
                 case ActionType.MouseButton:
+                case ActionType.GamepadControl:
                     result.notches = 1.0;
                     currentNotches -= 1.0;
                     break;

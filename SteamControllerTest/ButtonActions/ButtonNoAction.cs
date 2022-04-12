@@ -10,6 +10,7 @@ namespace SteamControllerTest.ButtonActions
     public class ButtonNoAction : ButtonMapAction
     {
         public override double ButtonDistance => throw new NotImplementedException();
+        public override double AxisUnit => throw new NotImplementedException();
 
         public ButtonNoAction()
         {
@@ -37,7 +38,8 @@ namespace SteamControllerTest.ButtonActions
         {
         }
 
-        public override void PrepareAnalog(Mapper mapper, double axisValue, bool alterState = true)
+        public override void PrepareAnalog(Mapper mapper, double axisValue, double axisUnit,
+            bool alterState = true)
         {
             throw new NotImplementedException();
         }

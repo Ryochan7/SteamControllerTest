@@ -44,7 +44,7 @@ namespace SteamControllerTest.TriggerActions
             //    axisNorm = 0.0;
             //}
 
-            eventButton.PrepareAnalog(mapper, axisNorm);
+            eventButton.PrepareAnalog(mapper, axisNorm, 1.0);
 
             inputStatus = axisNorm > 0.0;
             active = eventButton.active;

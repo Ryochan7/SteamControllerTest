@@ -12,6 +12,12 @@ namespace SteamControllerTest.ButtonActions
     {
         protected double notches;
 
+        public TouchpadCircularButton()
+        {
+            useNotches = true;
+            processAction = true;
+        }
+
         public void PrepareCircular(Mapper mapper, double notches, bool alterState = true)
         {
             this.notches = notches;
@@ -56,8 +62,63 @@ namespace SteamControllerTest.ButtonActions
                 case OutputActionData.ActionType.Keyboard:
                 case OutputActionData.ActionType.MouseButton:
                 case OutputActionData.ActionType.MouseWheel:
+                case OutputActionData.ActionType.GamepadControl:
                     {
                         action.currentNotches += this.notches;
+                    }
+
+                    break;
+                case OutputActionData.ActionType.ApplyActionLayer:
+                case OutputActionData.ActionType.HoldActionLayer:
+                case OutputActionData.ActionType.RemoveActionLayer:
+                case OutputActionData.ActionType.SwitchActionLayer:
+                    action.currentNotches = 1.0;
+                    break;
+                default:
+                    action.currentNotches += this.notches;
+                    break;
+            }
+        }
+
+        public override void ProcessAction(Mapper mapper, OutputActionData action)
+        {
+            WrapNotchesProcess(action);
+
+            switch(action.OutputType)
+            {
+                case OutputActionData.ActionType.Keyboard:
+                case OutputActionData.ActionType.MouseButton:
+                case OutputActionData.ActionType.GamepadControl:
+                    {
+                        //action.currentNotches += this.notches;
+                        double currentNotches = (int)action.currentNotches;
+                        if (!action.activatedEvent && action.currentNotches >= 1.0)
+                        {
+                            mapper.RunEventFromButton(action, true);
+                            action.currentNotches = action.currentNotches - currentNotches;
+                        }
+                        else if (action.activatedEvent)
+                        {
+                            mapper.RunEventFromButton(action, false);
+                        }
+
+                        action.firstRun = false;
+                    }
+                    break;
+                case OutputActionData.ActionType.MouseWheel:
+                    {
+                        double currentNotches = (int)action.currentNotches;
+                        if (!action.activatedEvent && action.currentNotches >= 1.0)
+                        {
+                            mapper.RunEventFromRelative(action, true, currentNotches);
+                            action.currentNotches = action.currentNotches - currentNotches;
+                        }
+                        else if (action.activatedEvent)
+                        {
+                            mapper.RunEventFromButton(action, false);
+                        }
+
+                        action.firstRun = false;
                     }
 
                     break;
