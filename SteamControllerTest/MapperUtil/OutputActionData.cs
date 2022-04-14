@@ -64,6 +64,7 @@ namespace SteamControllerTest.MapperUtil
         private JoypadActionCodes joypadCode;
         private bool negative;
 
+        private JoypadAxesCodes axisCode;
         private StickActionCodes stickCode;
         private DPadActionCodes dpadCode;
         public bool repeat = true;
@@ -116,6 +117,7 @@ namespace SteamControllerTest.MapperUtil
         public string OutputCodeStr { get => outputCodeProfileStr; set => outputCodeProfileStr = value; }
         public JoypadActionCodes JoypadCode { get => joypadCode; set => joypadCode = value; }
         public bool Negative { get => negative; set => negative = value; }
+        public JoypadAxesCodes AxisCode { get => axisCode; set => axisCode = value; }
         public StickActionCodes StickCode { get => stickCode; set => stickCode = value; }
         public DPadActionCodes DpadCode { get => dpadCode; set => dpadCode = value; }
         public int ChangeToSet { get => changeToSet; set => changeToSet = value; }
@@ -162,6 +164,15 @@ namespace SteamControllerTest.MapperUtil
             {
                 joypadCode = actionCode;
                 this.negative = negative;
+            }
+        }
+
+        public OutputActionData(ActionType type, JoypadAxesCodes axisCode)
+        {
+            outputType = type;
+            if (type == ActionType.GamepadControl)
+            {
+                this.axisCode = axisCode;
             }
         }
 
