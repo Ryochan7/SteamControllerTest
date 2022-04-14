@@ -3777,6 +3777,24 @@ namespace SteamControllerTest
                 case JoypadActionCodes.AxisRTrigger:
                     result = device.CurrentStateRef.RT > 0;
                     break;
+                case JoypadActionCodes.LPadTouch:
+                    result = device.CurrentStateRef.LeftPad.Touch;
+                    break;
+                case JoypadActionCodes.RPadTouch:
+                    result = device.CurrentStateRef.RightPad.Touch;
+                    break;
+                case JoypadActionCodes.LPadClick:
+                    result = device.CurrentStateRef.LeftPad.Click;
+                    break;
+                case JoypadActionCodes.RPadClick:
+                    result = device.CurrentStateRef.RightPad.Click;
+                    break;
+                case JoypadActionCodes.LTFullPull:
+                    result = device.CurrentStateRef.LTClick;
+                    break;
+                case JoypadActionCodes.RTFullPull:
+                    result = device.CurrentStateRef.RTClick;
+                    break;
                 default:
                     break;
             }
@@ -3824,6 +3842,24 @@ namespace SteamControllerTest
                         break;
                     case JoypadActionCodes.AxisRTrigger:
                         result = device.CurrentStateRef.RT > 0;
+                        break;
+                    case JoypadActionCodes.LPadTouch:
+                        result = device.CurrentStateRef.LeftPad.Touch;
+                        break;
+                    case JoypadActionCodes.RPadTouch:
+                        result = device.CurrentStateRef.RightPad.Touch;
+                        break;
+                    case JoypadActionCodes.LPadClick:
+                        result = device.CurrentStateRef.LeftPad.Click;
+                        break;
+                    case JoypadActionCodes.RPadClick:
+                        result = device.CurrentStateRef.RightPad.Click;
+                        break;
+                    case JoypadActionCodes.LTFullPull:
+                        result = device.CurrentStateRef.LTClick;
+                        break;
+                    case JoypadActionCodes.RTFullPull:
+                        result = device.CurrentStateRef.RTClick;
                         break;
                     default:
                         break;
