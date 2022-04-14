@@ -44,6 +44,7 @@ namespace SteamControllerTest.TouchpadActions
         private double relXRemainder;
         private double relYRemainder;
 
+        // Just use Kozec mouse wheel coefficient for now
         private const double SENS_COEFFICIENT = 0.005;
 
         public SplitAxesAnalogBindingCodes XAxisBinding
