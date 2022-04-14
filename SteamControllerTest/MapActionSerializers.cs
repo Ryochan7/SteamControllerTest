@@ -1449,6 +1449,57 @@ namespace SteamControllerTest
         }
     }
 
+    public class TouchpadAxesActionSerializer : MapActionSerializer
+    {
+        public class TouchpadAxesSettings
+        {
+            private TouchpadAxesAction touchAxesAct;
+
+            public double DeadZone
+            {
+                get => touchAxesAct.DeadMod.DeadZone;
+                set
+                {
+                    touchAxesAct.DeadMod.DeadZone = Math.Clamp(value, 0.0, 1.0);
+                    DeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler DeadZoneChanged;
+
+            public TouchpadAxesSettings(TouchpadAxesAction action)
+            {
+                touchAxesAct = action;
+            }
+        }
+
+        private TouchpadAxesAction touchAxesAct = new TouchpadAxesAction();
+        private TouchpadAxesSettings settings;
+        public TouchpadAxesSettings Settings
+        {
+            get => settings;
+            set => settings = value;
+        }
+
+        // Deserialize
+        public TouchpadAxesActionSerializer() : base()
+        {
+            mapAction = touchAxesAct;
+            settings = new TouchpadAxesSettings(touchAxesAct);
+        }
+
+        // Pre-serialize
+        public TouchpadAxesActionSerializer(ActionLayer tempLayer, MapAction mapAction) :
+            base(tempLayer, mapAction)
+        {
+            if (mapAction is TouchpadAxesAction temp)
+            {
+                touchAxesAct = temp;
+                this.mapAction = touchAxesAct;
+                settings = new TouchpadAxesSettings(touchAxesAct);
+            }
+        }
+    }
+
     public class TouchpadCircularSerializer : MapActionSerializer
     {
         public class TouchpadCircBtnBinding

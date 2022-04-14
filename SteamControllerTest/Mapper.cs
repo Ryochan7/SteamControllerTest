@@ -140,6 +140,25 @@ namespace SteamControllerTest
         private double mouseYRemainder = 0.0;
         public double MouseXRemainder { get => mouseXRemainder; set => mouseXRemainder = value; }
         public double MouseYRemainder { get => mouseYRemainder; set => mouseYRemainder = value; }
+
+        private int mouseWheelX;
+        private int mouseWheelY;
+        private bool mouseWheelSync;
+        public int MouseWheelX
+        {
+            get => mouseWheelX; set => mouseWheelX = value;
+        }
+
+        public int MouseWheelY
+        {
+            get => mouseWheelY; set => mouseWheelY = value;
+        }
+
+        public bool MouseWheelSync
+        {
+            get => mouseWheelSync; set => mouseWheelSync = value;
+        }
+
         private OneEuroFilter mStickFilterX = new OneEuroFilter(minCutoff: 0.6, beta: 0.7);
         private OneEuroFilter mStickFilterY = new OneEuroFilter(minCutoff: 0.6, beta: 0.7);
         private OneEuroFilter filterX = new OneEuroFilter(minCutoff: 0.4, beta: 0.6);
@@ -963,6 +982,13 @@ namespace SteamControllerTest
                 {
                     fakerInputHandler.MoveAbsoluteMouse(absMouseX, absMouseY);
                     absMouseSync = false;
+                }
+
+                if (mouseWheelSync)
+                {
+                    fakerInputHandler.PerformMouseWheelEvent(vertical: mouseWheelY,
+                        horizontal: mouseWheelX);
+                    mouseWheelSync = false;
                 }
 
                 SyncMouseButtons();

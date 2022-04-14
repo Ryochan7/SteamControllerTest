@@ -103,4 +103,29 @@ namespace SteamControllerTest.MapperUtil
         WheelLeft,
         WheelRight,
     }
+
+    public enum JoypadAxesCodes : uint
+    {
+        Axis1 = 1 << 8, AxisLX = Axis1, X360_LX = Axis1,
+        Axis2, AxisLY = Axis2, X360_LY = Axis2,
+        Axis3, AxisRX = Axis3, X360_RX = Axis3,
+        Axis4, AxisRY = Axis4, X360_RY = Axis4,
+        Axis5, AxisLTrigger = Axis5, X360_LT = Axis5,
+        Axis6, AxisRTrigger = Axis6, X360_RT = Axis6,
+    }
+
+    public enum SplitAxesAnalogBindingCodes : uint
+    {
+        None,
+        Axis1 = 1 << 8, AxisLX = Axis1, X360_LX = Axis1,
+        Axis2, AxisLY = Axis2, X360_LY = Axis2,
+        Axis3, AxisRX = Axis3, X360_RX = Axis3,
+        Axis4, AxisRY = Axis4, X360_RY = Axis4,
+        Axis5, AxisLTrigger = Axis5, X360_LT = Axis5,
+        Axis6, AxisRTrigger = Axis6, X360_RT = Axis6, AxisMax = Axis6,
+        MouseX,
+        MouseY,
+        MouseWheelX,
+        MouseWheelY,
+    }
 }
