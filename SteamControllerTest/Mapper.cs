@@ -195,6 +195,8 @@ namespace SteamControllerTest
         private StickDefinition lsDefintion;
         private TouchpadDefinition leftPadDefiniton;
         private TouchpadDefinition rightPadDefinition;
+        private TriggerDefinition leftTriggerDefinition;
+        private TriggerDefinition rightTriggerDefinition;
 
         private Profile actionProfile = new Profile();
         private IntermediateState intermediateState = new IntermediateState();
@@ -369,6 +371,18 @@ namespace SteamControllerTest
             };
 
             rightPadDefinition = new TouchpadDefinition(rpadXAxis, rpadYAxis, TouchpadActionCodes.TouchR);
+
+            TriggerDefinition.TriggerAxisData ltAxis = new TriggerDefinition.TriggerAxisData
+            {
+                min = 0,
+                max = 255,
+            };
+
+            leftTriggerDefinition = new TriggerDefinition(ltAxis, TriggerActionCodes.LeftTrigger);
+
+            // Copy struct
+            TriggerDefinition.TriggerAxisData rtAxis = ltAxis;
+            rightTriggerDefinition = new TriggerDefinition(rtAxis, TriggerActionCodes.LeftTrigger);
 
             ReadFromProfile();
         }
@@ -568,6 +582,16 @@ namespace SteamControllerTest
                                         case InputBindingMeta.InputControlType.Trigger:
                                             if (tempAction is TriggerMapAction)
                                             {
+                                                TriggerMapAction triggerAct = tempAction as TriggerMapAction;
+                                                if (tempBind.id == "LT")
+                                                {
+                                                    triggerAct.TriggerDef = leftTriggerDefinition;
+                                                }
+                                                else if (tempBind.id == "RT")
+                                                {
+                                                    triggerAct.TriggerDef = rightTriggerDefinition;
+                                                }
+
                                                 tempAction.MappingId = tempBind.id;
                                                 tempLayer.triggerActionDict[tempBind.id] = tempAction as TriggerMapAction;
                                                 if (parentLayer != null && parentLayer.triggerActionDict.TryGetValue(tempBind.id, out TriggerMapAction tempParentTrigAction) &&

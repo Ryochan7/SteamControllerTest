@@ -27,13 +27,15 @@ namespace SteamControllerTest.TriggerActions
 
         public TriggerButtonAction()
         {
-            deadZone = new AxisDeadZone(30 / 255.0, 1.0, 0.0);
+            double tempDeadZone = 30 / 255.0;
+            deadZone = new AxisDeadZone(tempDeadZone, 1.0, 0.0);
         }
 
         public override void Prepare(Mapper mapper, double axisValue, bool alterState = true)
         {
             //bool inSafeZone = axisValue > 30;
-            deadZone.CalcOutValues((int)axisValue, 255, out axisNorm);
+            int maxDir = triggerDefinition.trigAxis.max;
+            deadZone.CalcOutValues((int)axisValue, maxDir, out axisNorm);
             //bool inSafeZone = axisNorm != 0.0;
             //if (inSafeZone)
             //{

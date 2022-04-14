@@ -10,6 +10,8 @@ namespace SteamControllerTest.TriggerActions
 {
     public class TriggerTranslate : TriggerMapAction
     {
+        private TriggerTranslate parentTrigAction;
+
         public class PropertyKeyStrings
         {
             public const string NAME = "Name";
@@ -54,7 +56,8 @@ namespace SteamControllerTest.TriggerActions
         public override void Prepare(Mapper mapper, double axisValue, bool alterState = true)
         {
             //axisNorm = axisValue / 255.0;
-            deadMod.CalcOutValues((int)axisValue, 255, out axisNorm);
+            int maxDir = triggerDefinition.trigAxis.max;
+            deadMod.CalcOutValues((int)axisValue, maxDir, out axisNorm);
             stateData.state = axisNorm != 0.0;
             stateData.axisNormValue = axisNorm;
 
@@ -104,8 +107,7 @@ namespace SteamControllerTest.TriggerActions
             {
                 base.SoftCopyFromParent(parentAction);
 
-                this.parentAction = parentAction;
-                mappingId = tempTrigTranslateAction.mappingId;
+                parentTrigAction = tempTrigTranslateAction;
 
                 // Determine the set with properties that should inherit
                 // from the parent action
@@ -129,6 +131,7 @@ namespace SteamControllerTest.TriggerActions
                             deadMod.AntiDeadZone = tempTrigTranslateAction.deadMod.AntiDeadZone;
                             break;
                         case PropertyKeyStrings.OUTPUT_TRIGGER:
+                            outputData.JoypadCode = tempTrigTranslateAction.OutputData.JoypadCode;
                             break;
                         default:
                             break;

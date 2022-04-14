@@ -11,9 +11,20 @@ namespace SteamControllerTest.TriggerActions
         public bool activeEvent;
         public bool active;
 
+        protected TriggerDefinition triggerDefinition;
+        public TriggerDefinition TriggerDef
+        {
+            get => triggerDefinition;
+            set => triggerDefinition = value;
+        }
+
         public abstract void Prepare(Mapper mapper, double axisValue, bool alterState = true);
         public virtual void SoftCopyFromParent(TriggerMapAction parentAction)
         {
+            name = parentAction.name;
+            mappingId = parentAction.mappingId;
+            this.parentAction = parentAction;
+            this.triggerDefinition = new TriggerDefinition(parentAction.triggerDefinition);
         }
     }
 }

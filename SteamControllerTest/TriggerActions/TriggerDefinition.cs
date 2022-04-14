@@ -23,5 +23,11 @@ namespace SteamControllerTest.TriggerActions
             this.trigAxis = axisData;
             this.trigCode = trigCode;
         }
+
+        public TriggerDefinition(TriggerDefinition sourceDef)
+        {
+            trigAxis = sourceDef.trigAxis;
+            trigCode = sourceDef.trigCode;
+        }
     }
 }

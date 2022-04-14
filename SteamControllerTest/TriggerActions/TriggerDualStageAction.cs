@@ -118,7 +118,8 @@ namespace SteamControllerTest.TriggerActions
 
         public override void Prepare(Mapper mapper, double axisValue, bool alterState = true)
         {
-            deadMod.CalcOutValues((int)axisValue, 255, out axisNorm);
+            int maxDir = triggerDefinition.trigAxis.max;
+            deadMod.CalcOutValues((int)axisValue, maxDir, out axisNorm);
             ActiveZoneButtons currentStageBtns = ProcessCurrentStage(axisNorm);
 
             bool softPullActActive = (currentStageBtns & ActiveZoneButtons.SoftPull) != 0;
