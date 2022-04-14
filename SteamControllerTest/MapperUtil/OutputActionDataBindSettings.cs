@@ -8,10 +8,13 @@ namespace SteamControllerTest.MapperUtil
 {
     public class OutputActionDataBindSettings
     {
+        private const int MOUSE_X_SPEED = 50;
+        private const int MOUSE_Y_SPEED = 50;
+
         public int wheelXTicks = 0;
         public int wheelYTicks = 0;
 
-        public int mouseXSpeed;
-        public int mouseYSpeed;
+        public int mouseXSpeed = MOUSE_X_SPEED;
+        public int mouseYSpeed = MOUSE_Y_SPEED;
     }
 }

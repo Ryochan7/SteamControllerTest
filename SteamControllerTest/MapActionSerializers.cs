@@ -5129,10 +5129,15 @@ namespace SteamControllerTest
                 case ActionType.RelativeMouse:
                     {
                         tempInstance.OutputType = checkType;
-                        if (int.TryParse(j["Code"]?.ToString(), out int temp))
+                        //if (int.TryParse(j["Code"]?.ToString(), out int temp))
+                        //{
+                        //    tempInstance.OutputCode = temp;
+                        //    tempInstance.OutputCodeAlias = temp;
+                        //}
+                        if (Enum.TryParse(j["Dir"]?.ToString(), out RelativeMouseDir temp))
                         {
-                            tempInstance.OutputCode = temp;
-                            tempInstance.OutputCodeAlias = temp;
+                            tempInstance.mouseDir = temp;
+                            tempInstance.OutputCodeStr = j["Dir"]?.ToString();
                         }
 
                         DeserializeExtraJSONProperties(tempInstance, j);
@@ -5332,6 +5337,20 @@ namespace SteamControllerTest
                 case ActionType.Keyboard:
                     break;
                 case ActionType.RelativeMouse:
+                    {
+                        if (int.TryParse(jsonObject["Settings"]?["MouseXSpeed"]?.ToString(), out int tempX) &&
+                            tempX > 0)
+                        {
+                            actionData.extraSettings.mouseXSpeed = tempX;
+                        }
+
+                        if (int.TryParse(jsonObject["Settings"]?["MouseYSpeed"]?.ToString(), out int tempY) &&
+                            tempY > 0)
+                        {
+                            actionData.extraSettings.mouseYSpeed = tempY;
+                        }
+                    }
+
                     break;
                 case ActionType.MouseWheel:
                     if (int.TryParse(jsonObject["Settings"]?["TickTime"]?.ToString(), out int temp) &&
