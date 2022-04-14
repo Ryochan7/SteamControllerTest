@@ -67,6 +67,7 @@ namespace SteamControllerTest.MapperUtil
         private JoypadAxesCodes axisCode;
         private StickActionCodes stickCode;
         private DPadActionCodes dpadCode;
+        private JoypadActionCodeMapping outputPadMap = new JoypadActionCodeMapping();
         public bool repeat = true;
         public bool activatedEvent = false;
         public bool firstRun = true;
@@ -120,6 +121,11 @@ namespace SteamControllerTest.MapperUtil
         public JoypadAxesCodes AxisCode { get => axisCode; set => axisCode = value; }
         public StickActionCodes StickCode { get => stickCode; set => stickCode = value; }
         public DPadActionCodes DpadCode { get => dpadCode; set => dpadCode = value; }
+        public JoypadActionCodeMapping OutputPadMap
+        {
+            get => outputPadMap; set => outputPadMap = value;
+        }
+
         public int ChangeToSet { get => changeToSet; set => changeToSet = value; }
         public SetChangeCondition ChangeCondition { get => changeCondition; set => changeCondition = value; }
         public bool CheckTick { get => checkTick; set => checkTick = value; }
@@ -173,6 +179,8 @@ namespace SteamControllerTest.MapperUtil
             if (type == ActionType.GamepadControl)
             {
                 this.axisCode = axisCode;
+                outputPadMap.type = JoypadActionCodeMapping.ControlType.Axis;
+                outputPadMap.outputValue.axisCode = axisCode;
             }
         }
 
@@ -182,6 +190,8 @@ namespace SteamControllerTest.MapperUtil
             if (type == ActionType.GamepadControl)
             {
                 this.stickCode = stickCode;
+                outputPadMap.type = JoypadActionCodeMapping.ControlType.Stick;
+                outputPadMap.outputValue.stickCode = stickCode;
             }
         }
 
@@ -191,6 +201,8 @@ namespace SteamControllerTest.MapperUtil
             if (type == ActionType.GamepadControl)
             {
                 this.dpadCode = dpadCode;
+                outputPadMap.type = JoypadActionCodeMapping.ControlType.DPad;
+                outputPadMap.outputValue.dpadCode = dpadCode;
             }
         }
 
@@ -208,6 +220,7 @@ namespace SteamControllerTest.MapperUtil
             secondData.changeCondition = ChangeCondition;
             secondData.durationMs = durationMs;
             secondData.effectiveDurationMs = effectiveDurationMs;
+            secondData.outputPadMap = new JoypadActionCodeMapping(outputPadMap);
         }
 
         public bool ProcessTick()
