@@ -28,13 +28,16 @@ namespace SteamControllerTest.MapperUtil
         Btn16, BtnHome = Btn16,
         Btn17, BtnCapture = Btn17,
 
-        Btn18, LPadTouch = Btn18,
-        Btn19, LPadClick = Btn19,
-        Btn20, RPadTouch = Btn20,
-        Btn21, RPadClick = Btn21,
+        Btn18, BtnLGrip = Btn18,
+        Btn19, BtnRGrip = Btn19,
 
-        Btn22, LTFullPull = Btn22,
-        Btn23, RTFullPull = Btn23,
+        Btn20, LPadTouch = Btn20,
+        Btn21, LPadClick = Btn21,
+        Btn22, RPadTouch = Btn22,
+        Btn23, RPadClick = Btn23,
+
+        Btn24, LTFullPull = Btn24,
+        Btn25, RTFullPull = Btn25,
 
         BtnMax = 255,
 
