@@ -25,7 +25,7 @@ namespace SteamControllerTest.MapperUtil
         Btn14, BtnDPadLeft = Btn14, X360_DPAD_LEFT = Btn14,
         Btn15, BtnDPadRight = Btn15, X360_DPAD_RIGHT = Btn15,
 
-        Btn16, BtnHome = Btn16,
+        Btn16, BtnHome = Btn16, BtnSteam = Btn16,
         Btn17, BtnCapture = Btn17,
 
         Btn18, BtnLGrip = Btn18,
