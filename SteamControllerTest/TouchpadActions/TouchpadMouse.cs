@@ -106,8 +106,11 @@ namespace SteamControllerTest.TouchpadActions
                 ref TouchEventFrame previousTouchFrame =
                     ref mapper.GetPreviousTouchEventFrame(touchpadDefinition.touchCode);
 
-                // Process normal mouse
-                ProcessTouchMouse(mapper, ref touchFrame, ref previousTouchFrame);
+                if (previousTouchFrame.Touch)
+                {
+                    // Process normal mouse
+                    ProcessTouchMouse(mapper, ref touchFrame, ref previousTouchFrame);
+                }
             }
 
             active = activeEvent = true;
