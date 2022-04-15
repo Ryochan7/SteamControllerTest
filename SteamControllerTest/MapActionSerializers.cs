@@ -1436,7 +1436,7 @@ namespace SteamControllerTest
 
             public StickActionCodes OutputStick
             {
-                get => touchMouseJoyAction.OutputAction.StickCode;
+                get => touchMouseJoyAction.MStickParams.outputStick;
                 set
                 {
                     touchMouseJoyAction.OutputAction.StickCode = value;
@@ -1444,6 +1444,17 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler OutputStickChanged;
+
+            public bool Trackball
+            {
+                get => touchMouseJoyAction.MStickParams.trackballEnabled;
+                set
+                {
+                    touchMouseJoyAction.MStickParams.trackballEnabled = value;
+                    TrackballChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler TrackballChanged;
 
             public int TrackballFriction
             {
@@ -1455,6 +1466,39 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler TrackballFrictionChanged;
+
+            public bool InvertX
+            {
+                get => touchMouseJoyAction.MStickParams.invertX;
+                set
+                {
+                    touchMouseJoyAction.MStickParams.invertX = value;
+                    InvertXChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler InvertXChanged;
+
+            public bool InvertY
+            {
+                get => touchMouseJoyAction.MStickParams.invertY;
+                set
+                {
+                    touchMouseJoyAction.MStickParams.invertY = value;
+                    InvertYChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler InvertYChanged;
+
+            public double VerticalScale
+            {
+                get => touchMouseJoyAction.MStickParams.verticalScale;
+                set
+                {
+                    touchMouseJoyAction.MStickParams.verticalScale = Math.Clamp(value, 0.0, 10.0);
+                    VerticalScaleChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler VerticalScaleChanged;
 
             public TouchpadMouseJoystickSettings(TouchpadMouseJoystick action)
             {
@@ -1483,7 +1527,31 @@ namespace SteamControllerTest
             settings.AntiDeadZoneXChanged += Settings_AntiDeadZoneXChanged;
             settings.AntiDeadZoneYChanged += Settings_AntiDeadZoneYChanged;
             settings.OutputStickChanged += Settings_OutputStickChanged;
+            settings.TrackballChanged += Settings_TrackballChanged;
             settings.TrackballFrictionChanged += Settings_TrackballFrictionChanged;
+            settings.InvertXChanged += Settings_InvertXChanged;
+            settings.InvertYChanged += Settings_InvertYChanged;
+            settings.VerticalScaleChanged += Settings_VerticalScaleChanged;
+        }
+
+        private void Settings_TrackballChanged(object sender, EventArgs e)
+        {
+            touchMouseJoyAction.ChangedProperties.Add(TouchpadMouseJoystick.PropertyKeyStrings.TRACKBALL_MODE);
+        }
+
+        private void Settings_VerticalScaleChanged(object sender, EventArgs e)
+        {
+            touchMouseJoyAction.ChangedProperties.Add(TouchpadMouseJoystick.PropertyKeyStrings.VERTICAL_SCALE);
+        }
+
+        private void Settings_InvertYChanged(object sender, EventArgs e)
+        {
+            touchMouseJoyAction.ChangedProperties.Add(TouchpadMouseJoystick.PropertyKeyStrings.INVERT_Y);
+        }
+
+        private void Settings_InvertXChanged(object sender, EventArgs e)
+        {
+            touchMouseJoyAction.ChangedProperties.Add(TouchpadMouseJoystick.PropertyKeyStrings.INVERT_X);
         }
 
         private void Settings_TrackballFrictionChanged(object sender, EventArgs e)

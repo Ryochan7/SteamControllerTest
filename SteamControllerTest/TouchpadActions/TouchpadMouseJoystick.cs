@@ -22,9 +22,9 @@ namespace SteamControllerTest.TouchpadActions
             public const string TRACKBALL_MODE = "Trackball";
             public const string TRACKBALL_FRICTION = "TrackballFriction";
             //public const string ROTATION = "Rotation";
-            //public const string INVERT_X = "InvertX";
-            //public const string INVERT_Y = "InvertY";
-            //public const string VERTICAL_SCALE = "VerticalScale";
+            public const string INVERT_X = "InvertX";
+            public const string INVERT_Y = "InvertY";
+            public const string VERTICAL_SCALE = "VerticalScale";
             //public const string MAX_OUTPUT = "MaxOutput";
             //public const string MAX_OUTPUT_ENABLED = "MaxOutputEnabled";
             //public const string SQUARE_STICK_ENABLED = "SquareStickEnabled";
@@ -42,10 +42,10 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.OUTPUT_STICK,
             PropertyKeyStrings.TRACKBALL_MODE,
             PropertyKeyStrings.TRACKBALL_FRICTION,
-            //PropertyKeyStrings.INVERT_X,
-            //PropertyKeyStrings.INVERT_Y,
+            PropertyKeyStrings.INVERT_X,
+            PropertyKeyStrings.INVERT_Y,
             //PropertyKeyStrings.ROTATION,
-            //PropertyKeyStrings.VERTICAL_SCALE,
+            PropertyKeyStrings.VERTICAL_SCALE,
             //PropertyKeyStrings.MAX_OUTPUT_ENABLED,
             //PropertyKeyStrings.MAX_OUTPUT,
             //PropertyKeyStrings.SQUARE_STICK_ENABLED,
@@ -70,12 +70,30 @@ namespace SteamControllerTest.TouchpadActions
                 }
             }
             public event EventHandler TrackballFrictionChanged;
+
+            public bool invertX;
+            public bool invertY;
+            public double verticalScale;
+            public StickActionCodes outputStick;
+            public StickActionCodes OutputStick
+            {
+                get => outputStick;
+                set
+                {
+                    outputStick = value;
+                    OutputStickChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler OutputStickChanged;
         }
 
         private const int DEFAULT_DEADZONE = 70;
         private const int DEFAULT_MAXZONE = 430;
         private const double DEFAULT_ANTI_DEADZONE_X = 0.30;
         private const double DEFAULT_ANTI_DEADZONE_Y = 0.30;
+        private const double DEFAULT_VERTICAL_SCALE = 1.0;
+        private const StickActionCodes DEFAULT_OUTPUT_STICK = StickActionCodes.RS;
+        private const bool DEFAULT_TRACKBALL_ENABLED = true;
 
         private OutputActionData outputAction;
         public OutputActionData OutputAction
@@ -99,16 +117,35 @@ namespace SteamControllerTest.TouchpadActions
         //private double TRACKBALL_SCALE = 0.000023;
         private double TRACKBALL_SCALE = 0.000023;
         private const int TRACKBALL_BUFFER_LEN = 8;
-        private double[] trackballXBuffer = new double[TRACKBALL_BUFFER_LEN];
-        private double[] trackballYBuffer = new double[TRACKBALL_BUFFER_LEN];
-        private int trackballBufferTail = 0;
-        private int trackballBufferHead = 0;
-        private double trackballAccel = 0.0;
-        private double trackballXVel = 0.0;
-        private double trackballYVel = 0.0;
-        private bool trackballActive = false;
-        private double trackballDXRemain = 0.0;
-        private double trackballDYRemain = 0.0;
+
+        private class TrackballVelData
+        {
+            public double[] trackballXBuffer = new double[TRACKBALL_BUFFER_LEN];
+            public double[] trackballYBuffer = new double[TRACKBALL_BUFFER_LEN];
+            public int trackballBufferTail = 0;
+            public int trackballBufferHead = 0;
+            public double trackballAccel = 0.0;
+            public double trackballXVel = 0.0;
+            public double trackballYVel = 0.0;
+            public bool trackballActive = false;
+            public double trackballDXRemain = 0.0;
+            public double trackballDYRemain = 0.0;
+
+            public void PurgeData()
+            {
+                Array.Clear(trackballXBuffer, 0, TRACKBALL_BUFFER_LEN);
+                Array.Clear(trackballYBuffer, 0, TRACKBALL_BUFFER_LEN);
+                trackballXVel = 0.0;
+                trackballYVel = 0.0;
+                trackballActive = false;
+                trackballBufferTail = 0;
+                trackballBufferHead = 0;
+                trackballDXRemain = 0.0;
+                trackballDYRemain = 0.0;
+            }
+        }
+
+        private TrackballVelData trackData;
 
         private bool useParentTrackFriction;
 
@@ -120,9 +157,11 @@ namespace SteamControllerTest.TouchpadActions
 
         public TouchpadMouseJoystick()
         {
-            this.outputAction = new OutputActionData(OutputActionData.ActionType.GamepadControl, StickActionCodes.RS);
+            this.outputAction = new OutputActionData(OutputActionData.ActionType.GamepadControl,
+                DEFAULT_OUTPUT_STICK);
 
-            trackballAccel = TRACKBALL_RADIUS * TRACKBALL_JOY_FRICTION / TRACKBALL_INERTIA;
+            trackData = new TrackballVelData();
+            trackData.trackballAccel = TRACKBALL_RADIUS * TRACKBALL_JOY_FRICTION / TRACKBALL_INERTIA;
 
             mStickParams = new TouchpadMouseJoystickParams()
             {
@@ -130,10 +169,18 @@ namespace SteamControllerTest.TouchpadActions
                 maxZone = DEFAULT_MAXZONE,
                 antiDeadzoneX = DEFAULT_ANTI_DEADZONE_X,
                 antiDeadzoneY = DEFAULT_ANTI_DEADZONE_Y,
+                trackballEnabled = DEFAULT_TRACKBALL_ENABLED,
                 trackballFriction = TRACKBALL_JOY_FRICTION,
+                verticalScale = DEFAULT_VERTICAL_SCALE,
             };
 
             mStickParams.TrackballFrictionChanged += MStickParams_TrackballFrictionChanged;
+            mStickParams.OutputStickChanged += MStickParams_OutputStickChanged;
+        }
+
+        private void MStickParams_OutputStickChanged(object sender, EventArgs e)
+        {
+            outputAction.StickCode = mStickParams.outputStick;
         }
 
         private void MStickParams_TrackballFrictionChanged(object sender, EventArgs e)
@@ -145,7 +192,22 @@ namespace SteamControllerTest.TouchpadActions
         {
             //Trace.WriteLine($"IN PREPARE {touchFrame.X} {touchFrame.Y}");
             //Trace.WriteLine($"IN PREPARE {touchFrame.X} {touchFrame.Y}");
-            TrackballMouseJoystickProcess(mapper, ref touchFrame);
+
+            if (mStickParams.trackballEnabled)
+            {
+                TrackballMouseJoystickProcess(mapper, ref touchFrame);
+            }
+            else if (!mStickParams.trackballEnabled && touchFrame.Touch)
+            {
+                ref TouchEventFrame previousTouchFrame =
+                    ref mapper.GetPreviousTouchEventFrame(touchpadDefinition.touchCode);
+
+                if (previousTouchFrame.Touch)
+                {
+                    // Process normal mouse
+                    ProcessTouchMouseJoystick(ref touchFrame, ref previousTouchFrame);
+                }
+            }
 
             active = activeEvent = true;
         }
@@ -200,8 +262,7 @@ namespace SteamControllerTest.TouchpadActions
                 if (parentAction != null &&
                     mStickParams.trackballEnabled != tempMouseJoyAction.mStickParams.trackballEnabled)
                 {
-                    //trackData.PurgeData();
-                    PurgeTrackballData();
+                    trackData.PurgeData();
                 }
             }
 
@@ -210,15 +271,15 @@ namespace SteamControllerTest.TouchpadActions
 
         private void PurgeTrackballData()
         {
-            Array.Clear(trackballXBuffer, 0, TRACKBALL_BUFFER_LEN);
-            Array.Clear(trackballYBuffer, 0, TRACKBALL_BUFFER_LEN);
-            trackballXVel = 0.0;
-            trackballYVel = 0.0;
-            trackballActive = false;
-            trackballBufferTail = 0;
-            trackballBufferHead = 0;
-            trackballDXRemain = 0.0;
-            trackballDYRemain = 0.0;
+            Array.Clear(trackData.trackballXBuffer, 0, TRACKBALL_BUFFER_LEN);
+            Array.Clear(trackData.trackballYBuffer, 0, TRACKBALL_BUFFER_LEN);
+            trackData.trackballXVel = 0.0;
+            trackData.trackballYVel = 0.0;
+            trackData.trackballActive = false;
+            trackData.trackballBufferTail = 0;
+            trackData.trackballBufferHead = 0;
+            trackData.trackballDXRemain = 0.0;
+            trackData.trackballDYRemain = 0.0;
         }
 
         private void TrackballMouseJoystickProcess(Mapper mapper, ref TouchEventFrame touchFrame)
@@ -228,21 +289,21 @@ namespace SteamControllerTest.TouchpadActions
 
             if (touchFrame.Touch && !previousTouchFrame.Touch)
             {
-                if (trackballActive)
+                if (trackData.trackballActive)
                 {
                     //Trace.WriteLine("CHECKING HERE");
                 }
 
                 // Initial touch
-                Array.Clear(trackballXBuffer, 0, TRACKBALL_BUFFER_LEN);
-                Array.Clear(trackballYBuffer, 0, TRACKBALL_BUFFER_LEN);
-                trackballXVel = 0.0;
-                trackballYVel = 0.0;
-                trackballActive = false;
-                trackballBufferTail = 0;
-                trackballBufferHead = 0;
-                trackballDXRemain = 0.0;
-                trackballDYRemain = 0.0;
+                Array.Clear(trackData.trackballXBuffer, 0, TRACKBALL_BUFFER_LEN);
+                Array.Clear(trackData.trackballYBuffer, 0, TRACKBALL_BUFFER_LEN);
+                trackData.trackballXVel = 0.0;
+                trackData.trackballYVel = 0.0;
+                trackData.trackballActive = false;
+                trackData.trackballBufferTail = 0;
+                trackData.trackballBufferHead = 0;
+                trackData.trackballDXRemain = 0.0;
+                trackData.trackballDYRemain = 0.0;
 
                 //Trace.WriteLine("INITIAL");
             }
@@ -261,30 +322,30 @@ namespace SteamControllerTest.TouchpadActions
                 double finalWeight = 0.0;
                 double x_out = 0.0, y_out = 0.0;
                 int idx = -1;
-                for (int i = 0; i < TRACKBALL_BUFFER_LEN && idx != trackballBufferHead; i++)
+                for (int i = 0; i < TRACKBALL_BUFFER_LEN && idx != trackData.trackballBufferHead; i++)
                 {
-                    idx = (trackballBufferTail - i - 1 + TRACKBALL_BUFFER_LEN) % TRACKBALL_BUFFER_LEN;
-                    x_out += trackballXBuffer[idx] * currentWeight;
-                    y_out += trackballYBuffer[idx] * currentWeight;
+                    idx = (trackData.trackballBufferTail - i - 1 + TRACKBALL_BUFFER_LEN) % TRACKBALL_BUFFER_LEN;
+                    x_out += trackData.trackballXBuffer[idx] * currentWeight;
+                    y_out += trackData.trackballYBuffer[idx] * currentWeight;
                     finalWeight += currentWeight;
                     currentWeight *= 1.0;
                 }
 
                 x_out /= finalWeight;
-                trackballXVel = x_out;
+                trackData.trackballXVel = x_out;
                 y_out /= finalWeight;
-                trackballYVel = y_out;
+                trackData.trackballYVel = y_out;
 
-                double dist = Math.Sqrt(trackballXVel * trackballXVel + trackballYVel * trackballYVel);
+                double dist = Math.Sqrt(trackData.trackballXVel * trackData.trackballXVel + trackData.trackballYVel * trackData.trackballYVel);
                 if (dist >= 1.0)
                 {
-                    trackballActive = true;
+                    trackData.trackballActive = true;
 
                     //Trace.WriteLine($"START TRACK {dist}");
                     ProcessTrackballJoystickFrame(ref touchFrame);
                 }
             }
-            else if (!touchFrame.Touch && trackballActive)
+            else if (!touchFrame.Touch && trackData.trackballActive)
             {
                 //Trace.WriteLine("CONTINUE TRACK");
                 // Trackball Running
@@ -304,63 +365,66 @@ namespace SteamControllerTest.TouchpadActions
 
             //Trace.WriteLine(String.Format("DELTA X: {0} Y: {1}", dx, dy));
 
-            // Fill trackball entry
-            int iIndex = trackballBufferTail;
-            trackballXBuffer[iIndex] = (dx * TRACKBALL_SCALE) / touchFrame.timeElapsed;
-            trackballYBuffer[iIndex] = (dy * TRACKBALL_SCALE) / touchFrame.timeElapsed;
-            trackballBufferTail = (iIndex + 1) % TRACKBALL_BUFFER_LEN;
-            if (trackballBufferHead == trackballBufferTail)
-                trackballBufferHead = (trackballBufferHead + 1) % TRACKBALL_BUFFER_LEN;
+            if (mStickParams.trackballEnabled)
+            {
+                // Fill trackball entry
+                int iIndex = trackData.trackballBufferTail;
+                trackData.trackballXBuffer[iIndex] = (dx * TRACKBALL_SCALE) / touchFrame.timeElapsed;
+                trackData.trackballYBuffer[iIndex] = (dy * TRACKBALL_SCALE) / touchFrame.timeElapsed;
+                trackData.trackballBufferTail = (iIndex + 1) % TRACKBALL_BUFFER_LEN;
+                if (trackData.trackballBufferHead == trackData.trackballBufferTail)
+                    trackData.trackballBufferHead = (trackData.trackballBufferHead + 1) % TRACKBALL_BUFFER_LEN;
+            }
 
             TouchMouseJoystickPad(dx, -dy, ref touchFrame);
         }
 
         private void ProcessTrackballJoystickFrame(ref TouchEventFrame touchFrame)
         {
-            double tempAngle = Math.Atan2(-trackballYVel, trackballXVel);
+            double tempAngle = Math.Atan2(-trackData.trackballYVel, trackData.trackballXVel);
             double normX = Math.Abs(Math.Cos(tempAngle));
             double normY = Math.Abs(Math.Sin(tempAngle));
-            int signX = Math.Sign(trackballXVel);
-            int signY = Math.Sign(trackballYVel);
+            int signX = Math.Sign(trackData.trackballXVel);
+            int signY = Math.Sign(trackData.trackballYVel);
 
-            double trackXvDecay = Math.Min(Math.Abs(trackballXVel), trackballAccel * touchFrame.timeElapsed * normX);
-            double trackYvDecay = Math.Min(Math.Abs(trackballYVel), trackballAccel * touchFrame.timeElapsed * normY);
-            double xVNew = trackballXVel - (trackXvDecay * signX);
-            double yVNew = trackballYVel - (trackYvDecay * signY);
+            double trackXvDecay = Math.Min(Math.Abs(trackData.trackballXVel), trackData.trackballAccel * touchFrame.timeElapsed * normX);
+            double trackYvDecay = Math.Min(Math.Abs(trackData.trackballYVel), trackData.trackballAccel * touchFrame.timeElapsed * normY);
+            double xVNew = trackData.trackballXVel - (trackXvDecay * signX);
+            double yVNew = trackData.trackballYVel - (trackYvDecay * signY);
             double xMotion = (xVNew * touchFrame.timeElapsed) / TRACKBALL_SCALE;
             double yMotion = (yVNew * touchFrame.timeElapsed) / TRACKBALL_SCALE;
             if (xMotion != 0.0)
             {
-                xMotion += trackballDXRemain;
+                xMotion += trackData.trackballDXRemain;
             }
             else
             {
-                trackballDXRemain = 0.0;
+                trackData.trackballDXRemain = 0.0;
             }
 
             int dx = (int)xMotion;
-            trackballDXRemain = xMotion - dx;
+            trackData.trackballDXRemain = xMotion - dx;
 
             if (yMotion != 0.0)
             {
-                yMotion += trackballDYRemain;
+                yMotion += trackData.trackballDYRemain;
             }
             else
             {
-                trackballDYRemain = 0.0;
+                trackData.trackballDYRemain = 0.0;
             }
 
             int dy = (int)yMotion;
-            trackballDYRemain = yMotion - dy;
+            trackData.trackballDYRemain = yMotion - dy;
 
-            trackballXVel = xVNew;
-            trackballYVel = yVNew;
+            trackData.trackballXVel = xVNew;
+            trackData.trackballYVel = yVNew;
 
             //Trace.WriteLine(string.Format("DX: {0} DY: {1}", dx, dy));
 
             if (dx == 0 && dy == 0)
             {
-                trackballActive = false;
+                trackData.trackballActive = false;
                 //Trace.WriteLine("ENDING TRACK");
                 xNorm = yNorm = 0.0;
             }
@@ -542,6 +606,11 @@ namespace SteamControllerTest.TouchpadActions
             if (dx != 0) xratio = dx / (double)maxValX;
             if (dy != 0) yratio = dy / (double)maxValY;
 
+            if (mStickParams.verticalScale != 1.0)
+            {
+                yratio = Math.Clamp(yratio * mStickParams.verticalScale, 0.0, 1.0);
+            }
+
             double maxOutRatio = 1.0;
             double maxOutXRatio = Math.Abs(Math.Cos(tempAngle)) * maxOutRatio;
             double maxOutYRatio = Math.Abs(Math.Sin(tempAngle)) * maxOutRatio;
@@ -582,6 +651,16 @@ namespace SteamControllerTest.TouchpadActions
 
             this.xNorm = xNorm * signX;
             this.yNorm = yNorm * signY;
+
+            if (mStickParams.invertX)
+            {
+                this.xNorm *= -1.0;
+            }
+
+            if (mStickParams.invertY)
+            {
+                this.yNorm *= -1.0;
+            }
 
             //Trace.WriteLine($"OutX ({xratio}) | OutY ({yratio})");
             //short axisXOut = (short)filterX.Filter(xNorm * maxDirX,
@@ -636,12 +715,21 @@ namespace SteamControllerTest.TouchpadActions
                         case PropertyKeyStrings.TRACKBALL_MODE:
                             mStickParams.trackballEnabled = tempMouseJoyAction.mStickParams.trackballEnabled;
                             // Copy parent ref
-                            //trackData = tempMouseAction.trackData;
+                            trackData = tempMouseJoyAction.trackData;
                             break;
                         case PropertyKeyStrings.TRACKBALL_FRICTION:
                             mStickParams.trackballFriction = tempMouseJoyAction.mStickParams.trackballFriction;
                             useParentTrackFriction = true;
                             CalcTrackAccel();
+                            break;
+                        case PropertyKeyStrings.INVERT_X:
+                            mStickParams.invertX = tempMouseJoyAction.mStickParams.invertX;
+                            break;
+                        case PropertyKeyStrings.INVERT_Y:
+                            mStickParams.invertY = tempMouseJoyAction.mStickParams.invertY;
+                            break;
+                        case PropertyKeyStrings.VERTICAL_SCALE:
+                            mStickParams.verticalScale = tempMouseJoyAction.mStickParams.verticalScale;
                             break;
                         default:
                             break;
@@ -654,7 +742,7 @@ namespace SteamControllerTest.TouchpadActions
         {
             //trackData.trackballAccel = TRACKBALL_RADIUS * TRACKBALL_JOY_FRICTION / TRACKBALL_INERTIA;
             //trackData.trackballAccel = TRACKBALL_RADIUS * trackballFriction / TRACKBALL_INERTIA;
-            trackballAccel = TRACKBALL_RADIUS * mStickParams.trackballFriction / TRACKBALL_INERTIA;
+            trackData.trackballAccel = TRACKBALL_RADIUS * mStickParams.trackballFriction / TRACKBALL_INERTIA;
         }
     }
 }
