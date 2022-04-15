@@ -1456,6 +1456,17 @@ namespace SteamControllerTest
             }
             public event EventHandler OutputCurveChanged;
 
+            public int Rotation
+            {
+                get => touchMouseJoyAction.MStickParams.rotation;
+                set
+                {
+                    touchMouseJoyAction.MStickParams.rotation = Math.Clamp(value, -180, 180);
+                    RotationChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler RotationChanged;
+
             public bool Trackball
             {
                 get => touchMouseJoyAction.MStickParams.trackballEnabled;
@@ -1537,6 +1548,7 @@ namespace SteamControllerTest
             settings.MaxZoneChanged += Settings_MaxZoneChanged;
             settings.AntiDeadZoneXChanged += Settings_AntiDeadZoneXChanged;
             settings.AntiDeadZoneYChanged += Settings_AntiDeadZoneYChanged;
+            settings.RotationChanged += Settings_RotationChanged;
             settings.OutputStickChanged += Settings_OutputStickChanged;
             settings.OutputCurveChanged += Settings_OutputCurveChanged;
             settings.TrackballChanged += Settings_TrackballChanged;
@@ -1544,6 +1556,11 @@ namespace SteamControllerTest
             settings.InvertXChanged += Settings_InvertXChanged;
             settings.InvertYChanged += Settings_InvertYChanged;
             settings.VerticalScaleChanged += Settings_VerticalScaleChanged;
+        }
+
+        private void Settings_RotationChanged(object sender, EventArgs e)
+        {
+            touchMouseJoyAction.ChangedProperties.Add(TouchpadMouseJoystick.PropertyKeyStrings.ROTATION);
         }
 
         private void Settings_OutputCurveChanged(object sender, EventArgs e)

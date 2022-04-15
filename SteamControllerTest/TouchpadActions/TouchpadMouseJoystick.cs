@@ -22,7 +22,7 @@ namespace SteamControllerTest.TouchpadActions
             public const string OUTPUT_STICK = "OutputStick";
             public const string TRACKBALL_MODE = "Trackball";
             public const string TRACKBALL_FRICTION = "TrackballFriction";
-            //public const string ROTATION = "Rotation";
+            public const string ROTATION = "Rotation";
             public const string INVERT_X = "InvertX";
             public const string INVERT_Y = "InvertY";
             public const string VERTICAL_SCALE = "VerticalScale";
@@ -45,7 +45,7 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.TRACKBALL_FRICTION,
             PropertyKeyStrings.INVERT_X,
             PropertyKeyStrings.INVERT_Y,
-            //PropertyKeyStrings.ROTATION,
+            PropertyKeyStrings.ROTATION,
             PropertyKeyStrings.VERTICAL_SCALE,
             //PropertyKeyStrings.MAX_OUTPUT_ENABLED,
             //PropertyKeyStrings.MAX_OUTPUT,
@@ -87,6 +87,8 @@ namespace SteamControllerTest.TouchpadActions
                 }
             }
             public event EventHandler OutputStickChanged;
+
+            public int rotation;
         }
 
         private const int DEFAULT_DEADZONE = 70;
@@ -196,6 +198,14 @@ namespace SteamControllerTest.TouchpadActions
         {
             //Trace.WriteLine($"IN PREPARE {touchFrame.X} {touchFrame.Y}");
             //Trace.WriteLine($"IN PREPARE {touchFrame.X} {touchFrame.Y}");
+
+            int axisXVal = touchFrame.X;
+            int axisYVal = touchFrame.Y;
+            if (mStickParams.rotation != 0)
+            {
+                TouchpadMethods.RotatedCoordinates(mStickParams.rotation, axisXVal, axisYVal,
+                    touchpadDefinition, out axisXVal, out axisYVal);
+            }
 
             if (mStickParams.trackballEnabled)
             {
@@ -743,6 +753,9 @@ namespace SteamControllerTest.TouchpadActions
                             break;
                         case PropertyKeyStrings.VERTICAL_SCALE:
                             mStickParams.verticalScale = tempMouseJoyAction.mStickParams.verticalScale;
+                            break;
+                        case PropertyKeyStrings.ROTATION:
+                            mStickParams.rotation = tempMouseJoyAction.mStickParams.rotation;
                             break;
                         default:
                             break;
