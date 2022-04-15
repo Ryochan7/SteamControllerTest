@@ -1445,6 +1445,17 @@ namespace SteamControllerTest
             }
             public event EventHandler OutputStickChanged;
 
+            public StickOutCurve.Curve OutputCurve
+            {
+                get => touchMouseJoyAction.MStickParams.outputCurve;
+                set
+                {
+                    touchMouseJoyAction.MStickParams.outputCurve = value;
+                    OutputCurveChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler OutputCurveChanged;
+
             public bool Trackball
             {
                 get => touchMouseJoyAction.MStickParams.trackballEnabled;
@@ -1527,11 +1538,17 @@ namespace SteamControllerTest
             settings.AntiDeadZoneXChanged += Settings_AntiDeadZoneXChanged;
             settings.AntiDeadZoneYChanged += Settings_AntiDeadZoneYChanged;
             settings.OutputStickChanged += Settings_OutputStickChanged;
+            settings.OutputCurveChanged += Settings_OutputCurveChanged;
             settings.TrackballChanged += Settings_TrackballChanged;
             settings.TrackballFrictionChanged += Settings_TrackballFrictionChanged;
             settings.InvertXChanged += Settings_InvertXChanged;
             settings.InvertYChanged += Settings_InvertYChanged;
             settings.VerticalScaleChanged += Settings_VerticalScaleChanged;
+        }
+
+        private void Settings_OutputCurveChanged(object sender, EventArgs e)
+        {
+            touchMouseJoyAction.ChangedProperties.Add(TouchpadMouseJoystick.PropertyKeyStrings.OUTPUT_CURVE);
         }
 
         private void Settings_TrackballChanged(object sender, EventArgs e)
@@ -2819,7 +2836,7 @@ namespace SteamControllerTest
             }
             public event EventHandler AntiZoneChanged;
 
-            public StickModifiers.StickOutCurve.Curve OutputCurve
+            public StickOutCurve.Curve OutputCurve
             {
                 get => stickTransAct.OutputCurve;
                 set

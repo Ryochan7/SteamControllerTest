@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SteamControllerTest.MapperUtil;
+using SteamControllerTest.StickModifiers;
 
 namespace SteamControllerTest.TouchpadActions
 {
@@ -17,7 +18,7 @@ namespace SteamControllerTest.TouchpadActions
             public const string MAX_ZONE = "MaxZone";
             public const string ANTIDEAD_ZONE_X = "AntiDeadZoneX";
             public const string ANTIDEAD_ZONE_Y = "AntiDeadZoneY";
-            //public const string OUTPUT_CURVE = "OutputCurve";
+            public const string OUTPUT_CURVE = "OutputCurve";
             public const string OUTPUT_STICK = "OutputStick";
             public const string TRACKBALL_MODE = "Trackball";
             public const string TRACKBALL_FRICTION = "TrackballFriction";
@@ -38,7 +39,7 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.MAX_ZONE,
             PropertyKeyStrings.ANTIDEAD_ZONE_X,
             PropertyKeyStrings.ANTIDEAD_ZONE_Y,
-            //PropertyKeyStrings.OUTPUT_CURVE,
+            PropertyKeyStrings.OUTPUT_CURVE,
             PropertyKeyStrings.OUTPUT_STICK,
             PropertyKeyStrings.TRACKBALL_MODE,
             PropertyKeyStrings.TRACKBALL_FRICTION,
@@ -58,6 +59,7 @@ namespace SteamControllerTest.TouchpadActions
             public int maxZone;
             public double antiDeadzoneX;
             public double antiDeadzoneY;
+            public StickOutCurve.Curve outputCurve;
             public bool trackballEnabled;
             public int trackballFriction;
             public int TrackballFriction
@@ -93,6 +95,7 @@ namespace SteamControllerTest.TouchpadActions
         private const double DEFAULT_ANTI_DEADZONE_Y = 0.30;
         private const double DEFAULT_VERTICAL_SCALE = 1.0;
         private const StickActionCodes DEFAULT_OUTPUT_STICK = StickActionCodes.RS;
+        private const StickOutCurve.Curve DEFAULT_OUTPUT_CURVE = StickOutCurve.Curve.Linear;
         private const bool DEFAULT_TRACKBALL_ENABLED = true;
 
         private OutputActionData outputAction;
@@ -172,6 +175,7 @@ namespace SteamControllerTest.TouchpadActions
                 trackballEnabled = DEFAULT_TRACKBALL_ENABLED,
                 trackballFriction = TRACKBALL_JOY_FRICTION,
                 verticalScale = DEFAULT_VERTICAL_SCALE,
+                outputCurve = DEFAULT_OUTPUT_CURVE,
             };
 
             mStickParams.TrackballFrictionChanged += MStickParams_TrackballFrictionChanged;
@@ -606,6 +610,12 @@ namespace SteamControllerTest.TouchpadActions
             if (dx != 0) xratio = dx / (double)maxValX;
             if (dy != 0) yratio = dy / (double)maxValY;
 
+            if (mStickParams.outputCurve != StickOutCurve.Curve.Linear)
+            {
+                StickOutCurve.CalcOutValue(mStickParams.outputCurve, xratio, yratio,
+                    out xratio, out yratio);
+            }
+
             if (mStickParams.verticalScale != 1.0)
             {
                 yratio = Math.Clamp(yratio * mStickParams.verticalScale, 0.0, 1.0);
@@ -711,6 +721,9 @@ namespace SteamControllerTest.TouchpadActions
                             break;
                         case PropertyKeyStrings.OUTPUT_STICK:
                             outputAction.StickCode = tempMouseJoyAction.outputAction.StickCode;
+                            break;
+                        case PropertyKeyStrings.OUTPUT_CURVE:
+                            mStickParams.outputCurve = tempMouseJoyAction.mStickParams.outputCurve;
                             break;
                         case PropertyKeyStrings.TRACKBALL_MODE:
                             mStickParams.trackballEnabled = tempMouseJoyAction.mStickParams.trackballEnabled;
