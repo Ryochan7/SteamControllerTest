@@ -23,6 +23,7 @@
                 "OutputStick": "X360_LS",
                 "DeadZone": 0.05,
                 "AntiDeadZone": 0.35,
+                "MaxZone": 0.7,
                 "Rotation": 0
               }
             },
