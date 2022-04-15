@@ -15,7 +15,7 @@ namespace SteamControllerTest.MapperUtil
         Btn4, BtnWest = Btn4, X360_X = Btn4,
         Btn5, BtnLShoulder = Btn5, X360_LB = Btn5,
         Btn6, BtnRShoulder = Btn6, X360_RB = Btn6,
-        Btn7, BtnMode = Btn7, X360_Guide = Btn7,
+        Btn7, BtnMode = Btn7, BtnSteam = Btn7, X360_Guide = Btn7,
         Btn8, BtnStart = Btn8, X360_Start = Btn8,
         Btn9, BtnSelect = Btn9, X360_Back = Btn9,
         Btn10, BtnThumbL = Btn10, X360_ThumbL = Btn10,
@@ -25,7 +25,7 @@ namespace SteamControllerTest.MapperUtil
         Btn14, BtnDPadLeft = Btn14, X360_DPAD_LEFT = Btn14,
         Btn15, BtnDPadRight = Btn15, X360_DPAD_RIGHT = Btn15,
 
-        Btn16, BtnHome = Btn16, BtnSteam = Btn16,
+        Btn16, BtnHome = Btn16,
         Btn17, BtnCapture = Btn17,
 
         Btn18, BtnLGrip = Btn18,
