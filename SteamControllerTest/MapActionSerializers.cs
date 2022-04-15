@@ -1390,6 +1390,50 @@ namespace SteamControllerTest
         {
             private TouchpadMouseJoystick touchMouseJoyAction;
 
+            public int DeadZone
+            {
+                get => touchMouseJoyAction.MStickParams.deadZone;
+                set
+                {
+                    touchMouseJoyAction.MStickParams.deadZone = value;
+                    DeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler DeadZoneChanged;
+
+            public int MaxZone
+            {
+                get => touchMouseJoyAction.MStickParams.maxZone;
+                set
+                {
+                    touchMouseJoyAction.MStickParams.maxZone = value;
+                    MaxZoneChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler MaxZoneChanged;
+
+            public double AntiDeadZoneX
+            {
+                get => touchMouseJoyAction.MStickParams.antiDeadzoneX;
+                set
+                {
+                    touchMouseJoyAction.MStickParams.antiDeadzoneX = value;
+                    AntiDeadZoneXChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler AntiDeadZoneXChanged;
+
+            public double AntiDeadZoneY
+            {
+                get => touchMouseJoyAction.MStickParams.antiDeadzoneY;
+                set
+                {
+                    touchMouseJoyAction.MStickParams.antiDeadzoneX = value;
+                    AntiDeadZoneYChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler AntiDeadZoneYChanged;
+
             public StickActionCodes OutputStick
             {
                 get => touchMouseJoyAction.OutputAction.StickCode;
@@ -1400,6 +1444,17 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler OutputStickChanged;
+
+            public int TrackballFriction
+            {
+                get => touchMouseJoyAction.MStickParams.trackballFriction;
+                set
+                {
+                    touchMouseJoyAction.MStickParams.trackballFriction = value;
+                    TrackballFrictionChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler TrackballFrictionChanged;
 
             public TouchpadMouseJoystickSettings(TouchpadMouseJoystick action)
             {
@@ -1423,7 +1478,37 @@ namespace SteamControllerTest
             settings = new TouchpadMouseJoystickSettings(touchMouseJoyAction);
 
             NameChanged += TouchpadMouseJoystickSerializer_NameChanged;
+            settings.DeadZoneChanged += Settings_DeadZoneChanged;
+            settings.MaxZoneChanged += Settings_MaxZoneChanged;
+            settings.AntiDeadZoneXChanged += Settings_AntiDeadZoneXChanged;
+            settings.AntiDeadZoneYChanged += Settings_AntiDeadZoneYChanged;
             settings.OutputStickChanged += Settings_OutputStickChanged;
+            settings.TrackballFrictionChanged += Settings_TrackballFrictionChanged;
+        }
+
+        private void Settings_TrackballFrictionChanged(object sender, EventArgs e)
+        {
+            touchMouseJoyAction.ChangedProperties.Add(TouchpadMouseJoystick.PropertyKeyStrings.TRACKBALL_FRICTION);
+        }
+
+        private void Settings_AntiDeadZoneYChanged(object sender, EventArgs e)
+        {
+            touchMouseJoyAction.ChangedProperties.Add(TouchpadMouseJoystick.PropertyKeyStrings.ANTIDEAD_ZONE_Y);
+        }
+
+        private void Settings_AntiDeadZoneXChanged(object sender, EventArgs e)
+        {
+            touchMouseJoyAction.ChangedProperties.Add(TouchpadMouseJoystick.PropertyKeyStrings.ANTIDEAD_ZONE_X);
+        }
+
+        private void Settings_MaxZoneChanged(object sender, EventArgs e)
+        {
+            touchMouseJoyAction.ChangedProperties.Add(TouchpadMouseJoystick.PropertyKeyStrings.MAX_ZONE);
+        }
+
+        private void Settings_DeadZoneChanged(object sender, EventArgs e)
+        {
+            touchMouseJoyAction.ChangedProperties.Add(TouchpadMouseJoystick.PropertyKeyStrings.DEAD_ZONE);
         }
 
         private void TouchpadMouseJoystickSerializer_NameChanged(object sender, EventArgs e)

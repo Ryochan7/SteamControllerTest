@@ -15,9 +15,12 @@ namespace SteamControllerTest.TouchpadActions
             public const string NAME = "Name";
             public const string DEAD_ZONE = "DeadZone";
             public const string MAX_ZONE = "MaxZone";
-            public const string ANTIDEAD_ZONE = "AntiDeadZone";
+            public const string ANTIDEAD_ZONE_X = "AntiDeadZoneX";
+            public const string ANTIDEAD_ZONE_Y = "AntiDeadZoneY";
             //public const string OUTPUT_CURVE = "OutputCurve";
             public const string OUTPUT_STICK = "OutputStick";
+            public const string TRACKBALL_MODE = "Trackball";
+            public const string TRACKBALL_FRICTION = "TrackballFriction";
             //public const string ROTATION = "Rotation";
             //public const string INVERT_X = "InvertX";
             //public const string INVERT_Y = "InvertY";
@@ -33,9 +36,12 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.NAME,
             PropertyKeyStrings.DEAD_ZONE,
             PropertyKeyStrings.MAX_ZONE,
-            PropertyKeyStrings.ANTIDEAD_ZONE,
+            PropertyKeyStrings.ANTIDEAD_ZONE_X,
+            PropertyKeyStrings.ANTIDEAD_ZONE_Y,
             //PropertyKeyStrings.OUTPUT_CURVE,
             PropertyKeyStrings.OUTPUT_STICK,
+            PropertyKeyStrings.TRACKBALL_MODE,
+            PropertyKeyStrings.TRACKBALL_FRICTION,
             //PropertyKeyStrings.INVERT_X,
             //PropertyKeyStrings.INVERT_Y,
             //PropertyKeyStrings.ROTATION,
@@ -46,6 +52,31 @@ namespace SteamControllerTest.TouchpadActions
             //PropertyKeyStrings.SQUARE_STICK_ROUNDNESS,
         };
 
+        public struct TouchpadMouseJoystickParams
+        {
+            public int deadZone;
+            public int maxZone;
+            public double antiDeadzoneX;
+            public double antiDeadzoneY;
+            public bool trackballEnabled;
+            public int trackballFriction;
+            public int TrackballFriction
+            {
+                get => trackballFriction;
+                set
+                {
+                    trackballFriction = value;
+                    TrackballFrictionChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler TrackballFrictionChanged;
+        }
+
+        private const int DEFAULT_DEADZONE = 70;
+        private const int DEFAULT_MAXZONE = 430;
+        private const double DEFAULT_ANTI_DEADZONE_X = 0.30;
+        private const double DEFAULT_ANTI_DEADZONE_Y = 0.30;
+
         private OutputActionData outputAction;
         public OutputActionData OutputAction
         {
@@ -53,11 +84,11 @@ namespace SteamControllerTest.TouchpadActions
         }
 
         private double xNorm = 0.0, yNorm = 0.0;
-        private double xMotion;
-        private double yMotion;
+        //private double xMotion;
+        //private double yMotion;
 
         private const int TRACKBALL_INIT_FRICTION = 10;
-        private const int TRACKBALL_JOY_FRICTION = 7;
+        private const int TRACKBALL_JOY_FRICTION = 4;
         private const int TRACKBALL_MASS = 45;
         private const double TRACKBALL_RADIUS = 0.0245;
         private const double TOUCHPAD_MOUSE_OFFSET = 0.375;
@@ -79,11 +110,35 @@ namespace SteamControllerTest.TouchpadActions
         private double trackballDXRemain = 0.0;
         private double trackballDYRemain = 0.0;
 
+        private bool useParentTrackFriction;
+
+        private TouchpadMouseJoystickParams mStickParams;
+        public ref TouchpadMouseJoystickParams MStickParams
+        {
+            get => ref mStickParams;
+        }
+
         public TouchpadMouseJoystick()
         {
             this.outputAction = new OutputActionData(OutputActionData.ActionType.GamepadControl, StickActionCodes.RS);
 
             trackballAccel = TRACKBALL_RADIUS * TRACKBALL_JOY_FRICTION / TRACKBALL_INERTIA;
+
+            mStickParams = new TouchpadMouseJoystickParams()
+            {
+                deadZone = DEFAULT_DEADZONE,
+                maxZone = DEFAULT_MAXZONE,
+                antiDeadzoneX = DEFAULT_ANTI_DEADZONE_X,
+                antiDeadzoneY = DEFAULT_ANTI_DEADZONE_Y,
+                trackballFriction = TRACKBALL_JOY_FRICTION,
+            };
+
+            mStickParams.TrackballFrictionChanged += MStickParams_TrackballFrictionChanged;
+        }
+
+        private void MStickParams_TrackballFrictionChanged(object sender, EventArgs e)
+        {
+            CalcTrackAccel();
         }
 
         public override void Prepare(Mapper mapper, ref TouchEventFrame touchFrame, bool alterState = true)
@@ -133,12 +188,22 @@ namespace SteamControllerTest.TouchpadActions
 
         public override void SoftRelease(Mapper mapper, MapAction checkAction, bool resetState = true)
         {
-            xNorm = 0.0;
-            yNorm = 0.0;
+            if (active)
+            {
+                TouchpadMouseJoystick tempMouseJoyAction = checkAction as TouchpadMouseJoystick;
+                if (parentAction != null && !useParentTrackFriction)
+                {
+                    // Re-evaluate trackball friction with parent action setting
+                    tempMouseJoyAction.CalcTrackAccel();
+                }
 
-            mapper.GamepadFromStickInput(outputAction, 0.0, 0.0);
-
-            PurgeTrackballData();
+                if (parentAction != null &&
+                    mStickParams.trackballEnabled != tempMouseJoyAction.mStickParams.trackballEnabled)
+                {
+                    //trackData.PurgeData();
+                    PurgeTrackballData();
+                }
+            }
 
             active = activeEvent = false;
         }
@@ -309,9 +374,12 @@ namespace SteamControllerTest.TouchpadActions
         private void TouchMouseJoystickPad(int dx, int dy,
             ref TouchEventFrame touchFrame)
         {
-            const int deadZone = 70;
-            const int maxDeadZoneAxial = 100;
-            const int minDeadZoneAxial = 20;
+            //const int deadZone = 70;
+            int deadZone = mStickParams.deadZone;
+            //const int maxDeadZoneAxial = 100;
+            //const int minDeadZoneAxial = 20;
+            int maxDeadZoneAxial = (int)(mStickParams.maxZone * 0.20);
+            int minDeadZoneAxial = (int)(mStickParams.maxZone * 0.04);
 
             //Trace.WriteLine(touchFrame.Y);
 
@@ -328,12 +396,17 @@ namespace SteamControllerTest.TouchpadActions
             // Base speed 8 ms
             //double tempDouble = timeElapsed * 125.0;
 
-            int maxValX = signX * 430;
-            int maxValY = signY * 430;
+            //int maxValX = signX * 430;
+            //int maxValY = signY * 430;
+
+            int maxValX = signX * mStickParams.maxZone;
+            int maxValY = signY * mStickParams.maxZone;
 
             double xratio = 0.0, yratio = 0.0;
-            double antiX = 0.30 * normX;
-            double antiY = 0.30 * normY;
+            //double antiX = 0.30 * normX;
+            //double antiY = 0.30 * normY;
+            double antiX = mStickParams.antiDeadzoneX * normX;
+            double antiY = mStickParams.antiDeadzoneY * normY;
 
             int deadzoneX = (int)Math.Abs(normX * deadZone);
             int radialDeadZoneY = (int)(Math.Abs(normY * deadZone));
@@ -545,23 +618,43 @@ namespace SteamControllerTest.TouchpadActions
                         case PropertyKeyStrings.NAME:
                             name = tempMouseJoyAction.name;
                             break;
-                        //case PropertyKeyStrings.DEAD_ZONE:
-                        //    deadMod.DeadZone = tempStickAction.deadMod.DeadZone;
-                        //    break;
-                        //case PropertyKeyStrings.MAX_ZONE:
-                        //    deadMod.MaxZone = tempStickAction.deadMod.MaxZone;
-                        //    break;
-                        //case PropertyKeyStrings.ANTIDEAD_ZONE:
-                        //    deadMod.AntiDeadZone = tempStickAction.deadMod.AntiDeadZone;
-                        //    break;
+                        case PropertyKeyStrings.DEAD_ZONE:
+                            mStickParams.deadZone = tempMouseJoyAction.mStickParams.deadZone;
+                            break;
+                        case PropertyKeyStrings.MAX_ZONE:
+                            mStickParams.maxZone = tempMouseJoyAction.mStickParams.maxZone;
+                            break;
+                        case PropertyKeyStrings.ANTIDEAD_ZONE_X:
+                            mStickParams.antiDeadzoneX = tempMouseJoyAction.mStickParams.antiDeadzoneX;
+                            break;
+                        case PropertyKeyStrings.ANTIDEAD_ZONE_Y:
+                            mStickParams.antiDeadzoneY = tempMouseJoyAction.mStickParams.antiDeadzoneY;
+                            break;
                         case PropertyKeyStrings.OUTPUT_STICK:
                             outputAction.StickCode = tempMouseJoyAction.outputAction.StickCode;
+                            break;
+                        case PropertyKeyStrings.TRACKBALL_MODE:
+                            mStickParams.trackballEnabled = tempMouseJoyAction.mStickParams.trackballEnabled;
+                            // Copy parent ref
+                            //trackData = tempMouseAction.trackData;
+                            break;
+                        case PropertyKeyStrings.TRACKBALL_FRICTION:
+                            mStickParams.trackballFriction = tempMouseJoyAction.mStickParams.trackballFriction;
+                            useParentTrackFriction = true;
+                            CalcTrackAccel();
                             break;
                         default:
                             break;
                     }
                 }
             }
+        }
+
+        private void CalcTrackAccel()
+        {
+            //trackData.trackballAccel = TRACKBALL_RADIUS * TRACKBALL_JOY_FRICTION / TRACKBALL_INERTIA;
+            //trackData.trackballAccel = TRACKBALL_RADIUS * trackballFriction / TRACKBALL_INERTIA;
+            trackballAccel = TRACKBALL_RADIUS * mStickParams.trackballFriction / TRACKBALL_INERTIA;
         }
     }
 }
