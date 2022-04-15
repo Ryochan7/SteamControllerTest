@@ -657,14 +657,6 @@ namespace SteamControllerTest
             //(tempProfile.CurrentActionSet.ActionLayers[1].buttonActionDict["A"] as ButtonAction).ActionFuncs.Add(new NormalPressFunc(new OutputActionData(OutputActionData.ActionType.Keyboard, KeyInterop.VirtualKeyFromKey(Key.L))));
             //new ButtonAction(new OutputActionData(OutputActionData.ActionType.Keyboard, KeyInterop.VirtualKeyFromKey(Key.L)));
 
-            // Prepare initial composite ActionLayer instance using
-            // base ActionLayer references
-            foreach (ActionSet set in tempProfile.ActionSets)
-            {
-                //ActionLayer parentLayer = set.DefaultActionLayer;
-                set.PrepareCompositeLayer();
-            }
-
             // SyncActions for currently active ActionLayer instance
             //foreach (ActionSet set in tempProfile.ActionSets)
             //{
@@ -686,6 +678,15 @@ namespace SteamControllerTest
 
                     layer.SyncActions();
                 }
+            }
+
+            // Prepare initial composite ActionLayer instance using
+            // base ActionLayer references
+            foreach (ActionSet set in tempProfile.ActionSets)
+            {
+                //ActionLayer parentLayer = set.DefaultActionLayer;
+                set.ClearCompositeLayerActions();
+                set.PrepareCompositeLayer();
             }
 
             //tempProfile.CurrentActionSet.SwitchActionLayer(this, 1);

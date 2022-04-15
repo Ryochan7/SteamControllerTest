@@ -512,5 +512,11 @@ namespace SteamControllerTest
             defaultActionLayer.CopyLayerReferences(activeCompositeLayer);
             activeCompositeLayer.SyncActions();
         }
+
+        public void ClearCompositeLayerActions()
+        {
+            // Clear composite ActionLayer references and restore using default layer
+            activeCompositeLayer.ClearActions();
+        }
     }
 }
