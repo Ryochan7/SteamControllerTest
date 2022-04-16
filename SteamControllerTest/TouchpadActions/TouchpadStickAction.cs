@@ -22,10 +22,10 @@ namespace SteamControllerTest.TouchpadActions
             public const string INVERT_X = "InvertX";
             public const string INVERT_Y = "InvertY";
             public const string VERTICAL_SCALE = "VerticalScale";
-            //public const string MAX_OUTPUT = "MaxOutput";
-            //public const string MAX_OUTPUT_ENABLED = "MaxOutputEnabled";
-            //public const string SQUARE_STICK_ENABLED = "SquareStickEnabled";
-            //public const string SQUARE_STICK_ROUNDNESS = "SquareStickRoundness";
+            public const string MAX_OUTPUT = "MaxOutput";
+            public const string MAX_OUTPUT_ENABLED = "MaxOutputEnabled";
+            public const string SQUARE_STICK_ENABLED = "SquareStickEnabled";
+            public const string SQUARE_STICK_ROUNDNESS = "SquareStickRoundness";
         }
 
         private HashSet<string> fullPropertySet = new HashSet<string>()
@@ -40,10 +40,10 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.INVERT_Y,
             PropertyKeyStrings.ROTATION,
             PropertyKeyStrings.VERTICAL_SCALE,
-            //PropertyKeyStrings.MAX_OUTPUT_ENABLED,
-            //PropertyKeyStrings.MAX_OUTPUT,
-            //PropertyKeyStrings.SQUARE_STICK_ENABLED,
-            //PropertyKeyStrings.SQUARE_STICK_ROUNDNESS,
+            PropertyKeyStrings.MAX_OUTPUT_ENABLED,
+            PropertyKeyStrings.MAX_OUTPUT,
+            PropertyKeyStrings.SQUARE_STICK_ENABLED,
+            PropertyKeyStrings.SQUARE_STICK_ROUNDNESS,
         };
 
         private double xNorm = 0.0, yNorm = 0.0;
@@ -55,6 +55,11 @@ namespace SteamControllerTest.TouchpadActions
         private double verticalScale = 1.0;
         private int rotation;
         private StickOutCurve.Curve outputCurve = StickOutCurve.Curve.Linear;
+        private bool maxOutputEnabled;
+        private double maxOutput = 1.0;
+        private bool squareStickEnabled;
+        private double squareStickRoundness = 5.0;
+        private SquareStick squaredStick = new SquareStick();
 
         private OutputActionData outputAction;
         public OutputActionData OutputAction
@@ -95,6 +100,30 @@ namespace SteamControllerTest.TouchpadActions
         {
             get => verticalScale;
             set => verticalScale = value;
+        }
+
+        public bool MaxOutputEnabled
+        {
+            get => maxOutputEnabled;
+            set => maxOutputEnabled = value;
+        }
+
+        public double MaxOutput
+        {
+            get => maxOutput;
+            set => maxOutput = value;
+        }
+
+        public bool SquareStickEnabled
+        {
+            get => squareStickEnabled;
+            set => squareStickEnabled = value;
+        }
+
+        public double SquareStickRoundness
+        {
+            get => squareStickRoundness;
+            set => squareStickRoundness = value;
         }
 
         public TouchpadStickAction()
@@ -140,6 +169,31 @@ namespace SteamControllerTest.TouchpadActions
                 {
                     StickOutCurve.CalcOutValue(outputCurve, xNorm, yNorm,
                         out xNorm, out yNorm);
+                }
+
+                if (squareStickEnabled)
+                {
+                    squaredStick.current.x = xNorm;
+                    squaredStick.current.y = yNorm;
+                    squaredStick.CircleToSquare(squareStickRoundness);
+                    xNorm = Math.Clamp(squaredStick.current.x, -1.0, 1.0);
+                    yNorm = Math.Clamp(squaredStick.current.y, -1.0, 1.0);
+                }
+
+                if (maxOutputEnabled)
+                {
+                    double r = Math.Atan2(-axisYVal, axisXVal);
+                    double maxOutRatio = maxOutput;
+                    double maxOutXRatio = Math.Abs(Math.Cos(r)) * maxOutRatio;
+                    // Expand output a bit
+                    maxOutXRatio = Math.Min(maxOutXRatio / 0.96, 1.0);
+
+                    double maxOutYRatio = Math.Abs(Math.Sin(r)) * maxOutRatio;
+                    // Expand output a bit
+                    maxOutYRatio = Math.Min(maxOutYRatio / 0.96, 1.0);
+
+                    xNorm = Math.Min(Math.Max(xNorm, 0.0), maxOutXRatio);
+                    yNorm = Math.Min(Math.Max(yNorm, 0.0), maxOutYRatio);
                 }
 
                 if (invertX) xNorm = -1.0 * xNorm;
@@ -254,18 +308,18 @@ namespace SteamControllerTest.TouchpadActions
                         case PropertyKeyStrings.VERTICAL_SCALE:
                             verticalScale = tempStickAction.verticalScale;
                             break;
-                        //case PropertyKeyStrings.MAX_OUTPUT_ENABLED:
-                        //    maxOutputEnabled = tempStickAction.maxOutputEnabled;
-                        //    break;
-                        //case PropertyKeyStrings.MAX_OUTPUT:
-                        //    maxOutput = tempStickAction.maxOutput;
-                        //    break;
-                        //case PropertyKeyStrings.SQUARE_STICK_ENABLED:
-                        //    squareStickEnabled = tempStickAction.squareStickEnabled;
-                        //    break;
-                        //case PropertyKeyStrings.SQUARE_STICK_ROUNDNESS:
-                        //    squareStickRoundness = tempStickAction.squareStickRoundness;
-                        //    break;
+                        case PropertyKeyStrings.MAX_OUTPUT_ENABLED:
+                            maxOutputEnabled = tempStickAction.maxOutputEnabled;
+                            break;
+                        case PropertyKeyStrings.MAX_OUTPUT:
+                            maxOutput = tempStickAction.maxOutput;
+                            break;
+                        case PropertyKeyStrings.SQUARE_STICK_ENABLED:
+                            squareStickEnabled = tempStickAction.squareStickEnabled;
+                            break;
+                        case PropertyKeyStrings.SQUARE_STICK_ROUNDNESS:
+                            squareStickRoundness = tempStickAction.squareStickRoundness;
+                            break;
                         default:
                             break;
                     }

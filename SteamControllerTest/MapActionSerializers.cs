@@ -1963,6 +1963,50 @@ namespace SteamControllerTest
             }
             public event EventHandler VerticalScaleChanged;
 
+            public bool MaxOutputEnabled
+            {
+                get => touchStickAction.MaxOutputEnabled;
+                set
+                {
+                    touchStickAction.MaxOutputEnabled = value;
+                    MaxOutputEnabledChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler MaxOutputEnabledChanged;
+
+            public double MaxOutput
+            {
+                get => touchStickAction.MaxOutput;
+                set
+                {
+                    touchStickAction.MaxOutput = Math.Clamp(value, 0.0, 1.0);
+                    MaxOutputChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler MaxOutputChanged;
+
+            public bool SquareStickEnabled
+            {
+                get => touchStickAction.SquareStickEnabled;
+                set
+                {
+                    touchStickAction.SquareStickEnabled = value;
+                    SquareStickEnabledChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler SquareStickEnabledChanged;
+
+            public double SquareStickRoundness
+            {
+                get => touchStickAction.SquareStickRoundness;
+                set
+                {
+                    touchStickAction.SquareStickRoundness = Math.Clamp(value, 1.0, 10.0);
+                    SquareStickRoundnessChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler SquareStickRoundnessChanged;
+
             public TouchStickActionSettings(TouchpadStickAction action)
             {
                 this.touchStickAction = action;
@@ -1993,6 +2037,30 @@ namespace SteamControllerTest
             settings.InvertXChanged += Settings_InvertXChanged;
             settings.InvertYChanged += Settings_InvertYChanged;
             settings.VerticalScaleChanged += Settings_VerticalScaleChanged;
+            settings.MaxOutputEnabledChanged += Settings_MaxOutputEnabledChanged;
+            settings.MaxOutputChanged += Settings_MaxOutputChanged;
+            settings.SquareStickEnabledChanged += Settings_SquareStickEnabledChanged;
+            settings.SquareStickRoundnessChanged += Settings_SquareStickRoundnessChanged;
+        }
+
+        private void Settings_SquareStickRoundnessChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.SQUARE_STICK_ROUNDNESS);
+        }
+
+        private void Settings_SquareStickEnabledChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.SQUARE_STICK_ENABLED);
+        }
+
+        private void Settings_MaxOutputChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.MAX_OUTPUT);
+        }
+
+        private void Settings_MaxOutputEnabledChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.MAX_OUTPUT_ENABLED);
         }
 
         private void Settings_VerticalScaleChanged(object sender, EventArgs e)
