@@ -37,7 +37,8 @@
                 "MaxZone": 300,
                 "AntiDeadZoneX": 0.8,
                 "AntiDeadZoneY": 0.8,
-                "TrackballFriction": 4,
+                "TrackballFriction": 5,
+                "OutputCurve": "EaseoutQuad"
               }
             },
             {
@@ -229,15 +230,16 @@
             },
             {
               "Id": "15",
-              "Name": "X",
+              "Name": "Switch To Action Layer 1",
+              "__CommentBinding": "LeftGrip",
               "ActionMode": "ButtonAction",
               "Functions": [
                 {
                   "Type": "NormalPress",
                   "OutputActions": [
                     {
-                      "Type": "GamepadControl",
-                      "PadOutput": "X360_X"
+                      "Type": "HoldActionLayer",
+                      "Layer": "1",
                     }
                   ]
                 }
@@ -437,25 +439,22 @@
         },
         {
           "Index": "1",
-          "Name": "Test Layer",
-          "Description": "Action Layer",
+          "Name": "RPad Normal RS",
+          "Description": "Use a normal RS mapping on RightTouchpad for switching targets during some puzzles",
           "MappedActions": [
             {
               "Id": "0",
-              "Name": "X360 X Button",
-              "ActionMode": "ButtonAction",
-              "Functions": [
-                {
-                  "Type": "NormalPress",
-                  "OutputActions": [
-                    {
-                      "Type": "GamepadControl",
-                      "PadOutput": "X360_X"
-                    }
-                  ]
-                }
-              ]
-            }
+              "Name": "RS Action",
+              "__CommentBinding": "RS",
+              "ActionMode": "TouchStickTranslateAction",
+              "Settings":
+              {
+                "OutputStick": "X360_RS",
+                "DeadZone": 0.05,
+                "AntiDeadZone": 0.35,
+                "MaxZone": 0.7
+              }
+            },
           ]
         }
       ]
@@ -541,7 +540,7 @@
       "ActionLayer": "1",
       "InputMappings": [
         {
-          "Input": "Y",
+          "Input": "RightTouchpad",
           "Action": "0"
         }
       ]
