@@ -16,12 +16,12 @@ namespace SteamControllerTest.TouchpadActions
             public const string DEAD_ZONE = "DeadZone";
             public const string MAX_ZONE = "MaxZone";
             public const string ANTIDEAD_ZONE = "AntiDeadZone";
-            //public const string OUTPUT_CURVE = "OutputCurve";
+            public const string OUTPUT_CURVE = "OutputCurve";
             public const string OUTPUT_STICK = "OutputStick";
-            //public const string ROTATION = "Rotation";
-            //public const string INVERT_X = "InvertX";
-            //public const string INVERT_Y = "InvertY";
-            //public const string VERTICAL_SCALE = "VerticalScale";
+            public const string ROTATION = "Rotation";
+            public const string INVERT_X = "InvertX";
+            public const string INVERT_Y = "InvertY";
+            public const string VERTICAL_SCALE = "VerticalScale";
             //public const string MAX_OUTPUT = "MaxOutput";
             //public const string MAX_OUTPUT_ENABLED = "MaxOutputEnabled";
             //public const string SQUARE_STICK_ENABLED = "SquareStickEnabled";
@@ -34,12 +34,12 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.DEAD_ZONE,
             PropertyKeyStrings.MAX_ZONE,
             PropertyKeyStrings.ANTIDEAD_ZONE,
-            //PropertyKeyStrings.OUTPUT_CURVE,
+            PropertyKeyStrings.OUTPUT_CURVE,
             PropertyKeyStrings.OUTPUT_STICK,
-            //PropertyKeyStrings.INVERT_X,
-            //PropertyKeyStrings.INVERT_Y,
-            //PropertyKeyStrings.ROTATION,
-            //PropertyKeyStrings.VERTICAL_SCALE,
+            PropertyKeyStrings.INVERT_X,
+            PropertyKeyStrings.INVERT_Y,
+            PropertyKeyStrings.ROTATION,
+            PropertyKeyStrings.VERTICAL_SCALE,
             //PropertyKeyStrings.MAX_OUTPUT_ENABLED,
             //PropertyKeyStrings.MAX_OUTPUT,
             //PropertyKeyStrings.SQUARE_STICK_ENABLED,
@@ -49,6 +49,12 @@ namespace SteamControllerTest.TouchpadActions
         private double xNorm = 0.0, yNorm = 0.0;
         private double prevXNorm = 0.0, prevYNorm = 0.0;
         private StickDeadZone deadMod;
+
+        private bool invertX;
+        private bool invertY;
+        private double verticalScale = 1.0;
+        private int rotation;
+        private StickOutCurve.Curve outputCurve = StickOutCurve.Curve.Linear;
 
         private OutputActionData outputAction;
         public OutputActionData OutputAction
@@ -61,6 +67,36 @@ namespace SteamControllerTest.TouchpadActions
             get => deadMod;
         }
 
+        public StickOutCurve.Curve OutputCurve
+        {
+            get => outputCurve;
+            set => outputCurve = value;
+        }
+
+        public bool InvertX
+        {
+            get => invertX;
+            set => invertX = value;
+        }
+
+        public bool InvertY
+        {
+            get => invertY;
+            set => invertY = value;
+        }
+
+        public int Rotation
+        {
+            get => rotation;
+            set => rotation = value;
+        }
+
+        public double VerticalScale
+        {
+            get => verticalScale;
+            set => verticalScale = value;
+        }
+
         public TouchpadStickAction()
         {
             this.outputAction = new OutputActionData(OutputActionData.ActionType.GamepadControl, StickActionCodes.Empty);
@@ -71,9 +107,16 @@ namespace SteamControllerTest.TouchpadActions
         {
             xNorm = 0.0; yNorm = 0.0;
 
-            int axisXMid = touchpadDefinition.xAxis.mid, axisYMid = touchpadDefinition.yAxis.mid;
             int axisXVal = touchFrame.X;
             int axisYVal = touchFrame.Y;
+
+            if (rotation != 0)
+            {
+                TouchpadMethods.RotatedCoordinates(rotation, axisXVal, axisYVal,
+                    touchpadDefinition, out axisXVal, out axisYVal);
+            }
+
+            int axisXMid = touchpadDefinition.xAxis.mid, axisYMid = touchpadDefinition.yAxis.mid;
             int axisXDir = axisXVal - axisXMid, axisYDir = axisYVal - axisYMid;
             bool xNegative = axisXDir < 0;
             bool yNegative = axisYDir < 0;
@@ -91,9 +134,22 @@ namespace SteamControllerTest.TouchpadActions
 
             //if (xNegative) xNorm *= -1.0;
             //if (yNegative) yNorm *= -1.0;
-            //if (xNorm != 0.0 || yNorm != 0.0)
-            //{
-            //}
+            if (xNorm != 0.0 || yNorm != 0.0)
+            {
+                if (outputCurve != StickOutCurve.Curve.Linear)
+                {
+                    StickOutCurve.CalcOutValue(outputCurve, xNorm, yNorm,
+                        out xNorm, out yNorm);
+                }
+
+                if (invertX) xNorm = -1.0 * xNorm;
+                if (invertY) yNorm = -1.0 * yNorm;
+
+                if (verticalScale != 1.0)
+                {
+                    yNorm *= verticalScale;
+                }
+            }
 
             active = true;
             activeEvent = true;
@@ -180,24 +236,24 @@ namespace SteamControllerTest.TouchpadActions
                         case PropertyKeyStrings.ANTIDEAD_ZONE:
                             deadMod.AntiDeadZone = tempStickAction.deadMod.AntiDeadZone;
                             break;
-                        //case PropertyKeyStrings.OUTPUT_CURVE:
-                        //    outputCurve = tempStickAction.outputCurve;
-                        //    break;
+                        case PropertyKeyStrings.OUTPUT_CURVE:
+                            outputCurve = tempStickAction.outputCurve;
+                            break;
                         case PropertyKeyStrings.OUTPUT_STICK:
                             outputAction.StickCode = tempStickAction.outputAction.StickCode;
                             break;
-                        //case PropertyKeyStrings.INVERT_X:
-                        //    invertX = tempStickAction.invertX;
-                        //    break;
-                        //case PropertyKeyStrings.INVERT_Y:
-                        //    invertY = tempStickAction.invertY;
-                        //    break;
-                        //case PropertyKeyStrings.ROTATION:
-                        //    rotation = tempStickAction.rotation;
-                        //    break;
-                        //case PropertyKeyStrings.VERTICAL_SCALE:
-                        //    verticalScale = tempStickAction.verticalScale;
-                        //    break;
+                        case PropertyKeyStrings.INVERT_X:
+                            invertX = tempStickAction.invertX;
+                            break;
+                        case PropertyKeyStrings.INVERT_Y:
+                            invertY = tempStickAction.invertY;
+                            break;
+                        case PropertyKeyStrings.ROTATION:
+                            rotation = tempStickAction.rotation;
+                            break;
+                        case PropertyKeyStrings.VERTICAL_SCALE:
+                            verticalScale = tempStickAction.verticalScale;
+                            break;
                         //case PropertyKeyStrings.MAX_OUTPUT_ENABLED:
                         //    maxOutputEnabled = tempStickAction.maxOutputEnabled;
                         //    break;

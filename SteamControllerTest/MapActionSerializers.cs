@@ -1875,6 +1875,17 @@ namespace SteamControllerTest
             }
             public event EventHandler OutputStickChanged;
 
+            public StickOutCurve.Curve OutputCurve
+            {
+                get => touchStickAction.OutputCurve;
+                set
+                {
+                    touchStickAction.OutputCurve = value;
+                    OutputCurveChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler OutputCurveChanged;
+
             public double DeadZone
             {
                 get => touchStickAction.DeadMod.DeadZone;
@@ -1908,6 +1919,50 @@ namespace SteamControllerTest
             }
             public event EventHandler AntiDeadZoneChanged;
 
+            public int Rotation
+            {
+                get => touchStickAction.Rotation;
+                set
+                {
+                    touchStickAction.Rotation = Math.Clamp(value, -180, 180);
+                    RotationChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler RotationChanged;
+
+            public bool InvertX
+            {
+                get => touchStickAction.InvertX;
+                set
+                {
+                    touchStickAction.InvertX = value;
+                    InvertXChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler InvertXChanged;
+
+            public bool InvertY
+            {
+                get => touchStickAction.InvertY;
+                set
+                {
+                    touchStickAction.InvertY = value;
+                    InvertYChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler InvertYChanged;
+
+            public double VerticalScale
+            {
+                get => touchStickAction.VerticalScale;
+                set
+                {
+                    touchStickAction.VerticalScale = Math.Clamp(value, 0.0, 10.0);
+                    VerticalScaleChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler VerticalScaleChanged;
+
             public TouchStickActionSettings(TouchpadStickAction action)
             {
                 this.touchStickAction = action;
@@ -1931,9 +1986,33 @@ namespace SteamControllerTest
 
             NameChanged += TouchpadStickActionSerializer_NameChanged;
             settings.OutputStickChanged += Settings_OutputStickChanged;
+            settings.OutputCurveChanged += Settings_OutputCurveChanged;
             settings.DeadZoneChanged += Settings_DeadZoneChanged;
             settings.MaxZoneChanged += Settings_MaxZoneChanged;
             settings.AntiDeadZoneChanged += Settings_AntiDeadZoneChanged;
+            settings.InvertXChanged += Settings_InvertXChanged;
+            settings.InvertYChanged += Settings_InvertYChanged;
+            settings.VerticalScaleChanged += Settings_VerticalScaleChanged;
+        }
+
+        private void Settings_VerticalScaleChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.VERTICAL_SCALE);
+        }
+
+        private void Settings_InvertYChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.INVERT_Y);
+        }
+
+        private void Settings_InvertXChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.INVERT_X);
+        }
+
+        private void Settings_OutputCurveChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.OUTPUT_CURVE);
         }
 
         private void TouchpadStickActionSerializer_NameChanged(object sender, EventArgs e)
