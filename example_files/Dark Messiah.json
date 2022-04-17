@@ -3,6 +3,10 @@
   "Description": "Dark Messiah",
   "Creator": "ryochan7",
   "CreationDate": "2022-04-07T16:23:39+0000",
+  "OutputGamepadSettings":
+  {
+    "Enabled": false
+  },
   "ActionSets": [
     {
       "Index": "0",
