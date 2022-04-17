@@ -1026,12 +1026,17 @@ namespace SteamControllerTest
                 //fakerInputDev.UpdateKeyboard(keyboardReport);
                 fakerInputHandler.Sync();
 
-                if (intermediateState.Dirty && outputX360 != null)
+                if (intermediateState.Dirty)
                 {
-                    PopulateXbox();
-                    outputX360.SubmitReport();
+                    if (outputX360 != null)
+                    {
+                        PopulateXbox();
+                        outputX360.SubmitReport();
+                    }
+
+                    intermediateState.Dirty = false;
                 }
-                
+
                 if (queuedActionSet != -1)
                 {
                     //Console.WriteLine("CHANGING SET: {0}", queuedActionSet);
