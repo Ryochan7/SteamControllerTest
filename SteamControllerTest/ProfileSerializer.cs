@@ -66,6 +66,8 @@ namespace SteamControllerTest
 
         public string ControllerType { get => tempProfile.ControllerType; set => tempProfile.ControllerType = value; }
 
+        public EmulatedControllerSettings OutputGamepadSettings { get => tempProfile.OutputGamepadSettings; set => tempProfile.OutputGamepadSettings = value; }
+
         private List<ActionSetSerializer> actionSets = new List<ActionSetSerializer>();
         [JsonProperty(Required = Required.Always, PropertyName = "ActionSets")]
         public List<ActionSetSerializer> ActionSets

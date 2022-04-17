@@ -47,6 +47,13 @@ namespace SteamControllerTest
         protected int rightStickRotation;
         public int RightStickRotation { get => rightStickRotation; set => rightStickRotation = value; }
 
+        private EmulatedControllerSettings outputGamepadSettings = new EmulatedControllerSettings();
+        public EmulatedControllerSettings OutputGamepadSettings
+        {
+            get => outputGamepadSettings;
+            set => outputGamepadSettings = value;
+        }
+
         public Profile()
         {
             // Add one empty ActionSet by default
@@ -82,6 +89,31 @@ namespace SteamControllerTest
                 currentActionSet = actionSets[index];
                 currentActionSetIndex = index;
             }
+        }
+    }
+
+    public class EmulatedControllerSettings
+    {
+        public enum OutputControllerType : ushort
+        {
+            Xbox360,
+            //DS4,
+        }
+
+        // Default to making a virtual X360 controller after loading a profile
+        public bool enabled = true;
+        public OutputControllerType outputGamepad = OutputControllerType.Xbox360;
+
+        public bool Enabled
+        {
+            get => enabled;
+            set => enabled = value;
+        }
+
+        public OutputControllerType OutputGamepad
+        {
+            get => outputGamepad;
+            set => outputGamepad = value;
         }
     }
 }
