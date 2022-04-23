@@ -231,14 +231,26 @@ namespace SteamControllerTest.TouchpadActions
             double outXNorm = xNorm;
             double outYNorm = yNorm;
 
-            //Trace.WriteLine($"OUTPUT: {outXNorm} {outYNorm}");
+            // Adjust sensitivity to work around rounding in filter method
+            outXNorm *= 1.0005;
+            outYNorm *= 1.0005;
+            double tempXNorm = mapper.FilterX.Filter(outXNorm, mapper.CurrentRate);
+            double tempYNorm = mapper.FilterY.Filter(outYNorm, mapper.CurrentRate);
 
-            outXNorm = mapper.FilterX.Filter(outXNorm, mapper.CurrentRate);
-            outYNorm = mapper.FilterY.Filter(outYNorm, mapper.CurrentRate);
+            // Filter does not go back to absolute zero for reasons. Check
+            // for low number and reset to zero
+            if (Math.Abs(tempXNorm) < 0.0001) tempXNorm = 0.0;
+            if (Math.Abs(tempYNorm) < 0.0001) tempYNorm = 0.0;
 
-            mapper.GamepadFromStickInput(outputAction, outXNorm, outYNorm);
+            // Need to check bounds again
+            tempXNorm = Math.Clamp(tempXNorm, -1.0, 1.0);
+            tempYNorm = Math.Clamp(tempYNorm, -1.0, 1.0);
 
-            if (outXNorm != 0.0 || outYNorm != 0.0)
+            //Trace.WriteLine($"OUTPUT: {tempXNorm} {tempYNorm} | BE {outXNorm}");
+
+            mapper.GamepadFromStickInput(outputAction, tempXNorm, tempYNorm);
+
+            if (tempXNorm != 0.0 || tempYNorm != 0.0)
             {
                 active = true;
             }
@@ -682,13 +694,13 @@ namespace SteamControllerTest.TouchpadActions
                 this.yNorm *= -1.0;
             }
 
-            //Trace.WriteLine($"OutX ({xratio}) | OutY ({yratio})");
+            //Trace.WriteLine($"OutX ({this.xNorm}) | OutY ({this.yNorm})");
             //short axisXOut = (short)filterX.Filter(xNorm * maxDirX,
             //    1.0 / currentRate);
             //short axisYOut = (short)filterY.Filter(yNorm * maxDirY,
             //    1.0 / currentRate);
 
-            ////Trace.WriteLine($"OutX ({axisXOut}) | OutY ({axisYOut})");
+            //Trace.WriteLine($"OutX ({axisXOut}) | OutY ({axisYOut})");
 
             //xbox.RightThumbX = axisXOut;
             //xbox.RightThumbY = axisYOut;
