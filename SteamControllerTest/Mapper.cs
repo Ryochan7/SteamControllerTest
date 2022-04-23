@@ -2656,6 +2656,11 @@ namespace SteamControllerTest
                 mouseX = filterX.Filter(mouseX, currentRate);
                 mouseY = filterY.Filter(mouseY, currentRate);
 
+                // Filter does not go back to absolute zero for reasons. Check
+                // for low number and reset to zero
+                if (Math.Abs(mouseX) < 0.0001) mouseX = 0.0;
+                if (Math.Abs(mouseY) < 0.0001) mouseY = 0.0;
+
                 double mouseXTemp = mouseX - (remainderCutoff(mouseX * 100.0, 1.0) / 100.0);
                 int mouseXInt = (int)(mouseXTemp);
                 mouseXRemainder = mouseXTemp - mouseXInt;
