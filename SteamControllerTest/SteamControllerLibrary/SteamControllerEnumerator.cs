@@ -9,6 +9,7 @@ namespace SteamControllerTest.SteamControllerLibrary
         private const int STEAM_CONTROLLER_VENDOR_ID = 0x28DE;
         private const int STEAM_CONTROLLER_PRODUCT_ID = 0x1102;
         public const int STEAM_DONGLE_CONTROLLER_PRODUCT_ID = 0x1142;
+        public const int STEAM_BT_CONTROLLER_PRODUCT_ID = 0x1106;
 
         private Dictionary<string, SteamControllerDevice> foundDevices;
 
@@ -22,7 +23,8 @@ namespace SteamControllerTest.SteamControllerLibrary
             int endpointIdx = 1;
 
             IEnumerable<HidDevice> hDevices = HidDevices.Enumerate(STEAM_CONTROLLER_VENDOR_ID,
-                STEAM_CONTROLLER_PRODUCT_ID, STEAM_DONGLE_CONTROLLER_PRODUCT_ID);
+                STEAM_CONTROLLER_PRODUCT_ID, STEAM_DONGLE_CONTROLLER_PRODUCT_ID,
+                STEAM_BT_CONTROLLER_PRODUCT_ID);
             hDevices = hDevices.Where(hDevice => hDevice.Capabilities.Usage == 1);
             List<HidDevice> tempList = hDevices.ToList();
 
@@ -50,6 +52,12 @@ namespace SteamControllerTest.SteamControllerLibrary
                             foundDevices.Add(hDevice.DevicePath, tempDev);
                             endpointIdx++;
                         }
+                    }
+                    else if (hDevice.Attributes.ProductId ==
+                        STEAM_BT_CONTROLLER_PRODUCT_ID)
+                    {
+                        SteamControllerBTDevice tempDev = new SteamControllerBTDevice(hDevice);
+                        foundDevices.Add(hDevice.DevicePath, tempDev);
                     }
                 }
             }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SteamControllerTest.SteamControllerLibrary
@@ -71,19 +72,20 @@ namespace SteamControllerTest.SteamControllerLibrary
         public const int IMU_YAXIS_IDX = 1, IMU_PITCH_IDX = 1;
         public const int IMU_ZAXIS_IDX = 2, IMU_ROLL_IDX = 2;
 
-        private ConnectionType conType;
+        protected ConnectionType conType;
+        public ConnectionType ConType => conType;
 
-        private HidDevice hidDevice;
+        protected HidDevice hidDevice;
         public HidDevice HidDevice { get => hidDevice; }
 
         private bool modeChangeDone;
         public bool ModeChangeDone { get => modeChangeDone; }
 
-        private SteamControllerState currentState;
+        protected SteamControllerState currentState;
         public SteamControllerState CurrentState { get => currentState; }
         public ref SteamControllerState CurrentStateRef { get => ref currentState; }
 
-        private SteamControllerState previousState;
+        protected SteamControllerState previousState;
         public SteamControllerState PreviousState { get => previousState; }
         public ref SteamControllerState PreviousStateRef { get => ref previousState; }
 
@@ -92,14 +94,14 @@ namespace SteamControllerTest.SteamControllerLibrary
         public const int RUMBLE_REPORT_LEN = 65;
         public const int FEATURE_REPORT_LEN = 65;
 
-        public int InputReportLen { get => INPUT_REPORT_LEN; }
-        public int OutputReportLen { get => OUTPUT_REPORT_LEN; }
-        public int RumbleReportLen { get => RUMBLE_REPORT_LEN; }
+        public virtual int InputReportLen { get => INPUT_REPORT_LEN; }
+        public virtual int OutputReportLen { get => OUTPUT_REPORT_LEN; }
+        public virtual int RumbleReportLen { get => RUMBLE_REPORT_LEN; }
 
-        private SCControllerState controllerModeState;
+        protected SCControllerState controllerModeState;
         public SCControllerState ControllerModeState { get => controllerModeState; }
 
-        private double baseElapsedReference;
+        protected double baseElapsedReference;
         public double BaseElapsedReference
         {
             get => baseElapsedReference;
@@ -124,6 +126,11 @@ namespace SteamControllerTest.SteamControllerLibrary
             {
                 result = ConnectionType.SCDongle;
             }
+            else if (device.Attributes.ProductId ==
+                SteamControllerEnumerator.STEAM_BT_CONTROLLER_PRODUCT_ID)
+            {
+                result = ConnectionType.Bluetooth;
+            }
 
             return result;
         }
@@ -141,8 +148,10 @@ namespace SteamControllerTest.SteamControllerLibrary
             }
 
             ClearMappings();
-            Configure();
             ReadSerial();
+            Configure();
+
+            Thread.Sleep(1000);
 
             controllerModeState = SCControllerState.SS_READY;
             modeChangeDone = true;
@@ -158,7 +167,7 @@ namespace SteamControllerTest.SteamControllerLibrary
             controllerModeState = SCControllerState.SS_NOT_CONFIGURED;
         }
 
-        private void ReadSerial()
+        protected virtual void ReadSerial()
         {
             byte[] featureData = new byte[FEATURE_REPORT_LEN];
             featureData[1] = SCPacketType.PT_GET_SERIAL;
@@ -172,7 +181,7 @@ namespace SteamControllerTest.SteamControllerLibrary
             //Console.WriteLine("LKJDKJLLD: {0}", retReportData[1]);
         }
 
-        private void ClearMappings()
+        protected virtual void ClearMappings()
         {
             byte[] featureData = new byte[FEATURE_REPORT_LEN];
             featureData[1] = SCPacketType.PT_CLEAR_MAPPINGS;
@@ -180,7 +189,7 @@ namespace SteamControllerTest.SteamControllerLibrary
             hidDevice.WriteFeatureReport(featureData);
         }
 
-        private void Configure()
+        protected virtual void Configure()
         {
             int timeout = 600;
             int ledLevel = 30;
@@ -205,7 +214,7 @@ namespace SteamControllerTest.SteamControllerLibrary
             hidDevice.WriteFeatureReport(ledsFeatureData);
         }
 
-        private void ChangeToLizardMode()
+        protected virtual void ChangeToLizardMode()
         {
             byte[] featureData = new byte[FEATURE_REPORT_LEN];
             featureData[1] = SCPacketType.PT_LIZARD_BUTTONS;

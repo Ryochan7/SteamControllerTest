@@ -263,6 +263,29 @@ namespace HidLibrary
             }
         }
 
+        public ReadStatus ReadWithFileStream(byte[] inputBuffer, out int bytesRead,
+            int offset = 0, int length = 0)
+        {
+            try
+            {
+                if (length == 0) length = inputBuffer.Length;
+                bytesRead = fileStream.Read(inputBuffer, offset, length);
+                if (bytesRead > 0)
+                {
+                    return ReadStatus.Success;
+                }
+                else
+                {
+                    return ReadStatus.NoDataRead;
+                }
+            }
+            catch (Exception)
+            {
+                bytesRead = 0;
+                return ReadStatus.ReadError;
+            }
+        }
+
         public ReadStatus ReadWithFileStream(byte[] inputBuffer, int timeout)
         {
             try

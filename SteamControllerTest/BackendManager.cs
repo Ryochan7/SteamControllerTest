@@ -55,7 +55,16 @@ namespace SteamControllerTest
 
             foreach (SteamControllerDevice device in enumerator.GetFoundDevices())
             {
-                SteamControllerReader reader = new SteamControllerReader(device);
+                SteamControllerReader reader;
+                if (device.ConType == SteamControllerDevice.ConnectionType.Bluetooth)
+                {
+                    reader = new SteamControllerBTReader(device as SteamControllerBTDevice);
+                }
+                else
+                {
+                    reader = new SteamControllerReader(device);
+                }
+
                 device.SetOperational();
                 deviceReadersMap.Add(device, reader);
 

@@ -11,17 +11,17 @@ namespace SteamControllerTest.SteamControllerLibrary
 {
     public class SteamControllerReader
     {
-        private SteamControllerDevice device;
+        protected SteamControllerDevice device;
         public SteamControllerDevice Device { get => device; }
-        private Thread inputThread;
-        private bool activeInputLoop = false;
-        private byte[] inputReportBuffer;
-        private byte[] outputReportBuffer;
-        private byte[] rumbleReportBuffer;
+        protected Thread inputThread;
+        protected bool activeInputLoop = false;
+        protected byte[] inputReportBuffer;
+        protected byte[] outputReportBuffer;
+        protected byte[] rumbleReportBuffer;
 
         public delegate void SteamControllerReportDelegate(SteamControllerReader sender,
             SteamControllerDevice device);
-        public event SteamControllerReportDelegate Report;
+        public virtual event SteamControllerReportDelegate Report;
 
         public SteamControllerReader(SteamControllerDevice inputDevice)
         {
@@ -32,7 +32,7 @@ namespace SteamControllerTest.SteamControllerLibrary
             rumbleReportBuffer = new byte[SteamControllerDevice.RUMBLE_REPORT_LEN];
         }
 
-        public void PrepareDevice()
+        public virtual void PrepareDevice()
         {
             NativeMethods.HidD_SetNumInputBuffers(device.HidDevice.safeReadHandle.DangerousGetHandle(),
                 2);
@@ -40,7 +40,7 @@ namespace SteamControllerTest.SteamControllerLibrary
             device.SetOperational();
         }
 
-        public void StartUpdate()
+        public virtual void StartUpdate()
         {
             PrepareDevice();
 
@@ -62,7 +62,7 @@ namespace SteamControllerTest.SteamControllerLibrary
             }
         }
 
-        private void ReadInput()
+        protected virtual void ReadInput()
         {
             activeInputLoop = true;
 
