@@ -5318,6 +5318,11 @@ namespace SteamControllerTest
                     JsonConvert.PopulateObject(j.ToString(), touchDirSwipeInstance);
                     resultInstance = touchDirSwipeInstance;
                     break;
+                case "TouchAxesAction":
+                    TouchpadAxesActionSerializer touchAxesActInstance = new TouchpadAxesActionSerializer();
+                    JsonConvert.PopulateObject(j.ToString(), touchAxesActInstance);
+                    resultInstance = touchAxesActInstance;
+                    break;
                 case "DPadAction":
                     DpadActionSerializer dpadActSerializer = new DpadActionSerializer();
                     JsonConvert.PopulateObject(j.ToString(), dpadActSerializer);
@@ -5442,6 +5447,10 @@ namespace SteamControllerTest
                 case "TouchDirSwipeAction":
                     TouchpadDirectionalSwipeSerializer touchDirSwipeSerializer = new TouchpadDirectionalSwipeSerializer(current.TempLayer, tempMapAction);
                     serializer.Serialize(writer, touchDirSwipeSerializer);
+                    break;
+                case "TouchAxesAction":
+                    TouchpadAxesActionSerializer touchAxesActSerializer = new TouchpadAxesActionSerializer(current.TempLayer, tempMapAction);
+                    serializer.Serialize(writer, touchAxesActSerializer);
                     break;
                 case "DPadAction":
                     DpadActionSerializer dpadActSerializer = new DpadActionSerializer(current.TempLayer, tempMapAction);
