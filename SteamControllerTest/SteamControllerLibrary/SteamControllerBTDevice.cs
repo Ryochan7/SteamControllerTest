@@ -125,6 +125,8 @@ namespace SteamControllerTest.SteamControllerLibrary
 
         public override void PrepareRumbleData(byte[] buffer, byte position)
         {
+            // Taken from SteamControllerSinger app
+            // https://gitlab.com/Pilatomic/SteamControllerSinger
             const double STEAM_CONTROLLER_MAGIC_PERIOD_RATIO = 495483.0;
 
             double tempRatio = (position == HAPTIC_POS_RIGHT) ?
