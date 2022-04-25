@@ -416,6 +416,17 @@ namespace SteamControllerTest
             this.reader = reader;
             //reader.Report += ControllerReader_Report;
             reader.Report += Reader_Calibrate_Gyro;
+
+            if (outputX360 != null)
+            {
+                outputX360.FeedbackReceived += (sender, e) =>
+                {
+                    device.currentLeftAmpRatio = e.LargeMotor / 255.0;
+                    device.currentRightAmpRatio = e.SmallMotor / 255.0;
+                    reader.WriteRumbleReport();
+                };
+            }
+
             reader.StartUpdate();
         }
 

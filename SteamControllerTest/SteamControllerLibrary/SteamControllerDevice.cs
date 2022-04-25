@@ -68,6 +68,9 @@ namespace SteamControllerTest.SteamControllerLibrary
             Bluetooth,
         }
 
+        public const byte HAPTIC_POS_LEFT = 0x01;
+        public const byte HAPTIC_POS_RIGHT = 0x00;
+
         public const int IMU_XAXIS_IDX = 0, IMU_YAW_IDX = 0;
         public const int IMU_YAXIS_IDX = 1, IMU_PITCH_IDX = 1;
         public const int IMU_ZAXIS_IDX = 2, IMU_ROLL_IDX = 2;
@@ -108,6 +111,9 @@ namespace SteamControllerTest.SteamControllerLibrary
         }
 
         public short[] gyroCalibOffsets = new short[3];
+
+        public double currentLeftAmpRatio = 0.0;
+        public double currentRightAmpRatio = 0.0;
 
         public SteamControllerDevice(HidDevice device)
         {
@@ -227,6 +233,65 @@ namespace SteamControllerTest.SteamControllerLibrary
         public void SyncStates()
         {
             previousState = currentState;
+        }
+
+        public virtual void PrepareRumbleData(byte[] buffer, byte position)
+        {
+            const double STEAM_CONTROLLER_MAGIC_PERIOD_RATIO = 495483.0;
+
+            double tempRatio = (position == HAPTIC_POS_RIGHT) ?
+                currentRightAmpRatio : currentLeftAmpRatio;
+
+            ushort amplitude = 0;
+            if (tempRatio != 0.0)
+            {
+                amplitude = (ushort)((900 - 600) * tempRatio + 600);
+                //amplitude = (ushort)((1400 - 1000) * tempRatio + 1000);
+                //amplitude = 1000;
+                //amplitude = (ushort)((1200 - 100) * tempRatio + 100);
+                //amplitude = (ushort)((2000 - 1400) * tempRatio + 1400);
+                //amplitude = (ushort)((1400 - 2800) * tempRatio + 2800);
+            }
+
+            /*if (tempRatio != 0.0)
+            {
+                amplitude = 500;
+            }
+            */
+
+            ushort tmp_period_command = 15000;
+            //ushort period_command = 15000;
+            ushort period_command = 0;
+            if (tempRatio != 0.0)
+            {
+                period_command = (ushort)((6000 - 25000) * tempRatio + 25000);
+            }
+
+            double raw_period = period_command / STEAM_CONTROLLER_MAGIC_PERIOD_RATIO;
+            int duration_num_seconds = 5;
+            ushort count = (ushort)(Math.Min((int)(duration_num_seconds * 1.5 / raw_period),
+                0x7FFF));
+
+            buffer[1] = SCPacketType.PT_FEEDBACK;
+            buffer[2] = SCPacketLength.PL_FEEDBACK;
+            buffer[3] = position; // Left or Right Haptic LBA
+
+            // Amplitude
+            buffer[4] = (byte)amplitude;
+            buffer[5] = (byte)(amplitude >> 8);
+
+            // Period
+            buffer[6] = (byte)period_command;
+            buffer[7] = (byte)(period_command >> 8);
+
+            // Repeat count
+            buffer[8] = (byte)count;
+            buffer[9] = (byte)(count >> 8);
+        }
+
+        public virtual void SendRumbleReport(byte[] buffer)
+        {
+            hidDevice.WriteFeatureReport(buffer);
         }
     }
 }
