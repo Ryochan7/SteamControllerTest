@@ -274,7 +274,7 @@ namespace SteamControllerTest.SteamControllerLibrary
 
             buffer[1] = SCPacketType.PT_FEEDBACK;
             buffer[2] = SCPacketLength.PL_FEEDBACK;
-            buffer[3] = position; // Left or Right Haptic LBA
+            buffer[3] = position; // Left or Right Haptic actuator
 
             // Amplitude
             buffer[4] = (byte)amplitude;
