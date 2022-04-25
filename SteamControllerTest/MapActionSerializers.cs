@@ -2371,6 +2371,317 @@ namespace SteamControllerTest
         }
     }
 
+
+
+    public class TouchpadDirectionalSwipeSerializer : MapActionSerializer
+    {
+        public class SwipeDirBinding
+        {
+            public enum SwipeDir
+            {
+                Up,
+                Down,
+                Left,
+                Right,
+            }
+
+            private string actionDirName;
+            [JsonProperty("Name", Required = Required.Default)]
+            public string ActionDirName
+            {
+                get => actionDirName;
+                set => actionDirName = value;
+            }
+
+            private List<ActionFuncSerializer> actionFuncSerializers =
+                new List<ActionFuncSerializer>();
+            [JsonProperty("Functions", Required = Required.Always)]
+            public List<ActionFuncSerializer> ActionFuncSerializers
+            {
+                get => actionFuncSerializers;
+                set
+                {
+                    actionFuncSerializers = value;
+                    ActionFuncSerializersChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler ActionFuncSerializersChanged;
+        }
+
+        public class TouchpadDirSwipeSettings
+        {
+            private TouchpadDirectionalSwipe touchDirSwipeAction;
+
+            public int DeadZoneX
+            {
+                get => touchDirSwipeAction.swipeParams.deadzoneX;
+                set
+                {
+                    touchDirSwipeAction.swipeParams.deadzoneX = value;
+                    DeadZoneXChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler DeadZoneXChanged;
+
+            public int DeadZoneY
+            {
+                get => touchDirSwipeAction.swipeParams.deadzoneY;
+                set
+                {
+                    touchDirSwipeAction.swipeParams.deadzoneY = value;
+                    DeadZoneYChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler DeadZoneYChanged;
+
+            public int DelayTime
+            {
+                get => touchDirSwipeAction.swipeParams.delayTime;
+                set
+                {
+                    touchDirSwipeAction.swipeParams.delayTime = value;
+                    DelayTimeChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler DelayTimeChanged;
+
+            public TouchpadDirSwipeSettings(TouchpadDirectionalSwipe swipeAction)
+            {
+                touchDirSwipeAction = swipeAction;
+            }
+        }
+
+        private Dictionary<SwipeDirBinding.SwipeDir, SwipeDirBinding> dictDirBindings =
+            new Dictionary<SwipeDirBinding.SwipeDir, SwipeDirBinding>();
+
+        //private Dictionary<TouchpadDirectionalSwipe.SwipeAxisYDir, SwipeDirBinding> dictDirYBindings =
+        //    new Dictionary<TouchpadDirectionalSwipe.SwipeAxisYDir, SwipeDirBinding>();
+
+        [JsonProperty("Bindings", Required = Required.Always)]
+        public Dictionary<SwipeDirBinding.SwipeDir, SwipeDirBinding> DictDirBindings
+        {
+            get => dictDirBindings;
+            set => dictDirBindings = value;
+        }
+
+        //[JsonProperty("YBindings", Required = Required.Always)]
+        //public Dictionary<TouchpadDirectionalSwipe.SwipeAxisYDir, SwipeDirBinding> DictDirYBindings
+        //{
+        //    get => dictDirYBindings;
+        //    set => dictDirYBindings = value;
+        //}
+
+        private TouchpadDirectionalSwipe touchDirSwipeAction = new TouchpadDirectionalSwipe();
+        private TouchpadDirSwipeSettings settings;
+        public TouchpadDirSwipeSettings Settings
+        {
+            get => settings;
+            set => settings = value;
+        }
+
+        // Deserialize
+        public TouchpadDirectionalSwipeSerializer() : base()
+        {
+            mapAction = touchDirSwipeAction;
+            settings = new TouchpadDirSwipeSettings(touchDirSwipeAction);
+
+            NameChanged += TouchDirectionalSwipeSerializer_NameChanged;
+            settings.DeadZoneXChanged += Settings_DeadZoneXChanged;
+            settings.DeadZoneYChanged += Settings_DeadZoneYChanged;
+            settings.DelayTimeChanged += Settings_DelayTimeChanged;
+        }
+
+        // Serialize
+        public TouchpadDirectionalSwipeSerializer(ActionLayer tempLayer, MapAction action) :
+            base(tempLayer, action)
+        {
+            if (action is TouchpadDirectionalSwipe temp)
+            {
+                touchDirSwipeAction = temp;
+                MapAction = touchDirSwipeAction;
+                settings = new TouchpadDirSwipeSettings(touchDirSwipeAction);
+                PopulateFuncs();
+            }
+        }
+
+        // Post-deserialize
+        public override void PopulateMap()
+        {
+            foreach (ButtonAction dirButton in touchDirSwipeAction.UsedEventsButtonsX)
+            {
+                dirButton?.ActionFuncs.Clear();
+            }
+
+            foreach (ButtonAction dirButton in touchDirSwipeAction.UsedEventsButtonsY)
+            {
+                dirButton?.ActionFuncs.Clear();
+            }
+
+            foreach (KeyValuePair<SwipeDirBinding.SwipeDir, SwipeDirBinding> pair in dictDirBindings)
+            {
+                SwipeDirBinding.SwipeDir dir = pair.Key;
+                List<ActionFuncSerializer> tempSerializers = pair.Value.ActionFuncSerializers;
+                ButtonAction dirButton = new ButtonAction();
+                dirButton.Name = pair.Value.ActionDirName;
+                foreach (ActionFuncSerializer serializer in tempSerializers)
+                {
+                    serializer.PopulateFunc();
+                    dirButton.ActionFuncs.Add(serializer.ActionFunc);
+                }
+
+                switch (dir)
+                {
+                    case SwipeDirBinding.SwipeDir.Left:
+                        touchDirSwipeAction.UsedEventsButtonsX[(int)TouchpadDirectionalSwipe.SwipeAxisXDir.Left] = dirButton;
+                        break;
+                    case SwipeDirBinding.SwipeDir.Right:
+                        touchDirSwipeAction.UsedEventsButtonsX[(int)TouchpadDirectionalSwipe.SwipeAxisXDir.Right] = dirButton;
+                        break;
+                    case SwipeDirBinding.SwipeDir.Up:
+                        touchDirSwipeAction.UsedEventsButtonsY[(int)TouchpadDirectionalSwipe.SwipeAxisYDir.Up] = dirButton;
+                        break;
+                    case SwipeDirBinding.SwipeDir.Down:
+                        touchDirSwipeAction.UsedEventsButtonsY[(int)TouchpadDirectionalSwipe.SwipeAxisYDir.Down] = dirButton;
+                        break;
+                    default:
+                        break;
+                }
+
+                FlagBtnChangedDirection(dir);
+            }
+
+            //foreach (KeyValuePair<GyroDirectionalSwipe.SwipeAxisYDir, SwipeDirBinding> pair in dictDirYBindings)
+            //{
+            //    GyroDirectionalSwipe.SwipeAxisYDir dir = pair.Key;
+            //    List<ActionFuncSerializer> tempSerializers = pair.Value.ActionFuncSerializers;
+            //    ButtonAction dirButton = new ButtonAction();
+            //    dirButton.Name = pair.Value.ActionDirName;
+            //    foreach (ActionFuncSerializer serializer in tempSerializers)
+            //    {
+            //        serializer.PopulateFunc();
+            //        dirButton.ActionFuncs.Add(serializer.ActionFunc);
+            //    }
+
+            //    gyroDirSwipeAction.UsedEventsButtonsY[(int)dir] = dirButton;
+            //    FlagBtnChangedYDirection(dir);
+            //}
+        }
+
+        private void FlagBtnChangedDirection(SwipeDirBinding.SwipeDir dir)
+        {
+            switch (dir)
+            {
+                case SwipeDirBinding.SwipeDir.Left:
+                    touchDirSwipeAction.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_LEFT);
+                    break;
+                case SwipeDirBinding.SwipeDir.Right:
+                    touchDirSwipeAction.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_RIGHT);
+                    break;
+                case SwipeDirBinding.SwipeDir.Up:
+                    touchDirSwipeAction.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_UP);
+                    break;
+                case SwipeDirBinding.SwipeDir.Down:
+                    touchDirSwipeAction.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_DOWN);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // Pre-serialize
+        private void PopulateFuncs()
+        {
+            List<ActionFuncSerializer> tempFuncs = new List<ActionFuncSerializer>();
+            TouchpadDirectionalSwipe.SwipeAxisXDir[] tempDirsX = new TouchpadDirectionalSwipe.SwipeAxisXDir[]
+            {
+                TouchpadDirectionalSwipe.SwipeAxisXDir.Left,
+                TouchpadDirectionalSwipe.SwipeAxisXDir.Right,
+            };
+
+            TouchpadDirectionalSwipe.SwipeAxisYDir[] tempDirsY = new TouchpadDirectionalSwipe.SwipeAxisYDir[]
+            {
+                TouchpadDirectionalSwipe.SwipeAxisYDir.Up,
+                TouchpadDirectionalSwipe.SwipeAxisYDir.Down,
+            };
+
+            for (int i = 0; i < tempDirsX.Length; i++)
+            {
+                TouchpadDirectionalSwipe.SwipeAxisXDir tempDir = tempDirsX[i];
+                ButtonAction dirButton = touchDirSwipeAction.UsedEventsButtonsX[(int)tempDir];
+
+                tempFuncs.Clear();
+                foreach (ActionFunc tempFunc in dirButton.ActionFuncs)
+                {
+                    tempFuncs.Add(new ActionFuncSerializer(tempFunc));
+                }
+
+                SwipeDirBinding.SwipeDir swipeDir = SwipeDirBinding.SwipeDir.Left;
+                if (tempDir == TouchpadDirectionalSwipe.SwipeAxisXDir.Left)
+                {
+                    swipeDir = SwipeDirBinding.SwipeDir.Left;
+                }
+                else if (tempDir == TouchpadDirectionalSwipe.SwipeAxisXDir.Right)
+                {
+                    swipeDir = SwipeDirBinding.SwipeDir.Right;
+                }
+
+                dictDirBindings.Add(swipeDir, new SwipeDirBinding()
+                {
+                    ActionDirName = dirButton.Name,
+                    ActionFuncSerializers = tempFuncs,
+                });
+            }
+
+            for (int i = 0; i < tempDirsY.Length; i++)
+            {
+                TouchpadDirectionalSwipe.SwipeAxisYDir tempDir = tempDirsY[i];
+                ButtonAction dirButton = touchDirSwipeAction.UsedEventsButtonsY[(int)tempDir];
+
+                tempFuncs.Clear();
+                foreach (ActionFunc tempFunc in dirButton.ActionFuncs)
+                {
+                    tempFuncs.Add(new ActionFuncSerializer(tempFunc));
+                }
+
+                SwipeDirBinding.SwipeDir swipeDir = SwipeDirBinding.SwipeDir.Left;
+                if (tempDir == TouchpadDirectionalSwipe.SwipeAxisYDir.Up)
+                {
+                    swipeDir = SwipeDirBinding.SwipeDir.Up;
+                }
+                else if (tempDir == TouchpadDirectionalSwipe.SwipeAxisYDir.Down)
+                {
+                    swipeDir = SwipeDirBinding.SwipeDir.Down;
+                }
+
+                dictDirBindings.Add(swipeDir, new SwipeDirBinding()
+                {
+                    ActionDirName = dirButton.Name,
+                    ActionFuncSerializers = tempFuncs,
+                });
+            }
+        }
+
+        private void Settings_DelayTimeChanged(object sender, EventArgs e)
+        {
+            touchDirSwipeAction.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.DELAY_TIME);
+        }
+
+        private void Settings_DeadZoneYChanged(object sender, EventArgs e)
+        {
+            touchDirSwipeAction.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.DEAD_ZONE_Y);
+        }
+
+        private void Settings_DeadZoneXChanged(object sender, EventArgs e)
+        {
+            touchDirSwipeAction.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.DEAD_ZONE_X);
+        }
+
+        private void TouchDirectionalSwipeSerializer_NameChanged(object sender, EventArgs e)
+        {
+            touchDirSwipeAction.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.NAME);
+        }
+    }
+
     public class AxisDirButtonSerializer : MapActionSerializer
     {
         private ButtonActions.AxisDirButton axisDirButton =
