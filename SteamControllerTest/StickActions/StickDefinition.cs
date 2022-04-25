@@ -11,9 +11,14 @@ namespace SteamControllerTest.StickActions
     {
         public struct StickAxisData
         {
+            // Used limits by mapper. Might differ from real limits of hardware
             public short max;
             public short mid;
             public short min;
+
+            // Real hardware limits
+            public int hard_max;
+            public int hard_min;
         };
 
         /*public int axisMin;

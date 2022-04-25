@@ -330,12 +330,16 @@ namespace SteamControllerTest
                 min = -30000,
                 max = 30000,
                 mid = 0,
+                hard_max = 32767,
+                hard_min = -32767,
             };
             StickDefinition.StickAxisData lyAxis = new StickDefinition.StickAxisData
             {
                 min = -30000,
                 max = 30000,
                 mid = 0,
+                hard_max = 32767,
+                hard_min = -32767,
             };
             //StickDefinition lsDefintion = new StickDefinition(STICK_MIN, STICK_MAX, STICK_NEUTRAL, StickActionCodes.LS);
             lsDefintion = new StickDefinition(lxAxis, lyAxis, StickActionCodes.LS);
@@ -417,7 +421,7 @@ namespace SteamControllerTest
             //reader.Report += ControllerReader_Report;
             reader.Report += Reader_Calibrate_Gyro;
 
-            if (outputX360 != null)
+            /*if (outputX360 != null)
             {
                 outputX360.FeedbackReceived += (sender, e) =>
                 {
@@ -426,6 +430,7 @@ namespace SteamControllerTest
                     reader.WriteRumbleReport();
                 };
             }
+            */
 
             reader.StartUpdate();
         }
