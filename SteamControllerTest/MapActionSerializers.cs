@@ -2210,6 +2210,50 @@ namespace SteamControllerTest
             }
             public event EventHandler SnapToCenterOnReleaseChanged;
 
+            public double Width
+            {
+                get => touchAbsAct.AbsMouseRange.width;
+                set
+                {
+                    touchAbsAct.AbsMouseRange.width = Math.Clamp(value, 0.0, 1.0);
+                    WidthChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler WidthChanged;
+
+            public double Height
+            {
+                get => touchAbsAct.AbsMouseRange.height;
+                set
+                {
+                    touchAbsAct.AbsMouseRange.height = Math.Clamp(value, 0.0, 1.0);
+                    HeightChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler HeightChanged;
+
+            public double XCenter
+            {
+                get => touchAbsAct.AbsMouseRange.xcenter;
+                set
+                {
+                    touchAbsAct.AbsMouseRange.xcenter = Math.Clamp(value, 0.0, 1.0);
+                    XCenterChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler XCenterChanged;
+
+            public double YCenter
+            {
+                get => touchAbsAct.AbsMouseRange.ycenter;
+                set
+                {
+                    touchAbsAct.AbsMouseRange.ycenter = Math.Clamp(value, 0.0, 1.0);
+                    YCenterChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler YCenterChanged;
+
             public TouchpadAbsActionSettings(TouchpadAbsAction action)
             {
                 touchAbsAct = action;
@@ -2252,6 +2296,31 @@ namespace SteamControllerTest
             settings.UseOuterRingChanged += Settings_UseOuterRingChanged;
             settings.OuterRingDeadZoneChanged += Settings_OuterRingDeadZoneChanged;
             settings.SnapToCenterOnReleaseChanged += Settings_SnapToCenterOnReleaseChanged;
+
+            settings.WidthChanged += Settings_WidthChanged;
+            settings.HeightChanged += Settings_HeightChanged;
+            settings.XCenterChanged += Settings_XCenterChanged;
+            settings.YCenterChanged += Settings_YCenterChanged;
+        }
+
+        private void Settings_YCenterChanged(object sender, EventArgs e)
+        {
+            touchAbsAct.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.BOX_YCENTER);
+        }
+
+        private void Settings_XCenterChanged(object sender, EventArgs e)
+        {
+            touchAbsAct.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.BOX_XCENTER);
+        }
+
+        private void Settings_HeightChanged(object sender, EventArgs e)
+        {
+            touchAbsAct.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.BOX_HEIGHT);
+        }
+
+        private void Settings_WidthChanged(object sender, EventArgs e)
+        {
+            touchAbsAct.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.BOX_WIDTH);
         }
 
         private void Settings_SnapToCenterOnReleaseChanged(object sender, EventArgs e)
@@ -3298,6 +3367,50 @@ namespace SteamControllerTest
             }
             public event EventHandler UseAsOuterRingChanged;
 
+            public double Width
+            {
+                get => stickAbsMouseAction.AbsMouseRange.width;
+                set
+                {
+                    stickAbsMouseAction.AbsMouseRange.width = Math.Clamp(value, 0.0, 1.0);
+                    WidthChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler WidthChanged;
+
+            public double Height
+            {
+                get => stickAbsMouseAction.AbsMouseRange.height;
+                set
+                {
+                    stickAbsMouseAction.AbsMouseRange.height = Math.Clamp(value, 0.0, 1.0);
+                    HeightChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler HeightChanged;
+
+            public double XCenter
+            {
+                get => stickAbsMouseAction.AbsMouseRange.xcenter;
+                set
+                {
+                    stickAbsMouseAction.AbsMouseRange.xcenter = Math.Clamp(value, 0.0, 1.0);
+                    XCenterChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler XCenterChanged;
+
+            public double YCenter
+            {
+                get => stickAbsMouseAction.AbsMouseRange.ycenter;
+                set
+                {
+                    stickAbsMouseAction.AbsMouseRange.ycenter = Math.Clamp(value, 0.0, 1.0);
+                    YCenterChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler YCenterChanged;
+
             public StickAbsMouseSettings(StickAbsMouse absMouseAction)
             {
                 stickAbsMouseAction = absMouseAction;
@@ -3338,6 +3451,31 @@ namespace SteamControllerTest
             settings.UseAsOuterRingChanged += Settings_UseAsOuterRingChanged;
             settings.UseOuterRingChanged += Settings_UseOuterRingChanged;
             settings.OuterRingDeadZoneChanged += Settings_OuterRingDeadZoneChanged;
+
+            settings.WidthChanged += Settings_WidthChanged;
+            settings.HeightChanged += Settings_HeightChanged;
+            settings.XCenterChanged += Settings_XCenterChanged;
+            settings.YCenterChanged += Settings_YCenterChanged;
+        }
+
+        private void Settings_YCenterChanged(object sender, EventArgs e)
+        {
+            stickAbsMouseAction.ChangedProperties.Add(StickAbsMouse.PropertyKeyStrings.BOX_YCENTER);
+        }
+
+        private void Settings_XCenterChanged(object sender, EventArgs e)
+        {
+            stickAbsMouseAction.ChangedProperties.Add(StickAbsMouse.PropertyKeyStrings.BOX_XCENTER);
+        }
+
+        private void Settings_HeightChanged(object sender, EventArgs e)
+        {
+            stickAbsMouseAction.ChangedProperties.Add(StickAbsMouse.PropertyKeyStrings.BOX_HEIGHT);
+        }
+
+        private void Settings_WidthChanged(object sender, EventArgs e)
+        {
+            stickAbsMouseAction.ChangedProperties.Add(StickAbsMouse.PropertyKeyStrings.BOX_WIDTH);
         }
 
         // Serialize

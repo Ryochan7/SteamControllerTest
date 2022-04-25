@@ -21,6 +21,11 @@ namespace SteamControllerTest.TouchpadActions
             public const string USE_OUTER_RING = "UseOuterRing";
             public const string OUTER_RING_DEAD_ZONE = "OuterRingDeadZone";
             public const string USE_AS_OUTER_RING = "UseAsOuterRing";
+
+            public const string BOX_WIDTH = "BoxWidth";
+            public const string BOX_HEIGHT = "BoxHeight";
+            public const string BOX_XCENTER = "BoxXCenter";
+            public const string BOX_YCENTER = "BoxYCenter";
         }
 
         private HashSet<string> fullPropertySet = new HashSet<string>()
@@ -32,6 +37,11 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.USE_OUTER_RING,
             PropertyKeyStrings.OUTER_RING_DEAD_ZONE,
             PropertyKeyStrings.USE_AS_OUTER_RING,
+
+            PropertyKeyStrings.BOX_WIDTH,
+            PropertyKeyStrings.BOX_HEIGHT,
+            PropertyKeyStrings.BOX_XCENTER,
+            PropertyKeyStrings.BOX_YCENTER,
         };
 
         public struct AbsCoordRange
@@ -336,6 +346,18 @@ namespace SteamControllerTest.TouchpadActions
                             break;
                         case PropertyKeyStrings.SNAP_TO_CENTER_RELEASE:
                             snapToCenterRelease = tempAbsAction.snapToCenterRelease;
+                            break;
+                        case PropertyKeyStrings.BOX_WIDTH:
+                            absRange.width = tempAbsAction.absRange.width;
+                            break;
+                        case PropertyKeyStrings.BOX_HEIGHT:
+                            absRange.height = tempAbsAction.absRange.height;
+                            break;
+                        case PropertyKeyStrings.BOX_XCENTER:
+                            absRange.xcenter = tempAbsAction.absRange.xcenter;
+                            break;
+                        case PropertyKeyStrings.BOX_YCENTER:
+                            absRange.ycenter = tempAbsAction.absRange.ycenter;
                             break;
                         default:
                             break;
