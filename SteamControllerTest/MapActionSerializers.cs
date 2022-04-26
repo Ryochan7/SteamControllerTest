@@ -6055,6 +6055,17 @@ namespace SteamControllerTest
                     DeserializeExtraJSONProperties(tempInstance, j);
                     resultInstance = new OutputActionDataSerializer(tempInstance);
                     break;
+                case ActionType.Wait:
+                    tempInstance.OutputType = checkType;
+                    if (int.TryParse(j["Period"]?.ToString(), out int periodTemp))
+                    {
+                        tempInstance.DurationMs = periodTemp;
+                    }
+
+                    DeserializeExtraJSONProperties(tempInstance, j);
+                    tempInstance.ComputeActionFlags();
+                    resultInstance = new OutputActionDataSerializer(tempInstance);
+                    break;
                 case ActionType.Empty:
                     tempInstance.OutputType = ActionType.Empty;
                     resultInstance = new OutputActionDataSerializer(tempInstance);
@@ -6117,6 +6128,10 @@ namespace SteamControllerTest
                     break;
                 case ActionType.HoldActionLayer:
                     tempJ.Add("Layer", current.OutputData.ChangeToLayer);
+                    SerializeExtraJSONProperties(current.OutputData, tempJ);
+                    break;
+                case ActionType.Wait:
+                    tempJ.Add("Period", current.OutputData.DurationMs);
                     SerializeExtraJSONProperties(current.OutputData, tempJ);
                     break;
                 default:

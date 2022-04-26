@@ -81,6 +81,7 @@ namespace SteamControllerTest.MapperUtil
 
         public bool useNotches;
         public double currentNotches;
+        public bool processOutput;
 
         // Flag to have process stop processing output actions in an ActionFunc sequence
         public bool breakSequence;
@@ -161,6 +162,8 @@ namespace SteamControllerTest.MapperUtil
                     mouseDir = tempDir;
                 }
             }
+
+            processOutput = UseProcessForAction();
         }
 
         public OutputActionData(ActionType type, JoypadActionCodes actionCode, bool negative = false)
@@ -171,6 +174,8 @@ namespace SteamControllerTest.MapperUtil
                 joypadCode = actionCode;
                 this.negative = negative;
             }
+
+            processOutput = UseProcessForAction();
         }
 
         public OutputActionData(ActionType type, JoypadAxesCodes axisCode)
@@ -182,6 +187,8 @@ namespace SteamControllerTest.MapperUtil
                 outputPadMap.type = JoypadActionCodeMapping.ControlType.Axis;
                 outputPadMap.outputValue.axisCode = axisCode;
             }
+
+            processOutput = UseProcessForAction();
         }
 
         public OutputActionData(ActionType type, StickActionCodes stickCode)
@@ -193,6 +200,8 @@ namespace SteamControllerTest.MapperUtil
                 outputPadMap.type = JoypadActionCodeMapping.ControlType.Stick;
                 outputPadMap.outputValue.stickCode = stickCode;
             }
+
+            processOutput = UseProcessForAction();
         }
 
         public OutputActionData(ActionType type, DPadActionCodes dpadCode)
@@ -204,6 +213,8 @@ namespace SteamControllerTest.MapperUtil
                 outputPadMap.type = JoypadActionCodeMapping.ControlType.DPad;
                 outputPadMap.outputValue.dpadCode = dpadCode;
             }
+
+            processOutput = UseProcessForAction();
         }
 
         public OutputActionData(OutputActionData secondData)
@@ -221,6 +232,61 @@ namespace SteamControllerTest.MapperUtil
             secondData.durationMs = durationMs;
             secondData.effectiveDurationMs = effectiveDurationMs;
             secondData.outputPadMap = new JoypadActionCodeMapping(outputPadMap);
+            secondData.useNotches = useNotches;
+            secondData.processOutput = processOutput;
+        }
+
+        private bool UseProcessForAction()
+        {
+            bool process = false;
+            switch(outputType)
+            {
+                case ActionType.Wait:
+                    process = true;
+                    break;
+                default:
+                    break;
+            }
+            return process;
+        }
+
+        public bool ProcessAction()
+        {
+            bool active = activatedEvent;
+            switch(outputType)
+            {
+                case ActionType.Wait:
+                    {
+                        if (!tickTimerActive)
+                        {
+                            elapsed.Restart();
+                            tickTimerActive = true;
+                        }
+
+                        if (activatedEvent)
+                        {
+                            breakSequence = false;
+                        }
+                        else if (elapsed.ElapsedMilliseconds >= effectiveDurationMs)
+                        {
+                            elapsed.Reset();
+                            active = true;
+                            activatedEvent = true;
+                            breakSequence = false;
+                        }
+                        else
+                        {
+                            active = false;
+                            activatedEvent = false;
+                            breakSequence = true;
+                        }
+                    }
+
+                    break;
+                default:
+                    break;
+            }
+            return active;
         }
 
         public bool ProcessTick()
@@ -258,7 +324,7 @@ namespace SteamControllerTest.MapperUtil
 
                     break;
                 }
-                case ActionType.Wait:
+                /*case ActionType.Wait:
                 {
                     if (!tickTimerActive)
                     {
@@ -280,6 +346,7 @@ namespace SteamControllerTest.MapperUtil
 
                     break;
                 }
+                */
                 default: break;
             }
 
@@ -308,6 +375,11 @@ namespace SteamControllerTest.MapperUtil
             }
 
             return result;
+        }
+
+        public void ComputeActionFlags()
+        {
+            processOutput = UseProcessForAction();
         }
 
         public void Release()

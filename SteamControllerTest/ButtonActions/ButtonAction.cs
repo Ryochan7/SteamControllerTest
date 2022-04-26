@@ -291,6 +291,12 @@ namespace SteamControllerTest.ButtonActions
                                     //Console.WriteLine("JAMIES CRYING");
                                     if (!action.checkTick)
                                     {
+                                        if (action.processOutput)
+                                        {
+                                            action.ProcessAction();
+                                        }
+
+                                        if (action.breakSequence) break;
                                         mapper.RunEventFromButton(action, status);
                                         action.firstRun = false;
                                     }
@@ -322,7 +328,8 @@ namespace SteamControllerTest.ButtonActions
                                     if (action.activatedEvent)
                                     {
                                         mapper.RunEventFromButton(action, status);
-                                        if (action.checkTick) action.Release();
+                                        action.Release();
+                                        //if (action.checkTick) action.Release();
                                     }
 
                                     action.firstRun = true;
@@ -384,6 +391,9 @@ namespace SteamControllerTest.ButtonActions
                                 //}
                                 if (!action.checkTick)
                                 {
+                                    if (action.processOutput) action.ProcessAction();
+                                    if (action.breakSequence) break;
+
                                     if (processAction)
                                     {
                                         ProcessAction(mapper, action);
@@ -470,7 +480,8 @@ namespace SteamControllerTest.ButtonActions
                                 {
                                     //mapper.RunEventFromButton(action, status);
                                     mapper.RunEventFromButton(action, false);
-                                    if (action.checkTick) action.Release();
+                                    action.Release();
+                                    //if (action.checkTick) action.Release();
                                 }
 
                                 action.firstRun = true;
@@ -499,7 +510,8 @@ namespace SteamControllerTest.ButtonActions
                                 {
                                     //mapper.RunEventFromButton(action, status);
                                     mapper.RunEventFromButton(action, false);
-                                    if (action.checkTick) action.Release();
+                                    action.Release();
+                                    //if (action.checkTick) action.Release();
                                 }
 
                                 action.firstRun = true;
@@ -581,7 +593,8 @@ namespace SteamControllerTest.ButtonActions
                         if (action.activatedEvent)
                         {
                             mapper.RunEventFromButton(action, status);
-                            if (action.checkTick) action.Release();
+                            action.Release();
+                            //if (action.checkTick) action.Release();
                         }
 
                         action.firstRun = true;
@@ -604,7 +617,8 @@ namespace SteamControllerTest.ButtonActions
                                 if (action.activatedEvent)
                                 {
                                     mapper.RunEventFromButton(action, status);
-                                    if (action.checkTick) action.Release();
+                                    action.Release();
+                                    //if (action.checkTick) action.Release();
                                 }
 
                                 action.firstRun = true;
@@ -672,6 +686,9 @@ namespace SteamControllerTest.ButtonActions
                                 Trace.WriteLine("MADE IT HERE");
                                 foreach (OutputActionData action in func.OutputActions)
                                 {
+                                    if (action.processOutput) action.ProcessAction();
+                                    if (action.breakSequence) break;
+
                                     if (processAction)
                                     {
                                         ProcessAction(mapper, action);
@@ -687,8 +704,11 @@ namespace SteamControllerTest.ButtonActions
 
                                     //mapper.PendingReleaseActions.Add(action);
                                     action.firstRun = true;
-                                    if (action.checkTick) action.Release();
-                                    else if (action.breakSequence) break;
+                                    //if (action.checkTick) action.Release();
+                                    //else if (action.breakSequence) break;
+                                    bool currentBreakSequence = action.breakSequence;
+                                    action.Release();
+                                    if (currentBreakSequence) break;
                                     //activeActions.Add(action);
                                 }
 
@@ -816,7 +836,8 @@ namespace SteamControllerTest.ButtonActions
                     if (action.activatedEvent)
                     {
                         mapper.RunEventFromButton(action, false);
-                        if (action.checkTick) action.Release();
+                        action.Release();
+                        //if (action.checkTick) action.Release();
                     }
                 }
 
@@ -836,7 +857,8 @@ namespace SteamControllerTest.ButtonActions
                             if (action.activatedEvent)
                             {
                                 mapper.RunEventFromButton(action, false);
-                                if (action.checkTick) action.Release();
+                                action.Release();
+                                //if (action.checkTick) action.Release();
                             }
 
                             action.firstRun = true;
