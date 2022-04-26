@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SteamControllerTest.ButtonActions;
 
 namespace SteamControllerTest
 {
@@ -25,6 +26,10 @@ namespace SteamControllerTest
         {
             get => currentActionSetIndex;
         }
+
+        protected Dictionary<string, CycleButton> cycleBindings =
+            new Dictionary<string, CycleButton>();
+        public Dictionary<string, CycleButton> CycleBindings => cycleBindings;
 
         protected string name;
         public string Name { get => name; set => name = value; }

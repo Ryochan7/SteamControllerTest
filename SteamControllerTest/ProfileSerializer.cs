@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using SteamControllerTest.ButtonActions;
+using SteamControllerTest.MapperUtil;
 
 namespace SteamControllerTest
 {
@@ -68,6 +70,13 @@ namespace SteamControllerTest
 
         public EmulatedControllerSettings OutputGamepadSettings { get => tempProfile.OutputGamepadSettings; set => tempProfile.OutputGamepadSettings = value; }
 
+
+        private List<CycleButtonBindingSerializer> cycleSerializers = new List<CycleButtonBindingSerializer>();
+        public List<CycleButtonBindingSerializer> CycleBindings
+        {
+            get => cycleSerializers;
+        }
+
         private List<ActionSetSerializer> actionSets = new List<ActionSetSerializer>();
         [JsonProperty(Required = Required.Always, PropertyName = "ActionSets")]
         public List<ActionSetSerializer> ActionSets
@@ -92,6 +101,13 @@ namespace SteamControllerTest
             this.tempProfile = tempProfile;
             settings = new ProfileSettings(tempProfile);
 
+            foreach (CycleButton cycleBtn in tempProfile.CycleBindings.Values)
+            {
+                CycleButtonBindingSerializer cycleSerializer =
+                    new CycleButtonBindingSerializer(tempProfile, cycleBtn);
+                cycleSerializers.Add(cycleSerializer);
+            }
+
             foreach (ActionSet actionSet in tempProfile.ActionSets)
             {
                 ActionSetSerializer setSerializer =
@@ -102,6 +118,20 @@ namespace SteamControllerTest
 
         public void PopulateProfile()
         {
+            tempProfile.CycleBindings.Clear();
+            foreach(CycleButtonBindingSerializer serializer in cycleSerializers)
+            {
+                serializer.PopulateProfileSet(tempProfile);
+                if (tempProfile.CycleBindings.ContainsKey(serializer.CycleId))
+                {
+                    throw new JsonException($"Duplicate cycle id [{serializer.CycleId}] found in profile");
+                }
+
+                tempProfile.CycleBindings.Add(serializer.CycleId, serializer.TempCycleButton);
+                //tempProfile.CycleBindings.Add(serializer.CycleId, serializer.)
+                //CycleButton tempBtn = new CycleButton(serializer.CycleId);
+            }
+
             tempProfile.ActionSets.Clear();
             foreach (ActionSetSerializer serializer in actionSets)
             {
@@ -125,6 +155,60 @@ namespace SteamControllerTest
         internal void OnDeserializedMethod(StreamingContext context)
         {
             Trace.WriteLine("IN ProfileSerializer.OnDeserializedMethod");
+        }
+    }
+
+    public class CycleButtonBindingSerializer
+    {
+        private string cycleId;
+        public string CycleId
+        {
+            get => cycleId;
+            set => cycleId = value;
+        }
+
+        private CycleButton tempCycleButton = new CycleButton("temp");
+        [JsonIgnore]
+        public CycleButton TempCycleButton
+        {
+            get => tempCycleButton;
+        }
+
+        private List<OutputActionDataSerializer> dataBinds =
+            new List<OutputActionDataSerializer>();
+
+        public List<OutputActionDataSerializer> CycleActions
+        {
+            get => dataBinds;
+        }
+
+        [JsonConstructor]
+        public CycleButtonBindingSerializer()
+        {
+        }
+
+        public CycleButtonBindingSerializer(Profile tempProfile, CycleButton cycleButton)
+        {
+            dataBinds.Clear();
+
+            foreach(OutputActionData data in cycleButton.Actions)
+            {
+                dataBinds.Add(new OutputActionDataSerializer(data));
+            }
+        }
+
+        public void PopulateProfileSet(Profile tempProfile)
+        {
+            tempCycleButton = new CycleButton(cycleId);
+            foreach (OutputActionDataSerializer serializer in dataBinds)
+            {
+                if (!CycleButton.ValidDataBinding(serializer.ActionType))
+                {
+                    throw new JsonException($"Invalid output type [{serializer.ActionType}] for cycle binding");
+                }
+
+                tempCycleButton.Actions.Add(serializer.OutputData);
+            }
         }
     }
 

@@ -24,6 +24,7 @@ namespace SteamControllerTest.MapperUtil
             RemoveActionLayer,
             HoldActionLayer,
             Wait,
+            CycleStep,
         }
 
         public enum SetChangeCondition : uint
@@ -56,6 +57,23 @@ namespace SteamControllerTest.MapperUtil
             MouseRight,
         }
 
+        public enum CycleStepActionType
+        {
+            None,
+            Forward,
+            Backward,
+            MoveToFront,
+            MoveToEnd,
+            MoveToStep,
+        }
+
+        public struct CycleStepAction
+        {
+            public string cycleId;
+            public CycleStepActionType stepActionType;
+            public int stepNum;
+        }
+
         private int outputCode;
         private int outputCodeAlias;
         // Hold string as stored in the profile
@@ -78,6 +96,7 @@ namespace SteamControllerTest.MapperUtil
         private SetChangeCondition changeCondition;
         public bool checkTick;
         public RelativeMouseDir mouseDir;
+        public CycleStepAction cycleStepAct;
 
         public bool useNotches;
         public double currentNotches;

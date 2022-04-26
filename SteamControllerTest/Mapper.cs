@@ -317,6 +317,9 @@ namespace SteamControllerTest
         private bool keyboardEnhancedSync = false;
         //private bool mouseSync = false;
 
+        private bool processCycle = false;
+        private List<CycleButton> processCycleList = new List<CycleButton>();
+
         public Mapper(SteamControllerDevice device, string profileFile)
         {
             this.profileFile = profileFile;
@@ -401,6 +404,23 @@ namespace SteamControllerTest
             rightTriggerDefinition = new TriggerDefinition(rtAxis, TriggerActionCodes.LeftTrigger);
 
             ReadFromProfile();
+
+            /*CycleButton testCycle = new CycleButton("Weapon Cycle");
+            testCycle.Actions.AddRange(new OutputActionData[]
+            {
+                new OutputActionData(OutputActionData.ActionType.Keyboard, (int)KeyboardKey.Number1),
+                new OutputActionData(OutputActionData.ActionType.Keyboard, (int)KeyboardKey.Number2),
+                new OutputActionData(OutputActionData.ActionType.Keyboard, (int)KeyboardKey.Number3),
+                new OutputActionData(OutputActionData.ActionType.Keyboard, (int)KeyboardKey.Number4),
+                new OutputActionData(OutputActionData.ActionType.Keyboard, (int)KeyboardKey.Number5),
+                new OutputActionData(OutputActionData.ActionType.Keyboard, (int)KeyboardKey.Number6),
+                new OutputActionData(OutputActionData.ActionType.Keyboard, (int)KeyboardKey.Number7),
+                new OutputActionData(OutputActionData.ActionType.Keyboard, (int)KeyboardKey.Number8),
+                new OutputActionData(OutputActionData.ActionType.Keyboard, (int)KeyboardKey.Number9),
+            });
+            testCycle.ResetCycle();
+            actionProfile.CycleBindings.Add(testCycle.CycleIdentifier, testCycle);
+            */
         }
 
         //public void Start(ViGEmClient vigemTestClient,
@@ -801,6 +821,18 @@ namespace SteamControllerTest
                 intermediateState = new IntermediateState();
                 currentLatency = current.timeElapsed;
                 currentRate = 1.0 / currentLatency;
+
+                if (processCycle)
+                {
+                    foreach(CycleButton btn in processCycleList)
+                    {
+                        btn.Prepare(this, false);
+                        btn.Event(this);
+                    }
+
+                    processCycle = false;
+                    processCycleList.Clear();
+                }
 
                 ActionLayer currentLayer = actionProfile.CurrentActionSet.CurrentActionLayer;
 
@@ -3473,6 +3505,7 @@ namespace SteamControllerTest
                 case OutputActionData.ActionType.ApplyActionLayer:
                 case OutputActionData.ActionType.RemoveActionLayer:
                 case OutputActionData.ActionType.HoldActionLayer:
+                case OutputActionData.ActionType.CycleStep:
                     RunEventFromButton(actionData, pressed);
                     break;
                 case OutputActionData.ActionType.Empty:
@@ -3791,6 +3824,23 @@ namespace SteamControllerTest
                         actionData.skipRelease = false;
                     }
                     break;
+                case OutputActionData.ActionType.CycleStep:
+                    {
+                        if (pressed)
+                        {
+                            if (!actionData.activatedEvent)
+                            {
+                                ActivateCycle(actionData.cycleStepAct.cycleId, actionData.cycleStepAct);
+                                actionData.activatedEvent = true;
+                            }
+                        }
+                        else
+                        {
+                            actionData.activatedEvent = false;
+                        }
+                    }
+
+                    break;
                 default:
                     break;
             }
@@ -3934,6 +3984,62 @@ namespace SteamControllerTest
             }
 
             return result;
+        }
+
+        public void ActivateCycle(string cycleId,
+            OutputActionData.CycleStepAction stepAction)
+        {
+            if (actionProfile.CycleBindings.TryGetValue(cycleId, out CycleButton testCycle))
+            {
+                switch(stepAction.stepActionType)
+                {
+                    case OutputActionData.CycleStepActionType.Forward:
+                        {
+                            testCycle.MoveNext();
+                            testCycle.Prepare(this, true);
+                            testCycle.Event(this);
+                        }
+
+                        break;
+                    case OutputActionData.CycleStepActionType.Backward:
+                        {
+                            testCycle.MovePrevious();
+                            testCycle.Prepare(this, true);
+                            testCycle.Event(this);
+                        }
+
+                        break;
+                    case OutputActionData.CycleStepActionType.MoveToFront:
+                        {
+                            testCycle.ResetCycle();
+                            testCycle.Prepare(this, true);
+                            testCycle.Event(this);
+                        }
+
+                        break;
+                    case OutputActionData.CycleStepActionType.MoveToStep:
+                        {
+                            testCycle.MoveToStep(stepAction.stepNum);
+                            testCycle.Prepare(this, true);
+                            testCycle.Event(this);
+                        }
+
+                        break;
+                    case OutputActionData.CycleStepActionType.MoveToEnd:
+                        {
+                            testCycle.MoveToEnd();
+                            testCycle.Prepare(this, true);
+                            testCycle.Event(this);
+                        }
+
+                        break;
+                    default:
+                        break;
+                }
+
+                processCycleList.Add(testCycle);
+                processCycle = true;
+            }
         }
 
         public void Stop()

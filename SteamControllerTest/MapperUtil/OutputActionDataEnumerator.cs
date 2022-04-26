@@ -28,9 +28,19 @@ namespace SteamControllerTest.MapperUtil
         {
         }
 
+        public bool AtStart()
+        {
+            return currentIndex <= 0;
+        }
+
+        public bool AtEnd()
+        {
+            return (currentIndex+1) == _collection.Count;
+        }
+
         public bool MoveNext()
         {
-            //Avoids going beyond the end of the collection.
+            // Avoids going beyond the end of the collection.
             if (++currentIndex >= _collection.Count)
             {
                 return false;
@@ -45,7 +55,7 @@ namespace SteamControllerTest.MapperUtil
 
         public bool MovePrevious()
         {
-            //Avoids going beyond the end of the collection.
+            // Avoids going beyond the end of the collection.
             if (--currentIndex < 0)
             {
                 return false;
@@ -69,6 +79,23 @@ namespace SteamControllerTest.MapperUtil
             {
                 Reset();
             }
+        }
+
+        public bool MoveToStep(int index)
+        {
+            // Avoids going beyond the end of the collection
+            if (index >= _collection.Count)
+            {
+                return false;
+            }
+            else
+            {
+                currentIndex = index;
+                // Set current box to desired item in collection.
+                currentOutputAction = _collection[currentIndex];
+            }
+
+            return true;
         }
 
         public void Reset()

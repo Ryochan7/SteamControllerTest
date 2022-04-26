@@ -6066,6 +6066,29 @@ namespace SteamControllerTest
                     tempInstance.ComputeActionFlags();
                     resultInstance = new OutputActionDataSerializer(tempInstance);
                     break;
+                case ActionType.CycleStep:
+                    string tempCycleOp = j["Op"]?.ToString() ?? string.Empty;
+                    tempInstance.OutputType = checkType;
+                    if (Enum.TryParse(tempCycleOp,
+                        out CycleStepActionType cycleStepType))
+                    {
+                        tempInstance.cycleStepAct.stepActionType = cycleStepType;
+
+                        string tempId = j["Cycle"]?.ToString() ?? string.Empty;
+                        if (!string.IsNullOrWhiteSpace(tempId))
+                        {
+                            tempInstance.cycleStepAct.cycleId = tempId;
+
+                            if (cycleStepType == CycleStepActionType.MoveToStep &&
+                                int.TryParse(j["Step"]?.ToString() ?? string.Empty, out int tempStepNum))
+                            {
+                                tempInstance.cycleStepAct.stepNum = tempStepNum;
+                            }
+                        }
+                    }
+
+                    resultInstance = new OutputActionDataSerializer(tempInstance);
+                    break;
                 case ActionType.Empty:
                     tempInstance.OutputType = ActionType.Empty;
                     resultInstance = new OutputActionDataSerializer(tempInstance);
@@ -6133,6 +6156,20 @@ namespace SteamControllerTest
                 case ActionType.Wait:
                     tempJ.Add("Period", current.OutputData.DurationMs);
                     SerializeExtraJSONProperties(current.OutputData, tempJ);
+                    break;
+                case ActionType.CycleStep:
+                    {
+                        CycleStepAction tempStepAct = current.OutputData.cycleStepAct;
+                        tempJ.Add("Cycle", tempStepAct.cycleId);
+                        tempJ.Add("Op", tempStepAct.stepActionType.ToString());
+                        if (tempStepAct.stepActionType == CycleStepActionType.MoveToStep)
+                        {
+                            tempJ.Add("Step", tempStepAct.stepNum);
+                        }
+
+                        SerializeExtraJSONProperties(current.OutputData, tempJ);
+                    }
+
                     break;
                 default:
                     break;
