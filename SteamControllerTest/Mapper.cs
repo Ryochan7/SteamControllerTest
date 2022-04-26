@@ -349,6 +349,9 @@ namespace SteamControllerTest
                 min = -30000,
                 max = 30000,
                 mid = 0,
+
+                hard_max = 32767,
+                hard_min = -32768,
             };
 
             TouchpadDefinition.TouchAxisData lpadYAxis = new TouchpadDefinition.TouchAxisData
@@ -356,6 +359,9 @@ namespace SteamControllerTest
                 min = -30000,
                 max = 30000,
                 mid = 0,
+
+                hard_max = 32767,
+                hard_min = -32768,
             };
 
             leftPadDefiniton = new TouchpadDefinition(lpadXAxis, lpadYAxis, TouchpadActionCodes.TouchL);
@@ -365,6 +371,9 @@ namespace SteamControllerTest
                 min = -30000,
                 max = 30000,
                 mid = 0,
+
+                hard_max = 32767,
+                hard_min = -32768,
             };
 
             TouchpadDefinition.TouchAxisData rpadYAxis = new TouchpadDefinition.TouchAxisData
@@ -372,6 +381,9 @@ namespace SteamControllerTest
                 min = -30000,
                 max = 30000,
                 mid = 0,
+
+                hard_max = 32767,
+                hard_min = -32768,
             };
 
             rightPadDefinition = new TouchpadDefinition(rpadXAxis, rpadYAxis, TouchpadActionCodes.TouchR);
