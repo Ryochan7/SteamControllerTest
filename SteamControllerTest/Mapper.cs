@@ -568,9 +568,11 @@ namespace SteamControllerTest
                         ActionLayer parentLayer = tempLayer != tempSet.DefaultActionLayer ? tempSet.DefaultActionLayer : null;
                         foreach (LayerMapping layerMapping in mapping.LayerMappings)
                         {
-                            if (layerMapping.ActionIndex >= 0 && layerMapping.ActionIndex < tempLayer.LayerActions.Count)
+                            MapAction tempAction = layerMapping.ActionIndex >= 0 ?
+                                tempLayer.LayerActions.Find((act) => act.Id == layerMapping.ActionIndex) : null;
+                            if (tempAction != null)// layerMapping.ActionIndex < tempLayer.LayerActions.Count)
                             {
-                                MapAction tempAction = tempLayer.LayerActions[layerMapping.ActionIndex];
+                                //MapAction tempAction = tempLayer.LayerActions[layerMapping.ActionIndex];
                                 if (bindingDict.TryGetValue(layerMapping.InputBinding, out InputBindingMeta tempBind))
                                 {
                                     switch (tempBind.controlType)

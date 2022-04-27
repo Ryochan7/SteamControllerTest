@@ -367,6 +367,12 @@ namespace SteamControllerTest
             foreach (MapActionSerializer serializer in mapActionSerializers)
             {
                 serializer.PopulateMap();
+
+                if (actionLayer.LayerActions.FindIndex((act) => act.Id == serializer.MapAction.Id) != -1)
+                {
+                    throw new JsonException($"Duplicate action index [{serializer.MapAction.Id}] on layer [{actionLayer.Index}]");
+                }
+
                 actionLayer.LayerActions.Add(serializer.MapAction);
             }
         }
