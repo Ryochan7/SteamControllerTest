@@ -68,6 +68,7 @@ namespace SteamControllerTest.ActionUtil
                     {
                         waited = true;
                         active = true;
+                        outputActive = true;
                         activeEvent = true;
                         delayEnd = true;
                         delayTimer.Restart();
@@ -101,6 +102,7 @@ namespace SteamControllerTest.ActionUtil
         {
             status = false;
             active = false;
+            outputActive = false;
             activeEvent = false;
             waited = false;
             finished = false;

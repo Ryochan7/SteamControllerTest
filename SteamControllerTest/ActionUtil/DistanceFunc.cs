@@ -7,7 +7,7 @@ namespace SteamControllerTest.ActionUtil
     public class DistanceFunc : ActionFunc
     {
         private bool inputStatus;
-        private bool outputActive;
+        private bool distanceOutputActive;
 
         public DistanceFunc()
         {
@@ -43,19 +43,23 @@ namespace SteamControllerTest.ActionUtil
         {
             if (inputStatus != state)
             {
-                outputActive = stateData.axisNormValue >= distance;
+                distanceOutputActive = stateData.axisNormValue >= distance;
                 activeEvent = true;
 
-                if (outputActive)
+                if (distanceOutputActive)
                 {
                     active = true;
+                    distanceOutputActive = active;
                     finished = false;
                 }
                 else
                 {
                     active = false;
+                    distanceOutputActive = active;
                     finished = true;
                 }
+
+                outputActive = active;
             }
         }
 
@@ -63,17 +67,25 @@ namespace SteamControllerTest.ActionUtil
         {
             if (inputStatus)
             {
-                outputActive = stateData.axisNormValue >= distance;
-                if (outputActive)
+                distanceOutputActive = stateData.axisNormValue >= distance;
+                if (distanceOutputActive)
                 {
                     active = true;
+                    distanceOutputActive = active;
                     finished = false;
                 }
                 else
                 {
                     active = false;
+                    distanceOutputActive = active;
                     finished = true;
                 }
+
+                outputActive = active;
+            }
+            else
+            {
+                outputActive = false;
             }
 
             activeEvent = false;
@@ -83,8 +95,9 @@ namespace SteamControllerTest.ActionUtil
         {
             inputStatus = false;
             active = false;
+            outputActive = active;
+            distanceOutputActive = active;
             activeEvent = false;
-            outputActive = false;
             finished = true;
         }
     }

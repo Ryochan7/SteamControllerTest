@@ -34,12 +34,14 @@ namespace SteamControllerTest.ActionUtil
                     chordActive = triggerActive;
                     active = chordActive;
                     finished = false;
+                    outputActive = active;
                 }
                 else
                 {
                     chordActive = false;
                     active = false;
                     finished = true;
+                    outputActive = active;
                 }
             }
         }
@@ -52,17 +54,20 @@ namespace SteamControllerTest.ActionUtil
                 if (chordActive)
                 {
                     active = true;
+                    outputActive = active;
                     finished = false;
                 }
                 else
                 {
                     active = false;
+                    outputActive = active;
                     finished = true;
                 }
             }
             else
             {
                 active = false;
+                outputActive = active;
                 finished = true;
                 chordActive = false;
             }
@@ -74,6 +79,7 @@ namespace SteamControllerTest.ActionUtil
         {
             inputStatus = false;
             active = false;
+            outputActive = active;
             activeEvent = false;
             finished = true;
             chordActive = false;

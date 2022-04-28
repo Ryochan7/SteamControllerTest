@@ -80,7 +80,7 @@ namespace SteamControllerTest.ButtonActions
             }
         }
 
-        public override void ProcessAction(Mapper mapper, OutputActionData action)
+        public override void ProcessAction(Mapper mapper, bool outputActive, OutputActionData action)
         {
             WrapNotchesProcess(action);
 
@@ -92,12 +92,12 @@ namespace SteamControllerTest.ButtonActions
                     {
                         //action.currentNotches += this.notches;
                         //double currentNotches = (int)action.currentNotches;
-                        if (!action.activatedEvent && action.currentNotches >= 1.0)
+                        if (outputActive && !action.activatedEvent && action.currentNotches >= 1.0)
                         {
                             mapper.RunEventFromButton(action, true);
                             action.currentNotches -= 1.0;
                         }
-                        else if (action.activatedEvent)
+                        else if (!outputActive && action.activatedEvent)
                         {
                             mapper.RunEventFromButton(action, false);
                         }
@@ -108,12 +108,12 @@ namespace SteamControllerTest.ButtonActions
                 case OutputActionData.ActionType.MouseWheel:
                     {
                         double currentNotches = (int)action.currentNotches;
-                        if (!action.activatedEvent && action.currentNotches >= 1.0)
+                        if (outputActive && !action.activatedEvent && action.currentNotches >= 1.0)
                         {
                             mapper.RunEventFromRelative(action, true, currentNotches);
                             action.currentNotches = action.currentNotches - currentNotches;
                         }
-                        else if (action.activatedEvent)
+                        else if (!outputActive && action.activatedEvent)
                         {
                             mapper.RunEventFromButton(action, false);
                         }

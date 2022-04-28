@@ -59,12 +59,14 @@ namespace SteamControllerTest.ActionUtil
                     if (toggleEnabled && active)
                     {
                         active = false;
+                        outputActive = active;
                         currentTapStatus = TapStatus.Inactive;
                     }
 
                     if (currentTapStatus == TapStatus.Inactive)
                     {
                         active = false;
+                        outputActive = active;
                         //finished = false;
                         elapsed.Restart();
                     }
@@ -75,6 +77,7 @@ namespace SteamControllerTest.ActionUtil
                             //Console.WriteLine("DOUBLE TAP");
                             currentTapStatus = TapStatus.SecondTap;
                             active = true;
+                            outputActive = active;
                             elapsed.Stop();
                             //finished = true;
                         }
@@ -82,6 +85,7 @@ namespace SteamControllerTest.ActionUtil
                         {
                             //Console.WriteLine("DOUBLE TAP FAIL");
                             active = false;
+                            outputActive = active;
                             //finished = true;
                             elapsed.Stop();
                             currentTapStatus = TapStatus.Failed;
@@ -91,6 +95,7 @@ namespace SteamControllerTest.ActionUtil
                     {
                         //Console.WriteLine("MADE IT HERE: {0}", currentTapStatus.ToString());
                         active = false;
+                        outputActive = active;
                         //finished = false;
                         elapsed.Stop();
                         currentTapStatus = TapStatus.Failed;
@@ -105,6 +110,7 @@ namespace SteamControllerTest.ActionUtil
                             //Console.WriteLine("SINGLE TAP");
                             currentTapStatus = TapStatus.FirstTap;
                             active = false;
+                            outputActive = active;
                             //finished = false;
                         }
                         else
@@ -112,6 +118,7 @@ namespace SteamControllerTest.ActionUtil
                             //Console.WriteLine("SINGLE TAP FAIL");
                             elapsed.Stop();
                             active = false;
+                            outputActive = active;
                             //finished = true;
                             currentTapStatus = TapStatus.Inactive;
                         }
@@ -122,6 +129,7 @@ namespace SteamControllerTest.ActionUtil
                         if (!toggleEnabled)
                         {
                             active = false;
+                            outputActive = active;
                             currentTapStatus = TapStatus.Inactive;
                         }
 
@@ -131,6 +139,7 @@ namespace SteamControllerTest.ActionUtil
                     {
                         currentTapStatus = TapStatus.Inactive;
                         active = false;
+                        outputActive = active;
                         //finished = true;
                     }
                 }
@@ -145,6 +154,7 @@ namespace SteamControllerTest.ActionUtil
         {
             status = false;
             active = false;
+            outputActive = active;
             activeEvent = false;
             finished = false;
             if (currentTapStatus != TapStatus.FirstTap)

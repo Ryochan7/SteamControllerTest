@@ -1,9 +1,9 @@
-﻿using SteamControllerTest.MapperUtil;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SteamControllerTest.MapperUtil;
 
 namespace SteamControllerTest.ActionUtil
 {
@@ -18,9 +18,15 @@ namespace SteamControllerTest.ActionUtil
             get => outputActions; set => outputActions = value;
         }
 
+        // TODO: Can't remember what I wanted to do with this
         public bool activeEvent;
+        // State if an ActionFunc is considered active. Ex. For HoldPressFunc,
+        // hold duration has passed and output actions should be checked
         public bool active;
-        public bool analog;
+        // State if output actions for an ActionFunc should be sent to the
+        // Mapper for processing
+        public bool outputActive;
+
         public bool finished;
         public bool toggleEnabled;
         public bool delayEnd;
@@ -28,7 +34,10 @@ namespace SteamControllerTest.ActionUtil
         public bool canPressInterrupt;
         public double distance;
 
-        // Special flags used to denote special function type
+        // Type flags used for ButtonAction to add processing checks without
+        // checking the specific ActionFunc class type. Flag should be set in
+        // subclass ctor
+        public bool analog;
         public bool onRelease;
         public bool onDistance;
         public bool onChorded;

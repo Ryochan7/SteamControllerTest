@@ -1,9 +1,10 @@
-﻿using SteamControllerTest.MapperUtil;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SteamControllerTest.MapperUtil;
 
 namespace SteamControllerTest.ActionUtil
 {
@@ -11,6 +12,14 @@ namespace SteamControllerTest.ActionUtil
     {
         private bool inputStatus;
         private bool inToggleState;
+
+        private bool turboEnabled;
+        public bool TurboEnabled { get => turboEnabled; set => turboEnabled = value; }
+
+        private int turboDurationMs;
+        public int TurboDurationMs { get => turboDurationMs; set => turboDurationMs = value; }
+
+        private Stopwatch turboStopwatch = new Stopwatch();
 
         public NormalPressFunc()
         {
@@ -46,6 +55,7 @@ namespace SteamControllerTest.ActionUtil
         {
             if (inputStatus != state)
             {
+                bool oldActive = active;
                 inputStatus = state;
                 activeEvent = true;
                 if (inputStatus)
@@ -53,12 +63,23 @@ namespace SteamControllerTest.ActionUtil
                     if (!toggleEnabled)
                     {
                         active = true;
+                        outputActive = active;
                         finished = false;
+                        if (turboEnabled)
+                        {
+                            turboStopwatch.Restart();
+                        }
                     }
                     else
                     {
                         active = true;
+                        outputActive = active;
                         finished = false;
+
+                        if (turboEnabled && !oldActive)
+                        {
+                            turboStopwatch.Restart();
+                        }
                     }
                 }
                 else
@@ -66,17 +87,28 @@ namespace SteamControllerTest.ActionUtil
                     if (!toggleEnabled)
                     {
                         active = false;
+                        outputActive = active;
                         finished = true;
+                        if (turboEnabled && turboStopwatch.IsRunning)
+                        {
+                            turboStopwatch.Reset();
+                        }
                     }
                     else if (inToggleState)
                     {
                         active = false;
+                        outputActive = active;
                         finished = true;
                         inToggleState = false;
+                        if (turboEnabled && turboStopwatch.IsRunning)
+                        {
+                            turboStopwatch.Reset();
+                        }
                     }
                     else
                     {
                         active = true;
+                        outputActive = active;
                         finished = false;
                         inToggleState = true;
                     }
@@ -86,37 +118,29 @@ namespace SteamControllerTest.ActionUtil
 
         public override void Event(Mapper mapper, ActionFuncStateData stateData)
         {
-            //if (inputStatus)
-            //{
-            //    if (!toggleEnabled)
-            //    {
-            //        finished = false;
-            //        active = true;
-            //    }
-            //    else if (!inToggleState)
-            //    {
-            //        active = true;
-            //        finished = false;
-            //    }
-            //}
-            //else
-            //{
-            //    if (!toggleEnabled)
-            //    {
-            //        active = false;
-            //        finished = true;
-            //    }
-            //    else if (inToggleState)
-            //    {
-            //        active = false;
-            //        finished = true;
-            //        inToggleState = false;
-            //    }
-            //    else
-            //    {
-            //        inToggleState = true;
-            //    }
-            //}
+            if (!turboEnabled)
+            {
+                outputActive = active;
+            }
+            else
+            {
+                if (active)
+                {
+                    if (turboStopwatch.ElapsedMilliseconds >= turboDurationMs)
+                    {
+                        // Make state change occur
+                        turboStopwatch.Restart();
+                        outputActive = !outputActive;
+                    }
+                }
+                else if (!active)
+                {
+                    turboStopwatch.Reset();
+                    outputActive = false;
+                }
+            }
+
+            activeEvent = false;
         }
 
         public override void Release(Mapper mapper)
@@ -124,8 +148,14 @@ namespace SteamControllerTest.ActionUtil
             inputStatus = false;
             active = false;
             activeEvent = false;
+            outputActive = false;
             finished = true;
             inToggleState = false;
+
+            if (turboEnabled && turboStopwatch.IsRunning)
+            {
+                turboStopwatch.Reset();
+            }
         }
     }
 }

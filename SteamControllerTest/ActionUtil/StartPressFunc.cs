@@ -46,6 +46,7 @@ namespace SteamControllerTest.ActionUtil
                 if (status)
                 {
                     active = false;
+                    outputActive = false;
                     finished = false;
                     //elapsed.Restart();
                 }
@@ -67,6 +68,7 @@ namespace SteamControllerTest.ActionUtil
                 //if (!state && stateData.wasActive)
                 {
                     active = true;
+                    outputActive = true;
                     activeEvent = true;
                     // Execute system event
                     //SendOutputEvent(mapper);
@@ -80,6 +82,7 @@ namespace SteamControllerTest.ActionUtil
                     {
                         finished = true;
                         active = false;
+                        outputActive = false;
                     }
                 }
             }
@@ -98,6 +101,7 @@ namespace SteamControllerTest.ActionUtil
                     {
                         finished = true;
                         active = false;
+                        outputActive = false;
                     }
                 }
             }
@@ -107,6 +111,7 @@ namespace SteamControllerTest.ActionUtil
         {
             status = false;
             active = false;
+            outputActive = false;
             activeEvent = false;
             waited = false;
             finished = false;

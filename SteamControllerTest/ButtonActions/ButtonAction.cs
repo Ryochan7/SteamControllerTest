@@ -360,6 +360,7 @@ namespace SteamControllerTest.ButtonActions
                         //func.Prepare(mapper, true, stateData);
                         func.Event(mapper, stateData);
                         bool shouldInterrupt = func.interruptable && pressNonInterruptable;
+                        bool outputStatus = func.outputActive;
                         if (func.active && !shouldInterrupt)
                         {
                             foreach (OutputActionData action in func.OutputActions)
@@ -396,15 +397,15 @@ namespace SteamControllerTest.ButtonActions
 
                                     if (processAction)
                                     {
-                                        ProcessAction(mapper, action);
+                                        ProcessAction(mapper, outputStatus, action);
                                     }
                                     else if (analog)
                                     {
-                                        mapper.RunEventFromAnalog(action, status, ButtonDistance, AxisUnit);
+                                        mapper.RunEventFromAnalog(action, outputStatus, ButtonDistance, AxisUnit);
                                     }
                                     else
                                     {
-                                        mapper.RunEventFromButton(action, status);
+                                        mapper.RunEventFromButton(action, outputStatus);
                                     }
 
                                     action.firstRun = false;
@@ -416,15 +417,15 @@ namespace SteamControllerTest.ButtonActions
                                     {
                                         if (processAction)
                                         {
-                                            ProcessAction(mapper, action);
+                                            ProcessAction(mapper, outputStatus, action);
                                         }
                                         else if (analog)
                                         {
-                                            mapper.RunEventFromAnalog(action, status, ButtonDistance, AxisUnit);
+                                            mapper.RunEventFromAnalog(action, outputStatus, ButtonDistance, AxisUnit);
                                         }
                                         else
                                         {
-                                            mapper.RunEventFromButton(action, status);
+                                            mapper.RunEventFromButton(action, outputStatus);
                                         }
 
                                         action.firstRun = false;
@@ -691,7 +692,7 @@ namespace SteamControllerTest.ButtonActions
 
                                     if (processAction)
                                     {
-                                        ProcessAction(mapper, action);
+                                        ProcessAction(mapper, true, action);
                                     }
                                     else if (analog)
                                     {

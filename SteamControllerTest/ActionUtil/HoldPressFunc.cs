@@ -16,6 +16,14 @@ namespace SteamControllerTest.ActionUtil
 
         private bool waited;
 
+        private bool turboEnabled;
+        public bool TurboEnabled { get => turboEnabled; set => turboEnabled = value; }
+
+        private int turboDurationMs;
+        public int TurboDurationMs { get => turboDurationMs; set => turboDurationMs = value; }
+
+        private Stopwatch turboStopwatch = new Stopwatch();
+
         public HoldPressFunc()
         {
             canPressInterrupt = true;
@@ -47,6 +55,7 @@ namespace SteamControllerTest.ActionUtil
                     {
                         active = !active;
                         finished = !active;
+                        outputActive = active;
                     }
                 }
                 else
@@ -54,11 +63,18 @@ namespace SteamControllerTest.ActionUtil
                     if (!toggleEnabled)
                     {
                         active = false;
+                        outputActive = active;
                         finished = true;
                     }
                     else if (!active)
                     {
                         finished = true;
+                        outputActive = active;
+                    }
+
+                    if (!active && turboEnabled && turboStopwatch.IsRunning)
+                    {
+                        turboStopwatch.Reset();
                     }
                 }
             }
@@ -69,7 +85,12 @@ namespace SteamControllerTest.ActionUtil
                 {
                     waited = true;
                     active = true;
+                    outputActive = active;
                     activeEvent = true;
+                    if (turboEnabled)
+                    {
+                        turboStopwatch.Restart();
+                    }
                     // Execute system event
                     //SendOutputEvent(mapper);
                 }
@@ -78,15 +99,43 @@ namespace SteamControllerTest.ActionUtil
 
         public override void Event(Mapper mapper, ActionFuncStateData stateData)
         {
+            if (!turboEnabled)
+            {
+                outputActive = active;
+            }
+            else
+            {
+                if (active)
+                {
+                    if (turboStopwatch.ElapsedMilliseconds >= turboDurationMs)
+                    {
+                        // Make state change occur
+                        turboStopwatch.Restart();
+                        outputActive = !outputActive;
+                    }
+                }
+                else if (!active)
+                {
+                    turboStopwatch.Reset();
+                    outputActive = false;
+                }
+            }
+
+            activeEvent = false;
         }
 
         public override void Release(Mapper mapper)
         {
             status = false;
             active = false;
+            outputActive = active;
             activeEvent = false;
             waited = false;
             finished = false;
+            if (turboEnabled && turboStopwatch.IsRunning)
+            {
+                turboStopwatch.Reset();
+            }
         }
     }
 }

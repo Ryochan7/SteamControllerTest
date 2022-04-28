@@ -66,6 +66,18 @@ namespace SteamControllerTest
                 set => pressFunc.toggleEnabled = value;
             }
 
+            public bool TurboEnabled
+            {
+                get => pressFunc.TurboEnabled;
+                set => pressFunc.TurboEnabled = value;
+            }
+
+            public int TurboDurationMs
+            {
+                get => pressFunc.TurboDurationMs;
+                set => pressFunc.TurboDurationMs = value;
+            }
+
             public NormalPressSettings(NormalPressFunc actionFunc)
             {
                 this.pressFunc = actionFunc;
@@ -115,6 +127,18 @@ namespace SteamControllerTest
             {
                 get => holdPressFunc.DurationMs;
                 set => holdPressFunc.DurationMs = value;
+            }
+
+            public bool TurboEnabled
+            {
+                get => holdPressFunc.TurboEnabled;
+                set => holdPressFunc.TurboEnabled = value;
+            }
+
+            public int TurboDurationMs
+            {
+                get => holdPressFunc.TurboDurationMs;
+                set => holdPressFunc.TurboDurationMs = value;
             }
 
             public HoldPressSettings(HoldPressFunc actionFunc)

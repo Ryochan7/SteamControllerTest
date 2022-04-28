@@ -68,11 +68,13 @@ namespace SteamControllerTest.ActionUtil
                 if (inputStatus)
                 {
                     active = true;
+                    outputActive = active;
                     finished = false;
                 }
                 else
                 {
                     active = false;
+                    outputActive = active;
                     finished = true;
                 }
             }
@@ -99,6 +101,7 @@ namespace SteamControllerTest.ActionUtil
 
             inputStatus = false;
             active = false;
+            outputActive = active;
             activeEvent = false;
             finished = false;
         }

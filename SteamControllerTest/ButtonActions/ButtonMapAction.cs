@@ -30,7 +30,8 @@ namespace SteamControllerTest.ButtonActions
         {
         }
 
-        public virtual void ProcessAction(Mapper mapper, OutputActionData action)
+        public virtual void ProcessAction(Mapper mapper, bool outputActive,
+            OutputActionData action)
         {
         }
     }
