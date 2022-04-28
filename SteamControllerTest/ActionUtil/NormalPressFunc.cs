@@ -21,6 +21,24 @@ namespace SteamControllerTest.ActionUtil
 
         private Stopwatch turboStopwatch = new Stopwatch();
 
+        /*private bool cycleEnabled;
+        public bool CycleEnabled
+        {
+            get => cycleEnabled;
+            set => cycleEnabled = value;
+        }
+        // Keep list of active cycle slots for enumeration purposes in ButtonAction.
+        // Edit list contents in Prepare method when activating the ActionFunc
+        private List<OutputActionData> cycleActiveActionList =
+            new List<OutputActionData>();
+        public List<OutputActionData> CycleActionList
+        {
+            get => cycleActiveActionList;
+        }
+        // Not sure if this will be useful
+        //private OutputActionDataEnumerator cycleActionEnumerator;
+        */
+
         public NormalPressFunc()
         {
         }
