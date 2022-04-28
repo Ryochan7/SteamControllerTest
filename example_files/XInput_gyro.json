@@ -22,7 +22,8 @@
               {
                 "OutputStick": "X360_LS",
                 "DeadZone": 0.10,
-                "AntiDeadZone": 0.24,
+                "AntiDeadZone": 0.35,
+                "MaxZone": 0.7,
                 "Rotation": 0
               }
             },
@@ -33,7 +34,7 @@
               "Settings":
               {
                 "OutputStick": "X360_RS",
-                "DeadZone": 0.20,
+                "__DeadZone": 0.20,
                 "Rotation": 0
               }
             },
@@ -355,6 +356,21 @@
                 "TriggerActivates": false,
                 "TriggerButtons": "X360_X"
               }
+            },
+            {
+              "Id": "20",
+              "Name": "Gyro RS",
+              "ActionMode": "GyroMouseJoystickAction",
+              "Settings":
+              {
+                "OutputStick": "X360_RS",
+                "Sensitivity": 1.0,
+                "TriggerActivates": false,
+                "TriggerButtons": "RPadTouch",
+                "AntiDeadZoneX": 0.6,
+                "AntiDeadZoneY": 0.6,
+                "OutputCurve": "EaseoutQuad"
+              }
             }
           ]
         }
@@ -436,7 +452,7 @@
         },
         {
           "Input": "Gyro",
-          "Action": "19"
+          "Action": "20"
         }
       ]
     }
