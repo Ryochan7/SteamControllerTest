@@ -297,9 +297,10 @@ namespace SteamControllerTest
             }
         }
 
-        public void ReleaseActions(Mapper mapper)
+        public void ReleaseActions(Mapper mapper, bool ignoreReleaseActions = false)
         {
-            currentActionLayer.ReleaseActions(mapper);
+            currentActionLayer.ReleaseActions(mapper, true,
+                ignoreReleaseActions: ignoreReleaseActions);
             /*foreach(MapAction action in theLawActions)
             {
                 action.Release(mapper);

@@ -135,14 +135,15 @@ namespace SteamControllerTest.ButtonActions
             actionsEnumerator = new OutputActionDataEnumerator(actions);
         }
 
-        public override void Release(Mapper mapper, bool resetState = true)
+        public override void Release(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false)
         {
-            if (inputStatus)
+            if (inputStatus && !ignoreReleaseActions)
             {
                 OutputActionData current = actionsEnumerator.Current;
                 mapper.RunEventFromButton(current, false);
-                actionsEnumerator.Reset();
             }
+
+            actionsEnumerator.Reset();
 
             if (resetState)
             {

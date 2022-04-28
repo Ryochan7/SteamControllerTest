@@ -46,11 +46,11 @@ namespace SteamControllerTest.ButtonActions
             activeEvent = true;
         }
 
-        public override void Release(Mapper mapper, bool resetState = true)
+        public override void Release(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false)
         {
             notches = 0.0;
 
-            base.Release(mapper, resetState);
+            base.Release(mapper, resetState, ignoreReleaseActions);
         }
 
         public override void WrapNotchesProcess(OutputActionData action)

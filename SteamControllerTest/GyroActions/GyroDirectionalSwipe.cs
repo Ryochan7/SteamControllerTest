@@ -389,7 +389,7 @@ namespace SteamControllerTest.GyroActions
             activeEvent = false;
         }
 
-        public override void Release(Mapper mapper, bool resetState = true)
+        public override void Release(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false)
         {
             if (active)
             {
@@ -398,7 +398,7 @@ namespace SteamControllerTest.GyroActions
                     ButtonAction data = pair.Key;
                     if (data != null)
                     {
-                        data.Release(mapper, resetState);
+                        data.Release(mapper, resetState, ignoreReleaseActions);
                     }
                 }
 
@@ -409,7 +409,7 @@ namespace SteamControllerTest.GyroActions
                     ButtonAction data = pair.Key;
                     if (data != null)
                     {
-                        data.Release(mapper, resetState);
+                        data.Release(mapper, resetState, ignoreReleaseActions);
                     }
                 }
 

@@ -70,14 +70,14 @@ namespace SteamControllerTest.StickActions
             activeEvent = false;
         }
 
-        public override void Release(Mapper mapper, bool resetState = true)
+        public override void Release(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false)
         {
             if (previousAction != currentAction && previousAction != null)
             {
-                previousAction.Release(mapper, resetState);
+                previousAction.Release(mapper, resetState, ignoreReleaseActions);
             }
 
-            currentAction?.Release(mapper, resetState);
+            currentAction?.Release(mapper, resetState, ignoreReleaseActions);
         }
 
         public override StickMapAction DuplicateAction()

@@ -255,7 +255,7 @@ namespace SteamControllerTest.StickActions
             activeEvent = false;
         }
 
-        public override void Release(Mapper mapper, bool resetState = true)
+        public override void Release(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false)
         {
             if (active)
             {

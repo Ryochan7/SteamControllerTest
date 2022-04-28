@@ -31,7 +31,7 @@ namespace SteamControllerTest.DPadActions
         {
         }
 
-        public override void Release(Mapper mapper, bool resetState = true)
+        public override void Release(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false)
         {
         }
 

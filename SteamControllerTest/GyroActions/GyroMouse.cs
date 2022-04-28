@@ -271,7 +271,7 @@ namespace SteamControllerTest.GyroActions
             activeEvent = false;
         }
 
-        public override void Release(Mapper mapper, bool resetState = true)
+        public override void Release(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false)
         {
             xMotion = yMotion = 0.0;
             active = false;

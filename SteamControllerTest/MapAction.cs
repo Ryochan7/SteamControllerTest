@@ -70,7 +70,7 @@ namespace SteamControllerTest
 
         public abstract void Event(Mapper mapper);
 
-        public abstract void Release(Mapper mapper, bool resetState=true);
+        public abstract void Release(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false);
 
         public virtual void SoftRelease(Mapper mapper, MapAction checkAction,
             bool resetState = true)

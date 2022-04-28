@@ -349,11 +349,11 @@ namespace SteamControllerTest.StickActions
             activeEvent = false;
         }
 
-        public override void Release(Mapper mapper, bool resetState = true)
+        public override void Release(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false)
         {
             if (useRingButton && usedRingButton != null)
             {
-                usedRingButton.Release(mapper, resetState);
+                usedRingButton.Release(mapper, resetState, ignoreReleaseActions);
             }
 
             xNorm = yNorm = 0.0;

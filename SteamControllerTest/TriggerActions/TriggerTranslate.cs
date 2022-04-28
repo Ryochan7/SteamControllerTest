@@ -73,7 +73,7 @@ namespace SteamControllerTest.TriggerActions
             activeEvent = false;
         }
 
-        public override void Release(Mapper mapper, bool resetState = true)
+        public override void Release(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false)
         {
             axisNorm = 0.0;
             mapper.GamepadFromAxisInput(outputData, axisNorm);

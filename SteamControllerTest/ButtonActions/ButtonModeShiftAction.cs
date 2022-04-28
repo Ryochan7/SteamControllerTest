@@ -81,15 +81,15 @@ namespace SteamControllerTest.ButtonActions
             activeEvent = false;
         }
 
-        public override void Release(Mapper mapper, bool resetState=true)
+        public override void Release(Mapper mapper, bool resetState=true, bool ignoreReleaseActions = false)
         {
             if (previousAction != currentAction && previousAction != null)
             {
-                previousAction.Release(mapper);
+                previousAction.Release(mapper, resetState, ignoreReleaseActions);
                 previousAction = null;
             }
 
-            currentAction?.Release(mapper);
+            currentAction?.Release(mapper, resetState, ignoreReleaseActions);
             if (resetState)
             {
                 stateData.Reset(true);

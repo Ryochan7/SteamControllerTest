@@ -851,13 +851,13 @@ namespace SteamControllerTest.StickActions
         }
 
 
-        public override void Release(Mapper mapper, bool resetState = true)
+        public override void Release(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false)
         {
             if (active || tmpActiveBtns.Count > 0)
             {
                 if (useRingButton && usedRingButton != null)
                 {
-                    usedRingButton.Release(mapper, resetState);
+                    usedRingButton.Release(mapper, resetState, ignoreReleaseActions);
                 }
 
                 foreach (KeyValuePair<AxisDirButton, DpadDirections> pair in tmpActiveBtns)
@@ -867,7 +867,7 @@ namespace SteamControllerTest.StickActions
 
                     if (data != null)
                     {
-                        data.Release(mapper, resetState);
+                        data.Release(mapper, resetState, ignoreReleaseActions);
                     }
                 }
 

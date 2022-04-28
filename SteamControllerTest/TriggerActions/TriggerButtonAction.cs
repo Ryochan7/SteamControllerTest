@@ -61,9 +61,9 @@ namespace SteamControllerTest.TriggerActions
             activeEvent = false;
         }
 
-        public override void Release(Mapper mapper, bool resetState = true)
+        public override void Release(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false)
         {
-            eventButton.Release(mapper);
+            eventButton.Release(mapper, ignoreReleaseActions);
 
             axisNorm = 0.0;
             inputStatus = false;

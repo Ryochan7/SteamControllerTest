@@ -272,7 +272,7 @@ namespace SteamControllerTest.TouchpadActions
             activeEvent = false;
         }
 
-        public override void Release(Mapper mapper, bool resetState = true)
+        public override void Release(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false)
         {
             xNorm = yNorm = 0.0;
             xMotion = yMotion = 0.0;
@@ -280,7 +280,7 @@ namespace SteamControllerTest.TouchpadActions
 
             if (useRingButton && usedRingButton != null)
             {
-                usedRingButton.Release(mapper, resetState);
+                usedRingButton.Release(mapper, resetState, ignoreReleaseActions);
             }
 
             mapper.AbsMouseX = xMotion; mapper.AbsMouseY = yMotion;

@@ -306,7 +306,7 @@ namespace SteamControllerTest.TouchpadActions
             }
         }
 
-        public override void Release(Mapper mapper, bool resetState = true)
+        public override void Release(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false)
         {
             xNorm = yNorm = 0.0;
             prevXNorm = prevYNorm = 0.0;

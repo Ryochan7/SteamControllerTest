@@ -691,7 +691,7 @@ namespace SteamControllerTest.DPadActions
             activeEvent = false;
         }
 
-        public override void Release(Mapper mapper, bool resetState = true)
+        public override void Release(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false)
         {
             if (tmpActiveBtns.Count > 0)
             {
@@ -702,7 +702,7 @@ namespace SteamControllerTest.DPadActions
 
                     if (data != null)
                     {
-                        data.Release(mapper, resetState);
+                        data.Release(mapper, resetState, ignoreReleaseActions);
                     }
                 }
 

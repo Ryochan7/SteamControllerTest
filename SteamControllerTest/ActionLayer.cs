@@ -106,17 +106,17 @@ namespace SteamControllerTest
 
         // Full Release primarily meant to be used when switching
         // ActionSet instances
-        public void ReleaseActions(Mapper mapper, bool resetState = true)
+        public void ReleaseActions(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false)
         {
             foreach (MapAction action in mappedActions)
             {
-                action.Release(mapper, resetState);
+                action.Release(mapper, resetState, ignoreReleaseActions);
             }
         }
 
         // Soft Release meant to be used for switching actions in an
         // ActionLayer
-        public void SoftReleaseActions(Mapper mapper, bool resetState = true)
+        public void SoftReleaseActions(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false)
         {
             foreach (MapAction action in mappedActions)
             {
@@ -126,7 +126,7 @@ namespace SteamControllerTest
                 }
                 else
                 {
-                    action.Release(mapper, resetState);
+                    action.Release(mapper, resetState, ignoreReleaseActions);
                 }
             }
         }
@@ -142,7 +142,8 @@ namespace SteamControllerTest
         /// <param name="resetState"></param>
         public void CompareReleaseActions(Mapper mapper,
             ActionLayer changeLayer,
-            bool resetState = true)
+            bool resetState = true,
+            bool ignoreReleaseActions = false)
         {
             foreach (MapAction action in mappedActions)
             {
@@ -166,7 +167,7 @@ namespace SteamControllerTest
                     else if (changingAction != action)
                     {
                         // Jump across layers or used unique action. Perform Release
-                        action.Release(mapper, resetState);
+                        action.Release(mapper, resetState, ignoreReleaseActions);
                     }
                 }
                 else
@@ -178,7 +179,7 @@ namespace SteamControllerTest
         }
 
         public void CompareReleaseActions(Mapper mapper, MapAction action,
-            MapAction changingAction, bool resetState = true)
+            MapAction changingAction, bool resetState = true, bool ignoreReleaseActions = false)
         {
             //bool foundInputId = reverseActionDict.TryGetValue(action, out string mappedId);
             //string mappedId = action.MappingId;
@@ -207,7 +208,7 @@ namespace SteamControllerTest
                     else
                     {
                         // Jump across layers or used unique action. Perform Release
-                        action.Release(mapper, resetState);
+                        action.Release(mapper, resetState, ignoreReleaseActions);
                     }
                 }
             }

@@ -809,7 +809,7 @@ namespace SteamControllerTest.ButtonActions
             activeEvent = false;
         }
 
-        public override void Release(Mapper mapper, bool resetState= true)
+        public override void Release(Mapper mapper, bool resetState=true, bool ignoreReleaseActions=false)
         {
             //if (active)
             if (active || activeFuns.Count > 0)
@@ -875,7 +875,7 @@ namespace SteamControllerTest.ButtonActions
                 }
                 */
 
-                if (!mapper.Quit)
+                if (!ignoreReleaseActions)
                 {
                     // Only bother if a ReleaseFunc instance was found
                     if (releaseFuns.Count > 0)

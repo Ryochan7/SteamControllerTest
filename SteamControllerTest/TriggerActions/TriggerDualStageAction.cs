@@ -169,16 +169,16 @@ namespace SteamControllerTest.TriggerActions
             previousActiveButtons = currentActiveButtons;
         }
 
-        public override void Release(Mapper mapper, bool resetState = true)
+        public override void Release(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false)
         {
             if (softPullActActive)
             {
-                softPullActButton.Release(mapper, resetState);
+                softPullActButton.Release(mapper, resetState, ignoreReleaseActions);
             }
 
             if (fullPullActActive)
             {
-                fullPullActButton.Release(mapper, resetState);
+                fullPullActButton.Release(mapper, resetState, ignoreReleaseActions);
             }
 
             axisNorm = 0.0;

@@ -4050,7 +4050,7 @@ namespace SteamControllerTest
 
             quit = true;
 
-            actionProfile.CurrentActionSet.ReleaseActions(this);
+            actionProfile.CurrentActionSet.ReleaseActions(this, true);
 
             SyncKeyboard();
             SyncMouseButtons();
