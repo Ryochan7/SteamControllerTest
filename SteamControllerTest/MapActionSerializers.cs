@@ -1014,6 +1014,30 @@ namespace SteamControllerTest
             }
             public event EventHandler RotationChanged;
 
+            public bool DelayEnabled
+            {
+                get => touchActionPadAction.DelayEnabled;
+                set
+                {
+                    touchActionPadAction.DelayEnabled = value;
+                    DelayEnabledChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler DelayEnabledChanged;
+
+            // TODO: Double check time interval used
+            public double DelayTime
+            {
+                get => touchActionPadAction.DelayTime;
+                set
+                {
+                    touchActionPadAction.DelayTime = Math.Clamp(value, 0.0, 3600.0);
+                    DelayTimeChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler DelayTimeChanged;
+
+
             [JsonProperty("UseOuterRing")]
             public bool UseOuterRing
             {
@@ -1103,9 +1127,22 @@ namespace SteamControllerTest
             settings.DiagonalRangeChanged += Settings_DiagonalRangeChanged;
             settings.PadModeChanged += Settings_PadModeChanged;
             settings.RotationChanged += Settings_RotationChanged;
+            settings.DelayEnabledChanged += Settings_DelayEnabledChanged;
+            settings.DelayTimeChanged += Settings_DelayTimeChanged;
+
             settings.UseOuterRingChanged += Settings_UseOuterRingChanged;
             settings.UseAsOuterRingChanged += Settings_UseAsOuterRingChanged;
             settings.OuterRingDeadZoneChanged += Settings_OuterRingDeadZoneChanged;
+        }
+
+        private void Settings_DelayTimeChanged(object sender, EventArgs e)
+        {
+            touchActionPadAction.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.DELAY_TIME);
+        }
+
+        private void Settings_DelayEnabledChanged(object sender, EventArgs e)
+        {
+            touchActionPadAction.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.DELAY_ENABLED);
         }
 
         private void Settings_DeadZoneTypeChanged(object sender, EventArgs e)

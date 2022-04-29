@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +35,8 @@ namespace SteamControllerTest.TouchpadActions
             public const string ROTATION = "Rotation";
             public const string DIAGONAL_RANGE = "DiagonalRange";
             public const string REQUIRES_CLICK = "RequiresClick";
+            public const string DELAY_ENABLED = "DelayEnabled";
+            public const string DELAY_TIME = "DelayTime";
 
             public const string USE_OUTER_RING = "UseOuterRing";
             public const string OUTER_RING_DEAD_ZONE = "OuterRingDeadZone";
@@ -62,6 +65,8 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.ROTATION,
             PropertyKeyStrings.DIAGONAL_RANGE,
             PropertyKeyStrings.REQUIRES_CLICK,
+            PropertyKeyStrings.DELAY_ENABLED,
+            PropertyKeyStrings.DELAY_TIME,
         };
 
         public enum DPadMode : uint
@@ -161,6 +166,23 @@ namespace SteamControllerTest.TouchpadActions
         private bool[] useParentDataDraft2 = new bool[13];
         private bool useParentRingButton;
 
+        private bool useParentDelay;
+
+        private bool delayEnabled;
+        public bool DelayEnabled
+        {
+            get => delayEnabled; set => delayEnabled = value;
+        }
+
+        private double delayTime;
+        public double DelayTime
+        {
+            get => delayTime;
+            set => delayTime = value;
+        }
+
+        private Stopwatch delayStopWatch = new Stopwatch();
+
         public TouchpadActionPad()
         {
             FillDirectionalButtons();
@@ -186,13 +208,16 @@ namespace SteamControllerTest.TouchpadActions
             int maxDirX = (!xNegative ? touchpadDefinition.xAxis.max : touchpadDefinition.xAxis.min) - axisXMid;
             int maxDirY = (!yNegative ? touchpadDefinition.yAxis.max : touchpadDefinition.yAxis.min) - axisYMid;
 
+            bool deadInput = true;
             if (requiresClick && touchFrame.Click)
             {
                 deadMod.CalcOutValues(axisXDir, axisYDir, maxDirX, maxDirY, out xNorm, out yNorm);
+                deadInput = false;
             }
             else if (!requiresClick)
             {
                 deadMod.CalcOutValues(axisXDir, axisYDir, maxDirX, maxDirY, out xNorm, out yNorm);
+                deadInput = false;
             }
             else
             {
@@ -208,7 +233,34 @@ namespace SteamControllerTest.TouchpadActions
 
             //if (currentMode == DPadMode.Standard || currentMode == DPadMode.EightWay)
             {
-                DetermineDirection();
+                if (delayEnabled || deadInput)
+                {
+                    currentDir = DetermineDirection();
+                }
+                else
+                {
+                    DpadDirections tempDir = DetermineDirection();
+                    if (currentDir != tempDir)
+                    {
+                        if (!delayStopWatch.IsRunning)
+                        {
+                            delayStopWatch.Restart();
+                        }
+
+                        if ((delayStopWatch.ElapsedMilliseconds * 0.001) >= delayTime)
+                        {
+                            currentDir = tempDir;
+                            delayStopWatch.Reset();
+                        }
+                    }
+                    else
+                    {
+                        if (delayStopWatch.IsRunning)
+                        {
+                            delayStopWatch.Reset();
+                        }
+                    }
+                }
             }
 
             active = true;
@@ -768,9 +820,6 @@ namespace SteamControllerTest.TouchpadActions
             active = currentDir != DpadDirections.Centered ||
                 tmpActiveBtns.Count > 0;
             activeEvent = false;
-
-
-
         }
 
         public override void Release(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false)
@@ -798,6 +847,10 @@ namespace SteamControllerTest.TouchpadActions
             }
 
             inputStatus = false;
+            if (delayStopWatch.IsRunning)
+            {
+                delayStopWatch.Reset();
+            }
 
             if (resetState)
             {
@@ -847,6 +900,11 @@ namespace SteamControllerTest.TouchpadActions
                 previousDir = currentDir;
             }
 
+            if (!useParentDelay && delayStopWatch.IsRunning)
+            {
+                delayStopWatch.Reset();
+            }
+
             inputStatus = false;
 
             if (resetState)
@@ -867,11 +925,12 @@ namespace SteamControllerTest.TouchpadActions
             }
         }
 
-        private void DetermineDirection()
+        private DpadDirections DetermineDirection()
         {
+            DpadDirections resultDir = DpadDirections.Centered;
             if (xNorm == 0.0 && yNorm == 0.0)
             {
-                currentDir = DpadDirections.Centered;
+                resultDir = DpadDirections.Centered;
             }
             else
             {
@@ -912,39 +971,39 @@ namespace SteamControllerTest.TouchpadActions
                     //Trace.WriteLine(angle);
                     if (angle == 0.0)
                     {
-                        currentDir = DpadDirections.Up;
+                        resultDir = DpadDirections.Up;
                     }
                     else if (angle > upLeftEnd || angle < upRightBegin)
                     {
-                        currentDir = DpadDirections.Up;
+                        resultDir = DpadDirections.Up;
                     }
                     else if (angle >= upRightBegin && angle < rightBegin)
                     {
-                        currentDir = DpadDirections.UpRight;
+                        resultDir = DpadDirections.UpRight;
                     }
                     else if (angle >= rightBegin && angle < downRightBegin)
                     {
-                        currentDir = DpadDirections.Right;
+                        resultDir = DpadDirections.Right;
                     }
                     else if (angle >= downRightBegin && angle < downBegin)
                     {
-                        currentDir = DpadDirections.DownRight;
+                        resultDir = DpadDirections.DownRight;
                     }
                     else if (angle >= downBegin && angle < downLeftBegin)
                     {
-                        currentDir = DpadDirections.Down;
+                        resultDir = DpadDirections.Down;
                     }
                     else if (angle >= downLeftBegin && angle < leftBegin)
                     {
-                        currentDir = DpadDirections.DownLeft;
+                        resultDir = DpadDirections.DownLeft;
                     }
                     else if (angle >= leftBegin && angle < upLeftBegin)
                     {
-                        currentDir = DpadDirections.Left;
+                        resultDir = DpadDirections.Left;
                     }
                     else if (angle >= upLeftBegin && angle <= upLeftEnd)
                     {
-                        currentDir = DpadDirections.UpLeft;
+                        resultDir = DpadDirections.UpLeft;
                     }
                 }
                 else if (currentMode == DPadMode.FourWayDiagonal)
@@ -964,26 +1023,28 @@ namespace SteamControllerTest.TouchpadActions
 
                     if (angle == 0.0)
                     {
-                        currentDir = DpadDirections.Up;
+                        resultDir = DpadDirections.Up;
                     }
                     else if (angle > upRightBegin && angle < downRightBegin)
                     {
-                        currentDir = DpadDirections.UpRight;
+                        resultDir = DpadDirections.UpRight;
                     }
                     else if (angle >= downRightBegin && angle < downLeftBegin)
                     {
-                        currentDir = DpadDirections.DownRight;
+                        resultDir = DpadDirections.DownRight;
                     }
                     else if (angle >= downLeftBegin && angle < upLeftBegin)
                     {
-                        currentDir = DpadDirections.DownLeft;
+                        resultDir = DpadDirections.DownLeft;
                     }
                     else if (angle >= upLeftBegin && angle < 360)
                     {
-                        currentDir = DpadDirections.UpLeft;
+                        resultDir = DpadDirections.UpLeft;
                     }
                 }
             }
+
+            return resultDir;
 
             //Trace.WriteLine(currentDir);
         }
@@ -1109,6 +1170,18 @@ namespace SteamControllerTest.TouchpadActions
                             break;
                         case PropertyKeyStrings.DEAD_ZONE_TYPE:
                             deadMod.DeadZoneType = tempPadAction.deadMod.DeadZoneType;
+                            break;
+                        case PropertyKeyStrings.DELAY_ENABLED:
+                            delayEnabled = tempPadAction.delayEnabled;
+                            useParentDelay = true;
+                            break;
+                        case PropertyKeyStrings.DELAY_TIME:
+                            {
+                                delayTime = tempPadAction.delayTime;
+                                // Copy ref to parent action Stopwatch
+                                delayStopWatch = tempPadAction.delayStopWatch;
+                            }
+
                             break;
                         default:
                             break;
