@@ -52,12 +52,6 @@ namespace SteamControllerTest.ActionUtil
                         outputActive = false;
                         finished = false;
                     }
-                    else
-                    {
-                        // Don't change active state here
-                        outputActive = active;
-                        finished = !active;
-                    }
                 }
                 else
                 {
@@ -75,12 +69,13 @@ namespace SteamControllerTest.ActionUtil
                         finished = true;
                         inToggleState = false;
                     }
-                    else
+                    else if (active)
                     {
-                        // Flip current state
-                        active = !active;
-                        outputActive = active;
-                        finished = !active;
+                        inToggleState = true;
+                        //// Flip current state
+                        //active = !active;
+                        //outputActive = active;
+                        //finished = !active;
                     }
                 }
             }
@@ -95,10 +90,6 @@ namespace SteamControllerTest.ActionUtil
                     outputActive = true;
                     activeEvent = true;
                     finished = false;
-                    if (toggleEnabled)
-                    {
-                        inToggleState = true;
-                    }
                     // Execute system event
                     //SendOutputEvent(mapper);
                 }
@@ -112,24 +103,6 @@ namespace SteamControllerTest.ActionUtil
                         active = false;
                         outputActive = false;
                         finished = true;
-                        inToggleState = false;
-                    }
-                    else
-                    {
-                        if (inToggleState)
-                        {
-                            // Don't change active state here
-                            outputActive = active;
-                            finished = !active;
-                        }
-                        else
-                        {
-                            // Event passed
-                            active = false;
-                            outputActive = false;
-                            finished = true;
-                            inToggleState = false;
-                        }
                     }
                 }
             }
@@ -149,10 +122,6 @@ namespace SteamControllerTest.ActionUtil
                         active = false;
                         outputActive = false;
                         finished = true;
-                    }
-                    else
-                    {
-                        inToggleState = true;
                     }
                 }
             }
