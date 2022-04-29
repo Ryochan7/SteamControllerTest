@@ -12,6 +12,7 @@ namespace SteamControllerTest.ActionUtil
         private const int DEFAULT_DURATION_MS = 30;
 
         private bool status;
+        private bool inToggleState;
 
         private int durationMs = DEFAULT_DURATION_MS;
         public int DurationMs
@@ -45,18 +46,41 @@ namespace SteamControllerTest.ActionUtil
 
                 if (status)
                 {
-                    active = false;
-                    outputActive = false;
-                    finished = false;
-                    //elapsed.Restart();
-                }
-                else
-                {
-                    //elapsed.Reset();
-
                     if (!toggleEnabled)
                     {
                         active = false;
+                        outputActive = false;
+                        finished = false;
+                    }
+                    else
+                    {
+                        // Don't change active state here
+                        outputActive = active;
+                        finished = !active;
+                    }
+                }
+                else
+                {
+                    if (!toggleEnabled)
+                    {
+                        // End Func
+                        active = false;
+                        outputActive = active;
+                        finished = true;
+                    }
+                    else if (inToggleState)
+                    {
+                        active = false;
+                        outputActive = active;
+                        finished = true;
+                        inToggleState = false;
+                    }
+                    else
+                    {
+                        // Flip current state
+                        active = !active;
+                        outputActive = active;
+                        finished = !active;
                     }
                 }
             }
@@ -70,19 +94,42 @@ namespace SteamControllerTest.ActionUtil
                     active = true;
                     outputActive = true;
                     activeEvent = true;
+                    finished = false;
+                    if (toggleEnabled)
+                    {
+                        inToggleState = true;
+                    }
                     // Execute system event
                     //SendOutputEvent(mapper);
                 }
                 else
                 {
                     waited = true;
-                    //elapsed.Stop();
 
                     if (!toggleEnabled)
                     {
-                        finished = true;
+                        // Event passed
                         active = false;
                         outputActive = false;
+                        finished = true;
+                        inToggleState = false;
+                    }
+                    else
+                    {
+                        if (inToggleState)
+                        {
+                            // Don't change active state here
+                            outputActive = active;
+                            finished = !active;
+                        }
+                        else
+                        {
+                            // Event passed
+                            active = false;
+                            outputActive = false;
+                            finished = true;
+                            inToggleState = false;
+                        }
                     }
                 }
             }
@@ -95,13 +142,17 @@ namespace SteamControllerTest.ActionUtil
                 if (stateData.elapsed.ElapsedMilliseconds > durationMs)
                 {
                     waited = true;
-                    //elapsed.Stop();
 
+                    // Only change state if Toggle is not in use
                     if (!toggleEnabled)
                     {
-                        finished = true;
                         active = false;
                         outputActive = false;
+                        finished = true;
+                    }
+                    else
+                    {
+                        inToggleState = true;
                     }
                 }
             }
@@ -115,7 +166,7 @@ namespace SteamControllerTest.ActionUtil
             activeEvent = false;
             waited = false;
             finished = false;
-            //elapsed.Reset();
+            inToggleState = false;
         }
     }
 }

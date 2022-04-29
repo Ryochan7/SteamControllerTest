@@ -247,6 +247,18 @@ namespace SteamControllerTest
         {
             private StartPressFunc startPressFuncInstance;
 
+            public int DurationMs
+            {
+                get => startPressFuncInstance.DurationMs;
+                set => startPressFuncInstance.DurationMs = value;
+            }
+
+            public bool Toggle
+            {
+                get => startPressFuncInstance.toggleEnabled;
+                set => startPressFuncInstance.toggleEnabled = value;
+            }
+
             public StartPressFuncSettings(StartPressFunc funcInstance)
             {
                 startPressFuncInstance = funcInstance;
