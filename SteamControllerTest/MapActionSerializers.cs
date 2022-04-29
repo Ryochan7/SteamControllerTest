@@ -2719,6 +2719,89 @@ namespace SteamControllerTest
         }
     }
 
+    public class TouchpadSingleButtonSerializer : MapActionSerializer
+    {
+        public class TouchpadSingleButtonSettings
+        {
+            private TouchpadSingleButton touchpadSingleBtnAct;
+
+            public TouchpadSingleButtonSettings(TouchpadSingleButton action)
+            {
+                touchpadSingleBtnAct = action;
+            }
+        }
+
+        private TouchpadSingleButton buttonAction = new TouchpadSingleButton();
+
+        private List<ActionFuncSerializer> actionFuncSerializers =
+                new List<ActionFuncSerializer>();
+        [JsonProperty("Functions", Required = Required.Always)]
+        public List<ActionFuncSerializer> ActionFuncSerializers
+        {
+            get => actionFuncSerializers;
+            set
+            {
+                actionFuncSerializers = value;
+                ActionFuncSerializersChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler ActionFuncSerializersChanged;
+
+        // De-serialize
+        public TouchpadSingleButtonSerializer() : base()
+        {
+            mapAction = buttonAction;
+
+            NameChanged += TouchpadSingleButtonSerializer_NameChanged;
+            ActionFuncSerializersChanged += TouchpadSingleButtonSerializer_ActionFuncSerializersChanged;
+        }
+
+        // Pre-serialize
+        public TouchpadSingleButtonSerializer(ActionLayer tempLayer, MapAction mapAction) :
+            base(tempLayer, mapAction)
+        {
+            if (mapAction is TouchpadSingleButton temp)
+            {
+                buttonAction = temp;
+                this.mapAction = buttonAction;
+                PopulateFuncs();
+            }
+        }
+
+        // Serialize
+        private void PopulateFuncs()
+        {
+            if (!buttonAction.UseParentActions)
+            {
+                foreach (ActionFunc tempFunc in buttonAction.EventButton.ActionFuncs)
+                {
+                    actionFuncSerializers.Add(new ActionFuncSerializer(tempFunc));
+                }
+            }
+        }
+
+        // Deserialize
+        public override void PopulateMap()
+        {
+            buttonAction.EventButton.ActionFuncs.Clear();
+            foreach (ActionFuncSerializer serializer in actionFuncSerializers)
+            {
+                serializer.PopulateFunc();
+                buttonAction.EventButton.ActionFuncs.Add(serializer.ActionFunc);
+            }
+        }
+
+        private void TouchpadSingleButtonSerializer_ActionFuncSerializersChanged(object sender, EventArgs e)
+        {
+            buttonAction.ChangedProperties.Add(TouchpadSingleButton.PropertyKeyStrings.FUNCTIONS);
+        }
+
+        private void TouchpadSingleButtonSerializer_NameChanged(object sender, EventArgs e)
+        {
+            buttonAction.ChangedProperties.Add(TouchpadSingleButton.PropertyKeyStrings.NAME);
+        }
+    }
+
     public class AxisDirButtonSerializer : MapActionSerializer
     {
         private ButtonActions.AxisDirButton axisDirButton =
@@ -5360,6 +5443,11 @@ namespace SteamControllerTest
                     JsonConvert.PopulateObject(j.ToString(), touchAxesActInstance);
                     resultInstance = touchAxesActInstance;
                     break;
+                case "TouchSingleButtonAction":
+                    TouchpadSingleButtonSerializer touchSingleBtnActInstance = new TouchpadSingleButtonSerializer();
+                    JsonConvert.PopulateObject(j.ToString(), touchSingleBtnActInstance);
+                    resultInstance = touchSingleBtnActInstance;
+                    break;
                 case "DPadAction":
                     DpadActionSerializer dpadActSerializer = new DpadActionSerializer();
                     JsonConvert.PopulateObject(j.ToString(), dpadActSerializer);
@@ -5488,6 +5576,10 @@ namespace SteamControllerTest
                 case "TouchAxesAction":
                     TouchpadAxesActionSerializer touchAxesActSerializer = new TouchpadAxesActionSerializer(current.TempLayer, tempMapAction);
                     serializer.Serialize(writer, touchAxesActSerializer);
+                    break;
+                case "TouchSingleButtonAction":
+                    TouchpadSingleButtonSerializer touchSingleBtnActSerializer = new TouchpadSingleButtonSerializer(current.TempLayer, tempMapAction);
+                    serializer.Serialize(writer, touchSingleBtnActSerializer);
                     break;
                 case "DPadAction":
                     DpadActionSerializer dpadActSerializer = new DpadActionSerializer(current.TempLayer, tempMapAction);
