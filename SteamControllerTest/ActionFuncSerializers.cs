@@ -129,6 +129,12 @@ namespace SteamControllerTest
                 set => holdPressFunc.DurationMs = value;
             }
 
+            public bool Toggle
+            {
+                get => holdPressFunc.toggleEnabled;
+                set => holdPressFunc.toggleEnabled = value;
+            }
+
             public bool TurboEnabled
             {
                 get => holdPressFunc.TurboEnabled;
