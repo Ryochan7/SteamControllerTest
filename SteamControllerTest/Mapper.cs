@@ -407,7 +407,7 @@ namespace SteamControllerTest
             gyroSensDefinition = new GyroSensDefinition()
             {
                 elapsedReference = 125.0,
-                mouseCoefficient = 0.012,
+                mouseCoefficient = 0.025,
                 mouseOffset = 0.3,
 
                 accelMinLeanX = -16384,
