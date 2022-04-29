@@ -10,6 +10,7 @@ namespace SteamControllerTest.ActionUtil
     public class HoldPressFunc : ActionFunc
     {
         private bool status;
+        private bool inToggleState;
 
         private int durationMs;
         public int DurationMs { get => durationMs; set => durationMs = value; }
@@ -66,6 +67,21 @@ namespace SteamControllerTest.ActionUtil
                         outputActive = active;
                         finished = true;
                     }
+                    else if (inToggleState)
+                    {
+                        active = false;
+                        outputActive = active;
+                        finished = true;
+                        inToggleState = false;
+                    }
+                    else if (active)
+                    {
+                        // Toggle enabled and func currently active.
+                        // Activate in toggle state
+                        outputActive = active;
+                        finished = false;
+                        inToggleState = true;
+                    }
                     else if (!active)
                     {
                         finished = true;
@@ -87,6 +103,7 @@ namespace SteamControllerTest.ActionUtil
                     active = true;
                     outputActive = active;
                     activeEvent = true;
+
                     if (turboEnabled)
                     {
                         turboStopwatch.Restart();
