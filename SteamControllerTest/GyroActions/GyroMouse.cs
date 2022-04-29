@@ -156,8 +156,8 @@ namespace SteamControllerTest.GyroActions
                 return;
             }
 
-            double offset = GYRO_MOUSE_OFFSET;
-            double coefficient = GYRO_MOUSE_COEFFICIENT * mouseParams.sensitivity;
+            double offset = gyroSensDefinition.mouseOffset;
+            double coefficient = gyroSensDefinition.mouseCoefficient * mouseParams.sensitivity;
             int deadZone = mouseParams.deadzone;
 
             double timeElapsed = gyroFrame.timeElapsed;

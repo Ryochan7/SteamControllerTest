@@ -28,6 +28,12 @@ namespace SteamControllerTest.GyroActions
     {
         public bool active;
         public bool activeEvent;
+        protected GyroSensDefinition gyroSensDefinition = new GyroSensDefinition();
+        public GyroSensDefinition GyroSensDefinition
+        {
+            get => gyroSensDefinition;
+            set => gyroSensDefinition = value;
+        }
 
         public abstract void Prepare(Mapper mapper, ref GyroEventFrame gyroFrame, bool alterState = true);
 

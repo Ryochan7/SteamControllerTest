@@ -197,6 +197,7 @@ namespace SteamControllerTest
         private TouchpadDefinition rightPadDefinition;
         private TriggerDefinition leftTriggerDefinition;
         private TriggerDefinition rightTriggerDefinition;
+        private GyroSensDefinition gyroSensDefinition;
 
         private Profile actionProfile = new Profile();
         private IntermediateState intermediateState = new IntermediateState();
@@ -402,6 +403,20 @@ namespace SteamControllerTest
             // Copy struct
             TriggerDefinition.TriggerAxisData rtAxis = ltAxis;
             rightTriggerDefinition = new TriggerDefinition(rtAxis, TriggerActionCodes.LeftTrigger);
+
+            gyroSensDefinition = new GyroSensDefinition()
+            {
+                elapsedReference = 125.0,
+                mouseCoefficient = 0.012,
+                mouseOffset = 0.3,
+
+                accelMinLeanX = -16384,
+                accelMaxLeanX = 16384,
+                accelMinLeanY = -16384,
+                accelMaxLeanY = 16384,
+                accelMinLeanZ = -16384,
+                accelMaxLeanZ = 16384,
+            };
 
             ReadFromProfile();
 
@@ -683,6 +698,12 @@ namespace SteamControllerTest
                                         case InputBindingMeta.InputControlType.Gyro:
                                             if (tempAction is GyroMapAction)
                                             {
+                                                GyroMapAction gyroAction = tempAction as GyroMapAction;
+                                                //if (tempBind.id == "Gyro")
+                                                {
+                                                    gyroAction.GyroSensDefinition = gyroSensDefinition;
+                                                }
+
                                                 tempAction.MappingId = tempBind.id;
                                                 tempLayer.gyroActionDict[tempBind.id] = tempAction as GyroMapAction;
                                                 if (parentLayer != null && parentLayer.gyroActionDict.TryGetValue(tempBind.id, out GyroMapAction tempParentGyroAction) &&

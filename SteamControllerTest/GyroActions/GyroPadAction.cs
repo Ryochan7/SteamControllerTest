@@ -158,8 +158,8 @@ namespace SteamControllerTest.GyroActions
 
             bool xNegative = gyroFrame.AccelX < 0;
             bool yNegative = gyroFrame.AccelY < 0;
-            int maxDirX = (!xNegative ? MAX_ACCEL_LEAN_X : MIN_ACCEL_LEAN_X) - axisMid;
-            int maxDirY = (!yNegative ? MAX_ACCEL_LEAN_Y : MIN_ACCEL_LEAN_Y) - axisMid;
+            int maxDirX = (!xNegative ? gyroSensDefinition.accelMaxLeanX : gyroSensDefinition.accelMinLeanX) - axisMid;
+            int maxDirY = (!yNegative ? gyroSensDefinition.accelMaxLeanY : gyroSensDefinition.accelMinLeanY) - axisMid;
             bool inSafeZone;
             deadMod.CalcOutValues(axisXDir, axisYDir, maxDirX,
                     maxDirY, out xNorm, out yNorm);
