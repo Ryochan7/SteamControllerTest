@@ -29,10 +29,18 @@ namespace SteamControllerTest
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            if (e.Args.Length != 1 && !File.Exists(e.Args[0]))
+            // No longer require profile path to be passed to program
+            /*if (e.Args.Length != 1 && !File.Exists(e.Args[0]))
             {
                 Application.Current.Shutdown();
                 return;
+            }
+            */
+
+            string tempProfilePath = string.Empty;
+            if (e.Args.Length == 1 && File.Exists(e.Args[0]))
+            {
+                tempProfilePath = e.Args[0];
             }
 
             try
@@ -56,7 +64,7 @@ namespace SteamControllerTest
 
             testThread = new Thread(() =>
             {
-                manager = new BackendManager(e.Args[0]);
+                manager = new BackendManager(tempProfilePath);
                 manager.RequestOSD += Manager_RequestOSD;
                 //manager.Start();
                 //mapper = new Mapper();
@@ -68,10 +76,19 @@ namespace SteamControllerTest
             testThread.Join();
 
             MainWindow window = new MainWindow();
+            window.MainWinVM.ProfilePath = tempProfilePath;
+            window.ProfilePathChanged += Window_ProfilePathChanged;
             MainWindow = window;
+
             osdTestWindow = new OSDTest();
 
             window.Show();
+        }
+
+        private void Window_ProfilePathChanged(object sender,
+            MainWindow.ProfilePathEventArgs e)
+        {
+            manager.ProfileFile = e.FilePath;
         }
 
         private void Manager_RequestOSD(object sender, Mapper.RequestOSDArgs e)

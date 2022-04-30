@@ -6,7 +6,11 @@
         xmlns:local="clr-namespace:SteamControllerTest"
         mc:Ignorable="d"
         Title="MainWindow" Height="300" Width="600" Closed="Window_Closed">
-    <Grid>
-        <Button x:Name="startBtn" Content="Start" Click="Button_Click" />
-    </Grid>
+    <DockPanel>
+        <DockPanel Margin="6,10,6,10" DockPanel.Dock="Bottom">
+            <Button x:Name="findProfileBtn" Width="50" Height="30" Content="Change" Margin="0,0,0,0" DockPanel.Dock="Right" Click="FindProfileBtn_Click" />
+            <TextBlock IsEnabled="False" Text="{Binding ProfilePath}" DockPanel.Dock="Left" />
+        </DockPanel>
+        <Button x:Name="serviceChangeBtn" Content="{Binding ServiceBtnText,Mode=OneWay,FallbackValue='Start'}" Click="Button_Click" />
+    </DockPanel>
 </Window>

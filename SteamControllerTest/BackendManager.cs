@@ -12,12 +12,29 @@ namespace SteamControllerTest
     public class BackendManager
     {
         private Thread vbusThr;
+        private bool isRunning;
+        public bool IsRunning
+        {
+            get => isRunning;
+        }
+
+        private FakerInputHandler fakerInputHandler = new FakerInputHandler();
 
         private List<Mapper> mapperList;
         private SteamControllerEnumerator enumerator;
         private Dictionary<SteamControllerDevice, SteamControllerReader> deviceReadersMap;
         private ViGEmClient vigemTestClient = null;
         private string profileFile;
+        public string ProfileFile
+        {
+            get => profileFile;
+            set
+            {
+                profileFile = value;
+                ProfileFileChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler ProfileFileChanged;
 
         public event EventHandler<Mapper.RequestOSDArgs> RequestOSD;
 
@@ -27,10 +44,28 @@ namespace SteamControllerTest
             mapperList = new List<Mapper>();
             enumerator = new SteamControllerEnumerator();
             deviceReadersMap = new Dictionary<SteamControllerDevice, SteamControllerReader>();
+
+            ProfileFileChanged += BackendManager_ProfileFileChanged;
+        }
+
+        private void BackendManager_ProfileFileChanged(object sender, EventArgs e)
+        {
+            if (isRunning)
+            {
+                foreach(Mapper mapper in mapperList)
+                {
+                    Task.Run(() =>
+                    {
+                        mapper.ChangeProfile(profileFile);
+                    });
+                }
+            }
         }
 
         public void Start()
         {
+            bool checkConnect = fakerInputHandler.Connect();
+
             // Change thread affinity of bus object to not be tied
             // to GUI thread
             vbusThr = new Thread(() =>
@@ -70,10 +105,12 @@ namespace SteamControllerTest
 
                 Mapper testMapper = new Mapper(device, profileFile);
                 //testMapper.Start(device, reader);
-                testMapper.Start(vigemTestClient, device, reader);
+                testMapper.Start(vigemTestClient, fakerInputHandler, device, reader);
                 testMapper.RequestOSD += TestMapper_RequestOSD;
                 mapperList.Add(testMapper);
             }
+
+            isRunning = true;
         }
 
         private void TestMapper_RequestOSD(object sender, Mapper.RequestOSDArgs e)
@@ -83,6 +120,8 @@ namespace SteamControllerTest
 
         public void Stop()
         {
+            isRunning = false;
+
             foreach (SteamControllerReader readers in deviceReadersMap.Values)
             {
                 //readers.StopUpdate();
@@ -98,6 +137,8 @@ namespace SteamControllerTest
 
             vigemTestClient?.Dispose();
             vigemTestClient = null;
+
+            fakerInputHandler.Disconnect();
         }
     }
 }

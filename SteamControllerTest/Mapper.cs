@@ -211,17 +211,17 @@ namespace SteamControllerTest
             new List<OutputActionData>();
 
         // VK, Count
-        private Dictionary<int, int> keyReferenceCountDict = new Dictionary<int, int>();
+        private static Dictionary<int, int> keyReferenceCountDict = new Dictionary<int, int>();
         // VK
-        private HashSet<int> activeKeys = new HashSet<int>();
+        private static HashSet<int> activeKeys = new HashSet<int>();
         // VK
-        private HashSet<int> releasedKeys = new HashSet<int>();
+        private static HashSet<int> releasedKeys = new HashSet<int>();
 
-        private HashSet<int> currentMouseButtons = new HashSet<int>();
-        private HashSet<int> activeMouseButtons = new HashSet<int>();
-        private HashSet<int> releasedMouseButtons = new HashSet<int>();
+        private static HashSet<int> currentMouseButtons = new HashSet<int>();
+        private static HashSet<int> activeMouseButtons = new HashSet<int>();
+        private static HashSet<int> releasedMouseButtons = new HashSet<int>();
 
-        private FakerInputHandler fakerInputHandler = new FakerInputHandler();
+        private FakerInputHandler fakerInputHandler;
 
         public class RequestOSDArgs : EventArgs
         {
@@ -269,7 +269,14 @@ namespace SteamControllerTest
         }
 
         private string profileFile;
-
+        public string ProfileFile
+        {
+            get => profileFile;
+            set
+            {
+                profileFile = value;
+            }
+        }
 
         private ViGEmClient vigemTestClient = null;
         private IXbox360Controller outputX360 = null;
@@ -317,7 +324,8 @@ namespace SteamControllerTest
         //private RelativeMouseReport mouseReport = new RelativeMouseReport();
         //private KeyboardEnhancedReport mediaKeyboardReport = new KeyboardEnhancedReport();
 
-        
+        private bool inMapperEvent;
+        private bool calibrationFinished;
 
         private bool keyboardSync = false;
         private bool keyboardEnhancedSync = false;
@@ -423,7 +431,7 @@ namespace SteamControllerTest
                 accelMaxLeanZ = 16384,
             };
 
-            ReadFromProfile();
+            //ReadFromProfile();
 
             /*CycleButton testCycle = new CycleButton("Weapon Cycle");
             testCycle.Actions.AddRange(new OutputActionData[]
@@ -447,42 +455,26 @@ namespace SteamControllerTest
         //    SwitchProDevice proDevice, SwitchProReader proReader)
 
         public void Start(ViGEmClient vigemTestClient,
+            FakerInputHandler fakerInputHandler,
             SteamControllerDevice device, SteamControllerReader reader)
         {
             //bool checkConnect = fakerInput.Connect();
-            bool checkConnect = fakerInputHandler.Connect();
+            this.vigemTestClient = vigemTestClient;
+            this.fakerInputHandler = fakerInputHandler;
+            //bool checkConnect = fakerInputHandler.Connect();
             //Trace.WriteLine(checkConnect);
 
-            PopulateKeyBindings();
-
-            if (actionProfile.OutputGamepadSettings.Enabled)
-            {
-                contThr = new Thread(() =>
-                {
-                    outputX360 = vigemTestClient.CreateXbox360Controller();
-                    outputX360.AutoSubmitReport = false;
-                    outputX360.Connect();
-                });
-                contThr.Priority = ThreadPriority.Normal;
-                contThr.IsBackground = true;
-                contThr.Start();
-                contThr.Join(); // Wait for bus object start
-            }
+            //PopulateKeyBindings();
 
             this.reader = reader;
             //reader.Report += ControllerReader_Report;
-            reader.Report += Reader_Calibrate_Gyro;
 
-            /*if (outputX360 != null)
+            if (!string.IsNullOrEmpty(profileFile))
             {
-                outputX360.FeedbackReceived += (sender, e) =>
-                {
-                    device.currentLeftAmpRatio = e.LargeMotor / 255.0;
-                    device.currentRightAmpRatio = e.SmallMotor / 255.0;
-                    reader.WriteRumbleReport();
-                };
+                ChangeProfile(profileFile);
             }
-            */
+
+            reader.Report += Reader_Calibrate_Gyro;
 
             reader.StartUpdate();
         }
@@ -773,6 +765,83 @@ namespace SteamControllerTest
             Trace.WriteLine("IT IS FINISHED");
         }
 
+        public void ChangeProfile(string profilePath)
+        {
+            if (!inMapperEvent)
+            {
+                if (calibrationFinished)
+                {
+                    // Disconnect event
+                    reader.Report -= ControllerReader_Report;
+                }
+
+                // Reset actions from current profile
+                actionProfile.CurrentActionSet.ReleaseActions(this, true);
+
+                // Relay changes to event systems
+                SyncKeyboard();
+                SyncMouseButtons();
+
+                // Might use this info later. Output controller device switch?
+                EmulatedControllerSettings oldEmuControlSettings =
+                    new EmulatedControllerSettings()
+                {
+                    enabled = actionProfile.OutputGamepadSettings.enabled,
+                    outputGamepad = actionProfile.OutputGamepadSettings.outputGamepad,
+                };
+
+                // Reset virtual Xbox 360 controller if currently connected
+                if (outputX360 != null)
+                {
+                    outputX360.ResetReport();
+                    outputX360.SubmitReport();
+                }
+
+                // Change profile path
+                profileFile = profilePath;
+
+                // Read file
+                ReadFromProfile();
+
+                // Create virtual controller if desired
+                if (actionProfile.OutputGamepadSettings.Enabled && outputX360 == null)
+                {
+                    contThr = new Thread(() =>
+                    {
+                        outputX360 = vigemTestClient.CreateXbox360Controller();
+                        outputX360.AutoSubmitReport = false;
+                        outputX360.Connect();
+                    });
+                    contThr.Priority = ThreadPriority.Normal;
+                    contThr.IsBackground = true;
+                    contThr.Start();
+                    contThr.Join(); // Wait for bus object start
+
+                    /*//if (outputX360 != null)
+                    {
+                        outputX360.FeedbackReceived += (sender, e) =>
+                        {
+                            device.currentLeftAmpRatio = e.LargeMotor / 255.0;
+                            device.currentRightAmpRatio = e.SmallMotor / 255.0;
+                            reader.WriteRumbleReport();
+                        };
+                    }
+                    */
+                }
+                else if (!actionProfile.OutputGamepadSettings.enabled && outputX360 != null)
+                {
+                    outputX360.Disconnect();
+                    outputX360 = null;
+                }
+
+                if (calibrationFinished)
+                {
+                    // Re-connect event
+                    reader.Report += ControllerReader_Report;
+                }
+            }
+        }
+
         public void PopulateKeyBindings()
         {
             /*buttonBindings.A = (ushort)KeyInterop.VirtualKeyFromKey(Key.Space);
@@ -834,6 +903,8 @@ namespace SteamControllerTest
         private void ControllerReader_Report(SteamControllerReader sender,
             SteamControllerDevice device)
         {
+            inMapperEvent = true;
+
             ref SteamControllerState current = ref device.CurrentStateRef;
             //ref SteamControllerState previous = ref device.PreviousStateRef;
 
@@ -856,7 +927,7 @@ namespace SteamControllerTest
 
                 if (processCycle)
                 {
-                    foreach(CycleButton btn in processCycleList)
+                    foreach (CycleButton btn in processCycleList)
                     {
                         btn.Prepare(this, false);
                         btn.Event(this);
@@ -1185,7 +1256,7 @@ namespace SteamControllerTest
                         //actionProfile.CurrentActionSet.RemovePartialActionLayer(this, queuedActionLayer);
                         actionProfile.CurrentActionSet.RemovePartialActionLayer(this, tempIndex);
                     }
-                    
+
                     //actionProfile.CurrentActionSet.SwitchActionLayer(this, queuedActionLayer);
 
                     // Put new actions into an active state
@@ -1201,6 +1272,8 @@ namespace SteamControllerTest
                 // Make copy of state data as the previous state
                 previousMapperState = currentMapperState;
             }
+
+            inMapperEvent = false;
         }
 
         private const int CALIB_POLL_COUNT = 240; // Roughly 4 seconds of polls
@@ -1213,6 +1286,8 @@ namespace SteamControllerTest
 
         private void Reader_Calibrate_Gyro(SteamControllerReader sender, SteamControllerDevice device)
         {
+            calibrationFinished = false;
+
             ref SteamControllerState current = ref device.CurrentStateRef;
 
             if (ignoreGyroCalibPolls < TOTAL_IGNORE_CALIB_POLL_COUNT)
@@ -1262,6 +1337,8 @@ namespace SteamControllerTest
                 HookReaderEvent(sender, device);
                 //sender.Report += Reader_Right_Mixed_Gyro_Report;
                 Trace.WriteLine("CALIB DONE");
+
+                calibrationFinished = true;
             }
         }
 
@@ -4091,7 +4168,8 @@ namespace SteamControllerTest
             outputX360?.Disconnect();
             outputX360 = null;
 
-            fakerInputHandler.Disconnect();
+            // Let BackendManager handle disconnecting from event generator
+            //fakerInputHandler.Disconnect();
             //fakerInput.UpdateKeyboard(new KeyboardReport());
             //fakerInput.Disconnect();
             //fakerInput.Free();
