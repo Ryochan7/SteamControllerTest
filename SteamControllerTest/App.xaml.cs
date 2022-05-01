@@ -19,6 +19,7 @@ namespace SteamControllerTest
     public partial class App : Application
     {
         private BackendManager manager;
+        private AppGlobalData appGlobal;
 
         private Thread testThread;
         //private Mapper mapper;
@@ -26,6 +27,9 @@ namespace SteamControllerTest
         public BackendManager Manager { get => manager; }
 
         private OSDTest osdTestWindow;
+
+        private bool exitApp;
+        private string tempProfilePath = string.Empty;
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -37,10 +41,21 @@ namespace SteamControllerTest
             }
             */
 
-            string tempProfilePath = string.Empty;
+            /*string tempProfilePath = string.Empty;
             if (e.Args.Length == 1 && File.Exists(e.Args[0]))
             {
                 tempProfilePath = e.Args[0];
+            }
+            */
+
+            ArgumentParser parser = new ArgumentParser();
+            parser.Parse(e.Args);
+            CheckOptions(parser);
+
+            if (exitApp)
+            {
+                Current.Shutdown(1);
+                return;
             }
 
             try
@@ -61,6 +76,9 @@ namespace SteamControllerTest
                 Util.PROCESS_INFORMATION_CLASS.ProcessPagePriority, ref pagePrio, 4);
 
             RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
+
+            appGlobal = AppGlobalDataSingleton.Instance;
+            //appGlobal.LoadAppConfig();
 
             testThread = new Thread(() =>
             {
@@ -98,6 +116,20 @@ namespace SteamControllerTest
                 Trace.WriteLine("Attempt to display OSD");
                 osdTestWindow.DisplayOSD(e.Message);
             });
+        }
+
+        private void CheckOptions(ArgumentParser parser)
+        {
+            if (parser.HasErrors)
+            {
+                exitApp = true;
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(parser.ProfilePath))
+            {
+                tempProfilePath = parser.ProfilePath;
+            }
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)
