@@ -18,6 +18,17 @@ namespace SteamControllerTest
             get => isRunning;
         }
 
+        private bool changingService;
+        public bool ChangingService
+        {
+            get => changingService;
+        }
+
+        public event EventHandler ServiceStarted;
+        public event EventHandler PreServiceStop;
+        public event EventHandler ServiceStopped;
+        //public event EventHandler HotplugFinished;
+
         private FakerInputHandler fakerInputHandler = new FakerInputHandler();
 
         private List<Mapper> mapperList;
@@ -64,6 +75,7 @@ namespace SteamControllerTest
 
         public void Start()
         {
+            changingService = true;
             bool checkConnect = fakerInputHandler.Connect();
 
             // Change thread affinity of bus object to not be tied
@@ -111,6 +123,9 @@ namespace SteamControllerTest
             }
 
             isRunning = true;
+            changingService = false;
+
+            ServiceStarted?.Invoke(this, EventArgs.Empty);
         }
 
         private void TestMapper_RequestOSD(object sender, Mapper.RequestOSDArgs e)
@@ -120,7 +135,10 @@ namespace SteamControllerTest
 
         public void Stop()
         {
+            changingService = true;
             isRunning = false;
+
+            PreServiceStop?.Invoke(this, EventArgs.Empty);
 
             foreach (SteamControllerReader readers in deviceReadersMap.Values)
             {
@@ -139,6 +157,10 @@ namespace SteamControllerTest
             vigemTestClient = null;
 
             fakerInputHandler.Disconnect();
+
+            changingService = false;
+
+            ServiceStopped?.Invoke(this, EventArgs.Empty);
         }
     }
 }

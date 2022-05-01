@@ -98,7 +98,11 @@ namespace SteamControllerTest
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            Application.Current.Shutdown(0);
+            BackendManager manager = (Application.Current as App).Manager;
+            if (!manager.ChangingService)
+            {
+                Application.Current.Shutdown(0);
+            }
         }
 
         private void FindProfileBtn_Click(object sender, RoutedEventArgs e)
