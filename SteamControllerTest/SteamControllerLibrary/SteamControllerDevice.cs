@@ -115,6 +115,12 @@ namespace SteamControllerTest.SteamControllerLibrary
         public double currentLeftAmpRatio = 0.0;
         public double currentRightAmpRatio = 0.0;
 
+        private string serial;
+        public string Serial
+        {
+            get => serial;
+        }
+
         public SteamControllerDevice(HidDevice device)
         {
             hidDevice = device;
@@ -185,6 +191,16 @@ namespace SteamControllerTest.SteamControllerLibrary
             byte[] retReportData = new byte[FEATURE_REPORT_LEN];
             hidDevice.readFeatureData(retReportData);
             //Console.WriteLine("LKJDKJLLD: {0}", retReportData[1]);
+
+            string baseS = System.Text.Encoding.Default.GetString(retReportData, 4, 12);
+            string MACAddr = baseS.Replace("\0", string.Empty).ToUpper();
+            List<string> tempStrList = new List<string>();
+            for (int i=0; i < MACAddr.Length; i += 2)
+            {
+                tempStrList.Add($"{MACAddr[i]}{MACAddr[i + 1]}");
+            }
+
+            serial = string.Join(":", tempStrList);
         }
 
         protected virtual void ClearMappings()
