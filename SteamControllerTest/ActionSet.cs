@@ -387,6 +387,12 @@ namespace SteamControllerTest
                                     case InputBindingMeta.InputControlType.Gyro:
                                         activeCompositeLayer.gyroActionDict[mapId] = currentMapAction as GyroMapAction;
                                         break;
+                                    case InputBindingMeta.InputControlType.Touchpad:
+                                        activeCompositeLayer.touchpadActionDict[mapId] = currentMapAction as TouchpadMapAction;
+                                        break;
+                                    case InputBindingMeta.InputControlType.Trigger:
+                                        activeCompositeLayer.triggerActionDict[mapId] = currentMapAction as TriggerMapAction;
+                                        break;
                                     default:
                                         break;
                                 }
