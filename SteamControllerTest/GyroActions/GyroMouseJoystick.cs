@@ -297,25 +297,42 @@ namespace SteamControllerTest.GyroActions
             }
             */
 
-            double tempX = mapper.MStickFilterX.Filter(xNorm, mapper.CurrentRate);
-            double tempY = mapper.MStickFilterY.Filter(yNorm, mapper.CurrentRate);
+            double outXNorm = xNorm;
+            double outYNorm = yNorm;
 
-            if (mStickParms.invertX) tempX = -1.0 * tempX;
-            if (mStickParms.invertY) tempY = -1.0 * tempY;
+            // Adjust sensitivity to work around rounding in filter method
+            outXNorm *= 1.0005;
+            outYNorm *= 1.0005;
+            double tempXNorm = mapper.MStickFilterX.Filter(outXNorm, mapper.CurrentRate);
+            double tempYNorm = mapper.MStickFilterY.Filter(outYNorm, mapper.CurrentRate);
+
+            // Filter does not go back to absolute zero for reasons. Check
+            // for low number and reset to zero
+            if (Math.Abs(tempXNorm) < 0.0001) tempXNorm = 0.0;
+            if (Math.Abs(tempYNorm) < 0.0001) tempYNorm = 0.0;
+
+            // Need to check bounds again
+            tempXNorm = Math.Clamp(tempXNorm, -1.0, 1.0);
+            tempYNorm = Math.Clamp(tempYNorm, -1.0, 1.0);
+
+            if (mStickParms.invertX) tempXNorm = -1.0 * tempXNorm;
+            if (mStickParms.invertY) tempYNorm = -1.0 * tempYNorm;
 
             if (mStickParms.outputAxes != GyroMouseJoystickOuputAxes.All)
             {
                 if (mStickParms.outputAxes != GyroMouseJoystickOuputAxes.XAxis)
                 {
-                    tempX = 0.0;
+                    tempXNorm = 0.0;
                 }
                 else if (mStickParms.outputAxes != GyroMouseJoystickOuputAxes.YAxis)
                 {
-                    tempY = 0.0;
+                    tempYNorm = 0.0;
                 }
             }
 
-            mapper.GamepadFromStickInput(actionData, tempX, tempY);
+            //Trace.WriteLine($"HELP {tempXNorm} {tempYNorm}");
+
+            mapper.GamepadFromStickInput(actionData, tempXNorm, tempYNorm);
 
             //if (xNorm != 0.0 || yNorm != 0.0)
             //{
