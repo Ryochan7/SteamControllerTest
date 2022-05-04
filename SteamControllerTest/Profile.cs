@@ -52,6 +52,12 @@ namespace SteamControllerTest
         protected int rightStickRotation;
         public int RightStickRotation { get => rightStickRotation; set => rightStickRotation = value; }
 
+        protected int leftTouchpadRotation;
+        public int LeftTouchpadRotation { get => leftTouchpadRotation; set => leftTouchpadRotation = value; }
+
+        protected int rightTouchpadRotation;
+        public int RightTouchpadRotation { get => rightTouchpadRotation; set => rightTouchpadRotation = value; }
+
         private EmulatedControllerSettings outputGamepadSettings = new EmulatedControllerSettings();
         public EmulatedControllerSettings OutputGamepadSettings
         {

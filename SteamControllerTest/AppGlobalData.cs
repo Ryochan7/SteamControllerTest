@@ -6,13 +6,21 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SteamControllerTest.SteamControllerLibrary;
 
 namespace SteamControllerTest
 {
     public class AppGlobalData
     {
-        public const string APP_SETTINGS_FILENAME = "settings.json";
-        public const string APP_FOLDER_NAME = "Test";
+        public const string APP_SETTINGS_FILENAME = "Settings.json";
+        public const string CONTROLLER_CONFIGS_FILENAME = "ControllerConfigs.json";
+        public const string APP_FOLDER_NAME = "SCAutism";
+        public const string PROFILES_FOLDER_NAME = "Profiles";
+        public const string LOGS_FOLDER_NAME = "Logs";
+        public const string STEAM_CONTROLLER_PROFILE_DIR = "SteamController";
+        public const string SWITCH_PRO_PROFILE_DIR = "SwitchPro";
 
         public static string exelocation = Process.GetCurrentProcess().MainModule.FileName;
         public static string exedirpath = Directory.GetParent(exelocation).FullName;
@@ -27,6 +35,8 @@ namespace SteamControllerTest
         public string appdatapath;
         public string userAppDataPath =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), APP_FOLDER_NAME);
+        public string baseProfilesPath;
+        public string controllerConfigsPath;
 
         public const string BLANK_VIGEMBUS_VERSION = "0.0.0.0";
         public const string MIN_SUPPORTED_VIGEMBUS_VERSION = "1.17.333.0";
@@ -45,6 +55,8 @@ namespace SteamControllerTest
 
         public bool hidHideInstalled;
 
+        public bool appSettingsDirFound;
+
         public const int CONFIG_VERSION = 0;
         public const int APP_CONFIG_VERSION = 0;
         public const string ASSEMBLY_RESOURCE_PREFIX = "pack://application:,,,/SteamControllerTest;";
@@ -56,6 +68,36 @@ namespace SteamControllerTest
         {
             // Default to using remote AppData folder
             appdatapath = userAppDataPath;
+            baseProfilesPath = Path.Combine(appdatapath, PROFILES_FOLDER_NAME);
+            controllerConfigsPath = Path.Combine(appdatapath, CONTROLLER_CONFIGS_FILENAME);
+        }
+
+        public void FindConfigLocation()
+        {
+            if (Directory.Exists(appdatapath))
+            {
+                appSettingsDirFound = true;
+            }
+        }
+
+        public bool CreateBaseConfigSkeleton()
+        {
+            bool result = true;
+            try
+            {
+                Directory.CreateDirectory(appdatapath);
+                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME));
+                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, "SteamController"));
+                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, "SwitchPro"));
+                Directory.CreateDirectory(Path.Combine(appdatapath, LOGS_FOLDER_NAME));
+            }
+            catch (UnauthorizedAccessException)
+            {
+                result = false;
+            }
+
+
+            return result;
         }
 
         public void RefreshBaseDriverInfo()
@@ -296,6 +338,154 @@ namespace SteamControllerTest
 
             return result;
         }
+
+        public void CreateControllerDeviceSettingsFile()
+        {
+            string newJson = @"{
+                ""Controllers"": [
+                ]
+            }";
+
+            using (StreamWriter swriter = new StreamWriter(controllerConfigsPath))
+            using (JsonTextWriter jwriter = new JsonTextWriter(swriter))
+            {
+                JObject.Parse(newJson).WriteTo(jwriter);
+            }
+        }
+
+        public void LoadControllerDeviceSettings(SteamControllerDevice testDev,
+            ControllerOptionsStore store)
+        {
+            using (StreamReader sreader = new StreamReader(controllerConfigsPath))
+            {
+                string json = sreader.ReadToEnd();
+
+                try
+                {
+                    JObject tempJObj = JObject.Parse(json);
+                    JToken token = (from controller in tempJObj.SelectToken($@"$.Controllers")
+                         where controller.Type == JTokenType.Object && controller.Value<string>("Mac") == testDev.Serial &&
+                         controller.Value<string>("Type") == store.DeviceType.ToString()
+                         select controller).FirstOrDefault();
+
+                    if (token == null)
+                    {
+                        return;
+                    }
+
+                    JObject controllerObj = token.ToObject<JObject>();
+                    string macAddr = testDev.Serial;
+                    string devType = store.DeviceType.ToString();
+                    //string settings = controllerObj["Settings"].ToString();
+                    store.LoadSettings(controllerObj);
+                }
+                catch (JsonReaderException)
+                {
+                }
+                catch (JsonSerializationException)
+                {
+                }
+            }
+        }
+
+        public void SaveControllerDeviceSettings(SteamControllerDevice testDev,
+            ControllerOptionsStore store)
+        {
+            JObject tempRootJObj = null;
+            using (FileStream fs = new FileStream(controllerConfigsPath,
+                FileMode.Open, FileAccess.Read))
+            {
+                using (StreamReader sreader = new StreamReader(fs))
+                {
+                    string json = sreader.ReadToEnd();
+
+                    try
+                    {
+                        JToken token = null;
+                        if (!string.IsNullOrWhiteSpace(json))
+                        {
+                            tempRootJObj = JObject.Parse(json);
+                            token = (from controller in tempRootJObj.SelectToken($"$.Controllers")
+                                     where controller.Type == JTokenType.Object && controller.Value<string>("Mac") == testDev.Serial &&
+                                     controller.Value<string>("Type") == store.DeviceType.ToString()
+                                     select controller).First();
+                        }
+                        else
+                        {
+                            string newJson = @"{
+                                ""Controllers"": [
+                                ]
+                            }";
+
+                            tempRootJObj = JObject.Parse(newJson);
+                        }
+
+                        if (token != null)
+                        {
+                            // Found existing item. Update properties and replace object
+                            JObject controllerObj = token.ToObject<JObject>();
+                            string macAddr = testDev.Serial;
+                            string devType = InputDeviceType.SteamController.ToString();
+
+                            controllerObj["Mac"] = macAddr;
+                            controllerObj["Type"] = devType;
+                            store.PersistSettings(controllerObj);
+                            token.Replace(controllerObj);
+                        }
+                        else
+                        {
+                            JToken controllersToken = tempRootJObj.SelectToken("Controllers");
+                            if (controllersToken == null)
+                            {
+                                tempRootJObj.Add(new JProperty("Controllers", new JArray()));
+                            }
+                            else if (controllersToken != null && controllersToken.Type != JTokenType.Array)
+                            {
+                                tempRootJObj.Remove("Controllers");
+                                tempRootJObj.Add(new JProperty("Controllers", new JArray()));
+                            }
+
+                            // No current object found. Create a new object and add it to JArray
+                            string controllerJson = @"{
+                                ""Mac"": """"
+                                ""Type"": """",
+                                ""Settings"": {
+
+                                }
+                            }";
+
+                            JObject controllerObj = JObject.Parse(controllerJson);
+                            tempRootJObj["Controllers"].ToObject<JArray>().Add(controllerObj);
+
+                            store.PersistSettings(controllerObj);
+                        }
+                    }
+                    catch (JsonReaderException)
+                    {
+                    }
+                    catch (JsonSerializationException)
+                    {
+                    }
+                }
+            }
+
+            using (FileStream fs = new FileStream(controllerConfigsPath,
+               FileMode.Truncate, FileAccess.Write))
+            {
+                if (tempRootJObj != null)
+                {
+                    using (StreamWriter swriter = new StreamWriter(fs))
+                    using (JsonTextWriter jwriter = new JsonTextWriter(swriter))
+                    {
+                        jwriter.Formatting = Formatting.Indented;
+                        jwriter.Indentation = 2;
+                        string temp = tempRootJObj.ToString();
+                        //Trace.WriteLine(temp);
+                        tempRootJObj.WriteTo(jwriter);
+                    }
+                }
+            }
+        }
     }
 
     public class ViGEmBusInfo
@@ -309,6 +499,13 @@ namespace SteamControllerTest
         public string driverProviderName;
     }
 
+
+    public enum InputDeviceType
+    {
+        None,
+        SteamController,
+        SwitchPro,
+    }
 
     public static class AppGlobalDataSingleton
     {

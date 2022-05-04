@@ -278,9 +278,12 @@ namespace SteamControllerTest
             }
         }
 
+        public delegate void ProfileChangeDelegate(Mapper sender, string profilePath);
+        public event ProfileChangeDelegate ProfileChanged;
+
         private ViGEmClient vigemTestClient = null;
         private IXbox360Controller outputX360 = null;
-        private Thread contThr;
+        //private Thread contThr;
 
         private SteamControllerDevice device;
         private SteamControllerReader reader;
@@ -334,8 +337,16 @@ namespace SteamControllerTest
         private bool processCycle = false;
         private List<CycleButton> processCycleList = new List<CycleButton>();
 
-        public Mapper(SteamControllerDevice device, string profileFile)
+        private AppGlobalData appGlobal;
+        public AppGlobalData AppGlobal
         {
+            get => appGlobal;
+        }
+
+        public Mapper(SteamControllerDevice device, string profileFile,
+            AppGlobalData appGlobal)
+        {
+            this.appGlobal = appGlobal;
             this.profileFile = profileFile;
             this.device = device;
 
@@ -492,11 +503,23 @@ namespace SteamControllerTest
                 ProfileSerializer profileSerializer = new ProfileSerializer(tempProfile);
 
                 string json = sreader.ReadToEnd();
-                JsonConvert.PopulateObject(json, profileSerializer);
+
+                try
+                {
+                    JsonConvert.PopulateObject(json, profileSerializer);
+                }
+                catch (JsonSerializationException)
+                {
+                    return;
+                }
+
                 profileSerializer.PopulateProfile();
                 tempProfile.ResetAliases();
                 tempMappings = profileSerializer.ActionMappings;
             }
+
+            //tempProfile.LeftTouchpadRotation = device.DeviceOptions.LeftTouchpadRotation;
+            //tempProfile.RightTouchpadRotation = device.DeviceOptions.RightTouchpadRotation;
 
             // Populate ActionLayer dicts with default no action elements
             foreach (ActionSet set in tempProfile.ActionSets)
@@ -806,7 +829,7 @@ namespace SteamControllerTest
                 // Create virtual controller if desired
                 if (actionProfile.OutputGamepadSettings.Enabled && outputX360 == null)
                 {
-                    contThr = new Thread(() =>
+                    Thread contThr = new Thread(() =>
                     {
                         outputX360 = vigemTestClient.CreateXbox360Controller();
                         outputX360.AutoSubmitReport = false;
@@ -816,6 +839,7 @@ namespace SteamControllerTest
                     contThr.IsBackground = true;
                     contThr.Start();
                     contThr.Join(); // Wait for bus object start
+                    contThr = null;
 
                     /*//if (outputX360 != null)
                     {
@@ -839,6 +863,8 @@ namespace SteamControllerTest
                     // Re-connect event
                     reader.Report += ControllerReader_Report;
                 }
+
+                ProfileChanged?.Invoke(this, profilePath);
             }
         }
 
@@ -912,8 +938,20 @@ namespace SteamControllerTest
             // device state instance alone
             currentMapperState = current;
 
-            currentMapperState.LeftPad.Rotate(-18.0 * Math.PI / 180.0);
-            currentMapperState.RightPad.Rotate(8.0 * Math.PI / 180.0);
+            int leftRotation = device.DeviceOptions.LeftTouchpadRotation;
+            if (leftRotation != 0)
+            {
+                currentMapperState.LeftPad.Rotate(leftRotation * Math.PI / 180.0);
+            }
+
+            int rightRotation = device.DeviceOptions.RightTouchpadRotation;
+            if (rightRotation != 0)
+            {
+                currentMapperState.RightPad.Rotate(rightRotation * Math.PI / 180.0);
+            }
+
+            //currentMapperState.LeftPad.Rotate(-18.0 * Math.PI / 180.0);
+            //currentMapperState.RightPad.Rotate(8.0 * Math.PI / 180.0);
 
             mouseX = mouseY = 0.0;
 

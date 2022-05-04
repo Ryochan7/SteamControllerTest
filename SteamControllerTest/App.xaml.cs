@@ -78,11 +78,21 @@ namespace SteamControllerTest
             RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
 
             appGlobal = AppGlobalDataSingleton.Instance;
-            //appGlobal.LoadAppConfig();
+            appGlobal.FindConfigLocation();
+            if (!appGlobal.appSettingsDirFound && !appGlobal.CreateBaseConfigSkeleton())
+            {
+                MessageBox.Show($"Cannot create config folder structure in {appGlobal.appdatapath}. Exiting",
+                    "Test", MessageBoxButton.OK, MessageBoxImage.Error);
+                Current.Shutdown(1);
+                return;
+            }
+
+            appGlobal.RefreshBaseDriverInfo();
+            appGlobal.LoadAppSettings();
 
             testThread = new Thread(() =>
             {
-                manager = new BackendManager(tempProfilePath);
+                manager = new BackendManager(tempProfilePath, appGlobal);
                 manager.RequestOSD += Manager_RequestOSD;
                 //manager.Start();
                 //mapper = new Mapper();
@@ -94,6 +104,7 @@ namespace SteamControllerTest
             testThread.Join();
 
             MainWindow window = new MainWindow();
+            window.PostInit(appGlobal);
             window.MainWinVM.ProfilePath = tempProfilePath;
             window.ProfilePathChanged += Window_ProfilePathChanged;
             MainWindow = window;
@@ -134,7 +145,14 @@ namespace SteamControllerTest
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
-            manager?.Stop();
+            if (manager.IsRunning)
+            {
+                Task tempTask = Task.Run(() =>
+                {
+                    manager?.Stop();
+                });
+                tempTask.Wait();
+            }
 
             osdTestWindow.Close();
             osdTestWindow = null;

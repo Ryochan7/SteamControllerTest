@@ -7,10 +7,44 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="300" Width="600" Closed="Window_Closed">
     <DockPanel>
-        <DockPanel Margin="6,10,6,10" DockPanel.Dock="Bottom">
-            <Button x:Name="findProfileBtn" Width="50" Height="30" Content="Change" Margin="0,0,0,0" DockPanel.Dock="Right" Click="FindProfileBtn_Click" />
+        <StackPanel DockPanel.Dock="Bottom" Margin="6,10,6,10" Orientation="Vertical">
+            <Button x:Name="serviceChangeBtn" Content="{Binding ServiceBtnText,Mode=OneWay,FallbackValue='Start'}" Click="Button_Click" />
+        </StackPanel>
+
+        <DockPanel Margin="6,10,6,10" DockPanel.Dock="Bottom" Visibility="Collapsed">
+            <Button x:Name="findProfileBtn" Width="50" Height="20" Content="Change" Margin="0,0,0,0" DockPanel.Dock="Right" Click="FindProfileBtn_Click" />
             <TextBlock IsEnabled="False" Text="{Binding ProfilePath}" DockPanel.Dock="Left" />
         </DockPanel>
-        <Button x:Name="serviceChangeBtn" Content="{Binding ServiceBtnText,Mode=OneWay,FallbackValue='Start'}" Click="Button_Click" />
+        <DockPanel DockPanel.Dock="Top">
+            <ListView x:Name="deviceListView" ItemsSource="{Binding ControllerList}" SelectedIndex="{Binding SelectIndex, FallbackValue='-1'}" MouseDoubleClick="DeviceListView_MouseDoubleClick">
+                <ListView.View>
+                    <GridView>
+                        <GridView.Columns>
+                            <GridViewColumn Header="#" Width="30">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding DisplayIndex}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="ID" Width="200">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding DisplayName}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Width="150">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox ItemsSource="{Binding DevProfileList}" DisplayMemberPath="Name" SelectedIndex="{Binding ProfileIndex, FallbackValue='0'}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView.Columns>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </DockPanel>
     </DockPanel>
 </Window>

@@ -121,11 +121,30 @@ namespace SteamControllerTest.SteamControllerLibrary
             get => serial;
         }
 
+        private SteamControllerControllerOptions deviceOptions;
+        public SteamControllerControllerOptions DeviceOptions
+        {
+            get => deviceOptions;
+        }
+
+        public string DevTypeStr
+        {
+            get => "Steam Controller";
+        }
+
+        private int index = -1;
+        public int Index
+        {
+            get => index;
+            set => index = value;
+        }
+
         public SteamControllerDevice(HidDevice device)
         {
             hidDevice = device;
             conType = DetermineConnectionType(hidDevice);
             baseElapsedReference = 125.0;
+            deviceOptions = new SteamControllerControllerOptions(InputDeviceType.SteamController);
         }
 
         public static ConnectionType DetermineConnectionType(HidDevice device)

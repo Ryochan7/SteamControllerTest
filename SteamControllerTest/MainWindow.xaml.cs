@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using Microsoft.Win32;
 
 using SteamControllerTest.ViewModels;
+using SteamControllerTest.SteamControllerLibrary;
 
 namespace SteamControllerTest
 {
@@ -25,6 +26,9 @@ namespace SteamControllerTest
     {
         private MainWindowViewModel mainWinVM = new MainWindowViewModel();
         public MainWindowViewModel MainWinVM => mainWinVM;
+
+        private ControllerListViewModel controlListVM;
+        public ControllerListViewModel ControlListVM => controlListVM;
 
         public class ProfilePathEventArgs : EventArgs
         {
@@ -42,13 +46,24 @@ namespace SteamControllerTest
 
         public event EventHandler<ProfilePathEventArgs> ProfilePathChanged;
 
+        private AppGlobalData appGlobal;
+
         public MainWindow()
         {
             InitializeComponent();
+        }
 
-            mainWinVM.ProfilePathChanged += MainWinVM_ProfilePathChanged;
+        public void PostInit(AppGlobalData appGlobal)
+        {
+            this.appGlobal = appGlobal;
+
+            //mainWinVM.ProfilePathChanged += MainWinVM_ProfilePathChanged;
 
             DataContext = mainWinVM;
+
+            BackendManager manager = (App.Current as App).Manager;
+            controlListVM = new ControllerListViewModel(manager);
+            deviceListView.DataContext = controlListVM;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -67,33 +82,37 @@ namespace SteamControllerTest
         public async void StartCheckProcess()
         {
             serviceChangeBtn.IsEnabled = false;
+            deviceListView.IsEnabled = false;
 
             await Task.Run(async () =>
             {
                 App thing = Application.Current as App;
                 thing.Manager.Start();
                 // Keep arbitrary delay for now. Not really needed though
-                await Task.Delay(5000);
+                await Task.Delay(1000);
             });
 
             mainWinVM.ServiceBtnText = MainWindowViewModel.DEFAULT_STOP_TEXT;
             serviceChangeBtn.IsEnabled = true;
+            deviceListView.IsEnabled = true;
         }
 
         public async void StopCheckProcess()
         {
             serviceChangeBtn.IsEnabled = false;
+            deviceListView.IsEnabled = false;
 
             await Task.Run(async () =>
             {
                 App thing = Application.Current as App;
                 thing.Manager.Stop();
                 // Keep arbitrary delay for now. Not really needed though
-                await Task.Delay(5000);
+                await Task.Delay(1000);
             });
 
             mainWinVM.ServiceBtnText = MainWindowViewModel.DEFAULT_START_TEXT;
             serviceChangeBtn.IsEnabled = true;
+            deviceListView.IsEnabled = true;
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -108,6 +127,8 @@ namespace SteamControllerTest
         private void FindProfileBtn_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
+            fileDialog.InitialDirectory = appGlobal.baseProfilesPath;
+            fileDialog.Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*";
             if (fileDialog.ShowDialog() == true)
             {
                 bool check = mainWinVM.CheckProfilePath(fileDialog.FileName);
@@ -122,6 +143,18 @@ namespace SteamControllerTest
         {
             ProfilePathChanged?.Invoke(this,
                 new ProfilePathEventArgs(mainWinVM.ProfilePath));
+        }
+
+        private void DeviceListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (controlListVM.SelectedIndex >= 0)
+            {
+                int selectedIndex = controlListVM.SelectedIndex;
+                SteamControllerDevice device = controlListVM.ControllerList[selectedIndex].Device;
+                ControllerConfigWin dialog = new ControllerConfigWin();
+                dialog.PostInit(device);
+                dialog.ShowDialog();
+            }
         }
     }
 }
