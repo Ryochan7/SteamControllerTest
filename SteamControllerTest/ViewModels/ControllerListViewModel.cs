@@ -91,7 +91,7 @@ namespace SteamControllerTest.ViewModels
             Task.Run(() =>
             {
                 string profilePath = DeviceProfileList.ProfileListCol[item.ProfileIndex].ProfilePath;
-                backendManager.MapperList[item.ItemIndex].ChangeProfile(profilePath);
+                backendManager.MapperList[item.Device.Index].ChangeProfile(profilePath);
                 //backendManager.ProfileFile = DeviceProfileList.ProfileListCol[item.ProfileIndex].ProfilePath;
             });
         }

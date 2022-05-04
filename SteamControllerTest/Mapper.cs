@@ -278,8 +278,8 @@ namespace SteamControllerTest
             }
         }
 
-        public delegate void ProfileChangeDelegate(Mapper sender, string profilePath);
-        public event ProfileChangeDelegate ProfileChanged;
+        public delegate void ProfileChangeHandler(Mapper sender, string profilePath);
+        public event ProfileChangeHandler ProfileChanged;
 
         private ViGEmClient vigemTestClient = null;
         private IXbox360Controller outputX360 = null;
@@ -864,7 +864,7 @@ namespace SteamControllerTest
                     reader.Report += ControllerReader_Report;
                 }
 
-                ProfileChanged?.Invoke(this, profilePath);
+                //ProfileChanged?.Invoke(this, profilePath);
             }
         }
 
