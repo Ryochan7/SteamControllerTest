@@ -159,8 +159,12 @@ namespace SteamControllerTest.SteamControllerLibrary
 
             double raw_period = period_command / STEAM_CONTROLLER_MAGIC_PERIOD_RATIO;
             int duration_num_seconds = 5;
-            ushort count = (ushort)(Math.Min((int)(duration_num_seconds * 1.5 / raw_period),
-                0x7FFF));
+            ushort count = 0;
+            if (raw_period != 0)
+            {
+                count = (ushort)(Math.Min((int)(duration_num_seconds * 1.5 / raw_period),
+                    0x7FFF));
+            }
 
             buffer[0] = FEATURE_REPORT_ID;
             buffer[1] = FEATURE_REPORT_BT_PREFIX;

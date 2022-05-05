@@ -306,8 +306,12 @@ namespace SteamControllerTest.SteamControllerLibrary
 
             double raw_period = period_command / STEAM_CONTROLLER_MAGIC_PERIOD_RATIO;
             int duration_num_seconds = 5;
-            ushort count = (ushort)(Math.Min((int)(duration_num_seconds * 1.5 / raw_period),
-                0x7FFF));
+            ushort count = 0;
+            if (raw_period != 0)
+            {
+                count = (ushort)(Math.Min((int)(duration_num_seconds * 1.5 / raw_period),
+                    0x7FFF));
+            }
 
             buffer[1] = SCPacketType.PT_FEEDBACK;
             buffer[2] = SCPacketLength.PL_FEEDBACK;
