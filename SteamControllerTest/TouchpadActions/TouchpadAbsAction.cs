@@ -272,8 +272,12 @@ namespace SteamControllerTest.TouchpadActions
                 bool activeMod = outerRing ? (ringDistance > outerRingDeadZone ? true : false) :
                     (ringDistance > 0.0 && ringDistance <= outerRingDeadZone ? true : false);
 
+                double tempRingDistance = activeMod ? ringDistance : 0.0;
+                double tempRingUnit = activeMod ? 1.0 : 0.0;
+
+                usedRingButton.PrepareAnalog(mapper, tempRingDistance, tempRingUnit);
                 // Treat as boolean button for now
-                usedRingButton.Prepare(mapper, activeMod);
+                //usedRingButton.Prepare(mapper, activeMod);
                 //usedRingButton.PrepareAnalog(mapper, dist);
                 if (usedRingButton.active)
                 {
