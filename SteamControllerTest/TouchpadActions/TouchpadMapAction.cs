@@ -12,6 +12,12 @@ namespace SteamControllerTest.TouchpadActions
         TwoTouch,
     }
 
+    public enum OuterRingUseRange
+    {
+        OnlyActive,
+        FullRange,
+    }
+
     public struct TouchEventFrame
     {
         public short X;

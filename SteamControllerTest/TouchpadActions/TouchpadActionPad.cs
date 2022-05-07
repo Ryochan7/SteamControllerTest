@@ -41,6 +41,7 @@ namespace SteamControllerTest.TouchpadActions
             public const string USE_OUTER_RING = "UseOuterRing";
             public const string OUTER_RING_DEAD_ZONE = "OuterRingDeadZone";
             public const string USE_AS_OUTER_RING = "UseAsOuterRing";
+            public const string OUTER_RING_FULL_RANGE = "OuterRingFullRange";
         }
 
         private HashSet<string> fullPropertySet = new HashSet<string>()
@@ -97,6 +98,8 @@ namespace SteamControllerTest.TouchpadActions
         private DPadMode currentMode = DPadMode.Standard;
         private double xNorm = 0.0, yNorm = 0.0;
         private double prevXNorm = 0.0, prevYNorm = 0.0;
+        private double fullXNorm = 0.0, fullYNorm = 0.0;
+        private double ringDistance = 0.0;
         private DpadDirections currentDir;
         private DpadDirections previousDir;
         // Specify the input state of the button
@@ -128,6 +131,7 @@ namespace SteamControllerTest.TouchpadActions
         /// Displacement threshold when a ring binding should execute
         /// </summary>
         private double outerRingDeadZone = 1.0;
+        private OuterRingUseRange usedOuterRingRange;
         public AxisDirButton RingButton
         {
             get => ringButton;
@@ -136,6 +140,7 @@ namespace SteamControllerTest.TouchpadActions
         public bool UseAsOuterRing { get => outerRing; set => outerRing = value; }
         public bool UseRingButton { get => useRingButton; set => useRingButton = value; }
         public double OuterRingDeadZone { get => outerRingDeadZone; set => outerRingDeadZone = value; }
+        public OuterRingUseRange UsedOuterRingRange { get => usedOuterRingRange; set => usedOuterRingRange = value; }
 
         public DPadMode CurrentMode { get => currentMode; set => currentMode = value; }
         public ButtonAction[] EventCodes4 { get => usedEventButtonsList; set => usedEventButtonsList = value; }
@@ -222,6 +227,18 @@ namespace SteamControllerTest.TouchpadActions
             else
             {
                 xNorm = yNorm = 0.0;
+            }
+
+            fullXNorm = axisXDir / (double)maxDirX;
+            fullYNorm = axisYDir / (double)maxDirY;
+
+            if (usedOuterRingRange == OuterRingUseRange.OnlyActive)
+            {
+                ringDistance = Math.Sqrt((xNorm * xNorm) + (yNorm * yNorm));
+            }
+            else
+            {
+                ringDistance = Math.Sqrt((fullXNorm * fullXNorm) + (fullYNorm * fullYNorm));
             }
 
             //deadMod.CalcOutValues(axisXDir, axisYDir, maxDirX, maxDirY, out xNorm, out yNorm);
@@ -516,9 +533,11 @@ namespace SteamControllerTest.TouchpadActions
             //if (checkRingButton)
             {
                 //Trace.WriteLine("IN CHECK");
-                double dist = Math.Sqrt((xNorm * xNorm) + (yNorm * yNorm));
-                bool activeMod = outerRing ? (dist > outerRingDeadZone ? true : false) :
-                    (dist > 0.0 && dist <= outerRingDeadZone ? true : false);
+                //double dist = Math.Sqrt((xNorm * xNorm) + (yNorm * yNorm));
+                bool activeMod = outerRing ? (ringDistance > outerRingDeadZone ? true : false) :
+                    (ringDistance > 0.0 && ringDistance <= outerRingDeadZone ? true : false);
+                double tempRingDistance = activeMod ? ringDistance : 0.0;
+                double tempRingUnit = activeMod ? 1.0 : 0.0;
 
                 //ringButton.PrepareAnalog(mapper, dist);
                 //if (ringButton.active)
@@ -527,7 +546,7 @@ namespace SteamControllerTest.TouchpadActions
                 //}
 
                 // Treat as boolean button for now
-                usedRingButton.Prepare(mapper, activeMod);
+                usedRingButton.PrepareAnalog(mapper, tempRingDistance, tempRingUnit);
                 //usedRingButton.PrepareAnalog(mapper, dist);
                 if (usedRingButton.active)
                 {
@@ -1167,6 +1186,9 @@ namespace SteamControllerTest.TouchpadActions
                             break;
                         case PropertyKeyStrings.USE_AS_OUTER_RING:
                             outerRing = tempPadAction.outerRing;
+                            break;
+                        case PropertyKeyStrings.OUTER_RING_FULL_RANGE:
+                            usedOuterRingRange = tempPadAction.usedOuterRingRange;
                             break;
                         case PropertyKeyStrings.DEAD_ZONE_TYPE:
                             deadMod.DeadZoneType = tempPadAction.deadMod.DeadZoneType;

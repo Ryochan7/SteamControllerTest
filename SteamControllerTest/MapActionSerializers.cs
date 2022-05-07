@@ -1074,6 +1074,17 @@ namespace SteamControllerTest
             }
             public event EventHandler UseAsOuterRingChanged;
 
+            public OuterRingUseRange OuterRingRange
+            {
+                get => touchActionPadAction.UsedOuterRingRange;
+                set
+                {
+                    touchActionPadAction.UsedOuterRingRange = value;
+                    OuterRingRangeChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler OuterRingRangeChanged;
+
             public TouchpadActionPadSettings(TouchpadActionPad action)
             {
                 touchActionPadAction = action;
@@ -1133,6 +1144,12 @@ namespace SteamControllerTest
             settings.UseOuterRingChanged += Settings_UseOuterRingChanged;
             settings.UseAsOuterRingChanged += Settings_UseAsOuterRingChanged;
             settings.OuterRingDeadZoneChanged += Settings_OuterRingDeadZoneChanged;
+            settings.OuterRingRangeChanged += Settings_OuterRingRangeChanged;
+        }
+
+        private void Settings_OuterRingRangeChanged(object sender, EventArgs e)
+        {
+            touchActionPadAction.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.OUTER_RING_FULL_RANGE);
         }
 
         private void Settings_DelayTimeChanged(object sender, EventArgs e)
@@ -2236,7 +2253,7 @@ namespace SteamControllerTest
             }
             public event EventHandler UseAsOuterRingChanged;
 
-            public TouchpadAbsAction.OuterRingUseRange OuterRingRange
+            public OuterRingUseRange OuterRingRange
             {
                 get => touchAbsAct.UsedOuterRingRange;
                 set

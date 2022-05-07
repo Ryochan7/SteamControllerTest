@@ -69,12 +69,6 @@ namespace SteamControllerTest.TouchpadActions
             }
         }
 
-        public enum OuterRingUseRange
-        {
-            OnlyActive,
-            FullRange,
-        }
-
         // Specify the input state of the button
         private bool inputStatus;
 
