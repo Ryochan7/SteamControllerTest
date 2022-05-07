@@ -247,6 +247,9 @@ namespace SteamControllerTest.GyroActions
                 deltaY = 0;
             }
 
+            deltaX = (int)mapper.MStickFilterX.Filter(deltaX, mapper.CurrentRate);
+            deltaY = (int)mapper.MStickFilterY.Filter(deltaY, mapper.CurrentRate);
+
             if (deltaX != 0) xratio = deltaX / (double)maxValX;
             if (deltaY != 0) yratio = deltaY / (double)maxValY;
 
@@ -301,7 +304,7 @@ namespace SteamControllerTest.GyroActions
             double outYNorm = yNorm;
 
             // Adjust sensitivity to work around rounding in filter method
-            outXNorm *= 1.0005;
+            /*outXNorm *= 1.0005;
             outYNorm *= 1.0005;
             double tempXNorm = mapper.MStickFilterX.Filter(outXNorm, mapper.CurrentRate);
             double tempYNorm = mapper.MStickFilterY.Filter(outYNorm, mapper.CurrentRate);
@@ -314,6 +317,9 @@ namespace SteamControllerTest.GyroActions
             // Need to check bounds again
             tempXNorm = Math.Clamp(tempXNorm, -1.0, 1.0);
             tempYNorm = Math.Clamp(tempYNorm, -1.0, 1.0);
+            */
+            double tempXNorm = outXNorm;
+            double tempYNorm = outYNorm;
 
             if (mStickParms.invertX) tempXNorm = -1.0 * tempXNorm;
             if (mStickParms.invertY) tempYNorm = -1.0 * tempYNorm;
