@@ -310,7 +310,11 @@ namespace SteamControllerTest.TriggerActions
                         }
                         else if (axisNorm != 0.0 && !outputActive)
                         {
-                            bool nowActive = checkTimeWatch.ElapsedMilliseconds > hipFireMs;
+                            // Consider action active depending on timer
+                            // or whether full pull is achieved
+                            bool nowActive = axisNorm == 1.0 ||
+                                checkTimeWatch.ElapsedMilliseconds > hipFireMs;
+
                             if (nowActive)
                             {
                                 checkTimeWatch.Stop();
@@ -385,7 +389,11 @@ namespace SteamControllerTest.TriggerActions
                         }
                         else if (axisNorm != 0.0 && !outputActive)
                         {
-                            bool nowActive = checkTimeWatch.ElapsedMilliseconds > hipFireMs;
+                            // Consider action active depending on timer
+                            // or whether full pull is achieved
+                            bool nowActive = axisNorm == 1.0 ||
+                                checkTimeWatch.ElapsedMilliseconds > hipFireMs;
+
                             if (nowActive)
                             {
                                 checkTimeWatch.Stop();
@@ -437,7 +445,11 @@ namespace SteamControllerTest.TriggerActions
                         }
                         else if (axisNorm != 0.0 && !outputActive)
                         {
-                            bool nowActive = checkTimeWatch.ElapsedMilliseconds > hipFireMs;
+                            // Consider action active depending on timer
+                            // or whether full pull is achieved
+                            bool nowActive = axisNorm == 1.0 ||
+                                checkTimeWatch.ElapsedMilliseconds > hipFireMs;
+
                             if (nowActive)
                             {
                                 checkTimeWatch.Stop();
