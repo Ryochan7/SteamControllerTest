@@ -257,10 +257,14 @@ namespace SteamControllerTest.TriggerActions
             }
         }
 
-        private void StartStageProcessing()
+        private void StartStageProcessing(bool useTime=true)
         {
             startCheck = true;
-            checkTimeWatch.Restart();
+            if (useTime)
+            {
+                checkTimeWatch.Restart();
+            }
+
             outputActive = false;
             softPullActActive = false;
             fullPullActActive = false;
@@ -271,7 +275,11 @@ namespace SteamControllerTest.TriggerActions
         private void ResetStageState()
         {
             startCheck = false;
-            checkTimeWatch.Reset();
+            if (checkTimeWatch.IsRunning)
+            {
+                checkTimeWatch.Reset();
+            }
+
             outputActive = false;
             softPullActActive = false;
             fullPullActActive = false;
@@ -304,11 +312,19 @@ namespace SteamControllerTest.TriggerActions
                     break;
                 case DualStageMode.ExclusiveButtons:
                     {
-                        if (axisNorm != 0.0 && !startCheck)
+                        if (!startCheck)
                         {
-                            StartStageProcessing();
+                            if (axisNorm == 1.0)
+                            {
+                                StartStageProcessing(false);
+                            }
+                            else if (axisNorm != 0.0)
+                            {
+                                StartStageProcessing();
+                            }
                         }
-                        else if (axisNorm != 0.0 && !outputActive)
+
+                        if (axisNorm != 0.0 && !outputActive)
                         {
                             // Consider action active depending on timer
                             // or whether full pull is achieved
@@ -317,7 +333,11 @@ namespace SteamControllerTest.TriggerActions
 
                             if (nowActive)
                             {
-                                checkTimeWatch.Stop();
+                                if (checkTimeWatch.IsRunning)
+                                {
+                                    checkTimeWatch.Stop();
+                                }
+
                                 outputActive = nowActive;
 
                                 if (axisNorm == 1.0)
