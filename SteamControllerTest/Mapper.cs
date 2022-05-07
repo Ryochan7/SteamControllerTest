@@ -343,6 +343,11 @@ namespace SteamControllerTest
             get => appGlobal;
         }
 
+        private bool hasInputEvts;
+        //private object eventQueueLock = new object();
+        private ReaderWriterLockSlim eventQueueLocker = new ReaderWriterLockSlim();
+        private Queue<Action> eventQueue = new Queue<Action>();
+
         public Mapper(SteamControllerDevice device, string profileFile,
             AppGlobalData appGlobal)
         {
@@ -790,7 +795,7 @@ namespace SteamControllerTest
 
         public void ChangeProfile(string profilePath)
         {
-            if (!inMapperEvent)
+            //if (!inMapperEvent)
             {
                 if (calibrationFinished)
                 {
@@ -1309,9 +1314,37 @@ namespace SteamControllerTest
 
                 // Make copy of state data as the previous state
                 previousMapperState = currentMapperState;
+
+                // Check for any waiting events and call them in this thread
+                if (hasInputEvts)
+                {
+                    using (WriteLocker locker = new WriteLocker(eventQueueLocker))
+                    //lock (eventQueueLock)
+                    {
+                        Action tempAct = null;
+                        for (int actInd = 0, actLen = eventQueue.Count;
+                            actInd < actLen; actInd++)
+                        {
+                            tempAct = eventQueue.Dequeue();
+                            tempAct.Invoke();
+                        }
+
+                        hasInputEvts = false;
+                    }
+                }
             }
 
             inMapperEvent = false;
+        }
+
+        public void QueueEvent(Action tempAct)
+        {
+            //lock(eventQueueLock)
+            using (WriteLocker locker = new WriteLocker(eventQueueLocker))
+            {
+                eventQueue.Enqueue(tempAct);
+                hasInputEvts = true;
+            }
         }
 
         private const int CALIB_POLL_COUNT = 240; // Roughly 4 seconds of polls
