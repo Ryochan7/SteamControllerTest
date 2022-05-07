@@ -2236,6 +2236,17 @@ namespace SteamControllerTest
             }
             public event EventHandler UseAsOuterRingChanged;
 
+            public TouchpadAbsAction.OuterRingUseRange OuterRingRange
+            {
+                get => touchAbsAct.UsedOuterRingRange;
+                set
+                {
+                    touchAbsAct.UsedOuterRingRange = value;
+                    OuterRingRangeChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler OuterRingRangeChanged;
+
             public bool SnapToCenterOnRelease
             {
                 get => touchAbsAct.SnapToCenterRelease;
@@ -2332,12 +2343,18 @@ namespace SteamControllerTest
             settings.UseAsOuterRingChanged += Settings_UseAsOuterRingChanged;
             settings.UseOuterRingChanged += Settings_UseOuterRingChanged;
             settings.OuterRingDeadZoneChanged += Settings_OuterRingDeadZoneChanged;
+            settings.OuterRingRangeChanged += Settings_OuterRingRangeChanged;
             settings.SnapToCenterOnReleaseChanged += Settings_SnapToCenterOnReleaseChanged;
 
             settings.WidthChanged += Settings_WidthChanged;
             settings.HeightChanged += Settings_HeightChanged;
             settings.XCenterChanged += Settings_XCenterChanged;
             settings.YCenterChanged += Settings_YCenterChanged;
+        }
+
+        private void Settings_OuterRingRangeChanged(object sender, EventArgs e)
+        {
+            touchAbsAct.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.OUTER_RING_FULL_RANGE);
         }
 
         private void Settings_YCenterChanged(object sender, EventArgs e)
