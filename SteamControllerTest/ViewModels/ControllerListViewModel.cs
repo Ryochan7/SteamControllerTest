@@ -88,7 +88,7 @@ namespace SteamControllerTest.ViewModels
         private void DevItem_ProfileIndexChanged(object sender, EventArgs e)
         {
             DeviceListItem item = sender as DeviceListItem;
-            Mapper map = backendManager.MapperList[item.Device.Index];
+            Mapper map = backendManager.MapperDict[item.Device.Index];
             string profilePath = DeviceProfileList.ProfileListCol[item.ProfileIndex].ProfilePath;
             map.QueueEvent(() =>
             {

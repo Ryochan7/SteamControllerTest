@@ -33,10 +33,10 @@ namespace SteamControllerTest
 
         private FakerInputHandler fakerInputHandler = new FakerInputHandler();
 
-        private List<Mapper> mapperList;
-        public List<Mapper> MapperList
+        private Dictionary<int, Mapper> mapperDict;
+        public Dictionary<int, Mapper> MapperDict
         {
-            get => mapperList;
+            get => mapperDict;
         }
         private SteamControllerEnumerator enumerator;
         private Dictionary<SteamControllerDevice, SteamControllerReader> deviceReadersMap;
@@ -76,7 +76,7 @@ namespace SteamControllerTest
             this.profileFile = profileFile;
             this.appGlobal = appGlobal;
 
-            mapperList = new List<Mapper>();
+            mapperDict = new Dictionary<int, Mapper>();
             enumerator = new SteamControllerEnumerator();
             deviceReadersMap = new Dictionary<SteamControllerDevice, SteamControllerReader>();
             deviceProfileList = new ProfileList(InputDeviceType.SteamController);
@@ -169,7 +169,7 @@ namespace SteamControllerTest
                 //testMapper.Start(device, reader);
                 testMapper.Start(vigemTestClient, fakerInputHandler, device, reader);
                 testMapper.RequestOSD += TestMapper_RequestOSD;
-                mapperList.Add(testMapper);
+                mapperDict.Add(ind, testMapper);
 
                 controllerList[ind] = device;
                 ind++;
@@ -198,12 +198,12 @@ namespace SteamControllerTest
                 //readers.StopUpdate();
             }
 
-            foreach (Mapper mapper in mapperList)
+            foreach (Mapper mapper in mapperDict.Values)
             {
                 mapper.Stop();
             }
 
-            mapperList.Clear();
+            mapperDict.Clear();
             deviceReadersMap.Clear();
             enumerator.StopControllers();
             Array.Clear(controllerList, 0, CONTROLLER_LIMIT);
