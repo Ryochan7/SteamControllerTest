@@ -22,7 +22,7 @@ namespace SteamControllerTest.ButtonActions
         public abstract double AxisUnit { get; }
 
         public abstract void Prepare(Mapper mapper, bool status, bool alterState = true);
-        public abstract void PrepareAnalog(Mapper mapper, double axisValue, double axisUnit,
+        public abstract void PrepareAnalog(Mapper mapper, double axisNorm, double axisUnit,
             bool alterState = true);
 
         public abstract ButtonMapAction DuplicateAction();
