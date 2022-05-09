@@ -178,7 +178,8 @@
               "Settings":
               {
                 "DualStageMode": "HipFireExclusiveButtons",
-                "HipFireDelay": 100,
+                "HipFireDelay": 40,
+                "DeadZone": 0.02
               }
             },
             {
@@ -218,7 +219,8 @@
               "Settings":
               {
                 "DualStageMode": "HipFireExclusiveButtons",
-                "HipFireDelay": 100,
+                "HipFireDelay": 40,
+                "DeadZone": 0.02
               }
             },
             {
