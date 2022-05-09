@@ -122,19 +122,24 @@ namespace SteamControllerTest.TriggerActions
             deadMod.CalcOutValues((int)axisValue, maxDir, out axisNorm);
             ActiveZoneButtons currentStageBtns = ProcessCurrentStage(axisNorm);
 
+            this.softPullActActive = this.fullPullActActive = false;
+
             bool softPullActActive = (currentStageBtns & ActiveZoneButtons.SoftPull) != 0;
-            if (softPullActActive ||
-                (previousActiveButtons & ActiveZoneButtons.SoftPull) != 0)
+            if (softPullActActive)
             {
                 this.softPullActActive = softPullActActive;
             }
 
             bool fullPullActActive = (currentStageBtns & ActiveZoneButtons.FullPull) != 0;
-            if (fullPullActActive ||
-                (previousActiveButtons & ActiveZoneButtons.FullPull) != 0)
+            if (fullPullActActive)
             {
                 this.fullPullActActive = fullPullActActive;
             }
+
+            //if (mappingId == "RT" && axisNorm != 1.0 && currentStageBtns.HasFlag(ActiveZoneButtons.FullPull))
+            //{
+            //    Trace.WriteLine($"AXIS NORM {axisNorm} | BTNS {currentStageBtns.ToString()} | {actionStateMode}");
+            //}
 
             currentActiveButtons = currentStageBtns;
             //outputActive = currentStageBtns != ActiveZoneButtons.None;
@@ -145,25 +150,29 @@ namespace SteamControllerTest.TriggerActions
         public override void Event(Mapper mapper)
         {
             bool wasSoftPullActive = (previousActiveButtons & ActiveZoneButtons.SoftPull) != 0;
+            if (wasSoftPullActive)
+            {
+                softPullActButton.PrepareAnalog(mapper, 0.0, 0.0);
+                softPullActButton.Event(mapper);
+            }
+
+            bool wasFullPullActive = (previousActiveButtons & ActiveZoneButtons.FullPull) != 0;
+            if (wasFullPullActive)
+            {
+                fullPullActButton.PrepareAnalog(mapper, 0.0, 0.0);
+                fullPullActButton.Event(mapper);
+            }
+
             if (softPullActActive)
             {
                 softPullActButton.PrepareAnalog(mapper, axisNorm, 1.0);
                 if (softPullActButton.active) softPullActButton.Event(mapper);
             }
-            else if (wasSoftPullActive)
-            {
-                softPullActButton.Release(mapper);
-            }
 
-            bool wasFullPullActive = (previousActiveButtons & ActiveZoneButtons.FullPull) != 0;
             if (fullPullActActive)
             {
                 fullPullActButton.PrepareAnalog(mapper, axisNorm, 1.0);
                 if (fullPullActButton.active) fullPullActButton.Event(mapper);
-            }
-            else if (wasFullPullActive)
-            {
-                fullPullActButton.Release(mapper);
             }
 
             previousActiveButtons = currentActiveButtons;
@@ -268,7 +277,7 @@ namespace SteamControllerTest.TriggerActions
             outputActive = false;
             softPullActActive = false;
             fullPullActActive = false;
-            actionStateMode = EngageButtonsMode.Both;
+            actionStateMode = EngageButtonsMode.None;
             previousActiveButtons = ActiveZoneButtons.None;
         }
 
@@ -283,7 +292,7 @@ namespace SteamControllerTest.TriggerActions
             outputActive = false;
             softPullActActive = false;
             fullPullActActive = false;
-            actionStateMode = EngageButtonsMode.Both;
+            actionStateMode = EngageButtonsMode.None;
             previousActiveButtons = ActiveZoneButtons.None;
         }
 
@@ -411,8 +420,20 @@ namespace SteamControllerTest.TriggerActions
                     break;
                 case DualStageMode.HipFireExclusiveButtons:
                     {
-                        if (!startCheck)
+                        if (axisNorm == 0.0)
                         {
+                            if (startCheck)
+                            {
+                                ResetStageState();
+                            }
+
+                            actionStateMode = EngageButtonsMode.None;
+                            result = ActiveZoneButtons.None;
+                        }
+                        else if (axisNorm != 0.0 && !startCheck)
+                        {
+                            actionStateMode = EngageButtonsMode.None;
+
                             if (axisNorm == 1.0)
                             {
                                 StartStageProcessing(false);
@@ -423,56 +444,53 @@ namespace SteamControllerTest.TriggerActions
                             }
                         }
 
-                        if (axisNorm != 0.0 && !outputActive)
+                        if (axisNorm != 0.0)
                         {
-                            // Consider action active depending on timer
-                            // or whether full pull is achieved
-                            bool nowActive = axisNorm == 1.0 ||
-                                checkTimeWatch.ElapsedMilliseconds > hipFireMs;
-
-                            if (nowActive)
+                            if (startCheck && !outputActive)
                             {
-                                if (checkTimeWatch.IsRunning)
+                                // Consider action active depending on timer
+                                // or whether full pull is achieved
+                                bool nowActive = axisNorm == 1.0 ||
+                                    checkTimeWatch.ElapsedMilliseconds > hipFireMs;
+
+                                if (nowActive)
                                 {
-                                    checkTimeWatch.Stop();
+                                    if (checkTimeWatch.IsRunning)
+                                    {
+                                        checkTimeWatch.Stop();
+                                    }
+
+                                    outputActive = nowActive;
+
+                                    if (axisNorm == 1.0)
+                                    {
+                                        actionStateMode = EngageButtonsMode.FullPullOnly;
+                                        result = ActiveZoneButtons.FullPull;
+                                    }
+                                    else if (axisNorm != 0.0)
+                                    {
+                                        actionStateMode = EngageButtonsMode.SoftPullOnly;
+                                        result = ActiveZoneButtons.SoftPull;
+                                    }
                                 }
-
-                                outputActive = nowActive;
-
-                                if (axisNorm == 1.0)
+                            }
+                            else if (startCheck && outputActive)
+                            {
+                                if (axisNorm == 1.0 &&
+                                    actionStateMode == EngageButtonsMode.FullPullOnly)
                                 {
-                                    actionStateMode = EngageButtonsMode.FullPullOnly;
                                     result = ActiveZoneButtons.FullPull;
                                 }
-                                else if (axisNorm != 0.0)
+                                else if (axisNorm != 0.0 &&
+                                    actionStateMode == EngageButtonsMode.SoftPullOnly)
                                 {
-                                    actionStateMode = EngageButtonsMode.SoftPullOnly;
                                     result = ActiveZoneButtons.SoftPull;
                                 }
                             }
-                        }
-                        else if (outputActive)
-                        {
-                            if (axisNorm == 1.0 &&
-                                actionStateMode == EngageButtonsMode.FullPullOnly)
-                            {
-                                result = ActiveZoneButtons.FullPull;
-                            }
-                            else if (axisNorm != 0.0 &&
-                                actionStateMode == EngageButtonsMode.SoftPullOnly)
-                            {
-                                result = ActiveZoneButtons.SoftPull;
-                            }
-                            else if (axisNorm == 0.0)
-                            {
-                                actionStateMode = EngageButtonsMode.None;
-                                result = ActiveZoneButtons.None;
-                                ResetStageState();
-                            }
-                        }
-                        else if (startCheck)
-                        {
-                            ResetStageState();
+                            //else if (startCheck)
+                            //{
+                            //    ResetStageState();
+                            //}
                         }
                     }
 
