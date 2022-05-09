@@ -76,6 +76,7 @@ namespace SteamControllerTest.TriggerActions
 
         private DualStageMode triggerStageMode;
         private int hipFireMs;
+        private bool fullPullClick;
 
         private AxisDirButton softPullActButton = new AxisDirButton();
         private AxisDirButton fullPullActButton = new AxisDirButton();
@@ -120,6 +121,17 @@ namespace SteamControllerTest.TriggerActions
         {
             int maxDir = triggerDefinition.trigAxis.max;
             deadMod.CalcOutValues((int)axisValue, maxDir, out axisNorm);
+            if (triggerDefinition.trigAxis.hasClickButton)
+            {
+                // Trigger has dedicated click button. Check it
+                fullPullClick = mapper.IsButtonActive(triggerDefinition.trigAxis.fullClickBtnCode);
+            }
+            else
+            {
+                // Use interpolated soft axis range for now with normal triggers
+                fullPullClick = axisNorm == 1.0;
+            }
+
             ActiveZoneButtons currentStageBtns = ProcessCurrentStage(axisNorm);
 
             this.softPullActActive = this.fullPullActActive = false;
@@ -193,6 +205,7 @@ namespace SteamControllerTest.TriggerActions
             axisNorm = 0.0;
             currentActiveButtons = ActiveZoneButtons.None;
             previousActiveButtons = currentActiveButtons;
+            fullPullClick = false;
             ResetStageState();
             outputActive = false;
             active = activeEvent = false;
@@ -213,6 +226,7 @@ namespace SteamControllerTest.TriggerActions
             axisNorm = 0.0;
             currentActiveButtons = ActiveZoneButtons.None;
             previousActiveButtons = currentActiveButtons;
+            fullPullClick = false;
             ResetStageState();
             outputActive = false;
             active = activeEvent = false;
@@ -434,7 +448,7 @@ namespace SteamControllerTest.TriggerActions
                         {
                             actionStateMode = EngageButtonsMode.None;
 
-                            if (axisNorm == 1.0)
+                            if (fullPullClick)
                             {
                                 StartStageProcessing(false);
                             }
@@ -450,7 +464,7 @@ namespace SteamControllerTest.TriggerActions
                             {
                                 // Consider action active depending on timer
                                 // or whether full pull is achieved
-                                bool nowActive = axisNorm == 1.0 ||
+                                bool nowActive = fullPullClick ||
                                     checkTimeWatch.ElapsedMilliseconds > hipFireMs;
 
                                 if (nowActive)
@@ -462,7 +476,7 @@ namespace SteamControllerTest.TriggerActions
 
                                     outputActive = nowActive;
 
-                                    if (axisNorm == 1.0)
+                                    if (fullPullClick)
                                     {
                                         actionStateMode = EngageButtonsMode.FullPullOnly;
                                         result = ActiveZoneButtons.FullPull;
@@ -476,7 +490,7 @@ namespace SteamControllerTest.TriggerActions
                             }
                             else if (startCheck && outputActive)
                             {
-                                if (axisNorm == 1.0 &&
+                                if (fullPullClick &&
                                     actionStateMode == EngageButtonsMode.FullPullOnly)
                                 {
                                     result = ActiveZoneButtons.FullPull;

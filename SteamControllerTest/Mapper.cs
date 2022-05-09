@@ -425,12 +425,21 @@ namespace SteamControllerTest
             {
                 min = 0,
                 max = 255,
+                hasClickButton = true,
+                fullClickBtnCode = JoypadActionCodes.LTFullPull,
             };
 
             leftTriggerDefinition = new TriggerDefinition(ltAxis, TriggerActionCodes.LeftTrigger);
 
             // Copy struct
-            TriggerDefinition.TriggerAxisData rtAxis = ltAxis;
+            TriggerDefinition.TriggerAxisData rtAxis = new TriggerDefinition.TriggerAxisData
+            {
+                min = 0,
+                max = 255,
+                hasClickButton = true,
+                fullClickBtnCode = JoypadActionCodes.RTFullPull,
+            };
+
             rightTriggerDefinition = new TriggerDefinition(rtAxis, TriggerActionCodes.LeftTrigger);
 
             gyroSensDefinition = new GyroSensDefinition()
@@ -1308,8 +1317,9 @@ namespace SteamControllerTest
                     applyQueuedActionLayer = false;
                     switchQueuedActionLayer = false;
 
-                    RequestOSD?.Invoke(this,
+                    /*RequestOSD?.Invoke(this,
                         new RequestOSDArgs($"#{actionProfile.CurrentActionSet.CurrentActionLayer.Index}: {actionProfile.CurrentActionSet.CurrentActionLayer.Name}"));
+                    */
                 }
 
                 // Make copy of state data as the previous state

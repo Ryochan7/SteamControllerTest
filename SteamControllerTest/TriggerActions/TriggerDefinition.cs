@@ -13,6 +13,8 @@ namespace SteamControllerTest.TriggerActions
         {
             public short max;
             public short min;
+            public bool hasClickButton;
+            public JoypadActionCodes fullClickBtnCode;
         }
 
         public TriggerAxisData trigAxis;
