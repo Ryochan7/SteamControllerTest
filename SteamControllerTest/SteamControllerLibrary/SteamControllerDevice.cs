@@ -139,6 +139,8 @@ namespace SteamControllerTest.SteamControllerLibrary
             set => index = value;
         }
 
+        public event EventHandler Removal;
+
         public SteamControllerDevice(HidDevice device)
         {
             hidDevice = device;
@@ -333,6 +335,16 @@ namespace SteamControllerTest.SteamControllerLibrary
         public virtual void SendRumbleReport(byte[] buffer)
         {
             hidDevice.WriteFeatureReport(buffer);
+        }
+
+        public void RaiseRemoval()
+        {
+            Removal?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void PurgeRemoval()
+        {
+            Removal = null;
         }
     }
 }

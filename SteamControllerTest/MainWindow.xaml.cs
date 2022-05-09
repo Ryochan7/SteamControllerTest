@@ -16,6 +16,9 @@ using Microsoft.Win32;
 
 using SteamControllerTest.ViewModels;
 using SteamControllerTest.SteamControllerLibrary;
+using System.Windows.Interop;
+using HidLibrary;
+using System.Diagnostics;
 
 namespace SteamControllerTest
 {
@@ -29,6 +32,11 @@ namespace SteamControllerTest
 
         private ControllerListViewModel controlListVM;
         public ControllerListViewModel ControlListVM => controlListVM;
+
+        private IntPtr regHandle = new IntPtr();
+        private const int DBT_DEVICEARRIVAL = 0x8000;
+        private const int DBT_DEVICEREMOVECOMPLETE = 0x8004;
+        private const int HOTPLUG_CHECK_DELAY = 2000;
 
         public class ProfilePathEventArgs : EventArgs
         {
@@ -120,6 +128,7 @@ namespace SteamControllerTest
             BackendManager manager = (Application.Current as App).Manager;
             if (!manager.ChangingService)
             {
+                Util.UnregisterNotify(regHandle);
                 Application.Current.Shutdown(0);
             }
         }
@@ -155,6 +164,73 @@ namespace SteamControllerTest
                 dialog.PostInit(device);
                 dialog.ShowDialog();
             }
+        }
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+
+            HwndSource source = PresentationSource.FromVisual(this) as HwndSource;
+            HookWindowMessages(source);
+            source.AddHook(WndProc);
+        }
+
+        private void HookWindowMessages(HwndSource source)
+        {
+            Guid hidGuid = new Guid();
+            NativeMethods.HidD_GetHidGuid(ref hidGuid);
+            bool result = Util.RegisterNotify(source.Handle, hidGuid, ref regHandle);
+            if (!result)
+            {
+                App.Current.Shutdown();
+            }
+        }
+
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam,
+            IntPtr lParam, ref bool handled)
+        {
+            switch(msg)
+            {
+                case Util.WM_DEVICECHANGE:
+                    {
+                        App current = Application.Current as App;
+                        BackendManager manager = current.Manager;
+                        if (!manager.IsRunning)
+                        {
+                            break;
+                        }
+
+                        Int32 Type = wParam.ToInt32();
+                        if (Type == DBT_DEVICEARRIVAL ||
+                            Type == DBT_DEVICEREMOVECOMPLETE)
+                        {
+                            Trace.WriteLine($"IN THIS {System.Threading.Thread.CurrentThread.ManagedThreadId.ToString()}");
+                            Task.Run(() =>
+                            {
+                                InnerHotplug(manager);
+                            });
+                        }
+                    }
+
+                    break;
+                default:
+                    break;
+            }
+
+            return IntPtr.Zero;
+        }
+
+        private void InnerHotplug(BackendManager manager)
+        {
+            /*Trace.WriteLine("ENTERING INNER HOTPLUG");
+            Task.Delay(5000).Wait();
+            Trace.WriteLine("EXITING INNER HOTPLUG");
+            */
+            System.Threading.Thread.Sleep(HOTPLUG_CHECK_DELAY);
+            manager.EventDispatcher.BeginInvoke((Action)(() =>
+            {
+                manager.Hotplug();
+            }));
         }
     }
 }

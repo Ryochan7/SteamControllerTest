@@ -152,6 +152,8 @@ namespace SteamControllerTest
                     manager?.Stop();
                 });
                 tempTask.Wait();
+
+                manager.ShutDown();
             }
 
             osdTestWindow.Close();

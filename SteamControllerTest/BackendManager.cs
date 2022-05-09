@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using Nefarius.ViGEm.Client;
 using SteamControllerTest.SteamControllerLibrary;
 
@@ -71,6 +72,16 @@ namespace SteamControllerTest
             get => deviceProfileList;
         }
 
+        private Thread eventDispatchThread;
+        private Dispatcher eventDispatcher;
+        public Dispatcher EventDispatcher
+        {
+            get => eventDispatcher;
+        }
+
+        public delegate void HotplugControllerHandler(SteamControllerDevice device, int ind);
+        public event HotplugControllerHandler HotplugController;
+
         public BackendManager(string profileFile, AppGlobalData appGlobal)
         {
             this.profileFile = profileFile;
@@ -91,6 +102,22 @@ namespace SteamControllerTest
             //List<ProfileEntity> ham = deviceProfileList.ProfileListCol.ToList();
 
             //ProfileFileChanged += BackendManager_ProfileFileChanged;
+
+            eventDispatchThread = new Thread(() =>
+            {
+                Dispatcher currentDis = Dispatcher.CurrentDispatcher;
+                eventDispatcher = currentDis;
+                Dispatcher.Run();
+            });
+            eventDispatchThread.IsBackground = true;
+            eventDispatchThread.Priority = ThreadPriority.Normal;
+            eventDispatchThread.Name = "BackendManager Events";
+            eventDispatchThread.Start();
+
+            while (eventDispatcher == null)
+            {
+                Thread.SpinWait(500);
+            }
         }
 
         //private void BackendManager_ProfileFileChanged(object sender, EventArgs e)
@@ -153,8 +180,10 @@ namespace SteamControllerTest
                 }
 
                 device.Index = ind;
-                device.SetOperational();
+                //device.SetOperational();
                 deviceReadersMap.Add(device, reader);
+
+                device.Removal += Device_Removal;
 
                 appGlobal.LoadControllerDeviceSettings(device, device.DeviceOptions);
 
@@ -179,6 +208,29 @@ namespace SteamControllerTest
             changingService = false;
 
             ServiceStarted?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void Device_Removal(object sender, EventArgs e)
+        {
+            SteamControllerDevice device = sender as SteamControllerDevice;
+            deviceReadersMap.Remove(device);
+            if (mapperDict.TryGetValue(device.Index, out Mapper tempMapper))
+            {
+                Task tempTask = Task.Run(() =>
+                {
+                    tempMapper.Stop();
+                    tempMapper = null;
+                });
+                //tempTask.Wait();
+
+                mapperDict.Remove(device.Index);
+            }
+
+            enumerator.RemoveDevice(device);
+            eventDispatcher.Invoke(() =>
+            {
+                controllerList[device.Index] = null;
+            });
         }
 
         private void TestMapper_RequestOSD(object sender, Mapper.RequestOSDArgs e)
@@ -217,6 +269,102 @@ namespace SteamControllerTest
             changingService = false;
 
             ServiceStopped?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void ShutDown()
+        {
+            eventDispatcher.InvokeShutdown();
+            eventDispatchThread.Join();
+
+            eventDispatcher = null;
+            eventDispatchThread = null;
+        }
+
+        public void Hotplug()
+        {
+            if (isRunning)
+            {
+                Task temp = Task.Run(() =>
+                {
+                    enumerator.FindControllers();
+                });
+                temp.Wait();
+
+                IEnumerable<SteamControllerDevice> devices =
+                    enumerator.GetFoundDevices();
+
+                for (var devEnum = devices.GetEnumerator(); devEnum.MoveNext();)
+                {
+                    SteamControllerDevice device = devEnum.Current;
+                    Func<bool> tempFoundDevFunc = () =>
+                    {
+                        bool found = false;
+                        for (int i = 0, arlen = controllerList.Length; i < arlen; i++)
+                        {
+                            if (controllerList[i] != null &&
+                                controllerList[i].Serial == device.Serial)
+                            {
+                                found = true;
+                            }
+                        }
+
+                        return found;
+                    };
+
+                    if (tempFoundDevFunc())
+                    {
+                        continue;
+                    }
+
+                    for (int ind = 0, arlen = controllerList.Length; ind < arlen; ind++)
+                    {
+                        // No controller in input slot. Insert newly created
+                        // device in slot
+                        if (controllerList[ind] == null)
+                        {
+                            PrepareAddInputDevice(device, ind);
+                            HotplugController(device, ind);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void PrepareAddInputDevice(SteamControllerDevice device, int ind)
+        {
+            SteamControllerReader reader;
+            if (device.ConType == SteamControllerDevice.ConnectionType.Bluetooth)
+            {
+                reader = new SteamControllerBTReader(device as SteamControllerBTDevice);
+            }
+            else
+            {
+                reader = new SteamControllerReader(device);
+            }
+
+            device.Index = ind;
+            //device.SetOperational();
+            deviceReadersMap.Add(device, reader);
+
+            device.Removal += Device_Removal;
+
+            appGlobal.LoadControllerDeviceSettings(device, device.DeviceOptions);
+
+            string tempProfilePath = profileFile;
+            if (string.IsNullOrEmpty(profileFile) &&
+                deviceProfileList.ProfileListCol.Count > 0)
+            {
+                tempProfilePath = deviceProfileList.ProfileListCol[0].ProfilePath;
+            }
+
+            Mapper testMapper = new Mapper(device, tempProfilePath, appGlobal);
+            //testMapper.Start(device, reader);
+            testMapper.Start(vigemTestClient, fakerInputHandler, device, reader);
+            testMapper.RequestOSD += TestMapper_RequestOSD;
+            mapperDict.Add(ind, testMapper);
+
+            controllerList[ind] = device;
         }
     }
 }

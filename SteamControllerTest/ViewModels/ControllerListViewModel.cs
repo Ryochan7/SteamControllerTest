@@ -48,6 +48,7 @@ namespace SteamControllerTest.ViewModels
 
             backendManager.ServiceStarted += BackendManager_ServiceStarted;
             backendManager.ServiceStopped += BackendManager_ServiceStopped;
+            backendManager.HotplugController += BackendManager_HotplugController;
             
             BindingOperations.EnableCollectionSynchronization(controllerList, _colListLocker,
                             ColLockCallback);
@@ -77,11 +78,44 @@ namespace SteamControllerTest.ViewModels
                         }
 
                         devItem.ProfileIndexChanged += DevItem_ProfileIndexChanged;
+                        device.Removal += Device_Removal;
                         controllerList.Add(devItem);
-                    }
 
-                    i++;
+                        i++;
+                    }
                 }
+            }
+        }
+
+        private void Device_Removal(object sender, EventArgs e)
+        {
+            SteamControllerDevice device = sender as SteamControllerDevice;
+            using (WriteLocker locker = new WriteLocker(_colListLocker))
+            {
+                int ind = controllerList.Where((item) => item.ItemIndex == device.Index)
+                    .Select((item) => item.ItemIndex).FirstOrDefault();
+                if (ind >= 0)
+                {
+                    controllerList.RemoveAt(ind);
+                }
+            }
+        }
+
+        private void BackendManager_HotplugController(SteamControllerDevice device, int ind)
+        {
+            // Engage write lock pre-maturely
+            using (WriteLocker readLock = new WriteLocker(_colListLocker))
+            {
+                DeviceListItem devItem = new DeviceListItem(device, ind, DeviceProfileList);
+                Mapper map = backendManager.MapperDict[device.Index];
+                if (!string.IsNullOrWhiteSpace(map.ProfileFile))
+                {
+                    devItem.PostInit(map.ProfileFile);
+                }
+
+                devItem.ProfileIndexChanged += DevItem_ProfileIndexChanged;
+                device.Removal += Device_Removal;
+                controllerList.Add(devItem);
             }
         }
 
@@ -119,7 +153,7 @@ namespace SteamControllerTest.ViewModels
 
     public class DeviceListItem
     {
-        private int index;
+        private int itemIndex;
         private SteamControllerDevice device;
         private ProfileList profileListHolder;
         private int profileIndex;
@@ -141,7 +175,7 @@ namespace SteamControllerTest.ViewModels
 
         public int ItemIndex
         {
-            get => index;
+            get => itemIndex;
         }
 
         public int ProfileIndex
@@ -161,10 +195,10 @@ namespace SteamControllerTest.ViewModels
             get => profileListHolder.ProfileListCol;
         }
 
-        public DeviceListItem(SteamControllerDevice device, int index, ProfileList profileListHolder)
+        public DeviceListItem(SteamControllerDevice device, int itemIndex, ProfileList profileListHolder)
         {
             this.device = device;
-            this.index = index;
+            this.itemIndex = itemIndex;
             this.profileListHolder = profileListHolder;
         }
 

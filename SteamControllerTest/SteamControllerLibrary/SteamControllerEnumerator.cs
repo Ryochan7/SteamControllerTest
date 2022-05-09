@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using HidLibrary;
 
 namespace SteamControllerTest.SteamControllerLibrary
@@ -12,6 +13,7 @@ namespace SteamControllerTest.SteamControllerLibrary
         public const int STEAM_BT_CONTROLLER_PRODUCT_ID = 0x1106;
 
         private Dictionary<string, SteamControllerDevice> foundDevices;
+        private ReaderWriterLockSlim _foundDevlocker = new ReaderWriterLockSlim();
 
         public SteamControllerEnumerator()
         {
@@ -28,36 +30,45 @@ namespace SteamControllerTest.SteamControllerLibrary
             hDevices = hDevices.Where(hDevice => hDevice.Capabilities.Usage == 1);
             List<HidDevice> tempList = hDevices.ToList();
 
-            foreach (HidDevice hDevice in tempList)
+            using (WriteLocker locker = new WriteLocker(_foundDevlocker))
             {
-                if (!hDevice.IsOpen)
+                foreach (HidDevice hDevice in tempList)
                 {
-                    hDevice.OpenDevice(false);
-                }
-
-                if (hDevice.IsOpen)
-                {
-                    //string serial = hDevice.ReadSerial();
-                    if (hDevice.Attributes.ProductId == STEAM_CONTROLLER_PRODUCT_ID)
+                    if (!hDevice.IsOpen)
                     {
-                        SteamControllerDevice tempDev = new SteamControllerDevice(hDevice);
-                        foundDevices.Add(hDevice.DevicePath, tempDev);
+                        hDevice.OpenDevice(false);
                     }
-                    else if (hDevice.Attributes.ProductId == STEAM_DONGLE_CONTROLLER_PRODUCT_ID)
+
+                    if (foundDevices.ContainsKey(hDevice.DevicePath))
                     {
-                        // Only care about interface 1 for this test
-                        if (endpointIdx == 1)
+                        // Device is known. Skip
+                        continue;
+                    }
+
+                    if (hDevice.IsOpen)
+                    {
+                        //string serial = hDevice.ReadSerial();
+                        if (hDevice.Attributes.ProductId == STEAM_CONTROLLER_PRODUCT_ID)
                         {
                             SteamControllerDevice tempDev = new SteamControllerDevice(hDevice);
                             foundDevices.Add(hDevice.DevicePath, tempDev);
-                            endpointIdx++;
                         }
-                    }
-                    else if (hDevice.Attributes.ProductId ==
-                        STEAM_BT_CONTROLLER_PRODUCT_ID)
-                    {
-                        SteamControllerBTDevice tempDev = new SteamControllerBTDevice(hDevice);
-                        foundDevices.Add(hDevice.DevicePath, tempDev);
+                        else if (hDevice.Attributes.ProductId == STEAM_DONGLE_CONTROLLER_PRODUCT_ID)
+                        {
+                            // Only care about interface 1 for this test
+                            if (endpointIdx == 1)
+                            {
+                                SteamControllerDevice tempDev = new SteamControllerDevice(hDevice);
+                                foundDevices.Add(hDevice.DevicePath, tempDev);
+                                endpointIdx++;
+                            }
+                        }
+                        else if (hDevice.Attributes.ProductId ==
+                            STEAM_BT_CONTROLLER_PRODUCT_ID)
+                        {
+                            SteamControllerBTDevice tempDev = new SteamControllerBTDevice(hDevice);
+                            foundDevices.Add(hDevice.DevicePath, tempDev);
+                        }
                     }
                 }
             }
@@ -72,18 +83,25 @@ namespace SteamControllerTest.SteamControllerLibrary
         {
             inputDevice.Detach();
             inputDevice.HidDevice.CloseDevice();
-            foundDevices.Remove(inputDevice.HidDevice.DevicePath);
+
+            using (WriteLocker locker = new WriteLocker(_foundDevlocker))
+            {
+                foundDevices.Remove(inputDevice.HidDevice.DevicePath);
+            }
         }
 
         public void StopControllers()
         {
-            foreach (SteamControllerDevice inputDevice in foundDevices.Values)
+            using (WriteLocker locker = new WriteLocker(_foundDevlocker))
             {
-                inputDevice.Detach();
-                inputDevice.HidDevice.CloseDevice();
-            }
+                foreach (SteamControllerDevice inputDevice in foundDevices.Values)
+                {
+                    inputDevice.Detach();
+                    inputDevice.HidDevice.CloseDevice();
+                }
 
-            foundDevices.Clear();
+                foundDevices.Clear();
+            }
         }
     }
 }

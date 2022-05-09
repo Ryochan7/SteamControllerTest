@@ -55,6 +55,7 @@ namespace SteamControllerTest.SteamControllerLibrary
         {
             activeInputLoop = false;
             Report = null;
+            device.PurgeRemoval();
             //inputThread.Interrupt();
             if (inputThread != null && inputThread.IsAlive)
             {
@@ -102,6 +103,7 @@ namespace SteamControllerTest.SteamControllerLibrary
                         }
                         else if (tempByte == SteamControllerDevice.SCPacketType.PT_IDLE && !firstReport)
                         {
+                            //Trace.WriteLine($"IDLE {inputReportBuffer[4]}");
                             continue;
                         }
                         /*
@@ -291,6 +293,7 @@ namespace SteamControllerTest.SteamControllerLibrary
                     else
                     {
                         activeInputLoop = false;
+                        device.RaiseRemoval();
                     }
                 }
             }
