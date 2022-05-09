@@ -8,7 +8,7 @@ namespace SteamControllerTest.TriggerActions
 {
     public class TriggerNoAction : TriggerMapAction
     {
-        public override void Prepare(Mapper mapper, double axisValue, bool alterState = true)
+        public override void Prepare(Mapper mapper, short axisValue, bool alterState = true)
         {
         }
 

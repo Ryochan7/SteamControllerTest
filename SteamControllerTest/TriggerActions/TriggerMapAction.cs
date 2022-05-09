@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 
 namespace SteamControllerTest.TriggerActions
 {
+    public struct TriggerEventFrame
+    {
+        public short axisValue;
+        public bool fullClick;
+    }
+
     public abstract class TriggerMapAction : MapAction
     {
         public bool activeEvent;
@@ -18,7 +24,7 @@ namespace SteamControllerTest.TriggerActions
             set => triggerDefinition = value;
         }
 
-        public abstract void Prepare(Mapper mapper, double axisValue, bool alterState = true);
+        public abstract void Prepare(Mapper mapper, short axisValue, bool alterState = true);
         public virtual void SoftCopyFromParent(TriggerMapAction parentAction)
         {
             name = parentAction.name;

@@ -53,7 +53,7 @@ namespace SteamControllerTest.TriggerActions
             deadMod = new AxisDeadZone(0.0, 1.0, 0.0);
         }
 
-        public override void Prepare(Mapper mapper, double axisValue, bool alterState = true)
+        public override void Prepare(Mapper mapper, short axisValue, bool alterState = true)
         {
             //axisNorm = axisValue / 255.0;
             int maxDir = triggerDefinition.trigAxis.max;

@@ -31,7 +31,7 @@ namespace SteamControllerTest.TriggerActions
             deadZone = new AxisDeadZone(tempDeadZone, 1.0, 0.0);
         }
 
-        public override void Prepare(Mapper mapper, double axisValue, bool alterState = true)
+        public override void Prepare(Mapper mapper, short axisValue, bool alterState = true)
         {
             //bool inSafeZone = axisValue > 30;
             int maxDir = triggerDefinition.trigAxis.max;
