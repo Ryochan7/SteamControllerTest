@@ -161,14 +161,16 @@ namespace SteamControllerTest.TriggerActions
 
         public override void Event(Mapper mapper)
         {
-            bool wasSoftPullActive = (previousActiveButtons & ActiveZoneButtons.SoftPull) != 0;
+            bool wasSoftPullActive = !softPullActActive &&
+                (previousActiveButtons & ActiveZoneButtons.SoftPull) != 0;
             if (wasSoftPullActive)
             {
                 softPullActButton.PrepareAnalog(mapper, 0.0, 0.0);
                 softPullActButton.Event(mapper);
             }
 
-            bool wasFullPullActive = (previousActiveButtons & ActiveZoneButtons.FullPull) != 0;
+            bool wasFullPullActive = !fullPullActActive &&
+                (previousActiveButtons & ActiveZoneButtons.FullPull) != 0;
             if (wasFullPullActive)
             {
                 fullPullActButton.PrepareAnalog(mapper, 0.0, 0.0);
