@@ -117,14 +117,14 @@ namespace SteamControllerTest.TriggerActions
             deadMod = new AxisDeadZone(0.0, 1.0, 0.0);
         }
 
-        public override void Prepare(Mapper mapper, short axisValue, bool alterState = true)
+        public override void Prepare(Mapper mapper, ref TriggerEventFrame eventFrame, bool alterState = true)
         {
             int maxDir = triggerDefinition.trigAxis.max;
-            deadMod.CalcOutValues((int)axisValue, maxDir, out axisNorm);
+            deadMod.CalcOutValues((int)eventFrame.axisValue, maxDir, out axisNorm);
             if (triggerDefinition.trigAxis.hasClickButton)
             {
                 // Trigger has dedicated click button. Check it
-                fullPullClick = mapper.IsButtonActive(triggerDefinition.trigAxis.fullClickBtnCode);
+                fullPullClick = eventFrame.fullClick;
             }
             else
             {

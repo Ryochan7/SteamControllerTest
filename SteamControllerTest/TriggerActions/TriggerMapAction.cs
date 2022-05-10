@@ -24,7 +24,7 @@ namespace SteamControllerTest.TriggerActions
             set => triggerDefinition = value;
         }
 
-        public abstract void Prepare(Mapper mapper, short axisValue, bool alterState = true);
+        public abstract void Prepare(Mapper mapper, ref TriggerEventFrame eventFrame, bool alterState = true);
         public virtual void SoftCopyFromParent(TriggerMapAction parentAction)
         {
             name = parentAction.name;

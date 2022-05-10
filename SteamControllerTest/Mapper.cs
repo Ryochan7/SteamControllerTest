@@ -1017,13 +1017,23 @@ namespace SteamControllerTest
 
                 TriggerMapAction trigMapAction = currentLayer.triggerActionDict["LT"];
                 {
-                    trigMapAction.Prepare(this, currentMapperState.LT);
+                    TriggerEventFrame eventFrame = new TriggerEventFrame
+                    {
+                        axisValue = currentMapperState.LT,
+                        fullClick = currentMapperState.LTClick,
+                    };
+                    trigMapAction.Prepare(this, ref eventFrame);
                 }
                 if (trigMapAction.active) trigMapAction.Event(this);
 
                 trigMapAction = currentLayer.triggerActionDict["RT"];
                 {
-                    trigMapAction.Prepare(this, currentMapperState.RT);
+                    TriggerEventFrame eventFrame = new TriggerEventFrame
+                    {
+                        axisValue = currentMapperState.RT,
+                        fullClick = currentMapperState.RTClick,
+                    };
+                    trigMapAction.Prepare(this, ref eventFrame);
                 }
                 if (trigMapAction.active) trigMapAction.Event(this);
 
