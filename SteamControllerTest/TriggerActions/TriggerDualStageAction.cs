@@ -320,7 +320,7 @@ namespace SteamControllerTest.TriggerActions
             {
                 case DualStageMode.Threshold:
                     {
-                        if (axisNorm == 1.0)
+                        if (fullPullClick)
                         {
                             result = ActiveZoneButtons.SoftPull | ActiveZoneButtons.FullPull;
                         }
@@ -337,7 +337,7 @@ namespace SteamControllerTest.TriggerActions
                     break;
                 case DualStageMode.ExclusiveButtons:
                     {
-                        if (axisNorm == 1.0)
+                        if (fullPullClick)
                         {
                             actionStateMode = EngageButtonsMode.FullPullOnly;
                             result = ActiveZoneButtons.FullPull;
@@ -359,7 +359,7 @@ namespace SteamControllerTest.TriggerActions
                     break;
                 case DualStageMode.HairTrigger:
                     {
-                        if (axisNorm == 1.0)
+                        if (fullPullClick)
                         {
                             // Full pull now activates both. Soft pull action
                             // no longer engaged with threshold
@@ -388,7 +388,7 @@ namespace SteamControllerTest.TriggerActions
                         {
                             // Consider action active depending on timer
                             // or whether full pull is achieved
-                            bool nowActive = axisNorm == 1.0 ||
+                            bool nowActive = fullPullClick ||
                                 checkTimeWatch.ElapsedMilliseconds > hipFireMs;
 
                             if (nowActive)
@@ -396,7 +396,7 @@ namespace SteamControllerTest.TriggerActions
                                 checkTimeWatch.Stop();
                                 outputActive = nowActive;
 
-                                if (axisNorm == 1.0)
+                                if (fullPullClick)
                                 {
                                     actionStateMode = EngageButtonsMode.FullPullOnly;
                                 }
@@ -408,7 +408,7 @@ namespace SteamControllerTest.TriggerActions
                         }
                         else if (outputActive)
                         {
-                            if (axisNorm == 1.0)
+                            if (fullPullClick)
                             {
                                 result = ActiveZoneButtons.FullPull;
 
