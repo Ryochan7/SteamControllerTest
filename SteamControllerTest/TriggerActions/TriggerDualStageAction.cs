@@ -294,7 +294,7 @@ namespace SteamControllerTest.TriggerActions
             softPullActActive = false;
             fullPullActActive = false;
             actionStateMode = EngageButtonsMode.None;
-            previousActiveButtons = ActiveZoneButtons.None;
+            //previousActiveButtons = ActiveZoneButtons.None;
         }
 
         private void ResetStageState()
@@ -309,7 +309,7 @@ namespace SteamControllerTest.TriggerActions
             softPullActActive = false;
             fullPullActActive = false;
             actionStateMode = EngageButtonsMode.None;
-            previousActiveButtons = ActiveZoneButtons.None;
+            //previousActiveButtons = ActiveZoneButtons.None;
         }
 
         private ActiveZoneButtons ProcessCurrentStage(double axisNorm)
