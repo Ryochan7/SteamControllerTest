@@ -379,8 +379,8 @@ namespace SteamControllerTest
 
             TouchpadDefinition.TouchAxisData lpadXAxis = new TouchpadDefinition.TouchAxisData
             {
-                min = -30000,
-                max = 30000,
+                min = -32768,
+                max = 32767,
                 mid = 0,
 
                 hard_max = 32767,
@@ -389,8 +389,8 @@ namespace SteamControllerTest
 
             TouchpadDefinition.TouchAxisData lpadYAxis = new TouchpadDefinition.TouchAxisData
             {
-                min = -30000,
-                max = 30000,
+                min = -32768,
+                max = 32767,
                 mid = 0,
 
                 hard_max = 32767,
@@ -401,8 +401,8 @@ namespace SteamControllerTest
 
             TouchpadDefinition.TouchAxisData rpadXAxis = new TouchpadDefinition.TouchAxisData
             {
-                min = -30000,
-                max = 30000,
+                min = -32768,
+                max = 32767,
                 mid = 0,
 
                 hard_max = 32767,
@@ -411,8 +411,8 @@ namespace SteamControllerTest
 
             TouchpadDefinition.TouchAxisData rpadYAxis = new TouchpadDefinition.TouchAxisData
             {
-                min = -30000,
-                max = 30000,
+                min = -32768,
+                max = 32767,
                 mid = 0,
 
                 hard_max = 32767,
@@ -1149,8 +1149,8 @@ namespace SteamControllerTest
                     //Trace.WriteLine($"{currentMapperState.LeftPad.X} {currentMapperState.LeftPad.Y}");
                     TouchEventFrame eventFrame = new TouchEventFrame
                     {
-                        X = Math.Clamp(currentMapperState.LeftPad.X, (short)-30000, (short)30000),
-                        Y = Math.Clamp(currentMapperState.LeftPad.Y, (short)-30000, (short)30000),
+                        X = Math.Clamp(currentMapperState.LeftPad.X, (short)-32768, (short)32767),
+                        Y = Math.Clamp(currentMapperState.LeftPad.Y, (short)-32768, (short)32767),
                         Touch = currentMapperState.LeftPad.Touch,
                         Click = currentMapperState.LeftPad.Click,
                         numTouches = 1,
@@ -1167,8 +1167,8 @@ namespace SteamControllerTest
                 {
                     TouchEventFrame eventFrame = new TouchEventFrame
                     {
-                        X = Math.Clamp(currentMapperState.RightPad.X, (short)-30000, (short)30000),
-                        Y = Math.Clamp(currentMapperState.RightPad.Y, (short)-30000, (short)30000),
+                        X = Math.Clamp(currentMapperState.RightPad.X, (short)-32768, (short)32767),
+                        Y = Math.Clamp(currentMapperState.RightPad.Y, (short)-32768, (short)32767),
                         Touch = currentMapperState.RightPad.Touch,
                         Click = currentMapperState.RightPad.Click,
                         numTouches = 1,
