@@ -112,6 +112,8 @@ namespace SteamControllerTest
             osdTestWindow = new OSDTest();
 
             window.Show();
+
+            window.StartCheckProcess();
         }
 
         private void Window_ProfilePathChanged(object sender,
