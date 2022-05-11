@@ -9,6 +9,13 @@ namespace SteamControllerTest.ActionUtil
 {
     public abstract class ActionFunc
     {
+        protected string name;
+        public string Name
+        {
+            get => name;
+            set => name = value;
+        }
+
         protected List<OutputActionData> outputActions =
             new List<OutputActionData>();
         protected OutputActionDataEnumerator outputActionEnumerator;
