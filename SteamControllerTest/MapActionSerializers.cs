@@ -158,7 +158,11 @@ namespace SteamControllerTest
             {
                 foreach (ActionFunc tempFunc in buttonAction.ActionFuncs)
                 {
-                    actionFuncSerializers.Add(new ActionFuncSerializer(tempFunc));
+                    ActionFuncSerializer tempSerializer = ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                    if (tempSerializer != null)
+                    {
+                        actionFuncSerializers.Add(tempSerializer);
+                    }
                 }
             }
         }
@@ -6228,7 +6232,8 @@ namespace SteamControllerTest
                     break;
             }
 
-            serializer.Serialize(new JTokenWriter(tempJ), value);
+            //serializer.Serialize(new JTokenWriter(tempJ), value);
+            serializer.Serialize(writer,tempJ);
 
             //writer.WriteEndObject();
             //JObject j = JObject.FromObject(value);

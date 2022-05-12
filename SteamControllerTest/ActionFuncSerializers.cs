@@ -44,12 +44,22 @@ namespace SteamControllerTest
             this.actionFunc = tempFunc;
         }
 
+        // Deserialize
         public void PopulateFunc()
         {
             actionFunc.OutputActions.Clear();
             foreach(OutputActionDataSerializer serializer in actionDataSerializers)
             {
                 actionFunc.OutputActions.Add(serializer.OutputData);
+            }
+        }
+
+        // Serialize
+        public void PopulateOutputActionData()
+        {
+            foreach(OutputActionData data in actionFunc.OutputActions)
+            {
+                actionDataSerializers.Add(new OutputActionDataSerializer(data));
             }
         }
     }
@@ -112,6 +122,8 @@ namespace SteamControllerTest
                 this.type = typeString;
                 actionFunc = pressFunc;
                 settings = new NormalPressSettings(pressFunc);
+
+                PopulateOutputActionData();
             }
         }
     }
@@ -490,6 +502,8 @@ namespace SteamControllerTest
 
     public class ActionFuncTypeConverter : JsonConverter
     {
+        public override bool CanWrite => false;
+
         public override bool CanConvert(Type objectType)
         {
             return objectType == typeof(ActionFuncSerializer);
