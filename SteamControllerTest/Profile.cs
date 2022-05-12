@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using SteamControllerTest.ButtonActions;
 
 namespace SteamControllerTest
@@ -112,7 +113,9 @@ namespace SteamControllerTest
         }
 
         // Default to making a virtual X360 controller after loading a profile
+        [JsonIgnore]
         public bool enabled = true;
+        [JsonIgnore]
         public OutputControllerType outputGamepad = OutputControllerType.Xbox360;
 
         public bool Enabled

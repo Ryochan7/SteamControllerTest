@@ -32,13 +32,14 @@ namespace SteamControllerTest
         [JsonIgnore]
         public MapAction MapAction { get => mapAction; set => mapAction = value; }
 
-        [JsonProperty(Required = Required.Always)]
+        [JsonProperty(Required = Required.Always, Order = -4)]
         public int Id
         {
             get => mapAction.Id;
             set => mapAction.Id = value;
         }
 
+        [JsonProperty(Order = -3)]
         public string Name
         {
             get => mapAction.Name;
@@ -49,6 +50,7 @@ namespace SteamControllerTest
             }
         }
 
+        [JsonProperty(Order = -2)]
         public string ActionMode
         {
             get => mapAction.ActionTypeName;
@@ -5339,8 +5341,14 @@ namespace SteamControllerTest
         }
     }
 
+    // Only use JsonConverter for deserializing JSON to MapActionSerializer
+    // instance. Use base serializer to handle serializing an instance
+    // back to JSON
     public class MapActionTypeConverter : JsonConverter
     {
+        public override bool CanWrite => false;
+        public override bool CanRead => true;
+
         public override bool CanConvert(Type objectType)
         {
             return objectType == typeof(MapActionSerializer);
@@ -5531,124 +5539,6 @@ namespace SteamControllerTest
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            //JObject tempJ = new JObject();
-            MapActionSerializer current = value as MapActionSerializer;
-            MapAction tempMapAction = current.MapAction;
-            switch (current.MapAction.ActionTypeName)
-            {
-                case "ButtonAction":
-                    ButtonAction tempAction = tempMapAction as ButtonAction;
-                    ButtonActionSerializer actionSerializer = new ButtonActionSerializer(current.TempLayer, tempMapAction);
-                    //JsonConvert.SerializeObject(actionSerializer);
-                    serializer.Serialize(writer, actionSerializer);
-                    break;
-                case "ButtonNoAction":
-                    ButtonNoActionSerializer btnNoActSerializer = new ButtonNoActionSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, btnNoActSerializer);
-                    break;
-                case "StickPadAction":
-                    //StickActions.StickPadAction tempStickPadAction = tempMapAction as StickActions.StickPadAction;
-                    StickPadActionSerializer stickPadSerializer = new StickPadActionSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, stickPadSerializer);
-                    break;
-                case "StickMouseAction":
-                    StickMouseSerializer stickMouseSerializer = new StickMouseSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, stickMouseSerializer);
-                    break;
-                case "StickTranslateAction":
-                    StickTranslateSerializer stickTransSerializer = new StickTranslateSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, stickTransSerializer);
-                    break;
-                case "StickAbsMouseAction":
-                    StickAbsMouseActionSerializer stickAbsMouseSerializer = new StickAbsMouseActionSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, stickAbsMouseSerializer);
-                    break;
-                case "StickNoAction":
-                    StickNoActionSerializer stickNoActSerializer = new StickNoActionSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, stickNoActSerializer);
-                    break;
-                case "TriggerTranslateAction":
-                    TriggerTranslateActionSerializer triggerActSerializer = new TriggerTranslateActionSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, triggerActSerializer);
-                    break;
-                case "TriggerButtonAction":
-                    TriggerButtonActionSerializer triggerBtnActSerializer = new TriggerButtonActionSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, triggerBtnActSerializer);
-                    break;
-                case "TriggerDualStageAction":
-                    TriggerDualStageActionSerializer triggerDualActSerializer = new TriggerDualStageActionSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, triggerDualActSerializer);
-                    break;
-                case "TouchStickTranslateAction":
-                    TouchpadStickActionSerializer touchStickActSerializer = new TouchpadStickActionSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, touchStickActSerializer);
-                    break;
-                case "TouchMouseAction":
-                    TouchpadMouseSerializer touchMouseActSerializer = new TouchpadMouseSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, touchMouseActSerializer);
-                    break;
-                case "TouchMouseJoystickAction":
-                    TouchpadMouseJoystickSerializer touchMouseJoyActSerializer = new TouchpadMouseJoystickSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, touchMouseJoyActSerializer);
-                    break;
-                case "TouchActionPadAction":
-                    TouchpadActionPadSerializer touchActionPadSerializer = new TouchpadActionPadSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, touchActionPadSerializer);
-                    break;
-                case "TouchAbsPadAction":
-                    TouchpadAbsActionSerializer touchAbsActSerializer = new TouchpadAbsActionSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, touchAbsActSerializer);
-                    break;
-                case "TouchCircularAction":
-                    TouchpadCircularSerializer touchCircActSerializer = new TouchpadCircularSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, touchCircActSerializer);
-                    break;
-                case "TouchDirSwipeAction":
-                    TouchpadDirectionalSwipeSerializer touchDirSwipeSerializer = new TouchpadDirectionalSwipeSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, touchDirSwipeSerializer);
-                    break;
-                case "TouchAxesAction":
-                    TouchpadAxesActionSerializer touchAxesActSerializer = new TouchpadAxesActionSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, touchAxesActSerializer);
-                    break;
-                case "TouchSingleButtonAction":
-                    TouchpadSingleButtonSerializer touchSingleBtnActSerializer = new TouchpadSingleButtonSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, touchSingleBtnActSerializer);
-                    break;
-                case "DPadAction":
-                    DpadActionSerializer dpadActSerializer = new DpadActionSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, dpadActSerializer);
-                    break;
-                case "DPadNoAction":
-                    DpadNoActionSerializer dpadNoActSerializer = new DpadNoActionSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, dpadNoActSerializer);
-                    break;
-                case "DPadTranslateAction":
-                    DpadTranslateSerializer dpadTransActSerializer = new DpadTranslateSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, dpadTransActSerializer);
-                    break;
-                case "GyroMouseAction":
-                    GyroMouseSerializer gyroMouseSerializer = new GyroMouseSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, gyroMouseSerializer);
-                    break;
-                case "GyroMouseJoystickAction":
-                    GyroMouseJoystickSerializer gyroMouseStickSerializer = new GyroMouseJoystickSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, gyroMouseStickSerializer);
-                    break;
-                case "GyroDirSwipeAction":
-                    GyroDirectionalSwipeSerializer gyroDirSwipeSerializer = new GyroDirectionalSwipeSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, gyroDirSwipeSerializer);
-                    break;
-                case "GyroNoAction":
-                    GyroNoMapActionSerializer gyroNoActSerializer = new GyroNoMapActionSerializer(current.TempLayer, tempMapAction);
-                    serializer.Serialize(writer, gyroNoActSerializer);
-                    break;
-                default:
-                    break;
-            }
-
-            //serializer.Serialize(new JTokenWriter(tempJ), value);
-            //serializer.Serialize(writer, value);
         }
     }
 

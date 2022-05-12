@@ -356,8 +356,12 @@ namespace SteamControllerTest
 
             foreach (MapAction action in layer.LayerActions)
             {
-                MapActionSerializer serializer = new MapActionSerializer(layer, action);
-                mapActionSerializers.Add(serializer);
+                //MapActionSerializer serializer = new MapActionSerializer(layer, action);
+                MapActionSerializer serializer = MapActionSerializerFactory.CreateSerializer(layer, action);
+                if (serializer != null)
+                {
+                    mapActionSerializers.Add(serializer);
+                }
             }
         }
 
