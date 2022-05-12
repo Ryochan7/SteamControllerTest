@@ -382,7 +382,12 @@ namespace SteamControllerTest
                 tempFuncs.Clear();
                 foreach (ActionFunc tempFunc in dirButton.ActionFuncs)
                 {
-                    tempFuncs.Add(new ActionFuncSerializer(tempFunc));
+                    ActionFuncSerializer tempSerializer =
+                        ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                    if (tempSerializer != null)
+                    {
+                        tempFuncs.Add(tempSerializer);
+                    }
                 }
 
                 //dictPadBindings.Add(tempDir, tempFuncs);

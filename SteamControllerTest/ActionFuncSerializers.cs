@@ -196,6 +196,8 @@ namespace SteamControllerTest
                 this.type = typeString;
                 actionFunc = holdPressFunc;
                 settings = new HoldPressSettings(holdPressFunc);
+
+                PopulateOutputActionData();
             }
         }
     }
@@ -255,6 +257,8 @@ namespace SteamControllerTest
                 this.type = typeString;
                 actionFunc = releaseFuncInstance;
                 settings = new ReleaseFuncSettings(releaseFuncInstance);
+
+                PopulateOutputActionData();
             }
         }
     }
@@ -315,6 +319,8 @@ namespace SteamControllerTest
                 this.type = typeString;
                 actionFunc = startPressFuncInstance;
                 settings = new StartPressFuncSettings(startPressFuncInstance);
+
+                PopulateOutputActionData();
             }
         }
     }
@@ -379,6 +385,8 @@ namespace SteamControllerTest
                 this.type = typeString;
                 actionFunc = chordedPressFunc;
                 settings = new ChordedPressSettings(chordedPressFunc);
+
+                PopulateOutputActionData();
             }
         }
     }
@@ -452,6 +460,8 @@ namespace SteamControllerTest
                 this.type = typeString;
                 actionFunc = analogFunc;
                 settings = new AnalogFuncSettings(analogFunc);
+
+                PopulateOutputActionData();
             }
         }
     }
@@ -496,6 +506,8 @@ namespace SteamControllerTest
                 this.type = typeString;
                 actionFunc = distanceFunc;
                 settings = new DistanceSettings(distanceFunc);
+
+                PopulateOutputActionData();
             }
         }
     }
