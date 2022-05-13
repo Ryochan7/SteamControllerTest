@@ -16,7 +16,7 @@ namespace SteamControllerTest
         protected string type = "Invalid";
 
         protected ActionFunc actionFunc;
-        [JsonProperty(Required = Required.Always)]
+        [JsonProperty(Required = Required.Always, Order = -3)]
         public string Type { get => type; }
 
         [JsonIgnore]
@@ -27,7 +27,7 @@ namespace SteamControllerTest
 
         protected List<OutputActionDataSerializer> actionDataSerializers =
             new List<OutputActionDataSerializer>();
-        [JsonProperty("OutputActions", Required = Required.Always)]
+        [JsonProperty("OutputActions", Required = Required.Always, Order = -2)]
         public List<OutputActionDataSerializer> ActionDataSerializers
         {
             get => actionDataSerializers;
