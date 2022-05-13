@@ -1476,6 +1476,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler DeadZoneChanged;
+            public bool ShouldSerializeDeadZone()
+            {
+                return touchMouseJoyAction.ChangedProperties.Contains(TouchpadMouseJoystick.PropertyKeyStrings.DEAD_ZONE);
+            }
 
             public int MaxZone
             {
@@ -1487,6 +1491,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler MaxZoneChanged;
+            public bool ShouldSerializeMaxZone()
+            {
+                return touchMouseJoyAction.ChangedProperties.Contains(TouchpadMouseJoystick.PropertyKeyStrings.MAX_ZONE);
+            }
 
             public double AntiDeadZoneX
             {
@@ -1498,6 +1506,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler AntiDeadZoneXChanged;
+            public bool ShouldSerializeAntiDeadZoneX()
+            {
+                return touchMouseJoyAction.ChangedProperties.Contains(TouchpadMouseJoystick.PropertyKeyStrings.ANTIDEAD_ZONE_X);
+            }
 
             public double AntiDeadZoneY
             {
@@ -1509,17 +1521,29 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler AntiDeadZoneYChanged;
-
-            public StickActionCodes OutputStick
+            public bool ShouldSerializeAntiDeadZoneY()
             {
-                get => touchMouseJoyAction.MStickParams.outputStick;
+                return touchMouseJoyAction.ChangedProperties.Contains(TouchpadMouseJoystick.PropertyKeyStrings.ANTIDEAD_ZONE_Y);
+            }
+
+            //public StickActionCodes OutputStick
+            public string OutputStick
+            {
+                get => StickCodeHelper.Convert(touchMouseJoyAction.MStickParams.OutputStick);
                 set
                 {
-                    touchMouseJoyAction.OutputAction.StickCode = value;
-                    OutputStickChanged?.Invoke(this, EventArgs.Empty);
+                    if (Enum.TryParse(value, out StickActionCodes temp))
+                    {
+                        touchMouseJoyAction.MStickParams.OutputStick = temp;
+                        OutputStickChanged?.Invoke(this, EventArgs.Empty);
+                    }
                 }
             }
             public event EventHandler OutputStickChanged;
+            public bool ShouldSerializeOutputStick()
+            {
+                return touchMouseJoyAction.ChangedProperties.Contains(TouchpadMouseJoystick.PropertyKeyStrings.OUTPUT_STICK);
+            }
 
             public StickOutCurve.Curve OutputCurve
             {
@@ -1531,6 +1555,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler OutputCurveChanged;
+            public bool ShouldSerializeOutputCurve()
+            {
+                return touchMouseJoyAction.ChangedProperties.Contains(TouchpadMouseJoystick.PropertyKeyStrings.OUTPUT_CURVE);
+            }
 
             public int Rotation
             {
@@ -1542,6 +1570,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler RotationChanged;
+            public bool ShouldSerializeRotation()
+            {
+                return touchMouseJoyAction.ChangedProperties.Contains(TouchpadMouseJoystick.PropertyKeyStrings.ROTATION);
+            }
 
             public bool Trackball
             {
@@ -1553,6 +1585,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler TrackballChanged;
+            public bool ShouldSerializeTrackball()
+            {
+                return touchMouseJoyAction.ChangedProperties.Contains(TouchpadMouseJoystick.PropertyKeyStrings.TRACKBALL_MODE);
+            }
 
             public int TrackballFriction
             {
@@ -1564,6 +1600,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler TrackballFrictionChanged;
+            public bool ShouldSerializeTrackballFriction()
+            {
+                return touchMouseJoyAction.ChangedProperties.Contains(TouchpadMouseJoystick.PropertyKeyStrings.TRACKBALL_FRICTION);
+            }
 
             public bool InvertX
             {
@@ -1575,6 +1615,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler InvertXChanged;
+            public bool ShouldSerializeInvertX()
+            {
+                return touchMouseJoyAction.ChangedProperties.Contains(TouchpadMouseJoystick.PropertyKeyStrings.INVERT_X);
+            }
 
             public bool InvertY
             {
@@ -1586,6 +1630,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler InvertYChanged;
+            public bool ShouldSerializeInvertY()
+            {
+                return touchMouseJoyAction.ChangedProperties.Contains(TouchpadMouseJoystick.PropertyKeyStrings.INVERT_Y);
+            }
 
             public double VerticalScale
             {
@@ -1597,6 +1645,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler VerticalScaleChanged;
+            public bool ShouldSerializeVerticalScale()
+            {
+                return touchMouseJoyAction.ChangedProperties.Contains(TouchpadMouseJoystick.PropertyKeyStrings.VERTICAL_SCALE);
+            }
 
             public TouchpadMouseJoystickSettings(TouchpadMouseJoystick action)
             {
@@ -1611,6 +1663,10 @@ namespace SteamControllerTest
         {
             get => settings;
             set => settings = value;
+        }
+        public bool ShouldSerializeSettings()
+        {
+            return touchMouseJoyAction.ChangedProperties.Count > 0;
         }
 
         // Deserialize
@@ -1971,6 +2027,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler OutputCurveChanged;
+            public bool ShouldSerializeOutputCurve()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.OUTPUT_CURVE);
+            }
 
             public double DeadZone
             {
@@ -1982,6 +2042,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler DeadZoneChanged;
+            public bool ShouldSerializeDeadZone()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.DEAD_ZONE);
+            }
 
             public double MaxZone
             {
@@ -1993,6 +2057,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler MaxZoneChanged;
+            public bool ShouldSerializeMaxZone()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.MAX_ZONE);
+            }
 
             public double AntiDeadZone
             {
@@ -2004,6 +2072,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler AntiDeadZoneChanged;
+            public bool ShouldSerializeAntiDeadZone()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.ANTIDEAD_ZONE);
+            }
 
             public int Rotation
             {
@@ -2015,6 +2087,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler RotationChanged;
+            public bool ShouldSerializeRotation()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.ROTATION);
+            }
 
             public bool InvertX
             {
@@ -2026,6 +2102,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler InvertXChanged;
+            public bool ShouldSerializeInvertX()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.INVERT_X);
+            }
 
             public bool InvertY
             {
@@ -2037,6 +2117,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler InvertYChanged;
+            public bool ShouldSerializeInvertY()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.INVERT_Y);
+            }
 
             public double VerticalScale
             {
@@ -2048,6 +2132,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler VerticalScaleChanged;
+            public bool ShouldSerializeVerticalScale()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.VERTICAL_SCALE);
+            }
 
             public bool MaxOutputEnabled
             {
@@ -2059,6 +2147,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler MaxOutputEnabledChanged;
+            public bool ShouldSerializeMaxOutputEnabled()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.MAX_OUTPUT_ENABLED);
+            }
 
             public double MaxOutput
             {
@@ -2070,6 +2162,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler MaxOutputChanged;
+            public bool ShouldSerializeMaxOutput()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.MAX_OUTPUT);
+            }
 
             public bool SquareStickEnabled
             {
@@ -2081,6 +2177,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler SquareStickEnabledChanged;
+            public bool ShouldSerializeSquareStickEnabled()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.SQUARE_STICK_ENABLED);
+            }
 
             public double SquareStickRoundness
             {
@@ -2092,6 +2192,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler SquareStickRoundnessChanged;
+            public bool ShouldSerializeSquareStickRoundness()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.SQUARE_STICK_ROUNDNESS);
+            }
 
             public TouchStickActionSettings(TouchpadStickAction action)
             {
@@ -2985,28 +3089,48 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler DeadZoneChanged;
-
-            public StickPadAction.DPadMode PadMode
+            public bool ShouldSerializeDeadZone()
             {
-                get => padAction.CurrentMode;
+                return padAction.ChangedProperties.Contains(StickPadAction.PropertyKeyStrings.DEAD_ZONE);
+            }
+
+            //public StickPadAction.DPadMode PadMode
+            public string PadMode
+            {
+                get => padAction.CurrentMode.ToString();
                 set
                 {
-                    padAction.CurrentMode = value;
-                    PadModeChanged?.Invoke(this, EventArgs.Empty);
+                    if (Enum.TryParse(value, out StickPadAction.DPadMode temp))
+                    {
+                        padAction.CurrentMode = temp;
+                        PadModeChanged?.Invoke(this, EventArgs.Empty);
+                    }
                 }
             }
             public event EventHandler PadModeChanged;
-
-            public StickDeadZone.DeadZoneTypes DeadZoneType
+            public bool ShouldSerializePadMode()
             {
-                get => padAction.DeadMod.DeadZoneType;
+                return padAction.ChangedProperties.Contains(StickPadAction.PropertyKeyStrings.PAD_MODE);
+            }
+
+            //public StickDeadZone.DeadZoneTypes DeadZoneType
+            public string DeadZoneType
+            {
+                get => padAction.DeadMod.DeadZoneType.ToString();
                 set
                 {
-                    padAction.DeadMod.DeadZoneType = value;
-                    DeadZoneTypeChanged?.Invoke(this, EventArgs.Empty);
+                    if (Enum.TryParse(value, out StickDeadZone.DeadZoneTypes temp))
+                    {
+                        padAction.DeadMod.DeadZoneType = temp;
+                        DeadZoneTypeChanged?.Invoke(this, EventArgs.Empty);
+                    }
                 }
             }
             public event EventHandler DeadZoneTypeChanged;
+            public bool ShouldSerializeDeadZoneType()
+            {
+                return padAction.ChangedProperties.Contains(StickPadAction.PropertyKeyStrings.DEAD_ZONE_TYPE);
+            }
 
             [JsonProperty("UseOuterRing")]
             public bool UseOuterRing
@@ -3019,6 +3143,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler UseOuterRingChanged;
+            public bool ShouldSerializeUseOuterRing()
+            {
+                return padAction.ChangedProperties.Contains(StickPadAction.PropertyKeyStrings.USE_OUTER_RING);
+            }
 
             [JsonProperty("OuterRingDeadZone")]
             public double OuterRingDeadZone
@@ -3031,6 +3159,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler OuterRingDeadZoneChanged;
+            public bool ShouldSerializeOuterRingDeadZone()
+            {
+                return padAction.ChangedProperties.Contains(StickPadAction.PropertyKeyStrings.OUTER_RING_DEAD_ZONE);
+            }
 
             [JsonProperty("UseAsOuterRing")]
             public bool UseAsOuterRing
@@ -3043,6 +3175,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler UseAsOuterRingChanged;
+            public bool ShouldSerializeUseAsOuterRing()
+            {
+                return padAction.ChangedProperties.Contains(StickPadAction.PropertyKeyStrings.USE_AS_OUTER_RING);
+            }
 
             public int Rotation
             {
@@ -3054,6 +3190,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler RotationChanged;
+            public bool ShouldSerializeRotation()
+            {
+                return padAction.ChangedProperties.Contains(StickPadAction.PropertyKeyStrings.ROTATION);
+            }
 
             public int DiagonalRange
             {
@@ -3065,6 +3205,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler DiagonalRangeChanged;
+            public bool ShouldSerializeDiagonalRange()
+            {
+                return padAction.ChangedProperties.Contains(StickPadAction.PropertyKeyStrings.DIAGONAL_RANGE);
+            }
 
             public StickPadActionSettings(StickPadAction padAction)
             {
@@ -3084,6 +3228,10 @@ namespace SteamControllerTest
             get => dictPadBindings;
             set => dictPadBindings = value;
         }
+        public bool ShouldSerializeDictPadBindings()
+        {
+            return dictPadBindings.Count > 0;
+        }
 
         private StickPadDirBinding ringBinding;
 
@@ -3098,6 +3246,10 @@ namespace SteamControllerTest
             }
         }
         public event EventHandler RingBindingChanged;
+        public bool ShouldSerializeRingBinding()
+        {
+            return stickPadAct.ChangedProperties.Contains(StickPadAction.PropertyKeyStrings.OUTER_RING_BUTTON);
+        }
 
         //private List<StickPadBindings> padBindings =
         //    new List<StickPadBindings>()
@@ -3146,6 +3298,10 @@ namespace SteamControllerTest
         {
             get => settings;
             set => settings = value;
+        }
+        public bool ShouldSerializeSettings()
+        {
+            return stickPadAct.ChangedProperties.Count > 0;
         }
 
         // Deserialize
@@ -3392,11 +3548,6 @@ namespace SteamControllerTest
                 default:
                     break;
             }
-        }
-    
-        public bool ShouldSerializeRingBinding()
-        {
-            return ringBinding.ActionFuncSerializers.Count > 0;
         }
     }
 

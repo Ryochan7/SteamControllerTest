@@ -10,6 +10,8 @@ namespace SteamControllerTest.ActionUtil
 {
     public class NormalPressFunc : ActionFunc
     {
+        public const int DEFAULT_TURBO_DURATION_MS = 0;
+
         private bool inputStatus;
         private bool inToggleState;
 

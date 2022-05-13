@@ -75,17 +75,29 @@ namespace SteamControllerTest
                 get => pressFunc.toggleEnabled;
                 set => pressFunc.toggleEnabled = value;
             }
+            public bool ShouldSerializeToggle()
+            {
+                return pressFunc.toggleEnabled == true;
+            }
 
             public bool TurboEnabled
             {
                 get => pressFunc.TurboEnabled;
                 set => pressFunc.TurboEnabled = value;
             }
+            public bool ShouldSerializeTurboEnabled()
+            {
+                return pressFunc.TurboEnabled == true;
+            }
 
             public int TurboDurationMs
             {
                 get => pressFunc.TurboDurationMs;
                 set => pressFunc.TurboDurationMs = value;
+            }
+            public bool ShouldSerializeTurboDurationMs()
+            {
+                return pressFunc.TurboDurationMs != NormalPressFunc.DEFAULT_TURBO_DURATION_MS;
             }
 
             public NormalPressSettings(NormalPressFunc actionFunc)
