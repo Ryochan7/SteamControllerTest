@@ -480,10 +480,16 @@ namespace SteamControllerTest
         {
             private DPadActions.DPadTranslate dpadTransAct;
 
-            public DPadActionCodes OutputDPad
+            public string OutputDPad
             {
-                get => dpadTransAct.OutputAction.DpadCode;
-                set => dpadTransAct.OutputAction.DpadCode = value;
+                get => DPadCodeHelper.Convert(dpadTransAct.OutputAction.DpadCode);
+                set
+                {
+                    if (Enum.TryParse(value, out DPadActionCodes code))
+                    {
+                        dpadTransAct.OutputAction.DpadCode = code;
+                    }
+                }
             }
 
             public DpadTranslateSettings(DPadActions.DPadTranslate action)
@@ -915,7 +921,12 @@ namespace SteamControllerTest
             {
                 foreach (ActionFunc tempFunc in trigBtnAction.EventButton.ActionFuncs)
                 {
-                    actionFuncSerializers.Add(new ActionFuncSerializer(tempFunc));
+                    ActionFuncSerializer tempSerializer =
+                        ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                    if (tempSerializer != null)
+                    {
+                        actionFuncSerializers.Add(tempSerializer);
+                    }
                 }
             }
         }
@@ -1929,13 +1940,23 @@ namespace SteamControllerTest
         {
             private TouchpadStickAction touchStickAction;
 
-            public StickActionCodes OutputStick
+
+            [JsonProperty("OutputStick")]
+            //public StickActionCodes OutputStick
+            public string OutputStick
             {
-                get => touchStickAction.OutputAction.StickCode;
+                //get => touchStickAction.OutputAction.StickCode;
+                get
+                {
+                    return StickCodeHelper.Convert(touchStickAction.OutputAction.StickCode);
+                }
                 set
                 {
-                    touchStickAction.OutputAction.StickCode = value;
-                    OutputStickChanged?.Invoke(this, EventArgs.Empty);
+                    if (Enum.TryParse(value, out StickActionCodes stickCode))
+                    {
+                        touchStickAction.OutputAction.StickCode = stickCode;
+                        OutputStickChanged?.Invoke(this, EventArgs.Empty);
+                    }
                 }
             }
             public event EventHandler OutputStickChanged;
@@ -3250,7 +3271,12 @@ namespace SteamControllerTest
                 tempFuncs.Clear();
                 foreach (ActionFunc tempFunc in dirButton.ActionFuncs)
                 {
-                    tempFuncs.Add(new ActionFuncSerializer(tempFunc));
+                    ActionFuncSerializer tempSerializer =
+                        ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                    if (tempSerializer != null)
+                    {
+                        tempFuncs.Add(tempSerializer);
+                    }
                 }
 
                 //dictPadBindings.Add(tempDir, tempFuncs);
@@ -3268,7 +3294,12 @@ namespace SteamControllerTest
                 ringBinding.ActionDirName = stickPadAct.RingButton.Name;
                 foreach (ActionFunc tempFunc in stickPadAct.RingButton.ActionFuncs)
                 {
-                    ringBinding.ActionFuncSerializers.Add(new ActionFuncSerializer(tempFunc));
+                    ActionFuncSerializer tempSerializer =
+                        ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                    if (tempSerializer != null)
+                    {
+                        ringBinding.ActionFuncSerializers.Add(tempSerializer);
+                    }
                 }
             }
         }
@@ -3361,6 +3392,11 @@ namespace SteamControllerTest
                 default:
                     break;
             }
+        }
+    
+        public bool ShouldSerializeRingBinding()
+        {
+            return ringBinding.ActionFuncSerializers.Count > 0;
         }
     }
 
@@ -6192,7 +6228,8 @@ namespace SteamControllerTest
                     SerializeExtraJSONProperties(current.OutputData, tempJ);
                     break;
                 case ActionType.GamepadControl:
-                    tempJ.Add("PadOutput", current.OutputData.JoypadCode.ToString());
+                    //tempJ.Add("PadOutput", current.OutputData.JoypadCode.ToString());
+                    tempJ.Add("PadOutput", OutputJoypadActionCodeHelper.Convert(current.OutputData.JoypadCode));
                     SerializeExtraJSONProperties(current.OutputData, tempJ);
                     break;
                 case ActionType.SwitchSet:

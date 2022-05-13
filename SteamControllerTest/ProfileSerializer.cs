@@ -145,6 +145,12 @@ namespace SteamControllerTest
             return false;
         }
 
+        public bool ShouldSerializeCycleBindings()
+        {
+            return cycleSerializers.Count > 0;
+        }
+
+
         [OnDeserializing]
         internal void OnDeserializingMethod(StreamingContext context)
         {

@@ -140,4 +140,89 @@ namespace SteamControllerTest.MapperUtil
         MouseWheelX,
         MouseWheelY,
     }
+
+    public static class OutputJoypadActionCodeHelper
+    {
+        public static Dictionary<JoypadActionCodes, string> X360Mappings = new Dictionary<JoypadActionCodes, string>()
+        {
+            {JoypadActionCodes.Empty, "Empty"},
+            {JoypadActionCodes.X360_A, "X360_A"},
+            {JoypadActionCodes.X360_B, "X360_B"},
+            {JoypadActionCodes.X360_X, "X360_X"},
+            {JoypadActionCodes.X360_Y, "X360_Y"},
+            {JoypadActionCodes.X360_LB, "X360_LB"},
+            {JoypadActionCodes.X360_RB, "X360_RB"},
+            {JoypadActionCodes.X360_Guide, "X360_Guide"},
+            {JoypadActionCodes.X360_Start, "X360_Start"},
+            {JoypadActionCodes.X360_Back, "X360_Back"},
+            {JoypadActionCodes.X360_ThumbL, "X360_ThumbL"},
+            {JoypadActionCodes.X360_ThumbR, "X360_ThumbR"},
+            {JoypadActionCodes.X360_DPAD_UP, "X360_DPAD_UP"},
+            {JoypadActionCodes.X360_DPAD_DOWN, "X360_DPAD_DOWN"},
+            {JoypadActionCodes.X360_DPAD_LEFT, "X360_DPAD_LEFT"},
+            {JoypadActionCodes.X360_DPAD_RIGHT, "X360_DPAD_RIGHT"},
+            {JoypadActionCodes.X360_LX, "X360_LX"},
+            {JoypadActionCodes.X360_LY, "X360_LY"},
+            {JoypadActionCodes.X360_RX, "X360_RX"},
+            {JoypadActionCodes.X360_RY, "X360_RY"},
+            {JoypadActionCodes.X360_LT, "X360_LT"},
+            {JoypadActionCodes.X360_RT, "X360_RT"},
+            {JoypadActionCodes.X360_LX_NEG, "X360_LX_NEG"},
+            {JoypadActionCodes.X360_LX_POS, "X360_LX_POS"},
+            {JoypadActionCodes.X360_RX_NEG, "X360_RX_NEG"},
+            {JoypadActionCodes.X360_RX_POS, "X360_RX_POS"},
+            {JoypadActionCodes.X360_RY_NEG, "X360_RY_NEG"},
+            {JoypadActionCodes.X360_RY_POS, "X360_RY_POS"},
+        };
+
+
+        public static string Convert(JoypadActionCodes code)
+        {
+            string result = code.ToString();
+            if (X360Mappings.TryGetValue(code, out string tempResult))
+            {
+                result = tempResult;
+            }
+
+            return result;
+        }
+    }
+
+    public static class StickCodeHelper
+    {
+        public static string Convert(StickActionCodes code)
+        {
+            string result = code.ToString();
+            switch(code)
+            {
+                case StickActionCodes.Stick1:
+                    result = "X360_LS";
+                    break;
+                case StickActionCodes.Stick2:
+                    result = "X360_RS";
+                    break;
+                default:
+                    break;
+            }
+            return result;
+        }
+    }
+
+    public static class DPadCodeHelper
+    {
+        public static string Convert(DPadActionCodes code)
+        {
+            string result = code.ToString();
+            switch(code)
+            {
+                case DPadActionCodes.DPad1:
+                    result = "X360_DPAD";
+                    break;
+                default:
+                    break;
+            }
+
+            return result;
+        }
+    }
 }
