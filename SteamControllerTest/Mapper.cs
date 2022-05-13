@@ -879,6 +879,19 @@ namespace SteamControllerTest
                 }
 
                 //ProfileChanged?.Invoke(this, profilePath);
+
+                //ProfileSerializer profileSerializer = new ProfileSerializer(actionProfile);
+                //string tempOutJson = JsonConvert.SerializeObject(profileSerializer, Formatting.Indented,
+                //    new JsonSerializerSettings()
+                //{
+                //        //Converters = new List<JsonConverter>()
+                //        //{
+                //        //    new MapActionSubTypeConverter(),
+                //        //}
+                //        //TypeNameHandling = TypeNameHandling.Objects
+                //        //ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                //    });
+                //Trace.WriteLine(tempOutJson);
             }
         }
 
