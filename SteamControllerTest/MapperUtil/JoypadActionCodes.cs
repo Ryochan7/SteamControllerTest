@@ -143,6 +143,8 @@ namespace SteamControllerTest.MapperUtil
 
     public static class OutputJoypadActionCodeHelper
     {
+        public static string ALWAYS_ON_TEXT = "AlwaysOn";
+
         public static Dictionary<JoypadActionCodes, string> X360Mappings = new Dictionary<JoypadActionCodes, string>()
         {
             {JoypadActionCodes.Empty, "Empty"},

@@ -6444,11 +6444,29 @@ namespace SteamControllerTest
             JoypadActionCodes[] joypadActionCodes = (JoypadActionCodes[])value;
             if (joypadActionCodes.Length == 1)
             {
-                serializer.Serialize(writer, joypadActionCodes[0].ToString());
+                JoypadActionCodes tempCode = joypadActionCodes[0];
+                string tempStr = tempCode == JoypadActionCodes.AlwaysOn ? OutputJoypadActionCodeHelper.ALWAYS_ON_TEXT :
+                    OutputJoypadActionCodeHelper.Convert(tempCode);
+
+                serializer.Serialize(writer, tempStr);
             }
             else
             {
-                serializer.Serialize(writer, value);
+                List<string> tempList = new List<string>();
+                foreach(JoypadActionCodes code in joypadActionCodes)
+                {
+                    if (code == JoypadActionCodes.AlwaysOn)
+                    {
+                        tempList.Add(OutputJoypadActionCodeHelper.ALWAYS_ON_TEXT);
+                    }
+                    else
+                    {
+                        tempList.Add(OutputJoypadActionCodeHelper.Convert(code));
+                    }
+                }
+
+                serializer.Serialize(writer, tempList);
+                //serializer.Serialize(writer, value);
             }
         }
     }
