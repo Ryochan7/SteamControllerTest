@@ -9,7 +9,8 @@ namespace SteamControllerTest
 {
     public abstract class MapAction
     {
-        protected int id;
+        public const int DEFAULT_UNBOUND_ID = -1;
+        protected int id = DEFAULT_UNBOUND_ID;
         public int Id
         {
             get => id;
@@ -43,6 +44,15 @@ namespace SteamControllerTest
         // or to default
         protected HashSet<string> changedProperties = new HashSet<string>();
         public HashSet<string> ChangedProperties { get => changedProperties; }
+
+        // Need a way to destinguish default created unbound binding from
+        // explicitly created version. MIGHT REMOVE AND USE -1 FOR Id INSTEAD
+        protected bool defaultUnbound = true;
+        public bool DefaultUnbound
+        {
+            get => defaultUnbound;
+            set => defaultUnbound = value;
+        }
 
 
         protected ActionFuncStateData stateData = new ActionFuncStateData();

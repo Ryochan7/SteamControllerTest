@@ -114,6 +114,36 @@ namespace SteamControllerTest
                     new ActionSetSerializer(tempProfile, actionSet);
                 actionSets.Add(setSerializer);
             }
+
+            foreach(ActionSet actionSet in tempProfile.ActionSets)
+            {
+                foreach(ActionLayer layer in actionSet.ActionLayers)
+                {
+                    ProfileActionsMapping tempMapping = new ProfileActionsMapping()
+                    {
+                        ActionSet = actionSet.Index,
+                        ActionLayer = layer.Index,
+                    };
+
+                    List<LayerMapping> tempLayerMapping = new List<LayerMapping>();
+                    // Skip over unbound actions
+                    foreach(KeyValuePair<string, MapAction> actionPair in
+                        layer.normalActionDict.Where((item) => item.Value.Id != MapAction.DEFAULT_UNBOUND_ID))
+                    {
+                        LayerMapping layerMapping = new LayerMapping();
+                        layerMapping.inputBinding = actionPair.Key;
+                        layerMapping.ActionIndex = actionPair.Value.Id;
+
+                        tempLayerMapping.Add(layerMapping);
+                    }
+
+                    // Re-order temp LayerMapping list based on asc ActionIndex value
+                    List<LayerMapping> orderedList = tempLayerMapping.OrderBy((mapping) => mapping.ActionIndex).ToList();
+                    tempMapping.LayerMappings.AddRange(orderedList);
+
+                    actionMappings.Add(tempMapping);
+                }
+            }
         }
 
         public void PopulateProfile()
@@ -142,7 +172,7 @@ namespace SteamControllerTest
 
         public bool ShouldSerializeActionMappings()
         {
-            return false;
+            return actionMappings.Count > 0;
         }
 
         public bool ShouldSerializeCycleBindings()
@@ -424,12 +454,14 @@ namespace SteamControllerTest
 
     public class LayerMapping
     {
+        [JsonIgnore]
         public string inputBinding;
-        [JsonProperty("Input", Required = Required.Always)]
+
+        [JsonProperty("Input", Required = Required.Always, Order = 1)]
         public string InputBinding { get => inputBinding; set => inputBinding = value; }
 
         private int actionIndex;
-        [JsonProperty("Action", Required = Required.Always)]
+        [JsonProperty("Action", Required = Required.Always, Order = 2)]
         public int ActionIndex { get => actionIndex; set => actionIndex = value; }
     }
 }

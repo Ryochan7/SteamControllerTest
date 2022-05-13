@@ -629,6 +629,7 @@ namespace SteamControllerTest
                                         case InputBindingMeta.InputControlType.Button:
                                             if (tempAction is ButtonMapAction)
                                             {
+                                                //tempAction.DefaultUnbound = false;
                                                 tempAction.MappingId = tempBind.id;
                                                 tempLayer.buttonActionDict[tempBind.id] = tempAction as ButtonMapAction;
                                                 if (parentLayer != null && parentLayer.buttonActionDict.TryGetValue(tempBind.id, out ButtonMapAction tempParentBtnAction) &&
@@ -651,6 +652,7 @@ namespace SteamControllerTest
                                         case InputBindingMeta.InputControlType.DPad:
                                             if (tempAction is DPadMapAction)
                                             {
+                                                //tempAction.DefaultUnbound = false;
                                                 tempAction.MappingId = tempBind.id;
                                                 tempLayer.dpadActionDict[tempBind.id] = tempAction as DPadMapAction;
                                                 if (parentLayer != null && parentLayer.dpadActionDict.TryGetValue(tempBind.id, out DPadMapAction tempParentDpadAction) &&
@@ -670,6 +672,7 @@ namespace SteamControllerTest
                                                     tempStickAction.StickDefinition = lsDefintion;
                                                 }
 
+                                                //tempAction.DefaultUnbound = false;
                                                 tempAction.MappingId = tempBind.id;
                                                 tempLayer.stickActionDict[tempBind.id] = tempStickAction;
 
@@ -694,6 +697,7 @@ namespace SteamControllerTest
                                                     triggerAct.TriggerDef = rightTriggerDefinition;
                                                 }
 
+                                                //tempAction.DefaultUnbound = false;
                                                 tempAction.MappingId = tempBind.id;
                                                 tempLayer.triggerActionDict[tempBind.id] = tempAction as TriggerMapAction;
                                                 if (parentLayer != null && parentLayer.triggerActionDict.TryGetValue(tempBind.id, out TriggerMapAction tempParentTrigAction) &&
@@ -717,6 +721,7 @@ namespace SteamControllerTest
                                                     touchAct.TouchDefinition = rightPadDefinition;
                                                 }
 
+                                                //tempAction.DefaultUnbound = false;
                                                 tempAction.MappingId = tempBind.id;
                                                 tempLayer.touchpadActionDict[tempBind.id] = tempAction as TouchpadMapAction;
                                                 if (parentLayer != null && parentLayer.touchpadActionDict.TryGetValue(tempBind.id, out TouchpadMapAction tempParentTouchAction) &&
@@ -738,6 +743,7 @@ namespace SteamControllerTest
                                                     gyroAction.GyroSensDefinition = gyroSensDefinition;
                                                 }
 
+                                                //tempAction.DefaultUnbound = false;
                                                 tempAction.MappingId = tempBind.id;
                                                 tempLayer.gyroActionDict[tempBind.id] = tempAction as GyroMapAction;
                                                 if (parentLayer != null && parentLayer.gyroActionDict.TryGetValue(tempBind.id, out GyroMapAction tempParentGyroAction) &&
@@ -883,7 +889,7 @@ namespace SteamControllerTest
                 //ProfileSerializer profileSerializer = new ProfileSerializer(actionProfile);
                 //string tempOutJson = JsonConvert.SerializeObject(profileSerializer, Formatting.Indented,
                 //    new JsonSerializerSettings()
-                //{
+                //    {
                 //        //Converters = new List<JsonConverter>()
                 //        //{
                 //        //    new MapActionSubTypeConverter(),
