@@ -1,0 +1,21 @@
+﻿<Window x:Class="SteamControllerTest.ButtonActionEditTest"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SteamControllerTest"
+        mc:Ignorable="d"
+        Title="ButtonActionEditTest" Height="450" Width="800">
+    <DockPanel LastChildFill="False">
+        <StackPanel Orientation="Horizontal" Height="100" DockPanel.Dock="Top">
+            <Label Content="Gamepad" />
+            <ComboBox ItemsSource="{Binding GamepadComboItems}" SelectedIndex="{Binding SelectedIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" VerticalAlignment="Top">
+            </ComboBox>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Height="100" DockPanel.Dock="Top">
+            <Label Content="Keyboard" />
+            <ComboBox ItemsSource="{Binding KeyboardComboItems}" SelectedIndex="{Binding SelectedKeyboardIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" VerticalAlignment="Top">
+            </ComboBox>
+        </StackPanel>
+    </DockPanel>
+</Window>

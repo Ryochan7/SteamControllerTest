@@ -20,7 +20,7 @@ namespace SteamControllerTest
         protected string name;
         public string Name { get => name; set => name = value; }
 
-        private string actionTypeName;
+        protected string actionTypeName;
         public string ActionTypeName { get => actionTypeName; set => actionTypeName = value; }
 
         protected MapAction parentAction;

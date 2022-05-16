@@ -200,6 +200,7 @@ namespace SteamControllerTest
         private GyroSensDefinition gyroSensDefinition;
 
         private Profile actionProfile = new Profile();
+        public Profile ActionProfile => actionProfile;
         private IntermediateState intermediateState = new IntermediateState();
 
         // Have Mapper make copies of state structs for manipulation. Allow

@@ -9,11 +9,14 @@ namespace SteamControllerTest.ButtonActions
 {
     public class ButtonNoAction : ButtonMapAction
     {
+        private const string ACTION_TYPE = "ButtonNoAction";
+
         public override double ButtonDistance => throw new NotImplementedException();
         public override double AxisUnit => throw new NotImplementedException();
 
         public ButtonNoAction()
         {
+            actionTypeName = ACTION_TYPE;
         }
 
         protected ButtonNoAction(ButtonNoAction parentAction)
@@ -24,6 +27,8 @@ namespace SteamControllerTest.ButtonActions
                 parentAction.hasLayeredAction = true;
                 mappingId = parentAction.mappingId;
             }
+
+            actionTypeName = ACTION_TYPE;
         }
 
         public override void Prepare(Mapper mapper, bool status, bool alterState = true)

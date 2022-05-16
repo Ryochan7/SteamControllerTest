@@ -128,7 +128,7 @@ namespace SteamControllerTest.TouchpadActions
 
         public TouchpadStickAction()
         {
-            this.outputAction = new OutputActionData(OutputActionData.ActionType.GamepadControl, StickActionCodes.Empty);
+            this.outputAction = new OutputActionData(OutputActionData.ActionType.GamepadControl, StickActionCodes.X360_LS);
             this.deadMod = new StickDeadZone(0.00, 1.00, 0.00);
         }
 

@@ -255,6 +255,26 @@ namespace SteamControllerTest.MapperUtil
             secondData.processOutput = processOutput;
         }
 
+        public void Prepare(ActionType type, int code)
+        {
+            outputType = type;
+            outputCode = code;
+
+            if (type == ActionType.Keyboard)
+            {
+                repeat = false;
+            }
+            else if (type == ActionType.RelativeMouse)
+            {
+                if (Enum.TryParse(code.ToString(), out RelativeMouseDir tempDir))
+                {
+                    mouseDir = tempDir;
+                }
+            }
+
+            processOutput = UseProcessForAction();
+        }
+
         private bool UseProcessForAction()
         {
             bool process = false;
@@ -416,6 +436,15 @@ namespace SteamControllerTest.MapperUtil
             skipRelease = false;
             waitForRelease = false;
             currentNotches = 0.0;
+        }
+
+        public void Reset()
+        {
+            Release();
+
+            outputType = ActionType.Empty;
+            outputCode = 0;
+            outputCodeProfileStr = "";
         }
     }
 }

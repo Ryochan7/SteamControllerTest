@@ -363,5 +363,45 @@ namespace SteamControllerTest
             touchpadActionDict.Clear();
             gyroActionDict.Clear();
         }
+
+        public void ReplaceTouchpadAction(TouchpadMapAction oldAction, TouchpadMapAction action)
+        {
+            string mapId = oldAction.MappingId;
+            int ind = layerActions.FindIndex((item) => item == oldAction);
+            if (ind >= 0)
+            {
+                TouchpadMapAction tempAction = layerActions[ind] as TouchpadMapAction;
+                layerActions.RemoveAt(ind);
+                layerActions.Insert(ind, action);
+
+                normalActionDict.Remove(mapId);
+                reverseActionDict.Remove(tempAction);
+
+                touchpadActionDict[mapId] = action;
+                int mappedInd = mappedActions.FindIndex((item) => (item == tempAction));
+
+                mappedActions.RemoveAt(mappedInd);
+                mappedActions.Insert(mappedInd, action);
+
+                normalActionDict.Add(mapId, action);
+                reverseActionDict.Add(action, mapId);
+            }
+        }
+
+        public int FindNextAvailableId()
+        {
+            int result = 0;
+            HashSet<int> currentIds = layerActions.Select((item) => item.Id).ToHashSet();
+            bool unique = false;
+            for (int i = 0; i < 1000 && !unique; i++)
+            {
+                if (!currentIds.Contains(i))
+                {
+                    result = i;
+                }
+            }
+
+            return result;
+        }
     }
 }

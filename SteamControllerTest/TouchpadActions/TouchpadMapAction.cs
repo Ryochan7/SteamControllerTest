@@ -51,6 +51,12 @@ namespace SteamControllerTest.TouchpadActions
             this.touchpadDefinition = new TouchpadDefinition(parentAction.touchpadDefinition);
         }
 
+        public void CopyBaseMapProps(TouchpadMapAction sourceAction)
+        {
+            mappingId = sourceAction.mappingId;
+            touchpadDefinition = new TouchpadDefinition(sourceAction.touchpadDefinition);
+        }
+
         public virtual void PrepareActions()
         {
         }
