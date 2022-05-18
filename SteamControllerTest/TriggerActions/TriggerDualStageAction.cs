@@ -114,7 +114,7 @@ namespace SteamControllerTest.TriggerActions
 
         public TriggerDualStageAction()
         {
-            deadMod = new AxisDeadZone(0.0, 0.95, 0.0);
+            deadMod = new AxisDeadZone(0.0, 1.0, 0.0);
         }
 
         public override void Prepare(Mapper mapper, ref TriggerEventFrame eventFrame, bool alterState = true)
