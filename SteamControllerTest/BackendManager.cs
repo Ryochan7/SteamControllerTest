@@ -180,7 +180,7 @@ namespace SteamControllerTest
                 }
 
                 device.Index = ind;
-                //device.SetOperational();
+                device.SetOperational();
                 deviceReadersMap.Add(device, reader);
 
                 device.Removal += Device_Removal;

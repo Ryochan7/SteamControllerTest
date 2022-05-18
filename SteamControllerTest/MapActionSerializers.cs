@@ -672,6 +672,17 @@ namespace SteamControllerTest
             }
             public event EventHandler MaxZoneChanged;
 
+            public double AntiDeadZone
+            {
+                get => triggerDualAction.DeadMod.AntiDeadZone;
+                set
+                {
+                    triggerDualAction.DeadMod.AntiDeadZone = Math.Clamp(value, 0.0, 1.0);
+                    AntiDeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler AntiDeadZoneChanged;
+
             public TriggerDualStageAction.DualStageMode DualStageMode
             {
                 get => triggerDualAction.TriggerStateMode;
@@ -770,8 +781,14 @@ namespace SteamControllerTest
             FullPullChanged += TriggerDualStageActionSerializer_FullPullChanged;
             settings.DeadZoneChanged += Settings_DeadZoneChanged;
             settings.MaxZoneChanged += Settings_MaxZoneChanged;
+            settings.AntiDeadZoneChanged += Settings_AntiDeadZoneChanged;
             settings.DualStageModeChanged += Settings_DualStageModeChanged;
             settings.HipFireDelayChanged += Settings_HipFireDelayChanged;
+        }
+
+        private void Settings_AntiDeadZoneChanged(object sender, EventArgs e)
+        {
+            triggerDualAction.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.ANTIDEAD_ZONE);
         }
 
         private void Settings_HipFireDelayChanged(object sender, EventArgs e)

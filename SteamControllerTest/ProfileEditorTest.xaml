@@ -7,6 +7,10 @@
         mc:Ignorable="d"
         Title="ProfileEditorTest" Height="450" Width="800">
     <DockPanel>
+        <!--<StackPanel DockPanel.Dock="Top">
+            <Button Content="Test Out JSON" Click="Button_Click_4" />
+        </StackPanel>-->
+        
         <StackPanel DockPanel.Dock="Top">
             <ItemsControl x:Name="actionSetItemsControl" ItemsSource="{Binding ActionSetItems}">
                 <ItemsControl.ItemsPanel>

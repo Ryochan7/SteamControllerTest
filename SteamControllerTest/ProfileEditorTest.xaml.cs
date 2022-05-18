@@ -132,5 +132,19 @@ namespace SteamControllerTest
                 IsEnabled = true;
             }
         }
+
+        private async void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            IsEnabled = false;
+
+            editorTestVM.TestFakeSave(editorTestVM.ProfileEnt, editorTestVM.DeviceMapper.ActionProfile);
+
+            await Task.Run(() =>
+            {
+                editorTestVM.ActionResetEvent.Wait();
+            });
+
+            IsEnabled = true;
+        }
     }
 }

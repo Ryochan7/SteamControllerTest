@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using SteamControllerTest.ButtonActions;
 using SteamControllerTest.TouchpadActions;
 
@@ -315,6 +316,29 @@ namespace SteamControllerTest.ViewModels
             mapper.QueueEvent(() =>
             {
                 mapper.ActionProfile.CurrentActionSet.SwitchActionLayer(mapper, layerInd);
+                actionResetEvent.Set();
+            });
+        }
+
+        public void TestFakeSave(ProfileEntity entity, Profile profile)
+        {
+            ProfileEntity tempEntity = entity;
+            Profile tempProfile = profile;
+            mapper.QueueEvent(() =>
+            {
+                ProfileSerializer profileSerializer = new ProfileSerializer(tempProfile);
+                string tempOutJson = JsonConvert.SerializeObject(profileSerializer, Formatting.Indented,
+                    new JsonSerializerSettings()
+                    {
+                        //Converters = new List<JsonConverter>()
+                        //{
+                        //    new MapActionSubTypeConverter(),
+                        //}
+                        //TypeNameHandling = TypeNameHandling.Objects
+                        //ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                    });
+                Trace.WriteLine(tempOutJson);
+
                 actionResetEvent.Set();
             });
         }

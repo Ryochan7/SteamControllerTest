@@ -146,6 +146,7 @@ namespace SteamControllerTest.SteamControllerLibrary
             hidDevice = device;
             conType = DetermineConnectionType(hidDevice);
             baseElapsedReference = 125.0;
+
             deviceOptions = new SteamControllerControllerOptions(InputDeviceType.SteamController);
         }
 
@@ -184,7 +185,7 @@ namespace SteamControllerTest.SteamControllerLibrary
             ReadSerial();
             Configure();
 
-            Thread.Sleep(1000);
+            Thread.Sleep(100);
 
             controllerModeState = SCControllerState.SS_READY;
             modeChangeDone = true;

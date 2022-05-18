@@ -20,7 +20,7 @@ namespace SteamControllerTest.TriggerActions
             public const string FULLPULL_BUTTON = "FullPullButton";
             public const string DUALSTAGE_MODE = "DualStageMode";
             public const string HIPFIRE_DELAY = "HipFireDelay";
-            //public const string ANTIDEAD_ZONE = "AntiDeadZone";
+            public const string ANTIDEAD_ZONE = "AntiDeadZone";
             //public const string OUTPUT_TRIGGER = "OutputTrigger";
         }
 
@@ -33,7 +33,7 @@ namespace SteamControllerTest.TriggerActions
             PropertyKeyStrings.FULLPULL_BUTTON,
             PropertyKeyStrings.DUALSTAGE_MODE,
             PropertyKeyStrings.HIPFIRE_DELAY,
-            //PropertyKeyStrings.ANTIDEAD_ZONE,
+            PropertyKeyStrings.ANTIDEAD_ZONE,
             //PropertyKeyStrings.OUTPUT_TRIGGER,
         };
 
@@ -114,13 +114,13 @@ namespace SteamControllerTest.TriggerActions
 
         public TriggerDualStageAction()
         {
-            deadMod = new AxisDeadZone(0.0, 1.0, 0.0);
+            deadMod = new AxisDeadZone(0.0, 0.95, 0.0);
         }
 
         public override void Prepare(Mapper mapper, ref TriggerEventFrame eventFrame, bool alterState = true)
         {
             int maxDir = triggerDefinition.trigAxis.max;
-            deadMod.CalcOutValues((int)eventFrame.axisValue, maxDir, out axisNorm);
+            deadMod.CalcOutValues(eventFrame.axisValue, maxDir, out axisNorm);
             if (triggerDefinition.trigAxis.hasClickButton)
             {
                 // Trigger has dedicated click button. Check it
@@ -260,6 +260,9 @@ namespace SteamControllerTest.TriggerActions
                             break;
                         case PropertyKeyStrings.MAX_ZONE:
                             deadMod.MaxZone = tempDualTrigAction.deadMod.MaxZone;
+                            break;
+                        case PropertyKeyStrings.ANTIDEAD_ZONE:
+                            deadMod.AntiDeadZone = tempDualTrigAction.deadMod.AntiDeadZone;
                             break;
                         case PropertyKeyStrings.SOFTPULL_BUTTON:
                             softPullActButton = tempDualTrigAction.softPullActButton;
