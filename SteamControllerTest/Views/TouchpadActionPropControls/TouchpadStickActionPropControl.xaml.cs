@@ -23,6 +23,7 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
     public partial class TouchpadStickActionPropControl : UserControl
     {
         private TouchpadStickActionPropViewModel touchStickPropVM;
+        public TouchpadStickActionPropViewModel TouchStickPropVM => touchStickPropVM;
 
         public TouchpadStickActionPropControl()
         {

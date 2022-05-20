@@ -25,6 +25,7 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
     public partial class TouchpadMousePropControl : UserControl
     {
         private TouchpadMousePropViewModel touchMousePropVM;
+        public TouchpadMousePropViewModel TouchMousePropVM => touchMousePropVM;
 
         public TouchpadMousePropControl()
         {

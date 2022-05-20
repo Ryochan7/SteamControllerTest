@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using SteamControllerTest.ActionUtil;
 using SteamControllerTest.MapperUtil;
 using SteamControllerTest.TouchpadActions;
@@ -28,9 +29,13 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
             get => action.Name;
             set
             {
+                if (action.Name == value) return;
                 action.Name = value;
+                NameChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
             }
         }
+        public event EventHandler NameChanged;
 
         private List<OutputStickSelectionItem> outputStickItems =
             new List<OutputStickSelectionItem>();
@@ -44,6 +49,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
             {
                 outputStickIndex = value;
                 OutputStickIndexChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
             }
         }
         public event EventHandler OutputStickIndexChanged;
@@ -56,9 +62,12 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 if (double.TryParse(value, out double temp))
                 {
                     action.DeadMod.DeadZone = Math.Clamp(temp, 0.0, 1.0);
+                    DeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                    ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
+        public event EventHandler DeadZoneChanged;
 
         public string AntiDeadZone
         {
@@ -68,9 +77,12 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 if (double.TryParse(value, out double temp))
                 {
                     action.DeadMod.AntiDeadZone = Math.Clamp(temp, 0.0, 1.0);
+                    AntiDeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                    ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
+        public event EventHandler AntiDeadZoneChanged;
 
         public string MaxZone
         {
@@ -80,15 +92,88 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 if (double.TryParse(value, out double temp))
                 {
                     action.DeadMod.MaxZone = Math.Clamp(temp, 0.0, 1.0);
+                    MaxZoneChanged?.Invoke(this, EventArgs.Empty);
+                    ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
+        public event EventHandler MaxZoneChanged;
+
+        public event EventHandler ActionPropertyChanged;
+
+        private bool replacedAction = false;
+
+        public bool HighlightName
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.NAME);
+        }
+        public event EventHandler HighlightNameChanged;
+
+        public bool HighlightOutputStickIndex
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.OUTPUT_STICK);
+        }
+        public event EventHandler HighlightOutputStickIndexChanged;
+
+        public bool HighlightDeadZone
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.DEAD_ZONE);
+        }
+        public event EventHandler HighlightDeadZoneChanged;
+
+        public bool HighlightAntiDeadZone
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.ANTIDEAD_ZONE);
+        }
+        public event EventHandler HighlightAntiDeadZoneChanged;
+
+        public bool HighlightMaxZone
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.MAX_ZONE);
+        }
+        public event EventHandler HighlightMaxZoneChanged;
 
         public TouchpadStickActionPropViewModel(Mapper mapper,
             TouchpadMapAction action)
         {
             this.mapper = mapper;
             this.action = action as TouchpadStickAction;
+
+            // Check if base ActionLayer action from composite layer
+            if (action.ParentAction == null &&
+                mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer &&
+                !mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.LayerActions.Contains(action) &&
+                MapAction.IsSameType(mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId], action))
+            {
+                // Test with temporary object
+                TouchpadStickAction baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId] as TouchpadStickAction;
+                TouchpadStickAction tempAction = new TouchpadStickAction();
+                tempAction.SoftCopyFromParent(baseLayerAction);
+                //int tempLayerId = mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.Index;
+                int tempId = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.FindNextAvailableId();
+                tempAction.Id = tempId;
+                //tempAction.MappingId = this.action.MappingId;
+
+                this.action = tempAction;
+
+                ActionPropertyChanged += ReplaceExistingLayerAction;
+            }
+
+            //if (this.action.ParentAction != null)
+            //{
+            //}
+
+            NameChanged += TouchpadStickActionPropViewModel_NameChanged;
+            DeadZoneChanged += TouchpadStickActionPropViewModel_DeadZoneChanged;
+            AntiDeadZoneChanged += TouchpadStickActionPropViewModel_AntiDeadZoneChanged;
+            MaxZoneChanged += TouchpadStickActionPropViewModel_MaxZoneChanged;
+            OutputStickIndexChanged += MarkOutputStickChanged;
+            ActionPropertyChanged += SetProfileDirty;
 
             outputStickItems.AddRange(new OutputStickSelectionItem[]
             {
@@ -102,6 +187,81 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
             OutputStickIndexChanged += TouchpadStickActionPropViewModel_OutputStickIndexChanged;
         }
 
+        private void TouchpadStickActionPropViewModel_NameChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.NAME))
+            {
+                this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.NAME);
+            }
+
+            HighlightNameChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void MarkOutputStickChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.OUTPUT_STICK))
+            {
+                this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.OUTPUT_STICK);
+            }
+
+            HighlightOutputStickIndexChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TouchpadStickActionPropViewModel_MaxZoneChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.MAX_ZONE))
+            {
+                this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.MAX_ZONE);
+            }
+
+            HighlightMaxZoneChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TouchpadStickActionPropViewModel_AntiDeadZoneChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.ANTIDEAD_ZONE))
+            {
+                this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.ANTIDEAD_ZONE);
+            }
+
+            HighlightAntiDeadZoneChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TouchpadStickActionPropViewModel_DeadZoneChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.DEAD_ZONE))
+            {
+                this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.DEAD_ZONE);
+            }
+
+            HighlightDeadZoneChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ReplaceExistingLayerAction(object sender, EventArgs e)
+        {
+            if (!replacedAction)
+            {
+                ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+
+                mapper.QueueEvent(() =>
+                {
+                    this.action.ParentAction.Release(mapper, ignoreReleaseActions: true);
+
+                    mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddTouchpadAction(this.action);
+                    if (mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer)
+                    {
+                        mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
+                    }
+
+                    resetEvent.Set();
+                });
+
+                resetEvent.Wait();
+
+                replacedAction = true;
+            }
+        }
+
         private void TouchpadStickActionPropViewModel_OutputStickIndexChanged(object sender, EventArgs e)
         {
             OutputStickSelectionItem item = outputStickItems[outputStickIndex];
@@ -109,6 +269,11 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
             {
                 action.OutputAction.StickCode = item.Code;
             });
+        }
+
+        private void SetProfileDirty(object sender, EventArgs e)
+        {
+            mapper.ActionProfile.Dirty = true;
         }
 
         private void PrepareModel()

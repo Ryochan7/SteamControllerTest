@@ -33,15 +33,24 @@ namespace SteamControllerTest
         public ActionLayer DefaultActionLayer { get => defaultActionLayer; }
 
         private List<ActionLayer> appliedLayers = new List<ActionLayer>();
+        public ActionLayer RecentAppliedLayer
+        {
+            get => appliedLayers.Last();
+        }
         // Composite layer used when merging ActionLayer instances
         private ActionLayer activeCompositeLayer;
+
+        public bool UsingCompositeLayer
+        {
+            get => currentActionLayer == activeCompositeLayer;
+        }
 
 
         /// <summary>
         /// Will contain all mapped actions associated in the sets
         /// for all ActionLayer instances
         /// </summary>
-        private List<MapAction> setActions = new List<MapAction>();
+        //private List<MapAction> setActions = new List<MapAction>();
 
         private int index;
         public int Index { get => index; }
@@ -524,6 +533,91 @@ namespace SteamControllerTest
         {
             // Clear composite ActionLayer references and restore using default layer
             activeCompositeLayer.ClearActions();
+        }
+
+        public void RecompileCompositeLayer(Mapper mapper)
+        {
+            if (appliedLayers.Count == 1)
+            {
+                // Clear composite ActionLayer references and restore using default layer
+                //activeCompositeLayer.ClearActions();
+                //PrepareCompositeLayer();
+
+                return;
+            }
+
+            // Skip resetting composite layer if switching from base
+            //if (appliedLayers.Count > 1)
+            //{
+            //    //appliedLayers.Remove(currentActionLayer);
+            //    appliedLayers.RemoveRange(1, appliedLayers.Count - 1);
+
+            //    // Clear composite ActionLayer references and restore using default layer
+            //    activeCompositeLayer.ClearActions();
+            //    PrepareCompositeLayer();
+            //}
+
+            ActionLayer lastAppliedLayer = appliedLayers.Last();
+
+            HashSet<string> tempOverrideIds =
+                        lastAppliedLayer.normalActionDict.Keys.ToHashSet();
+
+            IEnumerable<ActionLayer> revLayers =
+                appliedLayers.Reverse<ActionLayer>();
+
+            foreach (string mapId in tempOverrideIds)
+            {
+                ActionLayer usedIdLayer = null;
+                MapAction tempBaseAction = null;
+                foreach (ActionLayer tempLayer in revLayers)
+                {
+                    if (tempLayer.normalActionDict.ContainsKey(mapId))
+                    {
+                        usedIdLayer = tempLayer;
+                        tempBaseAction = usedIdLayer.normalActionDict[mapId];
+                        break;
+                    }
+                }
+
+                if (usedIdLayer != null && tempBaseAction != null)
+                {
+                    MapAction currentMapAction = lastAppliedLayer.normalActionDict[mapId];
+
+                    if (mapId.StartsWith(ACTION_SET_ACTION_PREFIX))
+                    {
+                        activeCompositeLayer.actionSetActionDict[mapId] = currentMapAction as ButtonAction;
+                    }
+                    else
+                    {
+                        switch (mapper.BindingDict[mapId].controlType)
+                        {
+                            case InputBindingMeta.InputControlType.Button:
+                                activeCompositeLayer.buttonActionDict[mapId] = currentMapAction as ButtonMapAction;
+                                break;
+                            case InputBindingMeta.InputControlType.DPad:
+                                activeCompositeLayer.dpadActionDict[mapId] = currentMapAction as DPadMapAction;
+                                break;
+                            case InputBindingMeta.InputControlType.Stick:
+                                activeCompositeLayer.stickActionDict[mapId] = currentMapAction as StickMapAction;
+                                break;
+                            case InputBindingMeta.InputControlType.Gyro:
+                                activeCompositeLayer.gyroActionDict[mapId] = currentMapAction as GyroMapAction;
+                                break;
+                            case InputBindingMeta.InputControlType.Touchpad:
+                                activeCompositeLayer.touchpadActionDict[mapId] = currentMapAction as TouchpadMapAction;
+                                break;
+                            case InputBindingMeta.InputControlType.Trigger:
+                                activeCompositeLayer.triggerActionDict[mapId] = currentMapAction as TriggerMapAction;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
+
+            // Sync base MapAction Lists and Dicts
+            activeCompositeLayer.SyncActions();
         }
     }
 }

@@ -23,7 +23,8 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
     /// </summary>
     public partial class TouchpadMouseJoystickPropControl : UserControl
     {
-        private TouchpadMouseJoystickPropViewModel  touchMouseJoyPropVM;
+        private TouchpadMouseJoystickPropViewModel touchMouseJoyPropVM;
+        public TouchpadMouseJoystickPropViewModel TouchMouseJoyPropVM => touchMouseJoyPropVM;
         private Mapper mapper;
         private TouchpadMapAction action;
 

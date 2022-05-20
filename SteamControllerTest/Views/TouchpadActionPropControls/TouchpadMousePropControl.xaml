@@ -10,10 +10,32 @@
         <StackPanel DockPanel.Dock="Top">
             <StackPanel Orientation="Horizontal">
                 <Label Content="Name" />
-                <TextBox Text="{Binding Name,UpdateSourceTrigger=LostFocus}" Width="200" />
+                <TextBox Text="{Binding Name, UpdateSourceTrigger=LostFocus}" Width="200">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightNameChanged}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Content="Dead Zone" />
+                <TextBox Text="{Binding DeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightDeadZone}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+
             </StackPanel>
         </StackPanel>
     </DockPanel>

@@ -388,6 +388,15 @@ namespace SteamControllerTest
             }
         }
 
+        public void AddTouchpadAction(TouchpadMapAction action)
+        {
+            layerActions.Add(action);
+            mappedActions.Add(action);
+
+            normalActionDict.Add(action.MappingId, action);
+            reverseActionDict.Add(action, action.MappingId);
+        }
+
         public int FindNextAvailableId()
         {
             int result = 0;
@@ -398,6 +407,7 @@ namespace SteamControllerTest
                 if (!currentIds.Contains(i))
                 {
                     result = i;
+                    unique = true;
                 }
             }
 

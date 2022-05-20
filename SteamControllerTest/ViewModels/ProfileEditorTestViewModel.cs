@@ -92,6 +92,13 @@ namespace SteamControllerTest.ViewModels
             this.mapper = mapper;
             this.profileEnt = profileEnt;
             this.tempProfile = currentProfile;
+
+            tempProfile.DirtyChanged += TempProfile_DirtyChanged;
+        }
+
+        private void TempProfile_DirtyChanged(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
         }
 
         // Put List(s) in Mapper class to allow a more dynamic view later?

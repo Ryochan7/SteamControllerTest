@@ -66,6 +66,18 @@ namespace SteamControllerTest
             set => outputGamepadSettings = value;
         }
 
+        public bool dirty;
+        public bool Dirty
+        {
+            get => dirty;
+            set
+            {
+                dirty = value;
+                DirtyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler DirtyChanged;
+
         public Profile()
         {
             // Add one empty ActionSet by default

@@ -26,6 +26,8 @@ namespace SteamControllerTest.Views
         private TouchpadBindEditViewModel touchBindEditVM;
         public TouchpadBindEditViewModel TouchBindEditVM => touchBindEditVM;
 
+        public event EventHandler<TouchpadMapAction> TouchActionUpdated;
+
         public TouchpadBindEditWindow()
         {
             InitializeComponent();
@@ -94,6 +96,59 @@ namespace SteamControllerTest.Views
                     break;
                 default:
                     touchBindEditVM.DisplayControl = null;
+                    break;
+            }
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            switch (touchBindEditVM.Action)
+            {
+                case TouchpadStickAction:
+                    {
+                        TouchpadStickActionPropControl tempControl = touchBindEditVM.DisplayControl as TouchpadStickActionPropControl;
+                        if (tempControl.TouchStickPropVM.Action != touchBindEditVM.Action)
+                        {
+                            touchBindEditVM.UpdateAction(tempControl.TouchStickPropVM.Action);
+                            TouchActionUpdated?.Invoke(this, tempControl.TouchStickPropVM.Action);
+                        }
+                    }
+
+                    break;
+                case TouchpadActionPad:
+                    {
+                        TouchpadActionPadPropControl tempControl = touchBindEditVM.DisplayControl as TouchpadActionPadPropControl;
+                        if (tempControl.TouchActionPropVM.Action != touchBindEditVM.Action)
+                        {
+                            touchBindEditVM.UpdateAction(tempControl.TouchActionPropVM.Action);
+                            TouchActionUpdated?.Invoke(this, tempControl.TouchActionPropVM.Action);
+                        }
+                    }
+
+                    break;
+                case TouchpadMouseJoystick:
+                    {
+                        TouchpadMouseJoystickPropControl tempControl = touchBindEditVM.DisplayControl as TouchpadMouseJoystickPropControl;
+                        if (tempControl.TouchMouseJoyPropVM.Action != touchBindEditVM.Action)
+                        {
+                            touchBindEditVM.UpdateAction(tempControl.TouchMouseJoyPropVM.Action);
+                            TouchActionUpdated?.Invoke(this, tempControl.TouchMouseJoyPropVM.Action);
+                        }
+                    }
+
+                    break;
+                case TouchpadMouse:
+                    {
+                        TouchpadMousePropControl tempControl = touchBindEditVM.DisplayControl as TouchpadMousePropControl;
+                        if (tempControl.TouchMousePropVM.Action != touchBindEditVM.Action)
+                        {
+                            touchBindEditVM.UpdateAction(tempControl.TouchMousePropVM.Action);
+                            TouchActionUpdated?.Invoke(this, tempControl.TouchMousePropVM.Action);
+                        }
+                    }
+
+                    break;
+                default:
                     break;
             }
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using SteamControllerTest.MapperUtil;
@@ -75,18 +76,37 @@ namespace SteamControllerTest.ViewModels
             TouchpadMapAction oldAction = this.action;
             TouchpadMapAction newAction = action;
 
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+
             mapper.QueueEvent(() =>
             {
                 oldAction.Release(mapper, ignoreReleaseActions: true);
                 //int tempInd = mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.LayerActions.FindIndex((item) => item == tempAction);
                 //if (tempInd >= 0)
                 {
-                    mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.ReplaceTouchpadAction(oldAction, newAction);
                     //mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.LayerActions.RemoveAt(tempInd);
                     //mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.LayerActions.Insert(tempInd, newAction);
 
+                    //oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                    //mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddTouchpadAction(this.action);
+                    mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.ReplaceTouchpadAction(oldAction, newAction);
+                    if (mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer)
+                    {
+                        MapAction baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId];
+                        if (MapAction.IsSameType(baseLayerAction, newAction))
+                        {
+                            newAction.SoftCopyFromParent(baseLayerAction as TouchpadMapAction);
+                        }
+
+                        mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
+                    }
                 }
+
+                resetEvent.Set();
             });
+
+            resetEvent.Wait();
 
             this.action = action;
         }
@@ -96,13 +116,18 @@ namespace SteamControllerTest.ViewModels
             if (action.Id == MapAction.DEFAULT_UNBOUND_ID)
             {
                 // Need to create new ID for action
-                newAction.Id = mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.FindNextAvailableId();
+                newAction.Id = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.FindNextAvailableId();
             }
             else
             {
                 // Can re-use existing ID
                 newAction.Id = action.Id;
             }
+        }
+
+        public void UpdateAction(TouchpadMapAction currentAction)
+        {
+            this.action = currentAction;
         }
     }
 }

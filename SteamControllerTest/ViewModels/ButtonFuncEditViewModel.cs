@@ -106,7 +106,7 @@ namespace SteamControllerTest.ViewModels
             {
                 // Need to create new ID for action
                 action.Id =
-                    mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.FindNextAvailableId();
+                    mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.FindNextAvailableId();
             }
             else
             {

@@ -47,12 +47,13 @@ namespace SteamControllerTest
 
         // Need a way to destinguish default created unbound binding from
         // explicitly created version. MIGHT REMOVE AND USE -1 FOR Id INSTEAD
-        protected bool defaultUnbound = true;
+        /*protected bool defaultUnbound = true;
         public bool DefaultUnbound
         {
             get => defaultUnbound;
             set => defaultUnbound = value;
         }
+        */
 
 
         protected ActionFuncStateData stateData = new ActionFuncStateData();
