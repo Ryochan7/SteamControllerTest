@@ -3279,13 +3279,12 @@ namespace SteamControllerTest
                 if (intermediateState.BtnEast) tempButtons |= Xbox360Button.B.Value;
                 if (intermediateState.BtnWest) tempButtons |= Xbox360Button.X.Value;
                 if (intermediateState.BtnNorth) tempButtons |= Xbox360Button.Y.Value;
-                if (intermediateState.BtnMode) tempButtons |= Xbox360Button.Back.Value;
                 if (intermediateState.BtnStart) tempButtons |= Xbox360Button.Start.Value;
                 if (intermediateState.BtnSelect) tempButtons |= Xbox360Button.Back.Value;
 
                 if (intermediateState.BtnLShoulder) tempButtons |= Xbox360Button.LeftShoulder.Value;
                 if (intermediateState.BtnRShoulder) tempButtons |= Xbox360Button.RightShoulder.Value;
-                if (intermediateState.BtnHome) tempButtons |= Xbox360Button.Guide.Value;
+                if (intermediateState.BtnMode) tempButtons |= Xbox360Button.Guide.Value;
 
                 if (intermediateState.BtnThumbL) tempButtons |= Xbox360Button.LeftThumb.Value;
                 if (intermediateState.BtnThumbR) tempButtons |= Xbox360Button.RightThumb.Value;
