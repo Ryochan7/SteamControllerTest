@@ -96,7 +96,11 @@ namespace SteamControllerTest
                 ButtonMapAction tempAct = btnFuncEditVM.PrepareNewAction(ind);
                 if (tempAct != null)
                 {
+                    ButtonMapAction oldAction = btnFuncEditVM.Action;
+
                     btnFuncEditVM.UpdateAction(tempAct);
+                    //tempAct.MappingId = oldAction.MappingId;
+                    btnFuncEditVM.SwitchLayerAction(oldAction, tempAct);
                     SetupDisplayControl();
                 }
             }
@@ -133,6 +137,10 @@ namespace SteamControllerTest
         {
             bool oldValue = btnFuncEditVM.IsTransformOutputVisible;
             btnFuncEditVM.IsTransformOutputVisible = !oldValue;
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
         }
     }
 }

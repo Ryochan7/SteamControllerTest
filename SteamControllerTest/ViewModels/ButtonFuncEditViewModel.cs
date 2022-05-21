@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -114,10 +115,54 @@ namespace SteamControllerTest.ViewModels
                 action.Id = this.action.Id;
             }
 
+            action.MappingId = this.action.MappingId;
             this.action = action;
 
         }
 
+        public void SwitchLayerAction(ButtonMapAction oldAction, ButtonMapAction newAction)
+        {
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+
+            mapper.QueueEvent(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+                //int tempInd = mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.LayerActions.FindIndex((item) => item == tempAction);
+                //if (tempInd >= 0)
+                {
+                    //mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.LayerActions.RemoveAt(tempInd);
+                    //mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.LayerActions.Insert(tempInd, newAction);
+
+                    //oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                    //mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddTouchpadAction(this.action);
+                    //newAction.MappingId = oldAction.MappingId;
+                    if (oldAction.Id != MapAction.DEFAULT_UNBOUND_ID)
+                    {
+                        mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.ReplaceButtonAction(oldAction, newAction);
+                    }
+                    else
+                    {
+                        mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddButtonMapAction(newAction);
+                    }
+
+                    if (mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer)
+                    {
+                        MapAction baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[oldAction.MappingId];
+                        if (MapAction.IsSameType(baseLayerAction, newAction))
+                        {
+                            newAction.SoftCopyFromParent(baseLayerAction as ButtonMapAction);
+                        }
+
+                        mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
+                    }
+                }
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
+        }
     }
 
     public class ButtonActionViewModel

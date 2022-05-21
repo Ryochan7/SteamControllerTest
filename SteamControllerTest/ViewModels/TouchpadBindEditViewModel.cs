@@ -93,7 +93,7 @@ namespace SteamControllerTest.ViewModels
                     mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.ReplaceTouchpadAction(oldAction, newAction);
                     if (mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer)
                     {
-                        MapAction baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId];
+                        MapAction baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[oldAction.MappingId];
                         if (MapAction.IsSameType(baseLayerAction, newAction))
                         {
                             newAction.SoftCopyFromParent(baseLayerAction as TouchpadMapAction);

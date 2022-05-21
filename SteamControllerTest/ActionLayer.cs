@@ -364,10 +364,51 @@ namespace SteamControllerTest
             gyroActionDict.Clear();
         }
 
+        public void ReplaceButtonAction(ButtonMapAction oldAction, ButtonMapAction action)
+        {
+            string mapId = oldAction.MappingId;
+            int ind = layerActions.FindIndex((item) => item == oldAction);
+            int mappedInd = -1;
+            if (ind >= 0)
+            {
+                ButtonMapAction tempAction = layerActions[ind] as ButtonMapAction;
+                layerActions.RemoveAt(ind);
+                layerActions.Insert(ind, action);
+
+                normalActionDict.Remove(mapId);
+                reverseActionDict.Remove(tempAction);
+
+                mappedInd = mappedActions.FindIndex((item) => (item == tempAction));
+                mappedActions.RemoveAt(mappedInd);
+                mappedActions.Insert(mappedInd, action);
+            }
+            else
+            {
+                layerActions.Add(action);
+                mappedActions.Add(action);
+            }
+
+            buttonActionDict[mapId] = action;
+
+            normalActionDict.Add(mapId, action);
+            reverseActionDict.Add(action, mapId);
+        }
+
+        public void AddButtonMapAction(ButtonMapAction action)
+        {
+            layerActions.Add(action);
+            mappedActions.Add(action);
+            buttonActionDict[action.MappingId] = action;
+
+            normalActionDict.Add(action.MappingId, action);
+            reverseActionDict.Add(action, action.MappingId);
+        }
+
         public void ReplaceTouchpadAction(TouchpadMapAction oldAction, TouchpadMapAction action)
         {
             string mapId = oldAction.MappingId;
             int ind = layerActions.FindIndex((item) => item == oldAction);
+            int mappedInd = -1;
             if (ind >= 0)
             {
                 TouchpadMapAction tempAction = layerActions[ind] as TouchpadMapAction;
@@ -378,7 +419,7 @@ namespace SteamControllerTest
                 reverseActionDict.Remove(tempAction);
 
                 touchpadActionDict[mapId] = action;
-                int mappedInd = mappedActions.FindIndex((item) => (item == tempAction));
+                mappedInd = mappedActions.FindIndex((item) => (item == tempAction));
 
                 mappedActions.RemoveAt(mappedInd);
                 mappedActions.Insert(mappedInd, action);
@@ -392,6 +433,7 @@ namespace SteamControllerTest
         {
             layerActions.Add(action);
             mappedActions.Add(action);
+            touchpadActionDict[action.MappingId] = action;
 
             normalActionDict.Add(action.MappingId, action);
             reverseActionDict.Add(action, action.MappingId);
