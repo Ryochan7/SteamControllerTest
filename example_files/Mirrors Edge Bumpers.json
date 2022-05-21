@@ -1,5 +1,5 @@
 {
-  "Name": "Mirror's Edge",
+  "Name": "Mirror's Edge Bumpers",
   "Description": "X360",
   "Creator": "ryochan7",
   "CreationDate": "2022-05-07T06:35:32+0000",
@@ -144,87 +144,23 @@
             {
               "Id": "9",
               "Name": "X360 LT Button",
-              "ActionMode": "TriggerDualStageAction",
-              "FullPull":
-              {
-                "Name": "Bumper",
-                "Functions": [
-                  {
-                    "Type": "NormalPress",
-                    "OutputActions": [
-                      {
-                        "Type": "GamepadControl",
-                        "PadOutput": "X360_LB"
-                      }
-                    ]
-                  }
-                ]
-              },
-              "SoftPull":
-              {
-                "Name": "Trigger",
-                "Functions": [
-                  {
-                    "Type": "NormalPress",
-                    "OutputActions": [
-                      {
-                        "Type": "GamepadControl",
-                        "PadOutput": "X360_LT"
-                      }
-                    ]
-                  }
-                ]
-              },
+              "ActionMode": "TriggerTranslateAction",
               "Settings":
               {
-                "DualStageMode": "HipFireExclusiveButtons",
-                "HipFireDelay": 35,
+                "OutputTrigger": "X360_LT",
                 "DeadZone": 0.02,
-                "AntiDeadZone": 0.30,
-                "MaxZone": 0.95
+                "AntiDeadZone": 0.10
               }
             },
             {
               "Id": "10",
               "Name": "X360 RT Button",
-              "ActionMode": "TriggerDualStageAction",
-              "FullPull":
-              {
-                "Name": "Bumper",
-                "Functions": [
-                  {
-                    "Type": "NormalPress",
-                    "OutputActions": [
-                      {
-                        "Type": "GamepadControl",
-                        "PadOutput": "X360_RB"
-                      }
-                    ]
-                  }
-                ]
-              },
-              "SoftPull":
-              {
-                "Name": "Trigger",
-                "Functions": [
-                  {
-                    "Type": "NormalPress",
-                    "OutputActions": [
-                      {
-                        "Type": "GamepadControl",
-                        "PadOutput": "X360_RT"
-                      }
-                    ]
-                  }
-                ]
-              },
+              "ActionMode": "TriggerTranslateAction",
               "Settings":
               {
-                "DualStageMode": "HipFireExclusiveButtons",
-                "HipFireDelay": 35,
+                "OutputTrigger": "X360_RT",
                 "DeadZone": 0.02,
-                "AntiDeadZone": 0.30,
-                "MaxZone": 0.95
+                "AntiDeadZone": 0.10
               }
             },
             {
