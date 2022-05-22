@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -214,10 +215,11 @@ namespace SteamControllerTest.ViewModels
         {
             ProfileEntity tempEntity = entity;
             Profile tempProfile = profile;
+            string tempOutJson = string.Empty;
             mapper.QueueEvent(() =>
             {
                 ProfileSerializer profileSerializer = new ProfileSerializer(tempProfile);
-                string tempOutJson = JsonConvert.SerializeObject(profileSerializer, Formatting.Indented,
+                tempOutJson = JsonConvert.SerializeObject(profileSerializer, Formatting.Indented,
                     new JsonSerializerSettings()
                     {
                         //Converters = new List<JsonConverter>()
@@ -231,6 +233,16 @@ namespace SteamControllerTest.ViewModels
 
                 actionResetEvent.Set();
             });
+
+            actionResetEvent.Wait();
+
+            if (!string.IsNullOrEmpty(tempOutJson))
+            {
+                using (StreamWriter writer = new StreamWriter(tempEntity.ProfilePath))
+                {
+                    writer.Write(tempOutJson);
+                }
+            }
         }
     }
 

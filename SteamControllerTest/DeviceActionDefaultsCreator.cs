@@ -22,6 +22,10 @@ namespace SteamControllerTest
                 action.DeadMod.DeadZone = deadZone;
                 action.DeadMod.AntiDeadZone = antiDeadZone;
                 action.DeadMod.MaxZone = maxZone;
+
+                action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.DEAD_ZONE);
+                action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.ANTIDEAD_ZONE);
+                action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.MAX_ZONE);
             }
         }
 
@@ -32,6 +36,8 @@ namespace SteamControllerTest
             public void Process(TouchpadMouse action)
             {
                 action.DeadZone = deadZone;
+
+                action.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.DEAD_ZONE);
             }
         }
 
@@ -42,6 +48,8 @@ namespace SteamControllerTest
             public void Process(TouchpadMouseJoystick action)
             {
                 action.MStickParams.deadZone = deadZone;
+
+                action.ChangedProperties.Add(TouchpadMouseJoystick.PropertyKeyStrings.DEAD_ZONE);
             }
         }
 
@@ -52,6 +60,8 @@ namespace SteamControllerTest
             public void Process(TouchpadActionPad action)
             {
                 action.DeadMod.DeadZone = deadZone;
+
+                action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.DEAD_ZONE);
             }
         }
 
@@ -62,6 +72,8 @@ namespace SteamControllerTest
             public void Process(TouchpadCircular action)
             {
                 action.DeadMod.DeadZone = deadZone;
+
+                action.ChangedProperties.Add(TouchpadCircular.PropertyKeyStrings.DEAD_ZONE);
             }
         }
 
