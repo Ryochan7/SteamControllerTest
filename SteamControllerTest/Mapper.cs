@@ -325,6 +325,9 @@ namespace SteamControllerTest
             get => appGlobal;
         }
 
+        private DeviceActionDefaultsCreator deviceActionDefaults = new SteamControllerActionDefaultsCreator();
+        public DeviceActionDefaultsCreator DeviceActionDefaults => deviceActionDefaults;
+
         private bool hasInputEvts;
         //private object eventQueueLock = new object();
         private ReaderWriterLockSlim eventQueueLocker = new ReaderWriterLockSlim();

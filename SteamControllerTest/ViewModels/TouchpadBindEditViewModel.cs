@@ -51,7 +51,13 @@ namespace SteamControllerTest.ViewModels
                     result = new TouchpadNoAction();
                     break;
                 case 1:
-                    result = new TouchpadStickAction();
+                    {
+                        TouchpadStickAction tempAction = new TouchpadStickAction();
+                        var joyDefaults = mapper.DeviceActionDefaults.GrabTouchJoystickDefaults();
+                        joyDefaults.Process(tempAction);
+                        result = tempAction;
+                    }
+
                     break;
                 case 2:
                     result = new TouchpadActionPad();
@@ -60,7 +66,13 @@ namespace SteamControllerTest.ViewModels
                     result = new TouchpadMouseJoystick();
                     break;
                 case 4:
-                    result = new TouchpadMouse();
+                    {
+                        TouchpadMouse tempAction = new TouchpadMouse();
+                        var joyDefaults = mapper.DeviceActionDefaults.GrabTouchMouseDefaults();
+                        joyDefaults.Process(tempAction);
+                        result = tempAction;
+                    }
+
                     break;
                 case 5:
                     result = new TouchpadCircular();
