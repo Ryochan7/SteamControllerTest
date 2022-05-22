@@ -27,30 +27,6 @@ using SteamControllerTest.GyroActions;
 
 namespace SteamControllerTest
 {
-    public class InputBindingMeta
-    {
-        public enum InputControlType : uint
-        {
-            None,
-            Button,
-            Axis,
-            Stick,
-            DPad,
-            Trigger,
-            Touchpad,
-            Gyro
-        }
-
-        public InputControlType controlType;
-        public string id;
-
-        public InputBindingMeta(string id, InputControlType type)
-        {
-            this.id = id;
-            this.controlType = type;
-        }
-    }
-
     public class Mapper
     {
         //public enum DpadDirections : uint
@@ -240,30 +216,35 @@ namespace SteamControllerTest
 
         public event EventHandler<RequestOSDArgs> RequestOSD;
 
-        private Dictionary<string, InputBindingMeta> bindingDict =
-            new Dictionary<string, InputBindingMeta>()
-            {
-                ["A"] = new InputBindingMeta("A", InputBindingMeta.InputControlType.Button),
-                ["B"] = new InputBindingMeta("B", InputBindingMeta.InputControlType.Button),
-                ["X"] = new InputBindingMeta("X", InputBindingMeta.InputControlType.Button),
-                ["Y"] = new InputBindingMeta("Y", InputBindingMeta.InputControlType.Button),
-                ["Back"] = new InputBindingMeta("Back", InputBindingMeta.InputControlType.Button),
-                ["Start"] = new InputBindingMeta("Start", InputBindingMeta.InputControlType.Button),
-                ["LShoulder"] = new InputBindingMeta("LShoulder", InputBindingMeta.InputControlType.Button),
-                ["RShoulder"] = new InputBindingMeta("RShoulder", InputBindingMeta.InputControlType.Button),
-                ["LSClick"] = new InputBindingMeta("LSClick", InputBindingMeta.InputControlType.Button),
-                ["LeftGrip"] = new InputBindingMeta("LeftGrip", InputBindingMeta.InputControlType.Button),
-                ["RightGrip"] = new InputBindingMeta("RightGrip", InputBindingMeta.InputControlType.Button),
-                ["LT"] = new InputBindingMeta("LT", InputBindingMeta.InputControlType.Trigger),
-                ["RT"] = new InputBindingMeta("RT", InputBindingMeta.InputControlType.Trigger),
-                ["Steam"] = new InputBindingMeta("Steam", InputBindingMeta.InputControlType.Button),
-                ["Stick"] = new InputBindingMeta("Stick", InputBindingMeta.InputControlType.Stick),
-                ["LeftTouchpad"] = new InputBindingMeta("LeftTouchpad", InputBindingMeta.InputControlType.Touchpad),
-                ["RightTouchpad"] = new InputBindingMeta("RightTouchpad", InputBindingMeta.InputControlType.Touchpad),
-                ["LeftPadClick"] = new InputBindingMeta("LeftPadClick", InputBindingMeta.InputControlType.Button),
-                ["RightPadClick"] = new InputBindingMeta("RightPadClick", InputBindingMeta.InputControlType.Button),
-                ["Gyro"] = new InputBindingMeta("Gyro", InputBindingMeta.InputControlType.Gyro),
-            };
+        private List<InputBindingMeta> bindingList = new List<InputBindingMeta>()
+        {
+            new InputBindingMeta("A", "A", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("B", "B", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("X", "X", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("Y", "Y", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("Back", "Back", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("Start", "Start", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("LShoulder", "Left Shoulder", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("RShoulder", "Right Shoulder", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("LSClick", "Stick Click", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("LeftGrip", "Left Grip", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("RightGrip", "Right Grip", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("LT", "Left Trigger", InputBindingMeta.InputControlType.Trigger),
+            new InputBindingMeta("RT", "Right Trigger", InputBindingMeta.InputControlType.Trigger),
+            new InputBindingMeta("Steam", "Steam", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("Stick", "Stick", InputBindingMeta.InputControlType.Stick),
+            new InputBindingMeta("LeftTouchpad", "Left Touchpad", InputBindingMeta.InputControlType.Touchpad),
+            new InputBindingMeta("RightTouchpad", "Right Touchpad", InputBindingMeta.InputControlType.Touchpad),
+            new InputBindingMeta("LeftPadClick", "Left Pad Click", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("RightPadClick", "Right Pad Click", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("Gyro", "Gyro", InputBindingMeta.InputControlType.Gyro),
+        };
+        public List<InputBindingMeta> BindingList
+        {
+            get => bindingList;
+        }
+
+        private Dictionary<string, InputBindingMeta> bindingDict = new Dictionary<string, InputBindingMeta>();
         public Dictionary<string, InputBindingMeta> BindingDict
         {
             get => bindingDict;
@@ -355,6 +336,9 @@ namespace SteamControllerTest
             this.appGlobal = appGlobal;
             this.profileFile = profileFile;
             this.device = device;
+
+            // Populate Input Binding dictionary
+            bindingList.ForEach((item) => bindingDict.Add(item.id, item));
 
             //trackballAccel = TRACKBALL_RADIUS * TRACKBALL_INIT_FRICTION / TRACKBALL_INERTIA;
             trackballAccel = TRACKBALL_RADIUS * TRACKBALL_JOY_FRICTION / TRACKBALL_INERTIA;
@@ -499,6 +483,10 @@ namespace SteamControllerTest
             {
                 ChangeProfile(profileFile);
             }
+            else
+            {
+                UseBlankProfile();
+            }
 
             reader.Report += Reader_Calibrate_Gyro;
 
@@ -636,7 +624,296 @@ namespace SteamControllerTest
                                                 if (parentLayer != null && parentLayer.buttonActionDict.TryGetValue(tempBind.id, out ButtonMapAction tempParentBtnAction) &&
                                                     MapAction.IsSameType(tempAction, tempParentBtnAction))
                                                 {
-                                                    (tempAction as ButtonMapAction).SoftCopyFromParent(tempParentBtnAction);
+                                                    //(tempAction as ButtonMapAction).SoftCopyFromParent(tempParentBtnAction);
+                                                    //(tempAction as ButtonMapAction).CopyAction(tempParentBtnAction);
+                                                }
+
+                                                //if (parentLayer != null && parentLayer.LayerActions[layerMapping.ActionIndex] is ButtonMapAction)
+                                                //{
+                                                //    tempLayer.buttonActionDict[tempBind.id] = (tempAction as ButtonMapAction).DuplicateAction();
+                                                //}
+                                                //else
+                                                //{
+                                                //    tempLayer.buttonActionDict[tempBind.id] = tempAction as ButtonMapAction;
+                                                //}
+                                            }
+
+                                            break;
+                                        case InputBindingMeta.InputControlType.DPad:
+                                            if (tempAction is DPadMapAction)
+                                            {
+                                                //tempAction.DefaultUnbound = false;
+                                                tempAction.MappingId = tempBind.id;
+                                                tempLayer.dpadActionDict[tempBind.id] = tempAction as DPadMapAction;
+                                                if (parentLayer != null && parentLayer.dpadActionDict.TryGetValue(tempBind.id, out DPadMapAction tempParentDpadAction) &&
+                                                    MapAction.IsSameType(tempAction, tempParentDpadAction))
+                                                {
+                                                    (tempAction as DPadMapAction).SoftCopyFromParent(tempParentDpadAction);
+                                                }
+                                            }
+
+                                            break;
+                                        case InputBindingMeta.InputControlType.Stick:
+                                            if (tempAction is StickMapAction)
+                                            {
+                                                StickMapAction tempStickAction = tempAction as StickMapAction;
+                                                if (tempBind.id == "Stick")
+                                                {
+                                                    tempStickAction.StickDefinition = lsDefintion;
+                                                }
+
+                                                //tempAction.DefaultUnbound = false;
+                                                tempAction.MappingId = tempBind.id;
+                                                tempLayer.stickActionDict[tempBind.id] = tempStickAction;
+
+                                                if (parentLayer != null && parentLayer.stickActionDict.TryGetValue(tempBind.id, out StickMapAction tempParentStickAction) &&
+                                                    MapAction.IsSameType(tempAction, tempParentStickAction))
+                                                {
+                                                    (tempAction as StickMapAction).SoftCopyFromParent(tempParentStickAction);
+                                                }
+                                            }
+
+                                            break;
+                                        case InputBindingMeta.InputControlType.Trigger:
+                                            if (tempAction is TriggerMapAction)
+                                            {
+                                                TriggerMapAction triggerAct = tempAction as TriggerMapAction;
+                                                if (tempBind.id == "LT")
+                                                {
+                                                    triggerAct.TriggerDef = leftTriggerDefinition;
+                                                }
+                                                else if (tempBind.id == "RT")
+                                                {
+                                                    triggerAct.TriggerDef = rightTriggerDefinition;
+                                                }
+
+                                                //tempAction.DefaultUnbound = false;
+                                                tempAction.MappingId = tempBind.id;
+                                                tempLayer.triggerActionDict[tempBind.id] = tempAction as TriggerMapAction;
+                                                if (parentLayer != null && parentLayer.triggerActionDict.TryGetValue(tempBind.id, out TriggerMapAction tempParentTrigAction) &&
+                                                    MapAction.IsSameType(tempAction, tempParentTrigAction))
+                                                {
+                                                    (tempAction as TriggerMapAction).SoftCopyFromParent(tempParentTrigAction);
+                                                }
+                                            }
+
+                                            break;
+                                        case InputBindingMeta.InputControlType.Touchpad:
+                                            if (tempAction is TouchpadMapAction)
+                                            {
+                                                TouchpadMapAction touchAct = tempAction as TouchpadMapAction;
+                                                if (tempBind.id == "LeftTouchpad")
+                                                {
+                                                    touchAct.TouchDefinition = leftPadDefiniton;
+                                                }
+                                                else if (tempBind.id == "RightTouchpad")
+                                                {
+                                                    touchAct.TouchDefinition = rightPadDefinition;
+                                                }
+
+                                                //tempAction.DefaultUnbound = false;
+                                                tempAction.MappingId = tempBind.id;
+                                                tempLayer.touchpadActionDict[tempBind.id] = tempAction as TouchpadMapAction;
+                                                if (parentLayer != null && parentLayer.touchpadActionDict.TryGetValue(tempBind.id, out TouchpadMapAction tempParentTouchAction) &&
+                                                    MapAction.IsSameType(tempAction, tempParentTouchAction))
+                                                {
+                                                    (tempAction as TouchpadMapAction).SoftCopyFromParent(tempParentTouchAction);
+                                                }
+
+                                                touchAct.PrepareActions();
+                                            }
+
+                                            break;
+                                        case InputBindingMeta.InputControlType.Gyro:
+                                            if (tempAction is GyroMapAction)
+                                            {
+                                                GyroMapAction gyroAction = tempAction as GyroMapAction;
+                                                //if (tempBind.id == "Gyro")
+                                                {
+                                                    gyroAction.GyroSensDefinition = gyroSensDefinition;
+                                                }
+
+                                                //tempAction.DefaultUnbound = false;
+                                                tempAction.MappingId = tempBind.id;
+                                                tempLayer.gyroActionDict[tempBind.id] = tempAction as GyroMapAction;
+                                                if (parentLayer != null && parentLayer.gyroActionDict.TryGetValue(tempBind.id, out GyroMapAction tempParentGyroAction) &&
+                                                    MapAction.IsSameType(tempAction, tempParentGyroAction))
+                                                {
+                                                    (tempAction as GyroMapAction).SoftCopyFromParent(tempParentGyroAction);
+                                                }
+                                            }
+
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            //tempProfile.CurrentActionSet.CreateDupActionLayer();
+            //tempLayer.buttonActionDict[tempBind.id] = tempAction as ButtonMapAction;
+            //(tempProfile.CurrentActionSet.ActionLayers[1].buttonActionDict["A"] as ButtonAction).ActionFuncs.Clear();
+            //(tempProfile.CurrentActionSet.ActionLayers[1].buttonActionDict["A"] as ButtonAction).ActionFuncs.Add(new NormalPressFunc(new OutputActionData(OutputActionData.ActionType.Keyboard, KeyInterop.VirtualKeyFromKey(Key.L))));
+            //new ButtonAction(new OutputActionData(OutputActionData.ActionType.Keyboard, KeyInterop.VirtualKeyFromKey(Key.L)));
+
+            // SyncActions for currently active ActionLayer instance
+            //foreach (ActionSet set in tempProfile.ActionSets)
+            //{
+            //    set.CurrentActionLayer.SyncActions();
+            //}
+
+            // Compile convenience List for MapActions instances in layers
+            foreach (ActionSet set in tempProfile.ActionSets)
+            {
+                //int layerIdx = -1;
+                ActionLayer parentLayer = set.DefaultActionLayer;
+                foreach (ActionLayer layer in set.ActionLayers)
+                {
+                    //layerIdx++;
+                    //if (layerIdx > 0)
+                    //{
+                    //    parentLayer.MergeLayerActions(layer);
+                    //}
+
+                    layer.SyncActions();
+                }
+            }
+
+            // Prepare initial composite ActionLayer instance using
+            // base ActionLayer references
+            foreach (ActionSet set in tempProfile.ActionSets)
+            {
+                //ActionLayer parentLayer = set.DefaultActionLayer;
+                set.ClearCompositeLayerActions();
+                set.PrepareCompositeLayer();
+            }
+
+            //tempProfile.CurrentActionSet.SwitchActionLayer(this, 1);
+
+            Trace.WriteLine("IT IS FINISHED");
+        }
+
+        public void UseBlankProfile()
+        {
+            actionProfile = new Profile();
+            actionProfile.Name = "Blank";
+            Profile tempProfile = actionProfile;
+
+            tempProfile.ActionSets.Clear();
+            PrepareProfileActions(null);
+        }
+
+        private void PrepareProfileActions(List<ProfileActionsMapping> tempMappings)
+        {
+            Profile tempProfile = actionProfile;
+
+            // Populate ActionLayer dicts with default no action elements
+            foreach (ActionSet set in tempProfile.ActionSets)
+            {
+                //ActionLayer layer = set.ActionLayers.First();
+                //if (layer != null)
+
+                int layerIndex = 0;
+                foreach (ActionLayer layer in set.ActionLayers)
+                {
+                    if (layerIndex == 0)
+                    {
+                        foreach (KeyValuePair<string, InputBindingMeta> tempMeta in bindingDict)
+                        {
+                            switch (tempMeta.Value.controlType)
+                            {
+                                case InputBindingMeta.InputControlType.Button:
+                                    ButtonNoAction btnNoAction = new ButtonNoAction();
+                                    btnNoAction.MappingId = tempMeta.Key;
+                                    layer.buttonActionDict.Add(tempMeta.Key, btnNoAction);
+                                    break;
+                                case InputBindingMeta.InputControlType.DPad:
+                                    DPadNoAction dpadNoAction = new DPadNoAction();
+                                    dpadNoAction.MappingId = tempMeta.Key;
+                                    layer.dpadActionDict.Add(tempMeta.Key, dpadNoAction);
+                                    break;
+                                case InputBindingMeta.InputControlType.Stick:
+                                    StickNoAction stickNoAct = new StickNoAction();
+                                    stickNoAct.MappingId = tempMeta.Key;
+                                    layer.stickActionDict.Add(tempMeta.Key, stickNoAct);
+                                    break;
+                                case InputBindingMeta.InputControlType.Trigger:
+                                    {
+                                        TriggerNoAction trigNoAct = new TriggerNoAction();
+                                        trigNoAct.MappingId = tempMeta.Key;
+                                        layer.triggerActionDict.Add(tempMeta.Key, trigNoAct);
+                                    }
+
+                                    break;
+                                case InputBindingMeta.InputControlType.Touchpad:
+                                    {
+                                        TouchpadNoAction touchNoAct = new TouchpadNoAction();
+                                        touchNoAct.MappingId = tempMeta.Key;
+                                        layer.touchpadActionDict.Add(tempMeta.Key, touchNoAct);
+                                    }
+
+                                    break;
+                                case InputBindingMeta.InputControlType.Gyro:
+                                    GyroNoMapAction gyroNoMapAct = new GyroNoMapAction();
+                                    gyroNoMapAct.MappingId = tempMeta.Key;
+                                    layer.gyroActionDict.Add(tempMeta.Key, gyroNoMapAct);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+
+                    layerIndex++;
+                }
+            }
+
+            if (tempMappings != null)
+            {
+                foreach (ProfileActionsMapping mapping in tempMappings)
+                {
+                    ActionSet tempSet = null;
+                    ActionLayer tempLayer = null;
+                    if (mapping.ActionSet >= 0 && mapping.ActionSet < tempProfile.ActionSets.Count)
+                    {
+                        tempSet = tempProfile.ActionSets[mapping.ActionSet];
+                        if (mapping.ActionLayer >= 0 && mapping.ActionLayer < tempSet.ActionLayers.Count)
+                        {
+                            tempLayer = tempSet.ActionLayers[mapping.ActionLayer];
+                        }
+                    }
+
+                    if (tempLayer != null)
+                    {
+                        //ActionLayer parentLayer = (mapping.ActionLayer > 0 && mapping.ActionLayer < tempLayer.LayerActions.Count) ? tempLayer : null;
+                        ActionLayer parentLayer = tempLayer != tempSet.DefaultActionLayer ? tempSet.DefaultActionLayer : null;
+                        foreach (LayerMapping layerMapping in mapping.LayerMappings)
+                        {
+                            MapAction tempAction = layerMapping.ActionIndex >= 0 ?
+                                tempLayer.LayerActions.Find((act) => act.Id == layerMapping.ActionIndex) : null;
+                            if (tempAction != null)// layerMapping.ActionIndex < tempLayer.LayerActions.Count)
+                            {
+                                //MapAction tempAction = tempLayer.LayerActions[layerMapping.ActionIndex];
+                                if (bindingDict.TryGetValue(layerMapping.InputBinding, out InputBindingMeta tempBind))
+                                {
+                                    switch (tempBind.controlType)
+                                    {
+                                        case InputBindingMeta.InputControlType.Button:
+                                            if (tempAction is ButtonMapAction)
+                                            {
+                                                //tempAction.DefaultUnbound = false;
+                                                tempAction.MappingId = tempBind.id;
+                                                tempLayer.buttonActionDict[tempBind.id] = tempAction as ButtonMapAction;
+                                                if (parentLayer != null && parentLayer.buttonActionDict.TryGetValue(tempBind.id, out ButtonMapAction tempParentBtnAction) &&
+                                                    MapAction.IsSameType(tempAction, tempParentBtnAction))
+                                                {
+                                                    //(tempAction as ButtonMapAction).SoftCopyFromParent(tempParentBtnAction);
+                                                    //(tempAction as ButtonMapAction).CopyAction(tempParentBtnAction);
                                                 }
 
                                                 //if (parentLayer != null && parentLayer.LayerActions[layerMapping.ActionIndex] is ButtonMapAction)

@@ -142,4 +142,30 @@ namespace SteamControllerTest
             set => outputGamepad = value;
         }
     }
+
+    public class InputBindingMeta
+    {
+        public enum InputControlType : uint
+        {
+            None,
+            Button,
+            Axis,
+            Stick,
+            DPad,
+            Trigger,
+            Touchpad,
+            Gyro
+        }
+
+        public InputControlType controlType;
+        public string id;
+        public string displayName;
+
+        public InputBindingMeta(string id, string displayName, InputControlType type)
+        {
+            this.id = id;
+            this.displayName = displayName;
+            this.controlType = type;
+        }
+    }
 }

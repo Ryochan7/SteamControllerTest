@@ -93,10 +93,10 @@ namespace SteamControllerTest
             return action1.GetType() == action2.GetType();
         }
 
-        public void CopyBaseProps(MapAction secondAction)
+        public void CopyBaseProps(MapAction sourceAction)
         {
-            secondAction.name = name;
-            secondAction.mappingId = mappingId;
+            name = sourceAction.name;
+            mappingId = sourceAction.mappingId;
         }
     }
 }

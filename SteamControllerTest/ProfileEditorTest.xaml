@@ -70,7 +70,7 @@
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="JOE BIDEN. WAKE UP" />
-                                <TextBlock Text="{Binding BindingName}" Margin="10,0,0,0" />
+                                <TextBlock Text="{Binding DisplayInputMapString}" Margin="10,0,0,0" />
                                 <TextBlock Text="{Binding MappedActionType}" Margin="10,0,0,0" />
                                 <Button Content="Test" Click="Button_Click" Tag="{Binding BindingName}" Margin="10,0,0,0" />
                             </StackPanel>

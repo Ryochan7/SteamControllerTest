@@ -184,10 +184,32 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler DisplayControlChanged;
 
+        //public event EventHandler ActionPropertyChanged;
+
         public ButtonActionViewModel(Mapper mapper, ButtonMapAction action)
         {
             this.mapper = mapper;
             this.action = action as ButtonAction;
+
+            // Check if base ActionLayer action from composite layer
+            if (action.ParentAction == null &&
+                mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer &&
+                !mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.LayerActions.Contains(action) &&
+                MapAction.IsSameType(mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId], action))
+            {
+                // Test with temporary object
+                ButtonMapAction baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId] as ButtonMapAction;
+                ButtonAction tempAction = new ButtonAction();
+                tempAction.SoftCopyFromParent(baseLayerAction);
+                //int tempLayerId = mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.Index;
+                int tempId = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.FindNextAvailableId();
+                tempAction.Id = tempId;
+                //tempAction.MappingId = this.action.MappingId;
+
+                this.action = tempAction;
+
+                //ActionPropertyChanged += ReplaceExistingLayerAction;
+            }
         }
     }
 

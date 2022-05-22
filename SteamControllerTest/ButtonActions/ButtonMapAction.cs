@@ -26,6 +26,10 @@ namespace SteamControllerTest.ButtonActions
             bool alterState = true);
 
         public abstract ButtonMapAction DuplicateAction();
+        public virtual void CopyAction(ButtonMapAction sourceAction)
+        {
+        }
+
         public virtual void SoftCopyFromParent(ButtonMapAction parentAction)
         {
         }

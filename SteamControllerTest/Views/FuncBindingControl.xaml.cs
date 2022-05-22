@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using SteamControllerTest.ActionUtil;
 using SteamControllerTest.ViewModels;
 using SteamControllerTest.ButtonActions;
+using System.Threading;
 
 namespace SteamControllerTest.Views
 {
@@ -24,8 +25,10 @@ namespace SteamControllerTest.Views
     public partial class FuncBindingControl : UserControl
     {
         private FuncBindingControlViewModel funcBindVM;
+        public FuncBindingControlViewModel FuncBindVM => funcBindVM;
         private DefaultFuncPropControl defaultPropControl = new DefaultFuncPropControl();
         public event EventHandler<ActionFunc> RequestBindingEditor;
+        public event EventHandler<ButtonAction> ActionChanged;
 
         public FuncBindingControl()
         {
@@ -189,6 +192,36 @@ namespace SteamControllerTest.Views
         private void DisconnectPartialEvents()
         {
             //funcBindVM.ActionTypeIndexChanged -= FuncBindVM_ActionTypeIndexChanged;
+        }
+
+        private void CopyFuncButton_Click(object sender, RoutedEventArgs e)
+        {
+            DisconnectPartialEvents();
+
+            DataContext = null;
+
+            Mapper mapper = funcBindVM.Mapper;
+            ButtonAction oldAction = funcBindVM.Action.ParentAction as ButtonAction;
+            ButtonAction newAction = FuncBindingControlViewModel.CopyAction(oldAction);
+
+            funcBindVM = new FuncBindingControlViewModel(mapper, newAction, defaultPropControl);
+
+            if (funcBindVM.FuncList.Count > 0)
+            {
+                int ind = funcBindVM.FuncList.Count - 1;
+                FuncBindItem item = funcBindVM.FuncList[ind];
+                funcBindVM.CurrentItem = item;
+                funcBindVM.CurrentBindItemIndex = ind;
+
+                //CheckSelectionActionType(item);
+                SwitchPropView(item);
+            }
+
+            funcBindVM.SwitchAction(oldAction, newAction);
+            ActionChanged?.Invoke(this, newAction);
+
+            ConnectPartialEvents();
+            DataContext = funcBindVM;
         }
     }
 }

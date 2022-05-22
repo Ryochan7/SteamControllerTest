@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using SteamControllerTest.ActionUtil;
 using SteamControllerTest.ButtonActions;
 using SteamControllerTest.MapperUtil;
+using System.Threading;
 
 namespace SteamControllerTest.ViewModels
 {
@@ -50,6 +51,19 @@ namespace SteamControllerTest.ViewModels
             set => currentItem = value;
         }
 
+        private bool realAction;
+        public bool IsRealAction
+        {
+            get => realAction;
+        }
+        public event EventHandler IsRealActionChanged;
+
+        public bool IsNotRealAction
+        {
+            get => !realAction;
+        }
+        public event EventHandler IsNotRealActionChanged;
+
         public FuncBindingControlViewModel(Mapper mapper, ButtonAction action, UserControl currentPropControl)
         {
             this.mapper = mapper;
@@ -67,6 +81,8 @@ namespace SteamControllerTest.ViewModels
             {
                 currentBindItemIndex = 0;
             }
+
+            realAction = action.ParentAction == null;
 
             //thing.Add(new FuncBindItem(action, null, tempInd++));
         }
@@ -164,6 +180,49 @@ namespace SteamControllerTest.ViewModels
             }
 
             return result;
+        }
+
+        public static ButtonAction CopyAction(ButtonAction sourceAction)
+        {
+            ButtonAction result = new ButtonAction();
+            result.CopyAction(sourceAction);
+            return result;
+        }
+
+        public void SwitchAction(ButtonAction oldAction, ButtonAction newAction)
+        {
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+
+            mapper.QueueEvent(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                newAction.CopyBaseProps(oldAction);
+
+                if (newAction.Id != MapAction.DEFAULT_UNBOUND_ID)
+                {
+                    mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.ReplaceButtonAction(oldAction, newAction);
+                }
+                else
+                {
+                    // Need to create new ID for action
+                    newAction.Id =
+                        mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.FindNextAvailableId();
+
+                    mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddButtonMapAction(newAction);
+                }
+
+                if (mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer)
+                {
+                    mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
+                }
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
+
+            this.action = newAction;
         }
     }
 

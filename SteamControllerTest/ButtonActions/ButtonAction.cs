@@ -86,7 +86,8 @@ namespace SteamControllerTest.ButtonActions
         {
             if (parentAction != null)
             {
-                parentAction.CopyBaseProps(this);
+                this.CopyBaseProps(parentAction);
+                //parentAction.CopyBaseProps(this);
 
                 actionFuncs.AddRange(parentAction.actionFuncs);
                 parentAction.hasLayeredAction = true;
@@ -1332,6 +1333,34 @@ namespace SteamControllerTest.ButtonActions
 
                 }
                 */
+            }
+        }
+
+        public override void CopyAction(ButtonMapAction sourceAction)
+        {
+            if (sourceAction is ButtonAction tempSrcBtnAction)
+            {
+                // Determine the set with properties that should inherit
+                // from the parent action
+                IEnumerable<string> useParentProList = tempSrcBtnAction.changedProperties;
+
+                foreach (string parentPropType in useParentProList)
+                {
+                    switch (parentPropType)
+                    {
+                        case PropertyKeyStrings.NAME:
+                            name = tempSrcBtnAction.name;
+                            break;
+                        case PropertyKeyStrings.FUNCTIONS:
+                            foreach (ActionFunc func in tempSrcBtnAction.actionFuncs)
+                            {
+                                actionFuncs.Add(ActionFuncCopyFactory.CopyFunc(func));
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
         }
 

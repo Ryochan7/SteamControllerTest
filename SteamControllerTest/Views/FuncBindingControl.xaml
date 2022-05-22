@@ -8,7 +8,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel>
         <WrapPanel DockPanel.Dock="Top">
-            <ItemsControl ItemsSource="{Binding FuncList}">
+            <ItemsControl ItemsSource="{Binding FuncList}" IsEnabled="{Binding IsRealAction}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel />
@@ -20,7 +20,8 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <Button x:Name="addFuncButton" Content="Add +" Click="AddFuncButton_Click" Margin="10,0,0,0" />
+            <Button x:Name="addFuncButton" Content="Add +" Click="AddFuncButton_Click" IsEnabled="{Binding IsRealAction}" Margin="10,0,0,0" />
+            <Button Name="copyFuncButton" Content="Copy" Click="CopyFuncButton_Click" IsEnabled="{Binding IsNotRealAction}" Margin="8,0,0,0" />
         </WrapPanel>
 
         <!--<StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
@@ -34,6 +35,6 @@
             </ComboBox>
         </StackPanel>
         -->
-        <ContentControl x:Name="funcEditPropControl" Content="{Binding DisplayPropControl}" DockPanel.Dock="Bottom" />
+        <ContentControl x:Name="funcEditPropControl" Content="{Binding DisplayPropControl}" DockPanel.Dock="Bottom" IsEnabled="{Binding IsRealAction}" />
     </DockPanel>
 </UserControl>

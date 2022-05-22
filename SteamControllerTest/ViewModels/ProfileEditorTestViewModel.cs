@@ -155,145 +155,28 @@ namespace SteamControllerTest.ViewModels
         private void PopulateCurrentLayerBindings()
         {
             int tempBtnInd = 0;
-            if (tempProfile.CurrentActionSet.CurrentActionLayer.buttonActionDict.
-                TryGetValue("A", out ButtonMapAction tempAct))
+
+            foreach(InputBindingMeta meta in
+                mapper.BindingList.Where((item) => item.controlType == InputBindingMeta.InputControlType.Button))
             {
-                Trace.WriteLine($"{tempAct}");
-                BindingItemsTest tempItem = new BindingItemsTest("A", "A", tempAct);
-                buttonBindings.Add(tempItem);
-                buttonBindingsIndexDict.Add("A", tempBtnInd++);
+                if (tempProfile.CurrentActionSet.CurrentActionLayer.buttonActionDict.
+                    TryGetValue(meta.id, out ButtonMapAction tempBtnAct))
+                {
+                    BindingItemsTest tempItem = new BindingItemsTest(meta.id, meta.displayName, tempBtnAct);
+                    buttonBindings.Add(tempItem);
+                    buttonBindingsIndexDict.Add(meta.id, tempBtnInd++);
+                }
             }
 
-            if (tempProfile.CurrentActionSet.CurrentActionLayer.buttonActionDict.
-                TryGetValue("B", out ButtonMapAction tempBAct))
+            foreach (InputBindingMeta meta in
+                mapper.BindingList.Where((item) => item.controlType == InputBindingMeta.InputControlType.Touchpad))
             {
-                Trace.WriteLine($"{tempBAct}");
-                BindingItemsTest tempItem = new BindingItemsTest("B", "B", tempBAct);
-                buttonBindings.Add(tempItem);
-                buttonBindingsIndexDict.Add("B", tempBtnInd++);
-            }
-
-            if (tempProfile.CurrentActionSet.CurrentActionLayer.buttonActionDict.
-                TryGetValue("X", out ButtonMapAction tempXAct))
-            {
-                Trace.WriteLine($"{tempXAct}");
-                BindingItemsTest tempItem = new BindingItemsTest("X", "X", tempXAct);
-                buttonBindings.Add(tempItem);
-                buttonBindingsIndexDict.Add("X", tempBtnInd++);
-            }
-
-            if (tempProfile.CurrentActionSet.CurrentActionLayer.buttonActionDict.
-                TryGetValue("Y", out ButtonMapAction tempYAct))
-            {
-                Trace.WriteLine($"{tempYAct}");
-                BindingItemsTest tempItem = new BindingItemsTest("Y", "Y", tempYAct);
-                buttonBindings.Add(tempItem);
-                buttonBindingsIndexDict.Add("Y", tempBtnInd++);
-            }
-
-            if (tempProfile.CurrentActionSet.CurrentActionLayer.buttonActionDict.
-                TryGetValue("LShoulder", out ButtonMapAction tempLBAct))
-            {
-                Trace.WriteLine($"{tempLBAct}");
-                BindingItemsTest tempItem = new BindingItemsTest("LShoulder", "Left Bumper", tempLBAct);
-                buttonBindings.Add(tempItem);
-                buttonBindingsIndexDict.Add("LShoulder", tempBtnInd++);
-            }
-
-            if (tempProfile.CurrentActionSet.CurrentActionLayer.buttonActionDict.
-                TryGetValue("RShoulder", out ButtonMapAction tempRBAct))
-            {
-                Trace.WriteLine($"{tempRBAct}");
-                BindingItemsTest tempItem = new BindingItemsTest("RShoulder", "Right Bumper", tempRBAct);
-                buttonBindings.Add(tempItem);
-                buttonBindingsIndexDict.Add("RShoulder", tempBtnInd++);
-            }
-
-            if (tempProfile.CurrentActionSet.CurrentActionLayer.buttonActionDict.
-                TryGetValue("Back", out ButtonMapAction tempBackAct))
-            {
-                Trace.WriteLine($"{tempBackAct}");
-                BindingItemsTest tempItem = new BindingItemsTest("Back", "Back", tempBackAct);
-                buttonBindings.Add(tempItem);
-                buttonBindingsIndexDict.Add("Back", tempBtnInd++);
-            }
-
-            if (tempProfile.CurrentActionSet.CurrentActionLayer.buttonActionDict.
-                TryGetValue("Start", out ButtonMapAction tempStartAct))
-            {
-                Trace.WriteLine($"{tempStartAct}");
-                BindingItemsTest tempItem = new BindingItemsTest("Start", "Start", tempStartAct);
-                buttonBindings.Add(tempItem);
-                buttonBindingsIndexDict.Add("Start", tempBtnInd++);
-            }
-
-            if (tempProfile.CurrentActionSet.CurrentActionLayer.buttonActionDict.
-                TryGetValue("Steam", out ButtonMapAction tempSteamAct))
-            {
-                Trace.WriteLine($"{tempSteamAct}");
-                BindingItemsTest tempItem = new BindingItemsTest("Steam", "Steam", tempSteamAct);
-                buttonBindings.Add(tempItem);
-                buttonBindingsIndexDict.Add("Steam", tempBtnInd++);
-            }
-
-            if (tempProfile.CurrentActionSet.CurrentActionLayer.buttonActionDict.
-                TryGetValue("LeftGrip", out ButtonMapAction tempLGripAct))
-            {
-                Trace.WriteLine($"{tempLGripAct}");
-                BindingItemsTest tempItem = new BindingItemsTest("LeftGrip", "Left Grip", tempLGripAct);
-                buttonBindings.Add(tempItem);
-                buttonBindingsIndexDict.Add("LeftGrip", tempBtnInd++);
-            }
-
-            if (tempProfile.CurrentActionSet.CurrentActionLayer.buttonActionDict.
-                TryGetValue("RightGrip", out ButtonMapAction tempRGripAct))
-            {
-                Trace.WriteLine($"{tempRGripAct}");
-                BindingItemsTest tempItem = new BindingItemsTest("RightGrip", "Right Grip", tempRGripAct);
-                buttonBindings.Add(tempItem);
-                buttonBindingsIndexDict.Add("RightGrip", tempBtnInd++);
-            }
-
-            if (tempProfile.CurrentActionSet.CurrentActionLayer.buttonActionDict.
-                TryGetValue("LeftPadClick", out ButtonMapAction tempLPadClickAct))
-            {
-                Trace.WriteLine($"{tempLPadClickAct}");
-                BindingItemsTest tempItem = new BindingItemsTest("LeftPadClick", "Left Pad Click", tempLPadClickAct);
-                buttonBindings.Add(tempItem);
-                buttonBindingsIndexDict.Add("LeftPadClick", tempBtnInd++);
-            }
-
-            if (tempProfile.CurrentActionSet.CurrentActionLayer.buttonActionDict.
-                TryGetValue("RightPadClick", out ButtonMapAction tempRPadClickAct))
-            {
-                Trace.WriteLine($"{tempRPadClickAct}");
-                BindingItemsTest tempItem = new BindingItemsTest("RightPadClick", "Right Pad Click", tempRPadClickAct);
-                buttonBindings.Add(tempItem);
-                buttonBindingsIndexDict.Add("RightPadClick", tempBtnInd++);
-            }
-
-            if (tempProfile.CurrentActionSet.CurrentActionLayer.buttonActionDict.
-                TryGetValue("Stick", out ButtonMapAction tempStickAct))
-            {
-                Trace.WriteLine($"{tempStickAct}");
-                BindingItemsTest tempItem = new BindingItemsTest("Stick", "Stick", tempStickAct);
-                buttonBindings.Add(tempItem);
-                buttonBindingsIndexDict.Add("Stick", tempBtnInd++);
-            }
-
-
-            if (tempProfile.CurrentActionSet.CurrentActionLayer.touchpadActionDict.
-                TryGetValue("LeftTouchpad", out TouchpadMapAction tempTouchAct))
-            {
-                Trace.WriteLine($"{tempTouchAct}");
-                touchpadBindings.Add(new TouchBindingItemsTest("LeftTouchpad", "Left Touchpad", tempTouchAct));
-            }
-
-            if (tempProfile.CurrentActionSet.CurrentActionLayer.touchpadActionDict.
-                TryGetValue("RightTouchpad", out TouchpadMapAction tempRightTouchAct))
-            {
-                Trace.WriteLine($"{tempRightTouchAct}");
-                touchpadBindings.Add(new TouchBindingItemsTest("RightTouchpad", "Right Touchpad", tempRightTouchAct));
+                if (tempProfile.CurrentActionSet.CurrentActionLayer.touchpadActionDict.
+                        TryGetValue(meta.id, out TouchpadMapAction tempTouchAct))
+                {
+                    TouchBindingItemsTest tempItem = new TouchBindingItemsTest(meta.id, meta.displayName, tempTouchAct);
+                    touchpadBindings.Add(tempItem);
+                }
             }
         }
 

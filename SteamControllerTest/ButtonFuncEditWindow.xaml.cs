@@ -67,11 +67,16 @@ namespace SteamControllerTest
                     innerViewControl.DataContext = null;
 
                     btnActionEditVM = new ButtonActionViewModel(btnFuncEditVM.Mapper, btnFuncEditVM.Action);
+                    if (btnActionEditVM.Action != btnFuncEditVM.Action)
+                    {
+                        btnFuncEditVM.UpdateAction(btnActionEditVM.Action);
+                    }
 
                     bindControl = null;
                     bindControl = new FuncBindingControl();
                     bindControl.PostInit(btnFuncEditVM.Mapper, btnFuncEditVM.Action);
                     bindControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+                    bindControl.ActionChanged += BindControl_ActionChanged;
                     btnActionEditVM.DisplayControl = bindControl;
 
                     innerViewControl.DataContext = btnActionEditVM;
@@ -86,6 +91,11 @@ namespace SteamControllerTest
                 default:
                     break;
             }
+        }
+
+        private void BindControl_ActionChanged(object sender, ButtonAction action)
+        {
+            btnFuncEditVM.UpdateAction(action);
         }
 
         private void BtnFuncEditVM_SelectedTransformIndexChanged(object sender, EventArgs e)
