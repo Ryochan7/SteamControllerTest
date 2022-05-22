@@ -35,8 +35,41 @@ namespace SteamControllerTest
             }
         }
 
+        public struct TouchMouseJoystickActionValues
+        {
+            public int deadZone;
+
+            public void Process(TouchpadMouseJoystick action)
+            {
+                action.MStickParams.deadZone = deadZone;
+            }
+        }
+
+        public struct TouchActionPadActionValues
+        {
+            public double deadZone;
+
+            public void Process(TouchpadActionPad action)
+            {
+                action.DeadMod.DeadZone = deadZone;
+            }
+        }
+
+        public struct TouchCircularActionValues
+        {
+            public double deadZone;
+
+            public void Process(TouchpadCircular action)
+            {
+                action.DeadMod.DeadZone = deadZone;
+            }
+        }
+
         public abstract TouchJoystickActionValues GrabTouchJoystickDefaults();
         public abstract TouchMouseActionValues GrabTouchMouseDefaults();
+        public abstract TouchMouseJoystickActionValues GrabTouchMouseJoystickDefaults();
+        public abstract TouchActionPadActionValues GrabTouchActionPadDefaults();
+        public abstract TouchCircularActionValues GrabTouchCircularActionDefaults();
     }
 
     public class SteamControllerActionDefaultsCreator : DeviceActionDefaultsCreator
@@ -58,6 +91,36 @@ namespace SteamControllerTest
             TouchMouseActionValues result = new TouchMouseActionValues()
             {
                 deadZone = 8,
+            };
+
+            return result;
+        }
+
+        public override TouchMouseJoystickActionValues GrabTouchMouseJoystickDefaults()
+        {
+            TouchMouseJoystickActionValues result = new TouchMouseJoystickActionValues()
+            {
+                deadZone = 70,
+            };
+
+            return result;
+        }
+
+        public override TouchActionPadActionValues GrabTouchActionPadDefaults()
+        {
+            TouchActionPadActionValues result = new TouchActionPadActionValues()
+            {
+                deadZone = 0.05,
+            };
+
+            return result;
+        }
+
+        public override TouchCircularActionValues GrabTouchCircularActionDefaults()
+        {
+            TouchCircularActionValues result = new TouchCircularActionValues()
+            {
+                deadZone = 0.25,
             };
 
             return result;
