@@ -73,7 +73,7 @@ namespace SteamControllerTest
             {
                 action.DeadMod.DeadZone = deadZone;
 
-                action.ChangedProperties.Add(TouchpadCircular.PropertyKeyStrings.DEAD_ZONE);
+                //action.ChangedProperties.Add(TouchpadCircular.PropertyKeyStrings.DEAD_ZONE);
             }
         }
 
