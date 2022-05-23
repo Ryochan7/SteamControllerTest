@@ -61,6 +61,18 @@
                         <ComboBoxItem>Released</ComboBoxItem>
                     </ComboBox>
                 </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Height="100" DockPanel.Dock="Top" Margin="0,12,0,0">
+                    <Label Content="Switch Sets" />
+                    <ComboBox ItemsSource="{Binding AvailableSetsComboItems}" SelectedIndex="{Binding SelectedSetChoiceIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" VerticalAlignment="Top" Margin="8,0,0,0">
+                    </ComboBox>
+
+                    <ComboBox SelectedIndex="{Binding SelectedSetChangeConditionIndex, FallbackValue='0'}" Height="40" VerticalAlignment="Top" Visibility="{Binding ShowAvailableSets, Mode=OneWay, Converter={StaticResource boolVisConv}}" Margin="8,0,0,0">
+                        <ComboBoxItem>None</ComboBoxItem>
+                        <ComboBoxItem>Pressed</ComboBoxItem>
+                        <ComboBoxItem>Released</ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
             </StackPanel>
         </ScrollViewer>
 

@@ -22,6 +22,7 @@ namespace SteamControllerTest.ViewModels
             MouseWheelButton,
             RelativeMouseDir,
             LayerOp,
+            SetChange,
         }
 
         private Dictionary<JoypadActionCodes, int> gamepadIndexAliases;
@@ -46,6 +47,9 @@ namespace SteamControllerTest.ViewModels
 
         private List<AvailableLayerChoiceItem> availableLayerComboItems;
         public List<AvailableLayerChoiceItem> AvailableLayerComboItems => availableLayerComboItems;
+
+        private List<AvailableSetChoiceItem> availableSetsComboItems;
+        public List<AvailableSetChoiceItem> AvailableSetsComboItems => availableSetsComboItems;
 
         // Keycode, Index
         private Dictionary<int, int> revKeyCodeDict = new Dictionary<int, int>();
@@ -167,6 +171,43 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler SelectedLayerChangeConditionIndexChanged;
 
+
+        private bool showAvailableSets;
+        public bool ShowAvailableSets
+        {
+            get => showAvailableSets;
+            set
+            {
+                showAvailableSets = value;
+                ShowAvailableSetsChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler ShowAvailableSetsChanged;
+
+        private int selectedSetChoiceIndex = -1;
+        public int SelectedSetChoiceIndex
+        {
+            get => selectedSetChoiceIndex;
+            set
+            {
+                selectedSetChoiceIndex = value;
+                SelectedSetChoiceIndexChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SelectedSetChoiceIndexChanged;
+
+        private int selectedSetChangeConditionIndex = -1;
+        public int SelectedSetChangeConditionIndex
+        {
+            get => selectedSetChangeConditionIndex;
+            set
+            {
+                selectedSetChangeConditionIndex = value;
+                SelectedSetChangeConditionIndexChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SelectedSetChangeConditionIndexChanged;
+
         private ObservableCollection<OutputSlotItem> slotItems;
         public ObservableCollection<OutputSlotItem> SlotItems => slotItems;
 
@@ -201,6 +242,7 @@ namespace SteamControllerTest.ViewModels
             mouseDirComboItems = new List<MouseDirItem>();
             layerOperationsComboItems = new List<LayerOpChoiceItem>();
             availableLayerComboItems = new List<AvailableLayerChoiceItem>();
+            availableSetsComboItems = new List<AvailableSetChoiceItem>();
             slotItems = new ObservableCollection<OutputSlotItem>();
 
             PopulateComboBoxAliases();
@@ -264,6 +306,80 @@ namespace SteamControllerTest.ViewModels
             SelectedLayerOpsIndexChanged += ButtonActionEditViewModel_SelectedLayerOpsIndexChanged;
             SelectedLayerChoiceIndexChanged += ButtonActionEditViewModel_SelectedLayerChoiceIndexChanged;
             SelectedLayerChangeConditionIndexChanged += ButtonActionEditViewModel_SelectedLayerChangeConditionIndexChanged;
+            SelectedSetChoiceIndexChanged += ButtonActionEditViewModel_SelectedSetChoiceIndexChanged;
+            SelectedSetChangeConditionIndexChanged += ButtonActionEditViewModel_SelectedSetChangeConditionIndexChanged;
+        }
+
+        private void ButtonActionEditViewModel_SelectedSetChangeConditionIndexChanged(object sender, EventArgs e)
+        {
+            int index = selectedSetChangeConditionIndex;
+            if (index == -1) return;
+
+            AvailableSetChoiceItem tempItem = availableSetsComboItems[index];
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            mapper.QueueEvent(() =>
+            {
+                currentAction.Release(mapper, ignoreReleaseActions: true);
+                OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
+                OutputActionData tempData = slotItem.Data;
+
+                tempData.Reset();
+                tempData.Prepare(OutputActionData.ActionType.SwitchSet, 0);
+                tempData.ChangeToSet = tempItem.Set.Index;
+                tempData.LayerChangeCondition = (OutputActionData.ActionLayerChangeCondition)selectedSetChangeConditionIndex;
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
+        }
+
+        private void ButtonActionEditViewModel_SelectedSetChoiceIndexChanged(object sender, EventArgs e)
+        {
+            int index = selectedSetChoiceIndex;
+            if (index == -1) return;
+
+            AvailableSetChoiceItem tempItem = availableSetsComboItems[index];
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            bool fireConditionChangedEvent = false;
+            mapper.QueueEvent(() =>
+            {
+                currentAction.Release(mapper, ignoreReleaseActions: true);
+                OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
+                OutputActionData tempData = slotItem.Data;
+
+                tempData.Reset();
+                tempData.Prepare(OutputActionData.ActionType.SwitchSet, 0);
+                tempData.ChangeToSet = tempItem.Set.Index;
+                if (selectedSetChangeConditionIndex >= 0)
+                {
+                    tempData.ChangeCondition = (OutputActionData.SetChangeCondition)selectedSetChangeConditionIndex;
+                }
+                else
+                {
+                    tempData.ChangeCondition = OutputActionData.SetChangeCondition.Pressed;
+                    // Use field to update value without firing event. Set flag to call event
+                    // later from main thread
+                    selectedSetChangeConditionIndex = 1;
+                    fireConditionChangedEvent = true;
+                }
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
+
+            ShowAvailableSets = true;
+
+            if (fireConditionChangedEvent)
+            {
+                // Need to disconnect VM handler before firing event
+                SelectedSetChangeConditionIndexChanged -= ButtonActionEditViewModel_SelectedSetChangeConditionIndexChanged;
+                SelectedSetChangeConditionIndexChanged?.Invoke(this, EventArgs.Empty);
+
+                // Re-connect event
+                SelectedSetChangeConditionIndexChanged += ButtonActionEditViewModel_SelectedSetChangeConditionIndexChanged;
+            }
         }
 
         private void ButtonActionEditViewModel_SelectedMouseDirIndexChanged(object sender, EventArgs e)
@@ -402,6 +518,8 @@ namespace SteamControllerTest.ViewModels
             SelectedMouseDirIndexChanged -= ButtonActionEditViewModel_SelectedMouseDirIndexChanged;
             SelectedLayerOpsIndexChanged -= ButtonActionEditViewModel_SelectedLayerOpsIndexChanged;
             SelectedLayerChoiceIndexChanged -= ButtonActionEditViewModel_SelectedLayerChoiceIndexChanged;
+            SelectedSetChoiceIndexChanged -= ButtonActionEditViewModel_SelectedSetChoiceIndexChanged;
+            SelectedSetChangeConditionIndexChanged -= ButtonActionEditViewModel_SelectedSetChangeConditionIndexChanged;
         }
 
         private void PrepareControlsForSlot(OutputSlotItem item)
@@ -458,6 +576,17 @@ namespace SteamControllerTest.ViewModels
                             SelectedMouseDirIndex = tempItem.Index;
                         }
                     }
+                    break;
+                case OutputActionData.ActionType.SwitchSet:
+                    {
+                        int ind = availableSetsComboItems.FindIndex((setItem) => setItem.Set.Index == item.Data.ChangeToSet);
+                        if (ind >= 0)
+                        {
+                            SelectedSetChoiceIndex = ind;
+                            ShowAvailableSets = true;
+                        }
+                    }
+
                     break;
                 case OutputActionData.ActionType.HoldActionLayer:
                 case OutputActionData.ActionType.ApplyActionLayer:
@@ -753,6 +882,13 @@ namespace SteamControllerTest.ViewModels
                 AvailableLayerChoiceItem tempChoiceItem = new AvailableLayerChoiceItem(layer, tempInd++);
                 availableLayerComboItems.Add(tempChoiceItem);
             });
+
+            tempInd = 0;
+            mapper.ActionProfile.ActionSets.ForEach((actionSet) =>
+            {
+                AvailableSetChoiceItem tempChoiceItem = new AvailableSetChoiceItem(actionSet, tempInd++);
+                availableSetsComboItems.Add(tempChoiceItem);
+            });
         }
 
         public void AddTempOutputSlot()
@@ -951,6 +1087,33 @@ namespace SteamControllerTest.ViewModels
             if (!string.IsNullOrEmpty(layer.Name))
             {
                 displayName = $"{layer.Name} ({index})";
+            }
+            else
+            {
+                displayName = $"{index}";
+            }
+        }
+    }
+
+    public class AvailableSetChoiceItem
+    {
+        private string displayName;
+        public string DisplayName => displayName;
+
+        private ActionSet set;
+        public ActionSet Set => set;
+
+        private int index;
+        public int Index => index;
+
+        public AvailableSetChoiceItem(ActionSet set, int index)
+        {
+            this.set = set;
+            this.index = index;
+
+            if (!string.IsNullOrEmpty(set.Name))
+            {
+                displayName = $"{set.Name} ({index})";
             }
             else
             {
