@@ -5,8 +5,8 @@ namespace SteamControllerTest.ActionUtil
 {
     public class AnalogFunc : ActionFunc
     {
-        private const double DEFAULT_MIN_OUTPUT = 0.2;
-        private const double DEFAULT_MAX_OUTPUT = 1.0;
+        public const double DEFAULT_MIN_OUTPUT = 0.2;
+        public const double DEFAULT_MAX_OUTPUT = 1.0;
 
         private bool inputStatus;
         //private JoypadActionCodes outputAxis;
