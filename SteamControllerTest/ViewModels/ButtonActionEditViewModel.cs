@@ -123,6 +123,18 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler ShowAvailableLayersChanged;
 
+        private int selectedLayerChangeConditionIndex = -1;
+        public int SelectedLayerChangeConditionIndex
+        {
+            get => selectedLayerChangeConditionIndex;
+            set
+            {
+                selectedLayerChangeConditionIndex = value;
+                SelectedLayerChangeConditionIndexChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SelectedLayerChangeConditionIndexChanged;
+
         private ObservableCollection<OutputSlotItem> slotItems;
         public ObservableCollection<OutputSlotItem> SlotItems => slotItems;
 
@@ -215,6 +227,26 @@ namespace SteamControllerTest.ViewModels
             SelectedMouseButtonIndexChanged += ButtonActionEditViewModel_SelectedMouseButtonIndexChanged;
             SelectedLayerOpsIndexChanged += ButtonActionEditViewModel_SelectedLayerOpsIndexChanged;
             SelectedLayerChoiceIndexChanged += ButtonActionEditViewModel_SelectedLayerChoiceIndexChanged;
+            SelectedLayerChangeConditionIndexChanged += ButtonActionEditViewModel_SelectedLayerChangeConditionIndexChanged;
+        }
+
+        private void ButtonActionEditViewModel_SelectedLayerChangeConditionIndexChanged(object sender, EventArgs e)
+        {
+            int index = selectedLayerChangeConditionIndex;
+            if (index == -1) return;
+
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            mapper.QueueEvent(() =>
+            {
+                currentAction.Release(mapper, ignoreReleaseActions: true);
+                OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
+                OutputActionData tempData = slotItem.Data;
+                tempData.LayerChangeCondition = (OutputActionData.ActionLayerChangeCondition)index;
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
         }
 
         private void ButtonActionEditViewModel_SelectedLayerChoiceIndexChanged(object sender, EventArgs e)
@@ -234,6 +266,11 @@ namespace SteamControllerTest.ViewModels
                 tempData.Reset();
                 tempData.Prepare(opItem.LayerOp, 0);
                 tempData.ChangeToLayer = tempItem.Layer.Index;
+                if (opItem.LayerOp != OutputActionData.ActionType.HoldActionLayer &&
+                    selectedLayerChangeConditionIndex >= 0)
+                {
+                    tempData.LayerChangeCondition = (OutputActionData.ActionLayerChangeCondition)selectedLayerChangeConditionIndex;
+                }
 
                 resetEvent.Set();
             });
@@ -248,6 +285,23 @@ namespace SteamControllerTest.ViewModels
 
             ResetComboBoxIndex(ActionComboBoxTypes.LayerOp);
             ShowAvailableLayers = true;
+
+            LayerOpChoiceItem tempItem = layerOperationsComboItems[index];
+            switch(tempItem.LayerOp)
+            {
+                case OutputActionData.ActionType.HoldActionLayer:
+                    SelectedLayerChangeConditionIndex = -1;
+                    break;
+                case OutputActionData.ActionType.ApplyActionLayer:
+                case OutputActionData.ActionType.SwitchActionLayer:
+                    SelectedLayerChangeConditionIndex = 1;
+                    break;
+                case OutputActionData.ActionType.RemoveActionLayer:
+                    SelectedLayerChangeConditionIndex = 2;
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void DisconnectOutputSlotEvents()
@@ -305,6 +359,11 @@ namespace SteamControllerTest.ViewModels
                             SelectedLayerOpsIndex = ind;
                             SelectedLayerChoiceIndex = item.Data.ChangeToLayer;
                             ShowAvailableLayers = true;
+
+                            if (item.Data.OutputType != OutputActionData.ActionType.HoldActionLayer)
+                            {
+                                SelectedLayerChangeConditionIndex = (int)item.Data.ChangeCondition;
+                            }
                         }
                     }
 
@@ -436,6 +495,7 @@ namespace SteamControllerTest.ViewModels
                 SelectedLayerOpsIndex = -1;
                 SelectedLayerChoiceIndex = -1;
                 ShowAvailableLayers = false;
+                SelectedLayerChangeConditionIndex = -1;
             }
         }
 

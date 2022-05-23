@@ -43,7 +43,13 @@
                     <ComboBox ItemsSource="{Binding LayerOperationsComboItems}" SelectedIndex="{Binding SelectedLayerOpsIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" VerticalAlignment="Top">
                     </ComboBox>
 
-                    <ComboBox ItemsSource="{Binding AvailableLayerComboItems}" SelectedIndex="{Binding SelectedLayerChoiceIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" VerticalAlignment="Top" Visibility="{Binding ShowAvailableLayers, Mode=OneWay, Converter={StaticResource boolVisConv}}">
+                    <ComboBox ItemsSource="{Binding AvailableLayerComboItems}" SelectedIndex="{Binding SelectedLayerChoiceIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" VerticalAlignment="Top" Visibility="{Binding ShowAvailableLayers, Mode=OneWay, Converter={StaticResource boolVisConv}}" Margin="8,0,0,0">
+                    </ComboBox>
+
+                    <ComboBox SelectedIndex="{Binding SelectedLayerChangeConditionIndex, FallbackValue='0'}" Height="40" VerticalAlignment="Top" Visibility="{Binding ShowAvailableLayers, Mode=OneWay, Converter={StaticResource boolVisConv}}" Margin="8,0,0,0">
+                        <ComboBoxItem>None</ComboBoxItem>
+                        <ComboBoxItem>Pressed</ComboBoxItem>
+                        <ComboBoxItem>Released</ComboBoxItem>
                     </ComboBox>
                 </StackPanel>
             </StackPanel>
