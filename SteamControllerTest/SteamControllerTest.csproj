@@ -33,6 +33,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <PackageReference Include="HandyControl" Version="3.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="WpfScreenHelper" Version="2.0.0" />
   </ItemGroup>
