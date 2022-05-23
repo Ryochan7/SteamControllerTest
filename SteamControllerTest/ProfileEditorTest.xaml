@@ -7,60 +7,76 @@
         mc:Ignorable="d"
         Title="ProfileEditorTest" Height="450" Width="800">
     <DockPanel>
-        <!--<StackPanel DockPanel.Dock="Top">
+        <StackPanel DockPanel.Dock="Top">
             <Button Content="Test Out JSON" Click="Button_Click_4" />
-        </StackPanel>-->
+        </StackPanel>
 
         <StackPanel DockPanel.Dock="Top">
-            <ItemsControl x:Name="actionSetItemsControl" ItemsSource="{Binding ActionSetItems}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Button Content="{Binding DisplayName}" Click="Button_Click_2" Tag="{Binding SetIndex}">
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ItemActive}" Value="True">
-                                            <DataTrigger.Setters>
-                                                <Setter Property="Background" Value="#FFA6F3E7" />
-                                            </DataTrigger.Setters>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <WrapPanel>
+                <ItemsControl x:Name="actionSetItemsControl" ItemsSource="{Binding ActionSetItems}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding DisplayName}" Click="Button_Click_2" Tag="{Binding SetIndex}">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ItemActive}" Value="True">
+                                                <DataTrigger.Setters>
+                                                    <Setter Property="Background" Value="#FFA6F3E7" />
+                                                </DataTrigger.Setters>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button x:Name="addSetBtn" Content="Add Set +" Click="AddSetBtn_Click" />
+                <Button x:Name="removeSetBtn" Content="Remove Set -" Click="RemoveSetBtn_Click" />
+            </WrapPanel>
 
-            <ItemsControl ItemsSource="{Binding LayerItems}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Button Content="{Binding DisplayName}" Tag="{Binding LayerIndex}"  Click="Button_Click_3">
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ItemActive}" Value="True">
-                                            <DataTrigger.Setters>
-                                                <Setter Property="Background" Value="#FFA6F3E7" />
-                                            </DataTrigger.Setters>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <WrapPanel>
+                <ItemsControl ItemsSource="{Binding LayerItems}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding DisplayName}" Tag="{Binding LayerIndex}"  Click="Button_Click_3">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ItemActive}" Value="True">
+                                                <DataTrigger.Setters>
+                                                    <Setter Property="Background" Value="#FFA6F3E7" />
+                                                </DataTrigger.Setters>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button x:Name="addLayerBtn" Content="Add Layer +" Click="AddLayerBtn_Click" />
+                <Button x:Name="removeLayerBtn" Content="Remove Layer -" Click="RemoveLayerBtn_Click" />
+            </WrapPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Set Name" />
+                <TextBox Text="{Binding CurrentSetName, UpdateSourceTrigger=LostFocus}" Width="100" HorizontalAlignment="Left" Margin="8,0,0,0" />
+
+                <Label Content="Layer Name" Margin="8,0,0,0" />
+                <TextBox Text="{Binding CurrentLayerName, UpdateSourceTrigger=LostFocus}" Width="100" HorizontalAlignment="Left" Margin="8,0,0,0" />
+            </StackPanel>
         </StackPanel>
 
         <TabControl>

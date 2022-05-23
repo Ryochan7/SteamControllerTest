@@ -146,5 +146,67 @@ namespace SteamControllerTest
 
             IsEnabled = true;
         }
+
+        private void AddLayerBtn_Click(object sender, RoutedEventArgs e)
+        {
+            editorTestVM.AddLayer();
+        }
+
+        private void RemoveLayerBtn_Click(object sender, RoutedEventArgs e)
+        {
+            // Skip for default ActionLayer
+            if (editorTestVM.SelectedActionLayerIndex <= 0) return;
+
+            editorTestVM.RemoveLayer();
+            SwapActionLayer(editorTestVM.SelectedActionLayerIndex);
+        }
+
+        private void SwapActionLayer(int ind)
+        {
+            IsEnabled = false;
+
+            editorTestVM.SwitchActionLayer(ind);
+
+            editorTestVM.ActionResetEvent.Wait();
+
+            DataContext = null;
+
+            editorTestVM.RefreshLayerBindings();
+
+            DataContext = editorTestVM;
+
+            IsEnabled = true;
+        }
+
+        private void AddSetBtn_Click(object sender, RoutedEventArgs e)
+        {
+            editorTestVM.AddSet();
+        }
+
+        private void RemoveSetBtn_Click(object sender, RoutedEventArgs e)
+        {
+            // Skip for default ActionSet
+            if (editorTestVM.SelectedActionSetIndex <= 0) return;
+
+            editorTestVM.RemoveSet();
+            SwapActionSet(editorTestVM.SelectedActionSetIndex);
+        }
+
+        private void SwapActionSet(int ind)
+        {
+            IsEnabled = false;
+
+            editorTestVM.SwitchActionSets(ind);
+
+            editorTestVM.ActionResetEvent.Wait();
+
+            DataContext = null;
+
+            editorTestVM.RefreshSetBindings();
+
+            DataContext = editorTestVM;
+
+            IsEnabled = true;
+        }
     }
 }

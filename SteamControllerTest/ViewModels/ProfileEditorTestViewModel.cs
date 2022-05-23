@@ -79,14 +79,38 @@ namespace SteamControllerTest.ViewModels
             set => selectedActionSetIndex = value;
         }
 
-        private List<ActionLayerItemsTest> layerItems = new List<ActionLayerItemsTest>();
-        public List<ActionLayerItemsTest> LayerItems => layerItems;
+        private ObservableCollection<ActionLayerItemsTest> layerItems = new ObservableCollection<ActionLayerItemsTest>();
+        public ObservableCollection<ActionLayerItemsTest> LayerItems => layerItems;
 
         private int selectedActionLayerIndex = 0;
         public int SelectedActionLayerIndex
         {
             get => selectedActionLayerIndex;
             set => selectedActionLayerIndex = value;
+        }
+
+        public string CurrentLayerName
+        {
+            get => layerItems[selectedActionLayerIndex].Layer.Name;
+            set
+            {
+                string currentName = layerItems[selectedActionLayerIndex].Layer.Name;
+                if (currentName == value) return;
+                layerItems[selectedActionLayerIndex].Layer.Name = value;
+                layerItems[selectedActionLayerIndex].RaiseDisplayNameChanged();
+            }
+        }
+
+        public string CurrentSetName
+        {
+            get => actionSetItems[selectedActionSetIndex].Set.Name;
+            set
+            {
+                string currentName = actionSetItems[selectedActionSetIndex].Set.Name;
+                if (currentName == value) return;
+                actionSetItems[selectedActionSetIndex].Set.Name = value;
+                actionSetItems[selectedActionSetIndex].RaiseDisplayNameChanged();
+            }
         }
 
         public ProfileEditorTestViewModel(Mapper mapper, ProfileEntity profileEnt, Profile currentProfile)
@@ -193,6 +217,8 @@ namespace SteamControllerTest.ViewModels
             mapper.QueueEvent(() =>
             {
                 mapper.ActionProfile.SwitchSets(ind, mapper);
+                mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
+
                 actionResetEvent.Set();
             });
         }
@@ -250,6 +276,92 @@ namespace SteamControllerTest.ViewModels
                 //}
             }
         }
+
+        public void AddLayer()
+        {
+            ActionLayer tempLayer = null;
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            mapper.QueueEvent(() =>
+            {
+                int ind = mapper.ActionProfile.CurrentActionSet.ActionLayers.Count;
+                tempLayer = new ActionLayer(ind);
+                mapper.ActionProfile.CurrentActionSet.ActionLayers.Add(tempLayer);
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
+
+            ActionLayerItemsTest tempItem = new ActionLayerItemsTest(mapper.ActionProfile.CurrentActionSet, tempLayer, layerItems.Count);
+            layerItems.Add(tempItem);
+        }
+
+        public void RemoveLayer()
+        {
+            if (selectedActionLayerIndex <= 0) return;
+
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            mapper.QueueEvent(() =>
+            {
+                ActionLayer tempLayer = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer;
+                tempLayer.ReleaseActions(mapper, ignoreReleaseActions: true);
+                mapper.ActionProfile.CurrentActionSet.ActionLayers.Remove(tempLayer);
+                mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
+
+                resetEvent.Set();
+            });
+
+            layerItems.RemoveAt(selectedActionLayerIndex);
+            SelectedActionLayerIndex = 0;
+            resetEvent.Wait();
+        }
+
+        public void AddSet()
+        {
+            ActionSet tempSet = null;
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            mapper.QueueEvent(() =>
+            {
+                int ind = mapper.ActionProfile.ActionSets.Count;
+                tempSet = new ActionSet(ind, $"Set {ind+1}");
+                mapper.ActionProfile.ActionSets.Add(tempSet);
+                mapper.PrepopulateBlankActionLayer(tempSet.DefaultActionLayer);
+
+                tempSet.ClearCompositeLayerActions();
+                tempSet.PrepareCompositeLayer();
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
+
+            ActionSetItemsTest tempItem = new ActionSetItemsTest(tempSet);
+            actionSetItems.Add(tempItem);
+        }
+
+        public void RemoveSet()
+        {
+            if (selectedActionSetIndex <= 0) return;
+
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            mapper.QueueEvent(() =>
+            {
+                ActionSet tempSet = mapper.ActionProfile.CurrentActionSet;
+                tempSet.ReleaseActions(mapper, ignoreReleaseActions: true);
+
+                // Switch to default set before removing current ActionSet
+                mapper.ActionProfile.SwitchSets(0, mapper);
+                mapper.ActionProfile.ActionSets.Remove(tempSet);
+
+                mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
+
+                resetEvent.Set();
+            });
+
+            actionSetItems.RemoveAt(SelectedActionSetIndex);
+            SelectedActionSetIndex = 0;
+            resetEvent.Wait();
+        }
     }
 
     public class ActionLayerItemsTest
@@ -273,6 +385,7 @@ namespace SteamControllerTest.ViewModels
                 return result;
             }
         }
+        public event EventHandler DisplayNameChanged;
 
         private int index;
         public int LayerIndex
@@ -299,6 +412,11 @@ namespace SteamControllerTest.ViewModels
             this.layer = layer;
             this.index = index;
         }
+
+        public void RaiseDisplayNameChanged()
+        {
+            DisplayNameChanged?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     public class ActionSetItemsTest
@@ -319,6 +437,7 @@ namespace SteamControllerTest.ViewModels
                 return result;
             }
         }
+        public event EventHandler DisplayNameChanged;
 
         public int SetIndex
         {
@@ -341,6 +460,11 @@ namespace SteamControllerTest.ViewModels
         public ActionSetItemsTest(ActionSet set)
         {
             this.set = set;
+        }
+
+        public void RaiseDisplayNameChanged()
+        {
+            DisplayNameChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 

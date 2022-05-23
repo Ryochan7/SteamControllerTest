@@ -1089,6 +1089,56 @@ namespace SteamControllerTest
             Trace.WriteLine("IT IS FINISHED");
         }
 
+        public void PrepopulateBlankActionLayer(ActionLayer layer)
+        {
+            foreach (KeyValuePair<string, InputBindingMeta> tempMeta in bindingDict)
+            {
+                switch (tempMeta.Value.controlType)
+                {
+                    case InputBindingMeta.InputControlType.Button:
+                        ButtonNoAction btnNoAction = new ButtonNoAction();
+                        btnNoAction.MappingId = tempMeta.Key;
+                        layer.buttonActionDict.Add(tempMeta.Key, btnNoAction);
+                        break;
+                    case InputBindingMeta.InputControlType.DPad:
+                        DPadNoAction dpadNoAction = new DPadNoAction();
+                        dpadNoAction.MappingId = tempMeta.Key;
+                        layer.dpadActionDict.Add(tempMeta.Key, dpadNoAction);
+                        break;
+                    case InputBindingMeta.InputControlType.Stick:
+                        StickNoAction stickNoAct = new StickNoAction();
+                        stickNoAct.MappingId = tempMeta.Key;
+                        layer.stickActionDict.Add(tempMeta.Key, stickNoAct);
+                        break;
+                    case InputBindingMeta.InputControlType.Trigger:
+                        {
+                            TriggerNoAction trigNoAct = new TriggerNoAction();
+                            trigNoAct.MappingId = tempMeta.Key;
+                            layer.triggerActionDict.Add(tempMeta.Key, trigNoAct);
+                        }
+
+                        break;
+                    case InputBindingMeta.InputControlType.Touchpad:
+                        {
+                            TouchpadNoAction touchNoAct = new TouchpadNoAction();
+                            touchNoAct.MappingId = tempMeta.Key;
+                            layer.touchpadActionDict.Add(tempMeta.Key, touchNoAct);
+                        }
+
+                        break;
+                    case InputBindingMeta.InputControlType.Gyro:
+                        GyroNoMapAction gyroNoMapAct = new GyroNoMapAction();
+                        gyroNoMapAct.MappingId = tempMeta.Key;
+                        layer.gyroActionDict.Add(tempMeta.Key, gyroNoMapAct);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            layer.SyncActions();
+        }
+
         public void ChangeProfile(string profilePath)
         {
             //if (!inMapperEvent)
