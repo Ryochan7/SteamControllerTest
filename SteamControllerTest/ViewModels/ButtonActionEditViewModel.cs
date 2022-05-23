@@ -19,6 +19,7 @@ namespace SteamControllerTest.ViewModels
             Gamepad,
             Keyboard,
             MouseButton,
+            MouseWheelButton,
             LayerOp,
         }
 
@@ -32,6 +33,9 @@ namespace SteamControllerTest.ViewModels
 
         private List<MouseButtonCodeItem> mouseButtonComboItems;
         public List<MouseButtonCodeItem> MouseButtonComboItems => mouseButtonComboItems;
+
+        private List<MouseButtonCodeItem> mouseWheelButtonComboItems;
+        public List<MouseButtonCodeItem> MouseWheelButtonComboItems => mouseWheelButtonComboItems;
 
         private List<LayerOpChoiceItem> layerOperationsComboItems;
         public List<LayerOpChoiceItem> LayerOperationsComboItems => layerOperationsComboItems;
@@ -86,6 +90,18 @@ namespace SteamControllerTest.ViewModels
             }
         }
         public event EventHandler SelectedMouseButtonIndexChanged;
+
+        private int selectedMouseWheelButtonIndex = -1;
+        public int SelectedMouseWheelButtonIndex
+        {
+            get => selectedMouseWheelButtonIndex;
+            set
+            {
+                selectedMouseWheelButtonIndex = value;
+                SelectedMouseWheelButtonIndexChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SelectedMouseWheelButtonIndexChanged;
 
         private int selectedLayerOpsIndex = -1;
         public int SelectedLayerOpsIndex
@@ -165,6 +181,7 @@ namespace SteamControllerTest.ViewModels
             gamepadComboItems = new List<GamepadCodeItem>();
             keyboardComboItems = new List<KeyboardCodeItem>();
             mouseButtonComboItems = new List<MouseButtonCodeItem>();
+            mouseWheelButtonComboItems = new List<MouseButtonCodeItem>();
             layerOperationsComboItems = new List<LayerOpChoiceItem>();
             availableLayerComboItems = new List<AvailableLayerChoiceItem>();
             slotItems = new ObservableCollection<OutputSlotItem>();
@@ -225,9 +242,37 @@ namespace SteamControllerTest.ViewModels
             SelectedIndexChanged += ButtonActionEditViewModel_SelectedIndexChanged;
             SelectedKeyboardIndexChanged += ButtonActionEditViewModel_SelectedKeyboardIndexChanged;
             SelectedMouseButtonIndexChanged += ButtonActionEditViewModel_SelectedMouseButtonIndexChanged;
+            SelectedMouseWheelButtonIndexChanged += ButtonActionEditViewModel_SelectedMouseWheelButtonIndexChanged;
             SelectedLayerOpsIndexChanged += ButtonActionEditViewModel_SelectedLayerOpsIndexChanged;
             SelectedLayerChoiceIndexChanged += ButtonActionEditViewModel_SelectedLayerChoiceIndexChanged;
             SelectedLayerChangeConditionIndexChanged += ButtonActionEditViewModel_SelectedLayerChangeConditionIndexChanged;
+        }
+
+        private void ButtonActionEditViewModel_SelectedMouseWheelButtonIndexChanged(object sender, EventArgs e)
+        {
+            int index = selectedMouseWheelButtonIndex;
+            if (index == -1)
+            {
+                return;
+            }
+
+            ResetComboBoxIndex(ActionComboBoxTypes.MouseWheelButton);
+            MouseButtonCodeItem item = mouseWheelButtonComboItems[index];
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            mapper.QueueEvent(() =>
+            {
+                currentAction.Release(mapper, ignoreReleaseActions: true);
+                OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
+                OutputActionData tempData = slotItem.Data;
+                tempData.Reset();
+
+                tempData.Prepare(OutputActionData.ActionType.MouseWheel, item.Code);
+                tempData.OutputCodeStr = ((OutputActionDataSerializer.MouseWheelAliases)item.Code).ToString();
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
         }
 
         private void ButtonActionEditViewModel_SelectedLayerChangeConditionIndexChanged(object sender, EventArgs e)
@@ -309,6 +354,7 @@ namespace SteamControllerTest.ViewModels
             SelectedIndexChanged -= ButtonActionEditViewModel_SelectedIndexChanged;
             SelectedKeyboardIndexChanged -= ButtonActionEditViewModel_SelectedKeyboardIndexChanged;
             SelectedMouseButtonIndexChanged -= ButtonActionEditViewModel_SelectedMouseButtonIndexChanged;
+            SelectedMouseWheelButtonIndexChanged -= ButtonActionEditViewModel_SelectedMouseWheelButtonIndexChanged;
             SelectedLayerOpsIndexChanged -= ButtonActionEditViewModel_SelectedLayerOpsIndexChanged;
             SelectedLayerChoiceIndexChanged -= ButtonActionEditViewModel_SelectedLayerChoiceIndexChanged;
         }
@@ -344,6 +390,17 @@ namespace SteamControllerTest.ViewModels
                         if (tempMBItem != null)
                         {
                             SelectedMouseButtonIndex = tempMBItem.Index;
+                        }
+                    }
+
+                    break;
+                case OutputActionData.ActionType.MouseWheel:
+                    {
+                        int code = item.Data.OutputCode;
+                        MouseButtonCodeItem tempWheelItem = mouseWheelButtonComboItems.FirstOrDefault((item) => item.Code == code);
+                        if (tempWheelItem != null)
+                        {
+                            SelectedMouseWheelButtonIndex = tempWheelItem.Index;
                         }
                     }
 
@@ -490,6 +547,11 @@ namespace SteamControllerTest.ViewModels
                 SelectedMouseButtonIndex = -1;
             }
 
+            if (ignoreCombo != ActionComboBoxTypes.MouseWheelButton)
+            {
+                SelectedMouseWheelButtonIndex = -1;
+            }
+
             if (ignoreCombo != ActionComboBoxTypes.LayerOp)
             {
                 SelectedLayerOpsIndex = -1;
@@ -597,6 +659,15 @@ namespace SteamControllerTest.ViewModels
                 new MouseButtonCodeItem("Middle Button", MouseButtonCodes.MOUSE_MIDDLE_BUTTON, tempInd++),
                 new MouseButtonCodeItem("XButton1", MouseButtonCodes.MOUSE_XBUTTON1, tempInd++),
                 new MouseButtonCodeItem("XButton2", MouseButtonCodes.MOUSE_XBUTTON2, tempInd++),
+            });
+
+            tempInd = 0;
+            mouseWheelButtonComboItems.AddRange(new MouseButtonCodeItem[]
+            {
+                new MouseButtonCodeItem("Wheel Up", (int)MouseWheelCodes.WheelUp, tempInd++),
+                new MouseButtonCodeItem("Wheel Down", (int)MouseWheelCodes.WheelDown, tempInd++),
+                new MouseButtonCodeItem("Wheel Left", (int)MouseWheelCodes.WheelLeft, tempInd++),
+                new MouseButtonCodeItem("Wheel Right", (int)MouseWheelCodes.WheelRight, tempInd++),
             });
 
             tempInd = 0;

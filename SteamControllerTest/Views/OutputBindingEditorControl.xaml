@@ -13,32 +13,36 @@
         <StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Left" Margin="0,12,0,0">
             <Button Content="Done" Width="100" Click="Button_Click" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom">
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="0,12,0,0">
             <ComboBox ItemsSource="{Binding SlotItems}" SelectedIndex="{Binding SelectedSlotItemIndex}" DisplayMemberPath="DisplayName" />
             <Button x:Name="addOutputSlot" Content="Add +" Click="AddOutputSlot_Click" Margin="8,0,0,0" />
             <Button x:Name="removeOutputSlot" Content="Remove -" Click="RemoveOutputSlot_Click" IsEnabled="{Binding HasMultipleSlots}" Margin="8,0,0,0" />
         </StackPanel>
-        
-        
+
         <ScrollViewer DockPanel.Dock="Top">
             <StackPanel>
-                <StackPanel Orientation="Horizontal" Height="100" DockPanel.Dock="Top">
+                <StackPanel Orientation="Horizontal" Height="40" DockPanel.Dock="Top">
                     <Label Content="Gamepad" />
                     <ComboBox ItemsSource="{Binding GamepadComboItems}" SelectedIndex="{Binding SelectedIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" VerticalAlignment="Top">
                     </ComboBox>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Height="100" DockPanel.Dock="Top">
+                <StackPanel Orientation="Horizontal" Height="40" DockPanel.Dock="Top"  Margin="0,12,0,0">
                     <Label Content="Keyboard" />
                     <ComboBox ItemsSource="{Binding KeyboardComboItems}" SelectedIndex="{Binding SelectedKeyboardIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" VerticalAlignment="Top">
                     </ComboBox>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Height="100" DockPanel.Dock="Top">
+                <StackPanel Orientation="Horizontal" Height="40" DockPanel.Dock="Top" Margin="0,12,0,0">
                     <Label Content="Mouse Buttons" />
                     <ComboBox ItemsSource="{Binding MouseButtonComboItems}" SelectedIndex="{Binding SelectedMouseButtonIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" VerticalAlignment="Top">
                     </ComboBox>
                 </StackPanel>
+                <StackPanel Orientation="Horizontal" Height="40" Margin="0,12,0,0">
+                    <Label Content="Mouse Wheel Btns" />
+                    <ComboBox ItemsSource="{Binding MouseWheelButtonComboItems}" SelectedIndex="{Binding SelectedMouseWheelButtonIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" VerticalAlignment="Top">
+                    </ComboBox>
+                </StackPanel>
 
-                <StackPanel Orientation="Horizontal" Height="100" DockPanel.Dock="Top">
+                <StackPanel Orientation="Horizontal" Height="100" DockPanel.Dock="Top" Margin="0,12,0,0">
                     <Label Content="Layer Ops" />
                     <ComboBox ItemsSource="{Binding LayerOperationsComboItems}" SelectedIndex="{Binding SelectedLayerOpsIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" VerticalAlignment="Top">
                     </ComboBox>
@@ -54,7 +58,6 @@
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
-        
-        
+
     </DockPanel>
 </UserControl>
