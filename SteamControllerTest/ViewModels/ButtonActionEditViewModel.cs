@@ -20,6 +20,7 @@ namespace SteamControllerTest.ViewModels
             Keyboard,
             MouseButton,
             MouseWheelButton,
+            RelativeMouseDir,
             LayerOp,
         }
 
@@ -36,6 +37,9 @@ namespace SteamControllerTest.ViewModels
 
         private List<MouseButtonCodeItem> mouseWheelButtonComboItems;
         public List<MouseButtonCodeItem> MouseWheelButtonComboItems => mouseWheelButtonComboItems;
+
+        private List<MouseDirItem> mouseDirComboItems;
+        public List<MouseDirItem> MouseDirComboItems => mouseDirComboItems;
 
         private List<LayerOpChoiceItem> layerOperationsComboItems;
         public List<LayerOpChoiceItem> LayerOperationsComboItems => layerOperationsComboItems;
@@ -102,6 +106,18 @@ namespace SteamControllerTest.ViewModels
             }
         }
         public event EventHandler SelectedMouseWheelButtonIndexChanged;
+
+        private int selectedMouseDirIndex = -1;
+        public int SelectedMouseDirIndex
+        {
+            get => selectedMouseDirIndex;
+            set
+            {
+                selectedMouseDirIndex = value;
+                SelectedMouseDirIndexChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SelectedMouseDirIndexChanged;
 
         private int selectedLayerOpsIndex = -1;
         public int SelectedLayerOpsIndex
@@ -182,6 +198,7 @@ namespace SteamControllerTest.ViewModels
             keyboardComboItems = new List<KeyboardCodeItem>();
             mouseButtonComboItems = new List<MouseButtonCodeItem>();
             mouseWheelButtonComboItems = new List<MouseButtonCodeItem>();
+            mouseDirComboItems = new List<MouseDirItem>();
             layerOperationsComboItems = new List<LayerOpChoiceItem>();
             availableLayerComboItems = new List<AvailableLayerChoiceItem>();
             slotItems = new ObservableCollection<OutputSlotItem>();
@@ -243,9 +260,36 @@ namespace SteamControllerTest.ViewModels
             SelectedKeyboardIndexChanged += ButtonActionEditViewModel_SelectedKeyboardIndexChanged;
             SelectedMouseButtonIndexChanged += ButtonActionEditViewModel_SelectedMouseButtonIndexChanged;
             SelectedMouseWheelButtonIndexChanged += ButtonActionEditViewModel_SelectedMouseWheelButtonIndexChanged;
+            SelectedMouseDirIndexChanged += ButtonActionEditViewModel_SelectedMouseDirIndexChanged;
             SelectedLayerOpsIndexChanged += ButtonActionEditViewModel_SelectedLayerOpsIndexChanged;
             SelectedLayerChoiceIndexChanged += ButtonActionEditViewModel_SelectedLayerChoiceIndexChanged;
             SelectedLayerChangeConditionIndexChanged += ButtonActionEditViewModel_SelectedLayerChangeConditionIndexChanged;
+        }
+
+        private void ButtonActionEditViewModel_SelectedMouseDirIndexChanged(object sender, EventArgs e)
+        {
+            int index = selectedMouseDirIndex;
+            if (index == -1) return;
+
+            ResetComboBoxIndex(ActionComboBoxTypes.RelativeMouseDir);
+            MouseDirItem item = mouseDirComboItems[index];
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            mapper.QueueEvent(() =>
+            {
+                currentAction.Release(mapper, ignoreReleaseActions: true);
+                OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
+                OutputActionData tempData = slotItem.Data;
+                tempData.Reset();
+
+                OutputActionData.RelativeMouseDir tempDir = (OutputActionData.RelativeMouseDir)item.Code;
+                tempData.Prepare(OutputActionData.ActionType.RelativeMouse, 0);
+                tempData.mouseDir = tempDir;
+                tempData.OutputCodeStr = tempDir.ToString();
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
         }
 
         private void ButtonActionEditViewModel_SelectedMouseWheelButtonIndexChanged(object sender, EventArgs e)
@@ -355,15 +399,14 @@ namespace SteamControllerTest.ViewModels
             SelectedKeyboardIndexChanged -= ButtonActionEditViewModel_SelectedKeyboardIndexChanged;
             SelectedMouseButtonIndexChanged -= ButtonActionEditViewModel_SelectedMouseButtonIndexChanged;
             SelectedMouseWheelButtonIndexChanged -= ButtonActionEditViewModel_SelectedMouseWheelButtonIndexChanged;
+            SelectedMouseDirIndexChanged -= ButtonActionEditViewModel_SelectedMouseDirIndexChanged;
             SelectedLayerOpsIndexChanged -= ButtonActionEditViewModel_SelectedLayerOpsIndexChanged;
             SelectedLayerChoiceIndexChanged -= ButtonActionEditViewModel_SelectedLayerChoiceIndexChanged;
         }
 
         private void PrepareControlsForSlot(OutputSlotItem item)
         {
-            SelectedKeyboardIndex = -1;
-            SelectedIndex = -1;
-            selectedMouseButtonIndex = -1;
+            ResetComboBoxIndex(ActionComboBoxTypes.None);
 
             DisconnectOutputSlotEvents();
 
@@ -404,6 +447,17 @@ namespace SteamControllerTest.ViewModels
                         }
                     }
 
+                    break;
+                case OutputActionData.ActionType.RelativeMouse:
+                    {
+                        OutputActionData.RelativeMouseDir tempDir = item.Data.mouseDir;
+                        int dirCode = (int)tempDir;
+                        MouseDirItem tempItem = mouseDirComboItems.FirstOrDefault((item) => item.Code == dirCode);
+                        if (tempItem != null)
+                        {
+                            SelectedMouseDirIndex = tempItem.Index;
+                        }
+                    }
                     break;
                 case OutputActionData.ActionType.HoldActionLayer:
                 case OutputActionData.ActionType.ApplyActionLayer:
@@ -552,6 +606,11 @@ namespace SteamControllerTest.ViewModels
                 SelectedMouseWheelButtonIndex = -1;
             }
 
+            if (ignoreCombo != ActionComboBoxTypes.RelativeMouseDir)
+            {
+                SelectedMouseDirIndex = -1;
+            }
+
             if (ignoreCombo != ActionComboBoxTypes.LayerOp)
             {
                 SelectedLayerOpsIndex = -1;
@@ -668,6 +727,15 @@ namespace SteamControllerTest.ViewModels
                 new MouseButtonCodeItem("Wheel Down", (int)MouseWheelCodes.WheelDown, tempInd++),
                 new MouseButtonCodeItem("Wheel Left", (int)MouseWheelCodes.WheelLeft, tempInd++),
                 new MouseButtonCodeItem("Wheel Right", (int)MouseWheelCodes.WheelRight, tempInd++),
+            });
+
+            tempInd = 0;
+            mouseDirComboItems.AddRange(new MouseDirItem[]
+            {
+                new MouseDirItem("Mouse Up", (int)OutputActionData.RelativeMouseDir.MouseUp, tempInd++),
+                new MouseDirItem("Mouse Down", (int)OutputActionData.RelativeMouseDir.MouseDown, tempInd++),
+                new MouseDirItem("Mouse Left", (int)OutputActionData.RelativeMouseDir.MouseLeft, tempInd++),
+                new MouseDirItem("Mouse Right", (int)OutputActionData.RelativeMouseDir.MouseRight, tempInd++),
             });
 
             tempInd = 0;
@@ -818,6 +886,25 @@ namespace SteamControllerTest.ViewModels
         public int Index => index;
 
         public MouseButtonCodeItem(string displayName, int code, int index)
+        {
+            this.displayName = displayName;
+            this.code = code;
+            this.index = index;
+        }
+    }
+
+    public class MouseDirItem
+    {
+        private string displayName;
+        public string DisplayName => displayName;
+
+        private int code;
+        public int Code => code;
+
+        private int index;
+        public int Index => index;
+
+        public MouseDirItem(string displayName, int code, int index)
         {
             this.displayName = displayName;
             this.code = code;

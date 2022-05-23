@@ -41,6 +41,11 @@
                     <ComboBox ItemsSource="{Binding MouseWheelButtonComboItems}" SelectedIndex="{Binding SelectedMouseWheelButtonIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" VerticalAlignment="Top">
                     </ComboBox>
                 </StackPanel>
+                <StackPanel Orientation="Horizontal" Height="40" Margin="0,12,0,0">
+                    <Label Content="Mouse Move Dir" />
+                    <ComboBox ItemsSource="{Binding MouseDirComboItems}" SelectedIndex="{Binding SelectedMouseDirIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" VerticalAlignment="Top">
+                    </ComboBox>
+                </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Height="100" DockPanel.Dock="Top" Margin="0,12,0,0">
                     <Label Content="Layer Ops" />
