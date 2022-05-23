@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SteamControllerTest.ButtonActions;
 using SteamControllerTest.TouchpadActions;
 
@@ -238,10 +239,15 @@ namespace SteamControllerTest.ViewModels
 
             if (!string.IsNullOrEmpty(tempOutJson))
             {
-                using (StreamWriter writer = new StreamWriter(tempEntity.ProfilePath))
-                {
-                    writer.Write(tempOutJson);
-                }
+                //using (StreamWriter writer = new StreamWriter(tempEntity.ProfilePath))
+                //using (JsonTextWriter jwriter = new JsonTextWriter(writer))
+                //{
+                //    jwriter.Formatting = Formatting.Indented;
+                //    jwriter.Indentation = 2;
+                //    JObject tempJObj = JObject.Parse(tempOutJson);
+                //    tempJObj.WriteTo(jwriter);
+                //    //writer.Write(tempOutJson);
+                //}
             }
         }
     }

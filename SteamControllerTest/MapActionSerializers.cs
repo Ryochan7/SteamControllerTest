@@ -871,7 +871,7 @@ namespace SteamControllerTest
             List<ActionFuncSerializer> tempFuncs = new List<ActionFuncSerializer>();
             foreach(ActionFunc tempFunc in triggerDualAction.SoftPullActButton.ActionFuncs)
             {
-                tempFuncs.Add(new ActionFuncSerializer(tempFunc));
+                tempFuncs.Add(ActionFuncSerializerFactory.CreateSerializer(tempFunc));
             }
             softPullStageButton.ActionFuncSerializers.AddRange(tempFuncs);
 
@@ -879,7 +879,7 @@ namespace SteamControllerTest
 
             foreach (ActionFunc tempFunc in triggerDualAction.FullPullActButton.ActionFuncs)
             {
-                tempFuncs.Add(new ActionFuncSerializer(tempFunc));
+                tempFuncs.Add(ActionFuncSerializerFactory.CreateSerializer(tempFunc));
             }
 
             fullPullStageButton.ActionFuncSerializers.AddRange(tempFuncs);
@@ -997,6 +997,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler DeadZoneChanged;
+            public bool ShouldSerializeDeadZone()
+            {
+                return touchActionPadAction.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.DEAD_ZONE);
+            }
 
             public double MaxZone
             {
@@ -1008,6 +1012,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler MaxZoneChanged;
+            public bool ShouldSerializeMaxZone()
+            {
+                return touchActionPadAction.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.MAX_ZONE);
+            }
 
             public TouchpadActionPad.DPadMode PadMode
             {
@@ -1019,6 +1027,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler PadModeChanged;
+            public bool ShouldSerializePadMode()
+            {
+                return touchActionPadAction.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.PAD_MODE);
+            }
 
             public StickDeadZone.DeadZoneTypes DeadZoneType
             {
@@ -1030,6 +1042,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler DeadZoneTypeChanged;
+            public bool ShouldSerializeDeadZoneType()
+            {
+                return touchActionPadAction.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.DEAD_ZONE_TYPE);
+            }
 
             public int DiagonalRange
             {
@@ -1041,6 +1057,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler DiagonalRangeChanged;
+            public bool ShouldSerializeDiagonalRange()
+            {
+                return touchActionPadAction.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.DIAGONAL_RANGE);
+            }
 
             public int Rotation
             {
@@ -1052,6 +1072,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler RotationChanged;
+            public bool ShouldSerializeRotation()
+            {
+                return touchActionPadAction.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.ROTATION);
+            }
 
             public bool DelayEnabled
             {
@@ -1063,6 +1087,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler DelayEnabledChanged;
+            public bool ShouldSerializeDelayEnabled()
+            {
+                return touchActionPadAction.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.DELAY_ENABLED);
+            }
 
             // TODO: Double check time interval used
             public double DelayTime
@@ -1075,6 +1103,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler DelayTimeChanged;
+            public bool ShouldSerializeDelayTime()
+            {
+                return touchActionPadAction.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.DELAY_TIME);
+            }
 
 
             [JsonProperty("UseOuterRing")]
@@ -1088,6 +1120,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler UseOuterRingChanged;
+            public bool ShouldSerializeUseOuterRing()
+            {
+                return touchActionPadAction.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.USE_OUTER_RING);
+            }
 
             [JsonProperty("OuterRingDeadZone")]
             public double OuterRingDeadZone
@@ -1100,6 +1136,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler OuterRingDeadZoneChanged;
+            public bool ShouldSerializeOuterRingDeadZone()
+            {
+                return touchActionPadAction.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.OUTER_RING_DEAD_ZONE);
+            }
 
             [JsonProperty("UseAsOuterRing")]
             public bool UseAsOuterRing
@@ -1112,6 +1152,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler UseAsOuterRingChanged;
+            public bool ShouldSerializeUseAsOuterRing()
+            {
+                return touchActionPadAction.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.USE_AS_OUTER_RING);
+            }
 
             public OuterRingUseRange OuterRingRange
             {
@@ -1123,6 +1167,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler OuterRingRangeChanged;
+            public bool ShouldSerializeOuterRange()
+            {
+                return touchActionPadAction.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.OUTER_RING_FULL_RANGE);
+            }
 
             public TouchpadActionPadSettings(TouchpadActionPad action)
             {
@@ -1139,6 +1187,10 @@ namespace SteamControllerTest
             get => dictPadBindings;
             set => dictPadBindings = value;
         }
+        public bool ShouldSerializeDictPadBindings()
+        {
+            return dictPadBindings != null && dictPadBindings.Count > 0;
+        }
 
         private TouchPadDirBinding ringBinding;
 
@@ -1153,6 +1205,10 @@ namespace SteamControllerTest
             }
         }
         public event EventHandler RingBindingChanged;
+        public bool ShouldSerializeRingBinding()
+        {
+            return ringBinding != null && ringBinding.ActionFuncSerializers.Count > 0;
+        }
 
         private TouchpadActionPad touchActionPadAction = new TouchpadActionPad();
 
@@ -1161,6 +1217,10 @@ namespace SteamControllerTest
         {
             get => settings;
             set => settings = value;
+        }
+        public bool ShouldSerializeSettings()
+        {
+            return touchActionPadAction.ChangedProperties.Count > 0;
         }
 
         // Deserialize
@@ -1311,7 +1371,7 @@ namespace SteamControllerTest
                 tempFuncs.Clear();
                 foreach (ActionFunc tempFunc in dirButton.ActionFuncs)
                 {
-                    tempFuncs.Add(new ActionFuncSerializer(tempFunc));
+                    tempFuncs.Add(ActionFuncSerializerFactory.CreateSerializer(tempFunc));
                 }
 
                 //dictPadBindings.Add(tempDir, tempFuncs);
@@ -1329,7 +1389,7 @@ namespace SteamControllerTest
                 ringBinding.ActionDirName = touchActionPadAction.RingButton.Name;
                 foreach (ActionFunc tempFunc in touchActionPadAction.RingButton.ActionFuncs)
                 {
-                    ringBinding.ActionFuncSerializers.Add(new ActionFuncSerializer(tempFunc));
+                    ringBinding.ActionFuncSerializers.Add(ActionFuncSerializerFactory.CreateSerializer(tempFunc));
                 }
             }
         }
