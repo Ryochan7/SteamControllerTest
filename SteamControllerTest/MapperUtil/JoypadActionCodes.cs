@@ -96,7 +96,7 @@ namespace SteamControllerTest.MapperUtil
         Trigger2, RightTrigger = Trigger2, RT = RightTrigger,
     }
 
-    public static class MouseButtonCodes
+    public class MouseButtonCodes
     {
         public const int MOUSE_LEFT_BUTTON = 1;
         public const int MOUSE_MIDDLE_BUTTON = 2;

@@ -7,11 +7,21 @@ using System.Collections.ObjectModel;
 using SteamControllerTest.ActionUtil;
 using SteamControllerTest.ButtonActions;
 using SteamControllerTest.MapperUtil;
+using System.Threading;
 
 namespace SteamControllerTest.ViewModels
 {
     public class ButtonActionEditViewModel
     {
+        public enum ActionComboBoxTypes
+        {
+            None,
+            Gamepad,
+            Keyboard,
+            MouseButton,
+            LayerOp,
+        }
+
         private Dictionary<JoypadActionCodes, int> gamepadIndexAliases;
         private Dictionary<int, JoypadActionCodes> revGamepadIndexAliases;
         private List<GamepadCodeItem> gamepadComboItems;
@@ -20,9 +30,17 @@ namespace SteamControllerTest.ViewModels
         private List<KeyboardCodeItem> keyboardComboItems;
         public List<KeyboardCodeItem> KeyboardComboItems => keyboardComboItems;
 
+        private List<MouseButtonCodeItem> mouseButtonComboItems;
+        public List<MouseButtonCodeItem> MouseButtonComboItems => mouseButtonComboItems;
+
+        private List<LayerOpChoiceItem> layerOperationsComboItems;
+        public List<LayerOpChoiceItem> LayerOperationsComboItems => layerOperationsComboItems;
+
+        private List<AvailableLayerChoiceItem> availableLayerComboItems;
+        public List<AvailableLayerChoiceItem> AvailableLayerComboItems => availableLayerComboItems;
+
         // Keycode, Index
         private Dictionary<int, int> revKeyCodeDict = new Dictionary<int, int>();
-
 
         private ButtonAction currentAction;
         public ButtonAction CurrentAction
@@ -57,6 +75,54 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler SelectedKeyboardIndexChanged;
 
+        private int selectedMouseButtonIndex = -1;
+        public int SelectedMouseButtonIndex
+        {
+            get => selectedMouseButtonIndex;
+            set
+            {
+                selectedMouseButtonIndex = value;
+                SelectedMouseButtonIndexChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SelectedMouseButtonIndexChanged;
+
+        private int selectedLayerOpsIndex = -1;
+        public int SelectedLayerOpsIndex
+        {
+            get => selectedLayerOpsIndex;
+            set
+            {
+                selectedLayerOpsIndex = value;
+                SelectedLayerOpsIndexChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SelectedLayerOpsIndexChanged;
+
+        private int selectedLayerChoiceIndex = -1;
+        public int SelectedLayerChoiceIndex
+        {
+            get => selectedLayerChoiceIndex;
+            set
+            {
+                selectedLayerChoiceIndex = value;
+                SelectedLayerChoiceIndexChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SelectedLayerChoiceIndexChanged;
+
+        private bool showAvailableLayers;
+        public bool ShowAvailableLayers
+        {
+            get => showAvailableLayers;
+            set
+            {
+                showAvailableLayers = value;
+                ShowAvailableLayersChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler ShowAvailableLayersChanged;
+
         private ObservableCollection<OutputSlotItem> slotItems;
         public ObservableCollection<OutputSlotItem> SlotItems => slotItems;
 
@@ -86,11 +152,14 @@ namespace SteamControllerTest.ViewModels
 
             gamepadComboItems = new List<GamepadCodeItem>();
             keyboardComboItems = new List<KeyboardCodeItem>();
+            mouseButtonComboItems = new List<MouseButtonCodeItem>();
+            layerOperationsComboItems = new List<LayerOpChoiceItem>();
+            availableLayerComboItems = new List<AvailableLayerChoiceItem>();
             slotItems = new ObservableCollection<OutputSlotItem>();
 
-            PopulateGamepadAliases();
+            PopulateComboBoxAliases();
             revGamepadIndexAliases = new Dictionary<int, JoypadActionCodes>();
-            foreach(KeyValuePair<JoypadActionCodes, int> pair in gamepadIndexAliases)
+            foreach (KeyValuePair<JoypadActionCodes, int> pair in gamepadIndexAliases)
             {
                 revGamepadIndexAliases.Add(pair.Value, pair.Key);
             }
@@ -103,18 +172,12 @@ namespace SteamControllerTest.ViewModels
             });
 
             int tempInd = 0;
-            foreach(OutputActionData data in func.OutputActions)
+            foreach (OutputActionData data in func.OutputActions)
             {
                 OutputActionData tempData = data;
                 OutputSlotItem tempItem = new OutputSlotItem(tempData, tempInd++);
                 slotItems.Add(tempItem);
             }
-
-            //if (tempData.OutputType == OutputActionData.ActionType.GamepadControl)
-            //{
-            //    JoypadActionCodes temp = tempData.JoypadCode;
-            //    selectedIndex = gamepadIndexAliases[temp];
-            //}
 
             if (slotItems.Count > 0)
             {
@@ -149,30 +212,105 @@ namespace SteamControllerTest.ViewModels
         {
             SelectedIndexChanged += ButtonActionEditViewModel_SelectedIndexChanged;
             SelectedKeyboardIndexChanged += ButtonActionEditViewModel_SelectedKeyboardIndexChanged;
+            SelectedMouseButtonIndexChanged += ButtonActionEditViewModel_SelectedMouseButtonIndexChanged;
+            SelectedLayerOpsIndexChanged += ButtonActionEditViewModel_SelectedLayerOpsIndexChanged;
+            SelectedLayerChoiceIndexChanged += ButtonActionEditViewModel_SelectedLayerChoiceIndexChanged;
+        }
+
+        private void ButtonActionEditViewModel_SelectedLayerChoiceIndexChanged(object sender, EventArgs e)
+        {
+            int index = selectedLayerChoiceIndex;
+            if (index == -1) return;
+
+            AvailableLayerChoiceItem tempItem = availableLayerComboItems[index];
+            LayerOpChoiceItem opItem = layerOperationsComboItems[selectedLayerOpsIndex];
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            mapper.QueueEvent(() =>
+            {
+                currentAction.Release(mapper, ignoreReleaseActions: true);
+                OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
+                OutputActionData tempData = slotItem.Data;
+
+                tempData.Reset();
+                tempData.Prepare(opItem.LayerOp, 0);
+                tempData.ChangeToLayer = tempItem.Layer.Index;
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
+        }
+
+        private void ButtonActionEditViewModel_SelectedLayerOpsIndexChanged(object sender, EventArgs e)
+        {
+            int index = selectedLayerOpsIndex;
+            if (index == -1) return;
+
+            ResetComboBoxIndex(ActionComboBoxTypes.LayerOp);
+            ShowAvailableLayers = true;
         }
 
         private void DisconnectOutputSlotEvents()
         {
             SelectedIndexChanged -= ButtonActionEditViewModel_SelectedIndexChanged;
             SelectedKeyboardIndexChanged -= ButtonActionEditViewModel_SelectedKeyboardIndexChanged;
+            SelectedMouseButtonIndexChanged -= ButtonActionEditViewModel_SelectedMouseButtonIndexChanged;
+            SelectedLayerOpsIndexChanged -= ButtonActionEditViewModel_SelectedLayerOpsIndexChanged;
+            SelectedLayerChoiceIndexChanged -= ButtonActionEditViewModel_SelectedLayerChoiceIndexChanged;
         }
 
         private void PrepareControlsForSlot(OutputSlotItem item)
         {
             SelectedKeyboardIndex = -1;
             SelectedIndex = -1;
+            selectedMouseButtonIndex = -1;
 
             DisconnectOutputSlotEvents();
 
-            if (item.Data.OutputType == OutputActionData.ActionType.GamepadControl)
+            switch (item.Data.OutputType)
             {
-                JoypadActionCodes temp = item.Data.JoypadCode;
-                SelectedIndex = gamepadIndexAliases[temp];
-            }
-            else if (item.Data.OutputType == OutputActionData.ActionType.Keyboard)
-            {
-                int keyInd = revKeyCodeDict[item.Data.OutputCode];
-                SelectedKeyboardIndex = keyInd;
+                case OutputActionData.ActionType.GamepadControl:
+                    {
+                        JoypadActionCodes temp = item.Data.JoypadCode;
+                        SelectedIndex = gamepadIndexAliases[temp];
+                    }
+
+                    break;
+                case OutputActionData.ActionType.Keyboard:
+                    {
+                        int keyInd = revKeyCodeDict[item.Data.OutputCode];
+                        SelectedKeyboardIndex = keyInd;
+                    }
+
+                    break;
+                case OutputActionData.ActionType.MouseButton:
+                    {
+                        int code = item.Data.OutputCode;
+                        MouseButtonCodeItem tempMBItem = mouseButtonComboItems.FirstOrDefault((item) => item.Code == code);
+                        if (tempMBItem != null)
+                        {
+                            SelectedMouseButtonIndex = tempMBItem.Index;
+                        }
+                    }
+
+                    break;
+                case OutputActionData.ActionType.HoldActionLayer:
+                case OutputActionData.ActionType.ApplyActionLayer:
+                case OutputActionData.ActionType.RemoveActionLayer:
+                case OutputActionData.ActionType.SwitchActionLayer:
+                    {
+                        int ind = layerOperationsComboItems.FindIndex((opItem) => opItem.LayerOp == item.Data.OutputType);
+                        if (ind >= 0)
+                        {
+                            SelectedLayerOpsIndex = ind;
+                            SelectedLayerChoiceIndex = item.Data.ChangeToLayer;
+                            ShowAvailableLayers = true;
+                        }
+                    }
+
+                    break;
+                default:
+                    break;
             }
 
             ConnectOutputSlotEvents();
@@ -186,7 +324,7 @@ namespace SteamControllerTest.ViewModels
                 return;
             }
 
-            SelectedIndex = -1;
+            ResetComboBoxIndex(ActionComboBoxTypes.Keyboard);
             KeyboardCodeItem item = keyboardComboItems[index];
             mapper.QueueEvent(() =>
             {
@@ -221,14 +359,14 @@ namespace SteamControllerTest.ViewModels
                 return;
             }
 
-            SelectedKeyboardIndex = -1;
+            ResetComboBoxIndex(ActionComboBoxTypes.Gamepad);
             JoypadActionCodes temp = revGamepadIndexAliases[index];
             OutputSlotItem item = slotItems[selectedSlotItemIndex];
             mapper.QueueEvent(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
                 //currentAction.ActionFuncs[0].Release(mapper);
-                
+
                 OutputActionData tempData = item.Data;
                 if (tempData.OutputType == OutputActionData.ActionType.GamepadControl)
                 {
@@ -249,11 +387,63 @@ namespace SteamControllerTest.ViewModels
             });
         }
 
-        public void PopulateGamepadAliases()
+        private void ButtonActionEditViewModel_SelectedMouseButtonIndexChanged(object sender, EventArgs e)
+        {
+            int index = selectedMouseButtonIndex;
+            if (index == -1)
+            {
+                return;
+            }
+
+            ResetComboBoxIndex(ActionComboBoxTypes.MouseButton);
+            MouseButtonCodeItem item = mouseButtonComboItems[index];
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            mapper.QueueEvent(() =>
+            {
+                currentAction.Release(mapper, ignoreReleaseActions: true);
+                OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
+                OutputActionData tempData = slotItem.Data;
+                tempData.Reset();
+
+                tempData.Prepare(OutputActionData.ActionType.MouseButton, item.Code);
+                tempData.OutputCodeStr = ((OutputActionDataSerializer.MouseButtonAliases)item.Code).ToString();
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
+        }
+
+        private void ResetComboBoxIndex(ActionComboBoxTypes ignoreCombo)
+        {
+            if (ignoreCombo != ActionComboBoxTypes.Gamepad)
+            {
+                SelectedIndex = -1;
+            }
+
+            if (ignoreCombo != ActionComboBoxTypes.Keyboard)
+            {
+                SelectedKeyboardIndex = -1;
+            }
+
+            if (ignoreCombo != ActionComboBoxTypes.MouseButton)
+            {
+                SelectedMouseButtonIndex = -1;
+            }
+
+            if (ignoreCombo != ActionComboBoxTypes.LayerOp)
+            {
+                SelectedLayerOpsIndex = -1;
+                SelectedLayerChoiceIndex = -1;
+                ShowAvailableLayers = false;
+            }
+        }
+
+        public void PopulateComboBoxAliases()
         {
             int tempInd = 0;
 
-            if (mapper.ActionProfile.OutputGamepadSettings.outputGamepad == EmulatedControllerSettings.OutputControllerType.Xbox360)
+            //if (mapper.ActionProfile.OutputGamepadSettings.outputGamepad == EmulatedControllerSettings.OutputControllerType.Xbox360)
             {
                 gamepadIndexAliases = new Dictionary<JoypadActionCodes, int>()
                 {
@@ -338,6 +528,32 @@ namespace SteamControllerTest.ViewModels
                 new KeyboardCodeItem("Left Control", VirtualKeys.LeftControl, "LeftControl", tempInd++),
                 new KeyboardCodeItem("Right Control", VirtualKeys.RightControl, "RightControl", tempInd++),
             });
+
+            tempInd = 0;
+            mouseButtonComboItems.AddRange(new MouseButtonCodeItem[]
+            {
+                new MouseButtonCodeItem("Left Button", MouseButtonCodes.MOUSE_LEFT_BUTTON, tempInd++),
+                new MouseButtonCodeItem("Right Button", MouseButtonCodes.MOUSE_RIGHT_BUTTON, tempInd++),
+                new MouseButtonCodeItem("Middle Button", MouseButtonCodes.MOUSE_MIDDLE_BUTTON, tempInd++),
+                new MouseButtonCodeItem("XButton1", MouseButtonCodes.MOUSE_XBUTTON1, tempInd++),
+                new MouseButtonCodeItem("XButton2", MouseButtonCodes.MOUSE_XBUTTON2, tempInd++),
+            });
+
+            tempInd = 0;
+            layerOperationsComboItems.AddRange(new LayerOpChoiceItem[]
+            {
+                new LayerOpChoiceItem("Hold Layer", OutputActionData.ActionType.HoldActionLayer, tempInd++),
+                new LayerOpChoiceItem("Apply Layer", OutputActionData.ActionType.ApplyActionLayer, tempInd++),
+                new LayerOpChoiceItem("Remove Layer", OutputActionData.ActionType.RemoveActionLayer, tempInd++),
+                new LayerOpChoiceItem("Switch Layer", OutputActionData.ActionType.SwitchActionLayer, tempInd++),
+            });
+
+            tempInd = 0;
+            mapper.ActionProfile.CurrentActionSet.ActionLayers.ForEach((layer) =>
+            {
+                AvailableLayerChoiceItem tempChoiceItem = new AvailableLayerChoiceItem(layer, tempInd++);
+                availableLayerComboItems.Add(tempChoiceItem);
+            });
         }
 
         public void AddTempOutputSlot()
@@ -371,7 +587,7 @@ namespace SteamControllerTest.ViewModels
 
             int tempInd = ind;
             slotItems.RemoveAt(tempInd);
-            SelectedSlotItemIndex = ind < slotItems.Count ? ind : slotItems.Count-1;
+            SelectedSlotItemIndex = ind < slotItems.Count ? ind : slotItems.Count - 1;
             mapper.QueueEvent(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
@@ -379,7 +595,7 @@ namespace SteamControllerTest.ViewModels
             });
 
             int tempSlotInd = 0;
-            foreach(OutputSlotItem item in slotItems)
+            foreach (OutputSlotItem item in slotItems)
             {
                 item.SlotIndex = tempSlotInd++;
             }
@@ -394,7 +610,7 @@ namespace SteamControllerTest.ViewModels
             get => data;
             set => data = value;
         }
-        
+
         public string DisplayName
         {
             get
@@ -456,6 +672,72 @@ namespace SteamControllerTest.ViewModels
             this.code = code;
             this.codeAlias = codeAlias;
             this.index = index;
+        }
+    }
+
+    public class MouseButtonCodeItem
+    {
+        private string displayName;
+        public string DisplayName => displayName;
+
+        private int code;
+        public int Code => code;
+
+        private int index;
+        public int Index => index;
+
+        public MouseButtonCodeItem(string displayName, int code, int index)
+        {
+            this.displayName = displayName;
+            this.code = code;
+            this.index = index;
+        }
+    }
+
+    public class LayerOpChoiceItem
+    {
+        private string displayName;
+        public string DisplayName => displayName;
+
+        private OutputActionData.ActionType layerOp;
+        public OutputActionData.ActionType LayerOp => layerOp;
+
+        private int index;
+        public int Index => index;
+
+        public LayerOpChoiceItem(string displayName, OutputActionData.ActionType layerOp,
+            int index)
+        {
+            this.displayName = displayName;
+            this.layerOp = layerOp;
+            this.index = index;
+        }
+    }
+
+    public class AvailableLayerChoiceItem
+    {
+        private string displayName;
+        public string DisplayName => displayName;
+
+        private ActionLayer layer;
+        public ActionLayer Layer => layer;
+
+        private int index;
+        public int Index => index;
+
+        public AvailableLayerChoiceItem(ActionLayer layer, int index)
+        {
+            this.layer = layer;
+            this.index = index;
+
+            if (!string.IsNullOrEmpty(layer.Name))
+            {
+                displayName = $"{layer.Name} ({index})";
+            }
+            else
+            {
+                displayName = $"{index}";
+            }
         }
     }
 }
