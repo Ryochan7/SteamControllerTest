@@ -1017,6 +1017,8 @@ namespace SteamControllerTest
                 return touchActionPadAction.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.MAX_ZONE);
             }
 
+            [JsonConverter(typeof(SafeStringEnumConverter),
+                TouchpadActionPad.DPadMode.Standard)]
             public TouchpadActionPad.DPadMode PadMode
             {
                 get => touchActionPadAction.CurrentMode;
@@ -1157,6 +1159,7 @@ namespace SteamControllerTest
                 return touchActionPadAction.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.USE_AS_OUTER_RING);
             }
 
+            [JsonConverter(typeof(StringEnumConverter))]
             public OuterRingUseRange OuterRingRange
             {
                 get => touchActionPadAction.UsedOuterRingRange;
@@ -3765,6 +3768,7 @@ namespace SteamControllerTest
         {
             private StickTranslate stickTransAct;
 
+            [JsonConverter(typeof(StringEnumConverter))]
             public StickActionCodes OutputStick
             {
                 get => stickTransAct.OutputAction.StickCode;
@@ -6750,6 +6754,11 @@ namespace SteamControllerTest
             {
                 return DefaultValue;
             }
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            base.WriteJson(writer, value, serializer);
         }
     }
 }
