@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using SteamControllerTest.ButtonActions;
 using SteamControllerTest.Views;
 using SteamControllerTest.ViewModels;
+using SteamControllerTest.TriggerActions;
 using SteamControllerTest.TouchpadActions;
 
 namespace SteamControllerTest
@@ -40,7 +41,7 @@ namespace SteamControllerTest
             editorTestVM.Test();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void ButtonActionEditButton_Click(object sender, RoutedEventArgs e)
         {
             string mapTag = (sender as Button).Tag.ToString();
             int ind = editorTestVM.ButtonBindingsIndexDict[mapTag];
@@ -207,6 +208,20 @@ namespace SteamControllerTest
             DataContext = editorTestVM;
 
             IsEnabled = true;
+        }
+
+        private void TiggerActionEdit_Button_Click(object sender, RoutedEventArgs e)
+        {
+            int selectedInd = editorTestVM.SelectTriggerBindIndex;
+            if (selectedInd >= 0)
+            {
+                TriggerMapAction tempAction = editorTestVM.TriggerBindings[selectedInd].MappedAction;
+                TriggerBindEditWindow trigBindEditWin = new TriggerBindEditWindow();
+                trigBindEditWin.PostInit(editorTestVM.DeviceMapper, tempAction);
+                trigBindEditWin.ShowDialog();
+
+                editorTestVM.TriggerBindings[selectedInd].UpdateAction(trigBindEditWin.TrigBindEditVM.Action);
+            }
         }
     }
 }

@@ -25,10 +25,18 @@ namespace SteamControllerTest.TriggerActions
         }
 
         public abstract void Prepare(Mapper mapper, ref TriggerEventFrame eventFrame, bool alterState = true);
+
+        public void CopyBaseMapProps(TriggerMapAction sourceAction)
+        {
+            mappingId = sourceAction.mappingId;
+            triggerDefinition = new TriggerDefinition(sourceAction.triggerDefinition);
+        }
+
         public virtual void SoftCopyFromParent(TriggerMapAction parentAction)
         {
             name = parentAction.name;
             mappingId = parentAction.mappingId;
+
             this.parentAction = parentAction;
             this.triggerDefinition = new TriggerDefinition(parentAction.triggerDefinition);
         }

@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SteamControllerTest.MapperUtil;
-using SteamControllerTest.TouchpadActions;
+using SteamControllerTest.TriggerActions;
 
 namespace SteamControllerTest.ViewModels
 {
-    public class TouchpadActionSelectViewModel
+    public class TriggerActionSelectViewModel
     {
         private Mapper mapper;
-        private TouchpadMapAction action;
+        private TriggerMapAction action;
 
         private int selectedIndex = -1;
         public int SelectedIndex
@@ -26,7 +25,7 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler SelectedIndexChanged;
 
-        public TouchpadActionSelectViewModel(Mapper mapper, TouchpadMapAction action)
+        public TriggerActionSelectViewModel(Mapper mapper, TriggerMapAction action)
         {
             this.mapper = mapper;
             this.action = action;
@@ -34,34 +33,16 @@ namespace SteamControllerTest.ViewModels
 
         public void PrepareView()
         {
-            switch(action)
+            switch (action)
             {
-                case TouchpadNoAction:
+                case TriggerNoAction:
                     selectedIndex = 0;
                     break;
-                case TouchpadStickAction:
+                case TriggerTranslate:
                     selectedIndex = 1;
                     break;
-                case TouchpadActionPad:
+                case TriggerDualStageAction:
                     selectedIndex = 2;
-                    break;
-                case TouchpadMouseJoystick:
-                    selectedIndex = 3;
-                    break;
-                case TouchpadMouse:
-                    selectedIndex = 4;
-                    break;
-                case TouchpadCircular:
-                    selectedIndex = 5;
-                    break;
-                case TouchpadAbsAction:
-                    selectedIndex = 6;
-                    break;
-                case TouchpadDirectionalSwipe:
-                    selectedIndex = 7;
-                    break;
-                case TouchpadSingleButton:
-                    selectedIndex = 8;
                     break;
                 default:
                     selectedIndex = -1;

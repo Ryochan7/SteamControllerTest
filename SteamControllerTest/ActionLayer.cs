@@ -404,6 +404,46 @@ namespace SteamControllerTest
             reverseActionDict.Add(action, action.MappingId);
         }
 
+        public void ReplaceTriggerAction(TriggerMapAction oldAction, TriggerMapAction action)
+        {
+            string mapId = oldAction.MappingId;
+            int ind = layerActions.FindIndex((item) => item == oldAction);
+            int mappedInd = -1;
+            if (ind >= 0)
+            {
+                TriggerMapAction tempAction = layerActions[ind] as TriggerMapAction;
+                layerActions.RemoveAt(ind);
+                layerActions.Insert(ind, action);
+
+                normalActionDict.Remove(mapId);
+                reverseActionDict.Remove(tempAction);
+
+                mappedInd = mappedActions.FindIndex((item) => (item == tempAction));
+                mappedActions.RemoveAt(mappedInd);
+                mappedActions.Insert(mappedInd, action);
+            }
+            else
+            {
+                layerActions.Add(action);
+                mappedActions.Add(action);
+            }
+
+            triggerActionDict[mapId] = action;
+
+            normalActionDict.Add(mapId, action);
+            reverseActionDict.Add(action, mapId);
+        }
+
+        public void AddTriggerAction(TriggerMapAction action)
+        {
+            layerActions.Add(action);
+            mappedActions.Add(action);
+            triggerActionDict[action.MappingId] = action;
+
+            normalActionDict.Add(action.MappingId, action);
+            reverseActionDict.Add(action, action.MappingId);
+        }
+
         public void ReplaceTouchpadAction(TouchpadMapAction oldAction, TouchpadMapAction action)
         {
             string mapId = oldAction.MappingId;

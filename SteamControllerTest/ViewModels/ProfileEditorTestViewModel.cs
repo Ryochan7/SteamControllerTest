@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SteamControllerTest.ButtonActions;
+using SteamControllerTest.TriggerActions;
 using SteamControllerTest.TouchpadActions;
 
 namespace SteamControllerTest.ViewModels
@@ -56,6 +57,9 @@ namespace SteamControllerTest.ViewModels
             get => touchpadBindings;
         }
 
+        private List<TriggerBindingItemsTest> triggerBindings = new List<TriggerBindingItemsTest>();
+        public List<TriggerBindingItemsTest> TriggerBindings => triggerBindings;
+
         private int selectedTouchBindIndex = -1;
         public int SelectTouchBindIndex
         {
@@ -68,6 +72,20 @@ namespace SteamControllerTest.ViewModels
             }
         }
         public event EventHandler SelectTouchBindIndexChanged;
+
+        private int selectTriggerBindIndex = -1;
+        public int SelectTriggerBindIndex
+        {
+            get => selectTriggerBindIndex;
+            set
+            {
+                if (selectTriggerBindIndex == value) return;
+                selectTriggerBindIndex = value;
+                SelectTriggerBindIndexChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SelectTriggerBindIndexChanged;
+
 
         private ObservableCollection<ActionSetItemsTest> actionSetItems = new ObservableCollection<ActionSetItemsTest>();
         public ObservableCollection<ActionSetItemsTest> ActionSetItems => actionSetItems;
@@ -150,6 +168,7 @@ namespace SteamControllerTest.ViewModels
             buttonBindings.Clear();
             buttonBindingsIndexDict.Clear();
             touchpadBindings.Clear();
+            triggerBindings.Clear();
 
             PopulateLayerItems();
             PopulateCurrentLayerBindings();
@@ -163,6 +182,7 @@ namespace SteamControllerTest.ViewModels
             buttonBindings.Clear();
             buttonBindingsIndexDict.Clear();
             touchpadBindings.Clear();
+            triggerBindings.Clear();
 
             PopulateCurrentLayerBindings();
         }
@@ -205,6 +225,17 @@ namespace SteamControllerTest.ViewModels
                 {
                     TouchBindingItemsTest tempItem = new TouchBindingItemsTest(meta.id, meta.displayName, tempTouchAct);
                     touchpadBindings.Add(tempItem);
+                }
+            }
+
+            foreach (InputBindingMeta meta in
+                mapper.BindingList.Where((item) => item.controlType == InputBindingMeta.InputControlType.Trigger))
+            {
+                if (tempProfile.CurrentActionSet.CurrentActionLayer.triggerActionDict.
+                        TryGetValue(meta.id, out TriggerMapAction tempTrigAct))
+                {
+                    TriggerBindingItemsTest tempItem = new TriggerBindingItemsTest(meta.id, meta.displayName, tempTrigAct);
+                    triggerBindings.Add(tempItem);
                 }
             }
         }
@@ -381,7 +412,7 @@ namespace SteamControllerTest.ViewModels
         {
             get
             {
-                string result = $"Layer {layer.Index}";
+                string result = $"Layer {layer.Index+1}";
                 if (!string.IsNullOrEmpty(layer.Name))
                 {
                     result = layer.Name;
@@ -433,7 +464,7 @@ namespace SteamControllerTest.ViewModels
         {
             get
             {
-                string result = $"Set {set.Index}";
+                string result = $"Set {set.Index+1}";
                 if (!string.IsNullOrEmpty(set.Name))
                 {
                     result = set.Name;
@@ -559,6 +590,54 @@ namespace SteamControllerTest.ViewModels
         public void UpdateAction(MapAction action)
         {
             this.mappedAction = action as ButtonMapAction;
+            RaiseUIUpdate();
+        }
+
+        private void RaiseUIUpdate()
+        {
+            MappedActionTypeChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    public class TriggerBindingItemsTest
+    {
+        private string displayInputMapString;
+        public string DisplayInputMapString
+        {
+            get => displayInputMapString;
+        }
+
+        public string bindingName;
+        public string BindingName
+        {
+            get => bindingName;
+            //set => bindingName = value;
+        }
+        //public event EventHandler BindingNameChanged;
+
+        private TriggerMapAction mappedAction;
+        public TriggerMapAction MappedAction
+        {
+            get => mappedAction;
+        }
+
+        public string MappedActionType
+        {
+            get => mappedAction.ActionTypeName;
+        }
+        public event EventHandler MappedActionTypeChanged;
+
+        public TriggerBindingItemsTest(string bindingName, string displayInputMap,
+            MapAction mappedAction)
+        {
+            this.bindingName = bindingName;
+            this.displayInputMapString = displayInputMap;
+            this.mappedAction = mappedAction as TriggerMapAction;
+        }
+
+        public void UpdateAction(TriggerMapAction action)
+        {
+            this.mappedAction = action;
             RaiseUIUpdate();
         }
 
