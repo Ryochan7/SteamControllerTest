@@ -153,6 +153,9 @@ namespace SteamControllerTest.ViewModels
 
             PopulateLayerItems();
             PopulateCurrentLayerBindings();
+
+            SelectedActionLayerIndex = 0;
+            layerItems[selectedActionLayerIndex].ItemActive = true;
         }
 
         public void RefreshLayerBindings()
@@ -221,6 +224,8 @@ namespace SteamControllerTest.ViewModels
 
                 actionResetEvent.Set();
             });
+
+            SelectedActionLayerIndex = 0;
         }
 
         public void SwitchActionLayer(int layerInd)

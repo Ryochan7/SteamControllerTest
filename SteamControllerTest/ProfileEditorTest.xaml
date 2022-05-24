@@ -37,7 +37,7 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <Button x:Name="addSetBtn" Content="Add Set +" Click="AddSetBtn_Click" />
+                <Button x:Name="addSetBtn" Content="Add Set +" Click="AddSetBtn_Click" Margin="20,0,0,0" />
                 <Button x:Name="removeSetBtn" Content="Remove Set -" Click="RemoveSetBtn_Click" />
             </WrapPanel>
 
@@ -66,7 +66,7 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <Button x:Name="addLayerBtn" Content="Add Layer +" Click="AddLayerBtn_Click" />
+                <Button x:Name="addLayerBtn" Content="Add Layer +" Click="AddLayerBtn_Click" Margin="20,0,0,0" />
                 <Button x:Name="removeLayerBtn" Content="Remove Layer -" Click="RemoveLayerBtn_Click" />
             </WrapPanel>
 
