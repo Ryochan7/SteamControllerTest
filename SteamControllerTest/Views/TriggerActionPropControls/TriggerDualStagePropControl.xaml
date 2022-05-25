@@ -32,6 +32,87 @@
                 <Label Content="Soft Pull" />
                 <Button x:Name="btnEditOpenSoftTest" Content="Test Soft Bind" Click="btnEditOpenSoftTest_Click"  Margin="8,0,0,0" MinWidth="60" />
             </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Dead Zone" />
+                <TextBox Text="{Binding DeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightDeadZone}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Content="_AntiDead Zone" />
+                <TextBox Text="{Binding AntiDeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightAntiDeadZone}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Soft Max Zone" />
+                <TextBox Text="{Binding MaxZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightMaxZone}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Hip Fire Delay (ms)" />
+                <TextBox Text="{Binding HipFireDelay, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightHipFireDelay}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Dual Stage Mode" />
+                <ComboBox SelectedIndex="{Binding SelectedDSModeIndex}">
+                    <ComboBoxItem>Threshold</ComboBoxItem>
+                    <ComboBoxItem>Exclusive Buttons</ComboBoxItem>
+                    <ComboBoxItem>Hair Trigger</ComboBoxItem>
+                    <ComboBoxItem>Hip Fire</ComboBoxItem>
+                    <ComboBoxItem>Hip Fire Exclusive Buttons</ComboBoxItem>
+
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightDSMode}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
+                </ComboBox>
+            </StackPanel>
+
         </StackPanel>
     </DockPanel>
 </UserControl>

@@ -48,6 +48,7 @@ namespace SteamControllerTest.Views
                         TriggerTranslatePropControl propControl = new TriggerTranslatePropControl();
                         propControl.PostInit(trigBindEditVM.Mapper, trigBindEditVM.Action);
                         propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged;
+                        propControl.TrigTransPropVM.ActionChanged += TrigTransPropVM_ActionChanged;
                         trigBindEditVM.DisplayControl = propControl;
                     }
 
@@ -58,6 +59,7 @@ namespace SteamControllerTest.Views
                         propControl.PostInit(trigBindEditVM.Mapper, trigBindEditVM.Action);
                         propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged;
                         propControl.RequestFuncEditor += PropControl_RequestFuncEditor;
+                        propControl.TrigDualStagePropVM.ActionChanged += TrigDualStagePropVM_ActionChanged;
                         trigBindEditVM.DisplayControl = propControl;
                     }
 
@@ -76,6 +78,16 @@ namespace SteamControllerTest.Views
                     trigBindEditVM.DisplayControl = null;
                     break;
             }
+        }
+
+        private void TrigTransPropVM_ActionChanged(object sender, TriggerMapAction e)
+        {
+            trigBindEditVM.UpdateAction(e);
+        }
+
+        private void TrigDualStagePropVM_ActionChanged(object sender, TriggerMapAction e)
+        {
+            trigBindEditVM.UpdateAction(e);
         }
 
         private void PropControl_RequestFuncEditor(object sender,
@@ -121,6 +133,21 @@ namespace SteamControllerTest.Views
                 trigBindEditVM.MigrateActionId(tempAction);
                 trigBindEditVM.SwitchAction(tempAction);
                 SetupDisplayControl();
+            }
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            switch (trigBindEditVM.Action)
+            {
+                case TriggerTranslate:
+                    break;
+                case TriggerDualStageAction:
+                    break;
+                case TriggerNoAction:
+                    break;
+                default:
+                    break;
             }
         }
     }

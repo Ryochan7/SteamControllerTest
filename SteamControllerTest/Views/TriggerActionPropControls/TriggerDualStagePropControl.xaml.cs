@@ -36,6 +36,7 @@ namespace SteamControllerTest.Views.TriggerActionPropControls
         }
 
         private TriggerDualStagePropViewModel trigDualStagePropVM;
+        public TriggerDualStagePropViewModel TrigDualStagePropVM => trigDualStagePropVM;
 
         public event EventHandler<int> ActionTypeIndexChanged;
         public event EventHandler<DualStageBindingArgs> RequestFuncEditor;

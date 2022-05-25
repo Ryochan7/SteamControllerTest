@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using SteamControllerTest.TriggerActions;
 using SteamControllerTest.MapperUtil;
 
@@ -145,11 +146,34 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
         public event EventHandler HighlightMaxZoneChanged;
 
         public event EventHandler ActionPropertyChanged;
+        public event EventHandler<TriggerMapAction> ActionChanged;
+
+        private bool replacedAction = false;
 
         public TriggerTranslatePropViewModel(Mapper mapper, TriggerMapAction action)
         {
             this.mapper = mapper;
             this.action = action as TriggerTranslate;
+
+            // Check if base ActionLayer action from composite layer
+            if (action.ParentAction == null &&
+                mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer &&
+                !mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.LayerActions.Contains(action) &&
+                MapAction.IsSameType(mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId], action))
+            {
+                // Test with temporary object
+                TriggerTranslate baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId] as TriggerTranslate;
+                TriggerTranslate tempAction = new TriggerTranslate();
+                tempAction.SoftCopyFromParent(baseLayerAction);
+                //int tempLayerId = mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.Index;
+                int tempId = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.FindNextAvailableId();
+                tempAction.Id = tempId;
+                //tempAction.MappingId = this.action.MappingId;
+
+                this.action = tempAction;
+
+                ActionPropertyChanged += ReplaceExistingLayerAction;
+            }
 
             outputTriggerItems.AddRange(new OutputTriggerItem[]
             {
@@ -165,6 +189,33 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
             DeadZoneChanged += TriggerTranslatePropViewModel_DeadZoneChanged;
             AntiDeadZoneChanged += TriggerTranslatePropViewModel_AntiDeadZoneChanged;
             MaxZoneChanged += TriggerTranslatePropViewModel_MaxZoneChanged;
+        }
+
+        private void ReplaceExistingLayerAction(object sender, EventArgs e)
+        {
+            if (!replacedAction)
+            {
+                ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+
+                mapper.QueueEvent(() =>
+                {
+                    this.action.ParentAction.Release(mapper, ignoreReleaseActions: true);
+
+                    mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddTriggerAction(this.action);
+                    if (mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer)
+                    {
+                        mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
+                    }
+
+                    resetEvent.Set();
+                });
+
+                resetEvent.Wait();
+
+                replacedAction = true;
+
+                ActionChanged?.Invoke(this, action);
+            }
         }
 
         private void TriggerTranslatePropViewModel_MaxZoneChanged(object sender, EventArgs e)

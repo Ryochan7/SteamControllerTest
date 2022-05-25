@@ -134,5 +134,10 @@ namespace SteamControllerTest.ViewModels
                 newAction.Id = action.Id;
             }
         }
+
+        public void UpdateAction(TriggerMapAction newAction)
+        {
+            this.action = newAction;
+        }
     }
 }
