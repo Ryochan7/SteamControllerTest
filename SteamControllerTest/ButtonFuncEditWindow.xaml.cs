@@ -77,6 +77,7 @@ namespace SteamControllerTest
                     bindControl.PostInit(btnFuncEditVM.Mapper, btnFuncEditVM.Action);
                     bindControl.RequestBindingEditor += TempControl_RequestBindingEditor;
                     bindControl.ActionChanged += BindControl_ActionChanged;
+                    bindControl.RequestClose += BindControl_RequestClose;
                     btnActionEditVM.DisplayControl = bindControl;
 
                     innerViewControl.DataContext = btnActionEditVM;
@@ -91,6 +92,11 @@ namespace SteamControllerTest
                 default:
                     break;
             }
+        }
+
+        private void BindControl_RequestClose(object sender, EventArgs e)
+        {
+            this.Close();
         }
 
         private void BindControl_ActionChanged(object sender, ButtonAction action)

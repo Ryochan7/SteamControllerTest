@@ -35,6 +35,8 @@
             </ComboBox>
         </StackPanel>
         -->
+        <Button Content="Close" Click="Button_Click_1" DockPanel.Dock="Bottom" HorizontalAlignment="Right" MinWidth="60" />
         <ContentControl x:Name="funcEditPropControl" Content="{Binding DisplayPropControl}" DockPanel.Dock="Bottom" IsEnabled="{Binding IsRealAction}" />
+        
     </DockPanel>
 </UserControl>

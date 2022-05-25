@@ -6,9 +6,17 @@
         xmlns:local="clr-namespace:SteamControllerTest"
         mc:Ignorable="d"
         Title="ProfileEditorTest" Height="450" Width="800">
-    <DockPanel>
+    <DockPanel Margin="8">
         <StackPanel DockPanel.Dock="Top">
-            <Button Content="Test Out JSON" Click="Button_Click_4" />
+            <DockPanel LastChildFill="False">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Profile Name" />
+                    <TextBox Text="{Binding ProfileName, UpdateSourceTrigger=LostFocus}" Width="200" DockPanel.Dock="Left" Margin="8,0,0,0" />
+                </StackPanel>
+                
+                <Button Content="Test Out JSON" Click="Button_Click_4" DockPanel.Dock="Right" />
+            </DockPanel>
+            
         </StackPanel>
 
         <StackPanel DockPanel.Dock="Top">

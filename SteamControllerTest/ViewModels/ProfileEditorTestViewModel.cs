@@ -38,6 +38,15 @@ namespace SteamControllerTest.ViewModels
             get => tempProfile;
         }
 
+        public string ProfileName
+        {
+            get => tempProfile.Name;
+            set
+            {
+                tempProfile.Name = value;
+            }
+        }
+
         private List<BindingItemsTest> buttonBindings = new List<BindingItemsTest>();
         public List<BindingItemsTest> ButtonBindings
         {

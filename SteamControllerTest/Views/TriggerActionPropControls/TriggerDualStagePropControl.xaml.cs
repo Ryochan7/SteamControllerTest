@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using SteamControllerTest.ViewModels.TriggerActionPropViewModels;
 using SteamControllerTest.TriggerActions;
+using SteamControllerTest.ButtonActions;
+using SteamControllerTest.ActionUtil;
 
 namespace SteamControllerTest.Views.TriggerActionPropControls
 {
@@ -22,9 +24,21 @@ namespace SteamControllerTest.Views.TriggerActionPropControls
     /// </summary>
     public partial class TriggerDualStagePropControl : UserControl
     {
+        public class DualStageBindingArgs : EventArgs
+        {
+            private AxisDirButton pullBtn;
+            public AxisDirButton PullBtn => pullBtn;
+
+            public DualStageBindingArgs(AxisDirButton pullBtn)
+            {
+                this.pullBtn = pullBtn;
+            }
+        }
+
         private TriggerDualStagePropViewModel trigDualStagePropVM;
 
         public event EventHandler<int> ActionTypeIndexChanged;
+        public event EventHandler<DualStageBindingArgs> RequestBindingEditor;
 
         public TriggerDualStagePropControl()
         {
@@ -46,6 +60,18 @@ namespace SteamControllerTest.Views.TriggerActionPropControls
         {
             ActionTypeIndexChanged?.Invoke(this,
                 triggerSelectControl.TrigActionSelVM.SelectedIndex);
+        }
+
+        private void btnEditOpenTest_Click(object sender, RoutedEventArgs e)
+        {
+            RequestBindingEditor?.Invoke(this,
+                new DualStageBindingArgs(trigDualStagePropVM.Action.FullPullActButton));
+        }
+
+        private void btnEditOpenSoftTest_Click(object sender, RoutedEventArgs e)
+        {
+            RequestBindingEditor?.Invoke(this,
+                new DualStageBindingArgs(trigDualStagePropVM.Action.SoftPullActButton));
         }
     }
 }

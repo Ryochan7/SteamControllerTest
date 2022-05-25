@@ -57,6 +57,7 @@ namespace SteamControllerTest.Views
                         TriggerDualStagePropControl propControl = new TriggerDualStagePropControl();
                         propControl.PostInit(trigBindEditVM.Mapper, trigBindEditVM.Action);
                         propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged;
+                        propControl.RequestBindingEditor += PropControl_RequestBindingEditor;
                         trigBindEditVM.DisplayControl = propControl;
                     }
 
@@ -75,6 +76,40 @@ namespace SteamControllerTest.Views
                     trigBindEditVM.DisplayControl = null;
                     break;
             }
+        }
+
+        private void PropControl_RequestBindingEditor(object sender,
+            TriggerDualStagePropControl.DualStageBindingArgs e)
+        {
+            FuncBindingControl tempControl = new FuncBindingControl();
+            tempControl.PostInit(trigBindEditVM.Mapper, e.PullBtn);
+            tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+            UserControl oldControl = trigBindEditVM.DisplayControl;
+            tempControl.RequestClose += (sender, args) =>
+            {
+                trigBindEditVM.DisplayControl = oldControl;
+            };
+
+            trigBindEditVM.DisplayControl = tempControl;
+        }
+
+        private void TempControl_RequestBindingEditor(object sender, ActionUtil.ActionFunc e)
+        {
+            OutputBindingEditorControl tempControl = new OutputBindingEditorControl();
+            FuncBindingControl bindControl = sender as FuncBindingControl;
+            tempControl.PostInit(trigBindEditVM.Mapper, bindControl.FuncBindVM.Action, e);
+            UserControl oldControl = bindControl;
+            tempControl.Finished += (sender, args) =>
+            {
+                bindControl.RefreshView();
+                trigBindEditVM.DisplayControl = oldControl;
+                //FuncBindingControl tempControl = new FuncBindingControl();
+                //tempControl.PostInit(btnFuncEditVM.Mapper, btnFuncEditVM.Action);
+                //tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+                //btnFuncEditVM.DisplayControl = tempControl;
+            };
+
+            trigBindEditVM.DisplayControl = tempControl;
         }
 
         private void PropControl_ActionTypeIndexChanged(object sender, int ind)

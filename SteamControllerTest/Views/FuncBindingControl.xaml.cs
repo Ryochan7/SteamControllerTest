@@ -29,6 +29,7 @@ namespace SteamControllerTest.Views
         private DefaultFuncPropControl defaultPropControl = new DefaultFuncPropControl();
         public event EventHandler<ActionFunc> RequestBindingEditor;
         public event EventHandler<ButtonAction> ActionChanged;
+        public event EventHandler RequestClose;
 
         public FuncBindingControl()
         {
@@ -222,6 +223,11 @@ namespace SteamControllerTest.Views
 
             ConnectPartialEvents();
             DataContext = funcBindVM;
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            RequestClose?.Invoke(this, EventArgs.Empty);
         }
     }
 }

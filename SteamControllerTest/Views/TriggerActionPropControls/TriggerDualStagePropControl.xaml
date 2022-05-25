@@ -10,7 +10,7 @@
     <DockPanel>
         <StackPanel>
             <local1:TriggerActionSelectControl x:Name="triggerSelectControl" />
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal"  Margin="0,8,0,0">
                 <Label Content="Name" />
                 <TextBox Text="{Binding Name,UpdateSourceTrigger=LostFocus}" Width="200">
                     <TextBox.Style>
@@ -23,6 +23,14 @@
                         </Style>
                     </TextBox.Style>
                 </TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="Full Pull" />
+                <Button x:Name="btnEditOpenTest" Content="Test Full Bind" Click="btnEditOpenTest_Click" Margin="8,0,0,0" MinWidth="60" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="Soft Pull" />
+                <Button x:Name="btnEditOpenSoftTest" Content="Test Soft Bind" Click="btnEditOpenSoftTest_Click"  Margin="8,0,0,0" MinWidth="60" />
             </StackPanel>
         </StackPanel>
     </DockPanel>
