@@ -37,6 +37,38 @@
                 </TextBox>
 
             </StackPanel>
+            
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Trackball" />
+                <CheckBox IsChecked="{Binding TrackballEnabled}" VerticalAlignment="Center">
+                    <CheckBox.Style>
+                        <Style TargetType="CheckBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightTrackballEnabled}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </CheckBox.Style>
+                </CheckBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Trackball Friction" />
+                <TextBox Text="{Binding TrackballFriction, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightTrackballFriction}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+
+            </StackPanel>
+            
         </StackPanel>
     </DockPanel>
 </UserControl>

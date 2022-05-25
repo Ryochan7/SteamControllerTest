@@ -46,6 +46,33 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler DeadZoneChanged;
 
+        public bool TrackballEnabled
+        {
+            get => action.TrackballEnabled;
+            set
+            {
+                action.TrackballEnabled = value;
+                TrackballEnabledChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler TrackballEnabledChanged;
+
+        public string TrackballFriction
+        {
+            get => action.TrackballFriction.ToString();
+            set
+            {
+                if (int.TryParse(value, out int temp))
+                {
+                    action.TrackballFriction = Math.Clamp(temp, 0, 100);
+                    TrackballFrictionChanged?.Invoke(this, EventArgs.Empty);
+                    ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+        public event EventHandler TrackballFrictionChanged;
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||
@@ -59,6 +86,20 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 action.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.DEAD_ZONE);
         }
         public event EventHandler HighlightDeadZoneChanged;
+
+        public bool HighlightTrackballEnabled
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.TRACKBALL_MODE);
+        }
+        public event EventHandler HighlightTrackballEnabledChanged;
+
+        public bool HighlightTrackballFriction
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.TRACKBALL_FRICTION);
+        }
+        public event EventHandler HighlightTrackballFrictionChanged;
 
         public event EventHandler ActionPropertyChanged;
 
@@ -91,7 +132,29 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
             NameChanged += TouchpadMousePropViewModel_NameChanged;
             DeadZoneChanged += TouchpadMousePropViewModel_DeadZoneChanged;
+            TrackballEnabledChanged += TouchpadMousePropViewModel_TrackballEnabledChanged;
+            TrackballFrictionChanged += TouchpadMousePropViewModel_TrackballFrictionChanged;
             ActionPropertyChanged += SetProfileDirty;
+        }
+
+        private void TouchpadMousePropViewModel_TrackballFrictionChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.TRACKBALL_FRICTION))
+            {
+                this.action.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.TRACKBALL_FRICTION);
+            }
+
+            HighlightTrackballFrictionChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TouchpadMousePropViewModel_TrackballEnabledChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.TRACKBALL_MODE))
+            {
+                this.action.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.TRACKBALL_MODE);
+            }
+
+            HighlightTrackballEnabledChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void SetProfileDirty(object sender, EventArgs e)

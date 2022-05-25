@@ -1505,6 +1505,28 @@ namespace SteamControllerTest
             }
             public event EventHandler DeadZoneChanged;
 
+            public bool TrackballEnabled
+            {
+                get => touchMouseAct.TrackballEnabled;
+                set
+                {
+                    touchMouseAct.TrackballEnabled = value;
+                    TrackballEnabledChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler TrackballEnabledChanged;
+
+            public int TrackballFriction
+            {
+                get => touchMouseAct.TrackballFriction;
+                set
+                {
+                    touchMouseAct.TrackballFriction = value;
+                    TrackballFrictionChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler TrackballFrictionChanged;
+
             public TouchpadMouseSettings(TouchpadMouse action)
             {
                 touchMouseAct = action;
@@ -1525,6 +1547,31 @@ namespace SteamControllerTest
         {
             mapAction = touchMouseAction;
             settings = new TouchpadMouseSettings(touchMouseAction);
+
+            NameChanged += TouchpadMouseSerializer_NameChanged;
+            settings.DeadZoneChanged += Settings_DeadZoneChanged;
+            settings.TrackballEnabledChanged += Settings_TrackballEnabledChanged;
+            settings.TrackballFrictionChanged += Settings_TrackballFrictionChanged;
+        }
+
+        private void Settings_TrackballFrictionChanged(object sender, EventArgs e)
+        {
+            touchMouseAction.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.TRACKBALL_FRICTION);
+        }
+
+        private void Settings_TrackballEnabledChanged(object sender, EventArgs e)
+        {
+            touchMouseAction.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.TRACKBALL_MODE);
+        }
+
+        private void Settings_DeadZoneChanged(object sender, EventArgs e)
+        {
+            touchMouseAction.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.DEAD_ZONE);
+        }
+
+        private void TouchpadMouseSerializer_NameChanged(object sender, EventArgs e)
+        {
+            touchMouseAction.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.NAME);
         }
 
         // Pre-serialize

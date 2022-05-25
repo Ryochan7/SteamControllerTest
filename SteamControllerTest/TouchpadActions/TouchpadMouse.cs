@@ -82,9 +82,20 @@ namespace SteamControllerTest.TouchpadActions
         private TrackballVelData trackData;
 
         private bool trackballEnabled = true;
+        public bool TrackballEnabled
+        {
+            get => trackballEnabled;
+            set => trackballEnabled = value;
+        }
         //private bool useParentTrackball;
 
         private int trackballFriction = TRACKBALL_JOY_FRICTION;
+        public int TrackballFriction
+        {
+            get => trackballFriction;
+            set => trackballFriction = value;
+        }
+
         private bool useParentTrackFriction;
 
         public TouchpadMouse()
