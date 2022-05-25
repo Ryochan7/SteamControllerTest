@@ -41,6 +41,12 @@ namespace SteamControllerTest.GyroActions
 
         public abstract GyroMapAction DuplicateAction();
 
+        public void CopyBaseMapProps(GyroMapAction sourceAction)
+        {
+            mappingId = sourceAction.mappingId;
+            gyroSensDefinition = new GyroSensDefinition(sourceAction.GyroSensDefinition);
+        }
+
         public virtual void SoftCopyFromParent(GyroMapAction parentAction)
         {
         }

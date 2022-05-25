@@ -484,6 +484,46 @@ namespace SteamControllerTest
             reverseActionDict.Add(action, action.MappingId);
         }
 
+        public void ReplaceGyroAction(GyroMapAction oldAction, GyroMapAction action)
+        {
+            string mapId = oldAction.MappingId;
+            int ind = layerActions.FindIndex((item) => item == oldAction);
+            int mappedInd = -1;
+            if (ind >= 0)
+            {
+                GyroMapAction tempAction = layerActions[ind] as GyroMapAction;
+                layerActions.RemoveAt(ind);
+                layerActions.Insert(ind, action);
+
+                normalActionDict.Remove(mapId);
+                reverseActionDict.Remove(tempAction);
+
+                mappedInd = mappedActions.FindIndex((item) => (item == tempAction));
+                mappedActions.RemoveAt(mappedInd);
+                mappedActions.Insert(mappedInd, action);
+            }
+            else
+            {
+                layerActions.Add(action);
+                mappedActions.Add(action);
+            }
+
+            gyroActionDict[mapId] = action;
+
+            normalActionDict.Add(mapId, action);
+            reverseActionDict.Add(action, mapId);
+        }
+
+        public void AddGyroAction(GyroMapAction action)
+        {
+            layerActions.Add(action);
+            mappedActions.Add(action);
+            gyroActionDict[action.MappingId] = action;
+
+            normalActionDict.Add(action.MappingId, action);
+            reverseActionDict.Add(action, action.MappingId);
+        }
+
         public void ReplaceTouchpadAction(TouchpadMapAction oldAction, TouchpadMapAction action)
         {
             string mapId = oldAction.MappingId;

@@ -15,5 +15,23 @@ namespace SteamControllerTest.GyroActions
         public int accelMaxLeanY;
         public int accelMinLeanZ;
         public int accelMaxLeanZ;
+
+        public GyroSensDefinition()
+        {
+        }
+
+        public GyroSensDefinition(GyroSensDefinition sourceDefinition)
+        {
+            this.elapsedReference = sourceDefinition.elapsedReference;
+            this.mouseCoefficient = sourceDefinition.mouseCoefficient;
+            this.mouseOffset = sourceDefinition.mouseOffset;
+
+            this.accelMinLeanX = sourceDefinition.accelMinLeanX;
+            this.accelMaxLeanX = sourceDefinition.accelMaxLeanX;
+            this.accelMinLeanY = sourceDefinition.accelMinLeanY;
+            this.accelMaxLeanY = sourceDefinition.accelMaxLeanY;
+            this.accelMinLeanZ = sourceDefinition.accelMinLeanZ;
+            this.accelMaxLeanZ = sourceDefinition.accelMaxLeanZ;
+        }
     }
 }

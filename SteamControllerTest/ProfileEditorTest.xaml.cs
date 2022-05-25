@@ -18,6 +18,7 @@ using SteamControllerTest.ViewModels;
 using SteamControllerTest.TriggerActions;
 using SteamControllerTest.TouchpadActions;
 using SteamControllerTest.StickActions;
+using SteamControllerTest.GyroActions;
 
 namespace SteamControllerTest
 {
@@ -241,7 +242,16 @@ namespace SteamControllerTest
 
         private void GyroActionEdit_Button_Click(object sender, RoutedEventArgs e)
         {
+            int selectedInd = editorTestVM.SelectGyroBindIndex;
+            if (selectedInd >= 0)
+            {
+                GyroMapAction tempAction = editorTestVM.GyroBindings[selectedInd].MappedAction;
+                GyroBindEditWindow gyroBindEditWin = new GyroBindEditWindow();
+                gyroBindEditWin.PostInit(editorTestVM.DeviceMapper, tempAction);
+                gyroBindEditWin.ShowDialog();
 
+                editorTestVM.GyroBindings[selectedInd].UpdateAction(gyroBindEditWin.GyroBindEditVM.Action);
+            }
         }
     }
 }
