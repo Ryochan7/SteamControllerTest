@@ -12,6 +12,8 @@ using Newtonsoft.Json.Linq;
 using SteamControllerTest.ButtonActions;
 using SteamControllerTest.TriggerActions;
 using SteamControllerTest.TouchpadActions;
+using SteamControllerTest.StickActions;
+using SteamControllerTest.GyroActions;
 
 namespace SteamControllerTest.ViewModels
 {
@@ -94,6 +96,39 @@ namespace SteamControllerTest.ViewModels
             }
         }
         public event EventHandler SelectTriggerBindIndexChanged;
+
+        private List<StickBindingItemsTest> stickBindings = new List<StickBindingItemsTest>();
+        public List<StickBindingItemsTest> StickBindings => stickBindings;
+
+        private int selectStickBindIndex = -1;
+        public int SelectStickBindIndex
+        {
+            get => selectStickBindIndex;
+            set
+            {
+                if (selectStickBindIndex == value) return;
+                selectStickBindIndex = value;
+                SelectStickBindIndexChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SelectStickBindIndexChanged;
+
+
+        private List<GyroBindingItemsTest> gyroBindings = new List<GyroBindingItemsTest>();
+        public List<GyroBindingItemsTest> GyroBindings => gyroBindings;
+
+        private int selectGyroBindIndex = -1;
+        public int SelectGyroBindIndex
+        {
+            get => selectGyroBindIndex;
+            set
+            {
+                if (selectGyroBindIndex == value) return;
+                selectGyroBindIndex = value;
+                SelectGyroBindIndexChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SelectGyroBindIndexChanged;
 
 
         private ObservableCollection<ActionSetItemsTest> actionSetItems = new ObservableCollection<ActionSetItemsTest>();
@@ -252,6 +287,28 @@ namespace SteamControllerTest.ViewModels
                 {
                     TriggerBindingItemsTest tempItem = new TriggerBindingItemsTest(meta.id, meta.displayName, tempTrigAct);
                     triggerBindings.Add(tempItem);
+                }
+            }
+
+            foreach (InputBindingMeta meta in
+                mapper.BindingList.Where((item) => item.controlType == InputBindingMeta.InputControlType.Stick))
+            {
+                if (tempProfile.CurrentActionSet.CurrentActionLayer.stickActionDict.
+                        TryGetValue(meta.id, out StickMapAction tempTrigAct))
+                {
+                    StickBindingItemsTest tempItem = new StickBindingItemsTest(meta.id, meta.displayName, tempTrigAct);
+                    stickBindings.Add(tempItem);
+                }
+            }
+
+            foreach (InputBindingMeta meta in
+                mapper.BindingList.Where((item) => item.controlType == InputBindingMeta.InputControlType.Gyro))
+            {
+                if (tempProfile.CurrentActionSet.CurrentActionLayer.gyroActionDict.
+                        TryGetValue(meta.id, out GyroMapAction tempTrigAct))
+                {
+                    GyroBindingItemsTest tempItem = new GyroBindingItemsTest(meta.id, meta.displayName, tempTrigAct);
+                    gyroBindings.Add(tempItem);
                 }
             }
         }
@@ -652,6 +709,102 @@ namespace SteamControllerTest.ViewModels
         }
 
         public void UpdateAction(TriggerMapAction action)
+        {
+            this.mappedAction = action;
+            RaiseUIUpdate();
+        }
+
+        private void RaiseUIUpdate()
+        {
+            MappedActionTypeChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    public class StickBindingItemsTest
+    {
+        private string displayInputMapString;
+        public string DisplayInputMapString
+        {
+            get => displayInputMapString;
+        }
+
+        public string bindingName;
+        public string BindingName
+        {
+            get => bindingName;
+            //set => bindingName = value;
+        }
+        //public event EventHandler BindingNameChanged;
+
+        private StickMapAction mappedAction;
+        public StickMapAction MappedAction
+        {
+            get => mappedAction;
+        }
+
+        public string MappedActionType
+        {
+            get => mappedAction.ActionTypeName;
+        }
+        public event EventHandler MappedActionTypeChanged;
+
+        public StickBindingItemsTest(string bindingName, string displayInputMap,
+            MapAction mappedAction)
+        {
+            this.bindingName = bindingName;
+            this.displayInputMapString = displayInputMap;
+            this.mappedAction = mappedAction as StickMapAction;
+        }
+
+        public void UpdateAction(StickMapAction action)
+        {
+            this.mappedAction = action;
+            RaiseUIUpdate();
+        }
+
+        private void RaiseUIUpdate()
+        {
+            MappedActionTypeChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    public class GyroBindingItemsTest
+    {
+        private string displayInputMapString;
+        public string DisplayInputMapString
+        {
+            get => displayInputMapString;
+        }
+
+        public string bindingName;
+        public string BindingName
+        {
+            get => bindingName;
+            //set => bindingName = value;
+        }
+        //public event EventHandler BindingNameChanged;
+
+        private GyroMapAction mappedAction;
+        public GyroMapAction MappedAction
+        {
+            get => mappedAction;
+        }
+
+        public string MappedActionType
+        {
+            get => mappedAction.ActionTypeName;
+        }
+        public event EventHandler MappedActionTypeChanged;
+
+        public GyroBindingItemsTest(string bindingName, string displayInputMap,
+            MapAction mappedAction)
+        {
+            this.bindingName = bindingName;
+            this.displayInputMapString = displayInputMap;
+            this.mappedAction = mappedAction as GyroMapAction;
+        }
+
+        public void UpdateAction(GyroMapAction action)
         {
             this.mappedAction = action;
             RaiseUIUpdate();

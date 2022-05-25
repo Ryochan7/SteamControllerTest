@@ -444,6 +444,46 @@ namespace SteamControllerTest
             reverseActionDict.Add(action, action.MappingId);
         }
 
+        public void ReplaceStickAction(StickMapAction oldAction, StickMapAction action)
+        {
+            string mapId = oldAction.MappingId;
+            int ind = layerActions.FindIndex((item) => item == oldAction);
+            int mappedInd = -1;
+            if (ind >= 0)
+            {
+                StickMapAction tempAction = layerActions[ind] as StickMapAction;
+                layerActions.RemoveAt(ind);
+                layerActions.Insert(ind, action);
+
+                normalActionDict.Remove(mapId);
+                reverseActionDict.Remove(tempAction);
+
+                mappedInd = mappedActions.FindIndex((item) => (item == tempAction));
+                mappedActions.RemoveAt(mappedInd);
+                mappedActions.Insert(mappedInd, action);
+            }
+            else
+            {
+                layerActions.Add(action);
+                mappedActions.Add(action);
+            }
+
+            stickActionDict[mapId] = action;
+
+            normalActionDict.Add(mapId, action);
+            reverseActionDict.Add(action, mapId);
+        }
+
+        public void AddStickAction(StickMapAction action)
+        {
+            layerActions.Add(action);
+            mappedActions.Add(action);
+            stickActionDict[action.MappingId] = action;
+
+            normalActionDict.Add(action.MappingId, action);
+            reverseActionDict.Add(action, action.MappingId);
+        }
+
         public void ReplaceTouchpadAction(TouchpadMapAction oldAction, TouchpadMapAction action)
         {
             string mapId = oldAction.MappingId;

@@ -17,6 +17,7 @@ using SteamControllerTest.Views;
 using SteamControllerTest.ViewModels;
 using SteamControllerTest.TriggerActions;
 using SteamControllerTest.TouchpadActions;
+using SteamControllerTest.StickActions;
 
 namespace SteamControllerTest
 {
@@ -222,6 +223,25 @@ namespace SteamControllerTest
 
                 editorTestVM.TriggerBindings[selectedInd].UpdateAction(trigBindEditWin.TrigBindEditVM.Action);
             }
+        }
+
+        private void StickActionEdit_Button_Click(object sender, RoutedEventArgs e)
+        {
+            int selectedInd = editorTestVM.SelectTriggerBindIndex;
+            if (selectedInd >= 0)
+            {
+                StickMapAction tempAction = editorTestVM.StickBindings[selectedInd].MappedAction;
+                StickBindEditWindow stickBindEditWin = new StickBindEditWindow();
+                stickBindEditWin.PostInit(editorTestVM.DeviceMapper, tempAction);
+                stickBindEditWin.ShowDialog();
+
+                editorTestVM.StickBindings[selectedInd].UpdateAction(stickBindEditWin.StickBindEditVM.Action);
+            }
+        }
+
+        private void GyroActionEdit_Button_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

@@ -17,6 +17,12 @@ namespace SteamControllerTest.StickActions
         public abstract void Prepare(Mapper mapper, int axisXVal, int axisYVal, bool alterState = true);
 
         public abstract StickMapAction DuplicateAction();
+
+        public void CopyBaseMapProps(StickMapAction sourceAction)
+        {
+            mappingId = sourceAction.mappingId;
+            stickDefinition = new StickDefinition(sourceAction.stickDefinition);
+        }
         public virtual void SoftCopyFromParent(StickMapAction parentAction)
         {
         }
