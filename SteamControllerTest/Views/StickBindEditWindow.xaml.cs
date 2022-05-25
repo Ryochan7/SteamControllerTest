@@ -53,8 +53,22 @@ namespace SteamControllerTest.Views
 
                     break;
                 case StickTranslate:
+                    {
+                        StickTranslatePropControl propControl = new StickTranslatePropControl();
+                        propControl.PostInit(stickBindEditVM.Mapper, stickBindEditVM.Action);
+                        propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged; ;
+                        stickBindEditVM.DisplayControl = propControl;
+                    }
+
                     break;
                 case StickPadAction:
+                    {
+                        StickPadActionControl propControl = new StickPadActionControl();
+                        propControl.PostInit(stickBindEditVM.Mapper, stickBindEditVM.Action);
+                        propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged; ;
+                        stickBindEditVM.DisplayControl = propControl;
+                    }
+
                     break;
                 default:
                     break;

@@ -227,7 +227,7 @@ namespace SteamControllerTest
 
         private void StickActionEdit_Button_Click(object sender, RoutedEventArgs e)
         {
-            int selectedInd = editorTestVM.SelectTriggerBindIndex;
+            int selectedInd = editorTestVM.SelectStickBindIndex;
             if (selectedInd >= 0)
             {
                 StickMapAction tempAction = editorTestVM.StickBindings[selectedInd].MappedAction;
