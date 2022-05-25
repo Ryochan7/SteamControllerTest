@@ -13,8 +13,9 @@
                     <Label Content="Profile Name" />
                     <TextBox Text="{Binding ProfileName, UpdateSourceTrigger=LostFocus}" Width="200" DockPanel.Dock="Left" Margin="8,0,0,0" />
                 </StackPanel>
-                
+
                 <Button Content="Test Out JSON" Click="Button_Click_4" DockPanel.Dock="Right" />
+                <CheckBox IsChecked="{Binding OverwriteFile}" Content="Overwrite" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="0,0,8,0" />
             </DockPanel>
             
         </StackPanel>
@@ -89,18 +90,20 @@
 
         <TabControl>
             <TabItem Header="Buttons">
-                <ItemsControl x:Name="bindingsItemsControl" ItemsSource="{Binding ButtonBindings}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="JOE BIDEN. WAKE UP" />
-                                <TextBlock Text="{Binding DisplayInputMapString}" Margin="10,0,0,0" />
-                                <TextBlock Text="{Binding MappedActionType}" Margin="10,0,0,0" />
-                                <Button Content="Test" Click="ButtonActionEditButton_Click" Tag="{Binding BindingName}" Margin="10,0,0,0" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <ScrollViewer>
+                    <ItemsControl x:Name="bindingsItemsControl" ItemsSource="{Binding ButtonBindings}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="JOE BIDEN. WAKE UP" />
+                                    <TextBlock Text="{Binding DisplayInputMapString}" Margin="10,0,0,0" />
+                                    <TextBlock Text="{Binding MappedActionType}" Margin="10,0,0,0" />
+                                    <Button Content="Test" Click="ButtonActionEditButton_Click" Tag="{Binding BindingName}" Margin="10,0,0,0" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
                 
             </TabItem>
             <TabItem Header="Touchpads">

@@ -140,6 +140,13 @@ namespace SteamControllerTest.ViewModels
             }
         }
 
+        private bool overwriteFile;
+        public bool OverwriteFile
+        {
+            get => overwriteFile;
+            set => overwriteFile = value;
+        }
+
         public ProfileEditorTestViewModel(Mapper mapper, ProfileEntity profileEnt, Profile currentProfile)
         {
             this.mapper = mapper;
@@ -308,17 +315,17 @@ namespace SteamControllerTest.ViewModels
 
             actionResetEvent.Wait();
 
-            if (!string.IsNullOrEmpty(tempOutJson))
+            if (!string.IsNullOrEmpty(tempOutJson) && overwriteFile)
             {
-                //using (StreamWriter writer = new StreamWriter(tempEntity.ProfilePath))
-                //using (JsonTextWriter jwriter = new JsonTextWriter(writer))
-                //{
-                //    jwriter.Formatting = Formatting.Indented;
-                //    jwriter.Indentation = 2;
-                //    JObject tempJObj = JObject.Parse(tempOutJson);
-                //    tempJObj.WriteTo(jwriter);
-                //    //writer.Write(tempOutJson);
-                //}
+                using (StreamWriter writer = new StreamWriter(tempEntity.ProfilePath))
+                using (JsonTextWriter jwriter = new JsonTextWriter(writer))
+                {
+                    jwriter.Formatting = Formatting.Indented;
+                    jwriter.Indentation = 2;
+                    JObject tempJObj = JObject.Parse(tempOutJson);
+                    tempJObj.WriteTo(jwriter);
+                    //writer.Write(tempOutJson);
+                }
             }
         }
 

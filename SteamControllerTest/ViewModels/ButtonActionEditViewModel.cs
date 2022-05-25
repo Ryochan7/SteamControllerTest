@@ -757,35 +757,39 @@ namespace SteamControllerTest.ViewModels
             {
                 gamepadIndexAliases = new Dictionary<JoypadActionCodes, int>()
                 {
-                    [JoypadActionCodes.Empty] = 0,
-                    [JoypadActionCodes.X360_A] = 1,
-                    [JoypadActionCodes.X360_B] = 2,
-                    [JoypadActionCodes.X360_X] = 3,
-                    [JoypadActionCodes.X360_Y] = 4,
-                    [JoypadActionCodes.X360_LB] = 5,
-                    [JoypadActionCodes.X360_RB] = 6,
-                    [JoypadActionCodes.X360_Guide] = 7,
-                    [JoypadActionCodes.X360_Back] = 8,
-                    [JoypadActionCodes.X360_Start] = 9,
-                    [JoypadActionCodes.X360_ThumbL] = 10,
-                    [JoypadActionCodes.X360_ThumbR] = 11,
+                    [JoypadActionCodes.Empty] = tempInd++,
+                    [JoypadActionCodes.X360_A] = tempInd++,
+                    [JoypadActionCodes.X360_B] = tempInd++,
+                    [JoypadActionCodes.X360_X] = tempInd++,
+                    [JoypadActionCodes.X360_Y] = tempInd++,
+                    [JoypadActionCodes.X360_LB] = tempInd++,
+                    [JoypadActionCodes.X360_RB] = tempInd++,
+                    [JoypadActionCodes.X360_LT] = tempInd++,
+                    [JoypadActionCodes.X360_RT] = tempInd++,
+                    [JoypadActionCodes.X360_Guide] = tempInd++,
+                    [JoypadActionCodes.X360_Back] = tempInd++,
+                    [JoypadActionCodes.X360_Start] = tempInd++,
+                    [JoypadActionCodes.X360_ThumbL] = tempInd++,
+                    [JoypadActionCodes.X360_ThumbR] = tempInd++,
                 };
 
                 tempInd = 0;
                 gamepadComboItems.AddRange(new GamepadCodeItem[]
                 {
-                    new GamepadCodeItem("Unbound", JoypadActionCodes.Empty, 0),
-                    new GamepadCodeItem("X360_A", JoypadActionCodes.X360_A, 1),
-                    new GamepadCodeItem("X360_B", JoypadActionCodes.X360_B, 2),
-                    new GamepadCodeItem("X360_X", JoypadActionCodes.X360_X, 3),
-                    new GamepadCodeItem("X360_Y", JoypadActionCodes.X360_Y, 4),
-                    new GamepadCodeItem("X360_LB", JoypadActionCodes.X360_LB, 5),
-                    new GamepadCodeItem("X360_RB", JoypadActionCodes.X360_RB, 6),
-                    new GamepadCodeItem("X360_Guide", JoypadActionCodes.X360_Guide, 7),
-                    new GamepadCodeItem("X360_Back", JoypadActionCodes.X360_Back, 8),
-                    new GamepadCodeItem("X360_Start", JoypadActionCodes.X360_Start, 9),
-                    new GamepadCodeItem("X360_ThumbL", JoypadActionCodes.X360_ThumbL, 10),
-                    new GamepadCodeItem("X360_ThumbR", JoypadActionCodes.X360_ThumbR, 11),
+                    new GamepadCodeItem("Unbound", JoypadActionCodes.Empty, tempInd++),
+                    new GamepadCodeItem("X360_A", JoypadActionCodes.X360_A, tempInd++),
+                    new GamepadCodeItem("X360_B", JoypadActionCodes.X360_B, tempInd++),
+                    new GamepadCodeItem("X360_X", JoypadActionCodes.X360_X, tempInd++),
+                    new GamepadCodeItem("X360_Y", JoypadActionCodes.X360_Y, tempInd++),
+                    new GamepadCodeItem("X360_LB", JoypadActionCodes.X360_LB, tempInd++),
+                    new GamepadCodeItem("X360_RB", JoypadActionCodes.X360_RB, tempInd++),
+                    new GamepadCodeItem("X360_LT", JoypadActionCodes.X360_LT, tempInd++),
+                    new GamepadCodeItem("X360_RT", JoypadActionCodes.X360_RT, tempInd++),
+                    new GamepadCodeItem("X360_Guide", JoypadActionCodes.X360_Guide, tempInd++),
+                    new GamepadCodeItem("X360_Back", JoypadActionCodes.X360_Back, tempInd++),
+                    new GamepadCodeItem("X360_Start", JoypadActionCodes.X360_Start, tempInd++),
+                    new GamepadCodeItem("X360_ThumbL", JoypadActionCodes.X360_ThumbL, tempInd++),
+                    new GamepadCodeItem("X360_ThumbR", JoypadActionCodes.X360_ThumbR, tempInd++),
                 });
             }
 
