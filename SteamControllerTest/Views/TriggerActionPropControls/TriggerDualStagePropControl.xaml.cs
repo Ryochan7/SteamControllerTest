@@ -38,7 +38,7 @@ namespace SteamControllerTest.Views.TriggerActionPropControls
         private TriggerDualStagePropViewModel trigDualStagePropVM;
 
         public event EventHandler<int> ActionTypeIndexChanged;
-        public event EventHandler<DualStageBindingArgs> RequestBindingEditor;
+        public event EventHandler<DualStageBindingArgs> RequestFuncEditor;
 
         public TriggerDualStagePropControl()
         {
@@ -64,13 +64,13 @@ namespace SteamControllerTest.Views.TriggerActionPropControls
 
         private void btnEditOpenTest_Click(object sender, RoutedEventArgs e)
         {
-            RequestBindingEditor?.Invoke(this,
+            RequestFuncEditor?.Invoke(this,
                 new DualStageBindingArgs(trigDualStagePropVM.Action.FullPullActButton));
         }
 
         private void btnEditOpenSoftTest_Click(object sender, RoutedEventArgs e)
         {
-            RequestBindingEditor?.Invoke(this,
+            RequestFuncEditor?.Invoke(this,
                 new DualStageBindingArgs(trigDualStagePropVM.Action.SoftPullActButton));
         }
     }

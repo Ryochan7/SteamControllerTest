@@ -57,7 +57,7 @@ namespace SteamControllerTest.Views
                         TriggerDualStagePropControl propControl = new TriggerDualStagePropControl();
                         propControl.PostInit(trigBindEditVM.Mapper, trigBindEditVM.Action);
                         propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged;
-                        propControl.RequestBindingEditor += PropControl_RequestBindingEditor;
+                        propControl.RequestFuncEditor += PropControl_RequestFuncEditor;
                         trigBindEditVM.DisplayControl = propControl;
                     }
 
@@ -78,7 +78,7 @@ namespace SteamControllerTest.Views
             }
         }
 
-        private void PropControl_RequestBindingEditor(object sender,
+        private void PropControl_RequestFuncEditor(object sender,
             TriggerDualStagePropControl.DualStageBindingArgs e)
         {
             FuncBindingControl tempControl = new FuncBindingControl();
