@@ -12,7 +12,7 @@
             <ComboBox SelectedIndex="{Binding SelectedIndex}" MinWidth="100">
                 <ComboBoxItem>Unbound</ComboBoxItem>
                 <ComboBoxItem>Mouse</ComboBoxItem>
-                <ComboBoxItem>Joystick</ComboBoxItem>
+                <ComboBoxItem>Mouse-like Joystick</ComboBoxItem>
             </ComboBox>
         </StackPanel>
     </DockPanel>

@@ -46,6 +46,15 @@ namespace SteamControllerTest.ViewModels
             GyroMapAction result = null;
             switch (ind)
             {
+                case 0:
+                    result = new GyroNoMapAction();
+                    break;
+                case 1:
+                    result = new GyroMouse();
+                    break;
+                case 2:
+                    result = new GyroMouseJoystick();
+                    break;
                 default:
                     break;
             }

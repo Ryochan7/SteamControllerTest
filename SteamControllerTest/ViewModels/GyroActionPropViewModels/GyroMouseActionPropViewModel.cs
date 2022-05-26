@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SteamControllerTest.GyroActions;
+using SteamControllerTest.MapperUtil;
 
 namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 {
@@ -27,6 +28,9 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             }
         }
         public event EventHandler DeadZoneChanged;
+
+        private List<GyroTriggerButtonItem> triggerButtonItems;
+        public List<GyroTriggerButtonItem> TriggerButtonItems => triggerButtonItems;
 
         public bool HighlightName
         {
@@ -71,6 +75,8 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
                 ActionPropertyChanged += ReplaceExistingLayerAction;
             }
 
+            PopulateModel();
+
             NameChanged += GyroMouseActionPropViewModel_NameChanged;
             DeadZoneChanged += GyroMouseActionPropViewModel_DeadZoneChanged;
         }
@@ -93,6 +99,70 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             }
 
             HighlightNameChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void PopulateModel()
+        {
+            triggerButtonItems.AddRange(new GyroTriggerButtonItem[]
+            {
+                new GyroTriggerButtonItem("A", JoypadActionCodes.BtnSouth),
+                new GyroTriggerButtonItem("B", JoypadActionCodes.BtnEast),
+                new GyroTriggerButtonItem("X", JoypadActionCodes.BtnWest),
+                new GyroTriggerButtonItem("Y", JoypadActionCodes.BtnNorth),
+                new GyroTriggerButtonItem("Left Bumper", JoypadActionCodes.BtnLShoulder),
+                new GyroTriggerButtonItem("Right Bumper", JoypadActionCodes.BtnRShoulder),
+                new GyroTriggerButtonItem("Left Trigger", JoypadActionCodes.AxisLTrigger),
+                new GyroTriggerButtonItem("Right Trigger", JoypadActionCodes.AxisRTrigger),
+                new GyroTriggerButtonItem("Left Grip", JoypadActionCodes.BtnLGrip),
+                new GyroTriggerButtonItem("Right Grip", JoypadActionCodes.BtnRGrip),
+                new GyroTriggerButtonItem("Left Touchpad Touch", JoypadActionCodes.LPadTouch),
+                new GyroTriggerButtonItem("Right Touchpad Touch", JoypadActionCodes.RPadTouch),
+                new GyroTriggerButtonItem("Stick Click", JoypadActionCodes.BtnThumbL),
+                new GyroTriggerButtonItem("Back", JoypadActionCodes.BtnSelect),
+                new GyroTriggerButtonItem("Start", JoypadActionCodes.BtnStart),
+                new GyroTriggerButtonItem("Steam", JoypadActionCodes.BtnMode),
+            });
+
+            foreach(JoypadActionCodes code in action.mouseParams.gyroTriggerButtons)
+            {
+                GyroTriggerButtonItem tempItem = triggerButtonItems.Find((item) => item.Code == code);
+                if (tempItem != null)
+                {
+                    tempItem.Enabled = true;
+                }
+            }
+        }
+    }
+
+    public class GyroTriggerButtonItem
+    {
+        private string displayString;
+        public string DisplayString
+        {
+            get => displayString;
+        }
+
+        private JoypadActionCodes code;
+        public JoypadActionCodes Code => code;
+
+        private bool enabled;
+        public bool Enabled
+        {
+            get => enabled;
+            set
+            {
+                enabled = value;
+                EnabledChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler EnabledChanged;
+
+        public GyroTriggerButtonItem(string displayString, JoypadActionCodes code,
+            bool enabled=false)
+        {
+            this.displayString = displayString;
+            this.code = code;
+            this.enabled = enabled;
         }
     }
 }

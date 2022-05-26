@@ -40,6 +40,33 @@
                 </TextBox>
             </StackPanel>
 
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Trigger Buttons" />
+                <ListView ItemsSource="{Binding TriggerButtonItems}" Height="50">
+                    <ListView.View>
+                        <GridView>
+                            <GridView.Columns>
+                                <GridViewColumn Width="200">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding DisplayName}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Width="50">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding Enabled}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView.Columns>
+                            
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </StackPanel>
+
         </StackPanel>
     </DockPanel>
 </UserControl>
