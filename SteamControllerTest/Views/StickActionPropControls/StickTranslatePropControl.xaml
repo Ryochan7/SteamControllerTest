@@ -41,6 +41,51 @@
                 </ComboBox>
             </StackPanel>
 
+            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                <Label Content="_Dead Zone" />
+                <TextBox Text="{Binding DeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightDeadZone}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                <Label Content="_AntiDead Zone" />
+                <TextBox Text="{Binding AntiDeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightAntiDeadZone}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                <Label Content="_Max Zone" />
+                <TextBox Text="{Binding MaxZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightMaxZone}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </StackPanel>
+
         </StackPanel>
     </DockPanel>
 </UserControl>

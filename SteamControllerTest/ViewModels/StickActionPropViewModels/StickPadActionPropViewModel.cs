@@ -52,6 +52,21 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
         }
         public event EventHandler SelectedPadModeIndexChanged;
 
+        public bool ShowDiagonalPad
+        {
+            get => action.CurrentMode == StickPadAction.DPadMode.EightWay ||
+                action.CurrentMode == StickPadAction.DPadMode.FourWayDiagonal;
+        }
+        public event EventHandler ShowDiagonalPadChanged;
+
+        public bool ShowCardinalPad
+        {
+            get => action.CurrentMode == StickPadAction.DPadMode.Standard ||
+                action.CurrentMode == StickPadAction.DPadMode.EightWay ||
+                action.CurrentMode == StickPadAction.DPadMode.FourWayCardinal;
+        }
+        public event EventHandler ShowCardinalPadChanged;
+
         public string DeadZone
         {
             get => action.DeadMod.DeadZone.ToString();
@@ -142,7 +157,16 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
             PrepareModel();
 
             NameChanged += StickPadActionPropViewModel_NameChanged;
+            SelectedPadModeIndexChanged += ChangeStickPadMode;
             SelectedPadModeIndexChanged += StickPadActionPropViewModel_SelectedPadModeIndexChanged;
+        }
+
+        private void ChangeStickPadMode(object sender, EventArgs e)
+        {
+            action.CurrentMode = padModeItems[selectedPadModeIndex].DPadMode;
+
+            ShowCardinalPadChanged?.Invoke(this, EventArgs.Empty);
+            ShowDiagonalPadChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void StickPadActionPropViewModel_SelectedPadModeIndexChanged(object sender, EventArgs e)

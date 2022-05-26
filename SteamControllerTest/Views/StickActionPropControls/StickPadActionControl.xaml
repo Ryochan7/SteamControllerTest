@@ -7,11 +7,14 @@
              xmlns:local1="clr-namespace:SteamControllerTest.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="boolVisConv" />
+    </UserControl.Resources>
     <DockPanel>
         <StackPanel DockPanel.Dock="Top">
             <local1:StickActionSelectControl x:Name="stickSelectControl" DockPanel.Dock="Top" />
 
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
                 <Label Content="Name" />
                 <TextBox Text="{Binding Name,UpdateSourceTrigger=LostFocus}" Width="200">
                     <TextBox.Style>
@@ -26,7 +29,7 @@
                 </TextBox>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
                 <Label Content="DPad Mode" />
                 <ComboBox ItemsSource="{Binding PadModeItems}" SelectedIndex="{Binding SelectedPadModeIndex}" DisplayMemberPath="DisplayName" Width="200">
                     <ComboBox.Style>
@@ -41,18 +44,25 @@
                 </ComboBox>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+            <StackPanel Orientation="Horizontal" MinHeight="80" Margin="0,12,0,0">
                 <Label Content="Bindings" />
-                <WrapPanel Orientation="Horizontal" Width="150" Height="100" Margin="8,0,0,0">
+                <WrapPanel Orientation="Horizontal" Width="150" Margin="8,0,0,0" Visibility="{Binding ShowCardinalPad, FallbackValue='Visible', Converter={StaticResource boolVisConv}}">
                     <Button x:Name="btnUpEdit" Content="Test Up" Click="btnUpEdit_Click" MinWidth="60" />
                     <Button x:Name="btnDownEdit" Content="Test Down" Click="btnDownEdit_Click" Margin="20,0,0,0" MinWidth="60" />
                     <Button x:Name="btnLeftEdit" Content="Test Left" Click="btnLeftEdit_Click" Margin="0,12,0,0" MinWidth="60" />
                     <Button x:Name="btnRightEdit" Content="Test Right" Click="btnRightEdit_Click" Margin="20,12,0,0" MinWidth="60" />
                 </WrapPanel>
-                
+
+                <WrapPanel Orientation="Horizontal" Width="200" Margin="8,0,0,0" Visibility="{Binding ShowDiagonalPad, FallbackValue='Collapsed', Converter={StaticResource boolVisConv}}">
+                    <Button x:Name="btnUpLeftEdit" Content="Test UpLeft" Click="btnUpLeftEdit_Click" MinWidth="60" />
+                    <Button x:Name="btnUpRightEdit" Content="Test UpRight" Click="btnUpRightEdit_Click" Margin="20,0,0,0" MinWidth="60" />
+                    <Button x:Name="btnDownLeftEdit" Content="Test DownLeft" Click="btnDownLeftEdit_Click" Margin="0,12,0,0" MinWidth="60" />
+                    <Button x:Name="btnDownRightEdit" Content="Test DownRight" Click="btnDownRightEdit_Click" Margin="20,12,0,0" MinWidth="60" />
+                </WrapPanel>
+
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
                 <Label Content="Dead Zone" />
                 <TextBox Text="{Binding DeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
                     <TextBox.Style>
@@ -67,7 +77,7 @@
                 </TextBox>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
                 <Label Content="Diagonal Range" />
                 <TextBox Text="{Binding DiagonalRange, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
                     <TextBox.Style>

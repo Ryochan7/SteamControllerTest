@@ -52,6 +52,51 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
         }
         public event EventHandler OutputStickIndexChanged;
 
+        public string DeadZone
+        {
+            get => action.DeadMod.DeadZone.ToString();
+            set
+            {
+                if (double.TryParse(value, out double temp))
+                {
+                    action.DeadMod.DeadZone = Math.Clamp(temp, 0.0, 1.0);
+                    DeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                    ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+        public event EventHandler DeadZoneChanged;
+
+        public string AntiDeadZone
+        {
+            get => action.DeadMod.AntiDeadZone.ToString();
+            set
+            {
+                if (double.TryParse(value, out double temp))
+                {
+                    action.DeadMod.AntiDeadZone = Math.Clamp(temp, 0.0, 1.0);
+                    AntiDeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                    ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+        public event EventHandler AntiDeadZoneChanged;
+
+        public string MaxZone
+        {
+            get => action.DeadMod.MaxZone.ToString("N2");
+            set
+            {
+                if (double.TryParse(value, out double temp))
+                {
+                    action.DeadMod.MaxZone = Math.Clamp(temp, 0.0, 1.0);
+                    MaxZoneChanged?.Invoke(this, EventArgs.Empty);
+                    ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+        public event EventHandler MaxZoneChanged;
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||
@@ -65,6 +110,27 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.OUTPUT_STICK);
         }
         public event EventHandler HighlightOutputStickChanged;
+
+        public bool HighlightDeadZone
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.DEAD_ZONE);
+        }
+        public event EventHandler HighlightDeadZoneChanged;
+
+        public bool HighlightAntiDeadZone
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.ANTIDEAD_ZONE);
+        }
+        public event EventHandler HighlightAntiDeadZoneChanged;
+
+        public bool HighlightMaxZone
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.MAX_ZONE);
+        }
+        public event EventHandler HighlightMaxZoneChanged;
 
         public event EventHandler ActionPropertyChanged;
         public event EventHandler<StickMapAction> ActionChanged;
@@ -100,6 +166,39 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
 
             NameChanged += StickTranslatePropViewModel_NameChanged;
             OutputStickIndexChanged += StickTranslatePropViewModel_OutputStickIndexChanged;
+            DeadZoneChanged += StickTranslatePropViewModel_DeadZoneChanged;
+            AntiDeadZoneChanged += StickTranslatePropViewModel_AntiDeadZoneChanged;
+            MaxZoneChanged += StickTranslatePropViewModel_MaxZoneChanged;
+        }
+
+        private void StickTranslatePropViewModel_MaxZoneChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.MAX_ZONE))
+            {
+                action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.MAX_ZONE);
+            }
+
+            HighlightMaxZoneChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void StickTranslatePropViewModel_AntiDeadZoneChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.ANTIDEAD_ZONE))
+            {
+                action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.ANTIDEAD_ZONE);
+            }
+
+            HighlightAntiDeadZoneChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void StickTranslatePropViewModel_DeadZoneChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.DEAD_ZONE))
+            {
+                action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.DEAD_ZONE);
+            }
+
+            HighlightDeadZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void StickTranslatePropViewModel_OutputStickIndexChanged(object sender, EventArgs e)

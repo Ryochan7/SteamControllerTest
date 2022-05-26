@@ -84,5 +84,29 @@ namespace SteamControllerTest.Views.StickActionPropControls
             RequestFuncEditor?.Invoke(this,
                 new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.Right]));
         }
+
+        private void btnUpLeftEdit_Click(object sender, RoutedEventArgs e)
+        {
+            RequestFuncEditor?.Invoke(this,
+                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.UpLeft]));
+        }
+
+        private void btnUpRightEdit_Click(object sender, RoutedEventArgs e)
+        {
+            RequestFuncEditor?.Invoke(this,
+                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.UpRight]));
+        }
+
+        private void btnDownLeftEdit_Click(object sender, RoutedEventArgs e)
+        {
+            RequestFuncEditor?.Invoke(this,
+                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.DownLeft]));
+        }
+
+        private void btnDownRightEdit_Click(object sender, RoutedEventArgs e)
+        {
+            RequestFuncEditor?.Invoke(this,
+                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.DownRight]));
+        }
     }
 }

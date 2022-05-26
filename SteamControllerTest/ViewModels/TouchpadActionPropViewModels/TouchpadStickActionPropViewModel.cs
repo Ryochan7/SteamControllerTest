@@ -56,7 +56,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
         public string DeadZone
         {
-            get => action.DeadMod.DeadZone.ToString();
+            get => action.DeadMod.DeadZone.ToString("N2");
             set
             {
                 if (double.TryParse(value, out double temp))
@@ -71,7 +71,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
         public string AntiDeadZone
         {
-            get => action.DeadMod.AntiDeadZone.ToString();
+            get => action.DeadMod.AntiDeadZone.ToString("N2");
             set
             {
                 if (double.TryParse(value, out double temp))
@@ -86,7 +86,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
         public string MaxZone
         {
-            get => action.DeadMod.MaxZone.ToString();
+            get => action.DeadMod.MaxZone.ToString("N2");
             set
             {
                 if (double.TryParse(value, out double temp))
@@ -164,17 +164,6 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 ActionPropertyChanged += ReplaceExistingLayerAction;
             }
 
-            //if (this.action.ParentAction != null)
-            //{
-            //}
-
-            NameChanged += TouchpadStickActionPropViewModel_NameChanged;
-            DeadZoneChanged += TouchpadStickActionPropViewModel_DeadZoneChanged;
-            AntiDeadZoneChanged += TouchpadStickActionPropViewModel_AntiDeadZoneChanged;
-            MaxZoneChanged += TouchpadStickActionPropViewModel_MaxZoneChanged;
-            OutputStickIndexChanged += MarkOutputStickChanged;
-            ActionPropertyChanged += SetProfileDirty;
-
             outputStickItems.AddRange(new OutputStickSelectionItem[]
             {
                 new OutputStickSelectionItem("Unbound", StickActionCodes.Empty),
@@ -183,6 +172,14 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
             });
 
             PrepareModel();
+
+
+            NameChanged += TouchpadStickActionPropViewModel_NameChanged;
+            DeadZoneChanged += TouchpadStickActionPropViewModel_DeadZoneChanged;
+            AntiDeadZoneChanged += TouchpadStickActionPropViewModel_AntiDeadZoneChanged;
+            MaxZoneChanged += TouchpadStickActionPropViewModel_MaxZoneChanged;
+            OutputStickIndexChanged += MarkOutputStickChanged;
+            ActionPropertyChanged += SetProfileDirty;
 
             OutputStickIndexChanged += TouchpadStickActionPropViewModel_OutputStickIndexChanged;
         }
