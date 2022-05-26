@@ -35,12 +35,78 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
         }
         public event EventHandler NameChanged;
 
+        private List<PadModeItem> padModeItems;
+        public List<PadModeItem> PadModeItems => padModeItems;
+
+        private int selectedPadModeIndex = -1;
+        public int SelectedPadModeIndex
+        {
+            get => selectedPadModeIndex;
+            set
+            {
+                if (selectedPadModeIndex == value) return;
+                selectedPadModeIndex = value;
+                SelectedPadModeIndexChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SelectedPadModeIndexChanged;
+
+        public string DeadZone
+        {
+            get => action.DeadMod.DeadZone.ToString();
+            set
+            {
+                if (double.TryParse(value, out double temp))
+                {
+                    action.DeadMod.DeadZone = Math.Clamp(temp, 0.0, 1.0);
+                    DeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                    ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+        public event EventHandler DeadZoneChanged;
+
+        public int DiagonalRange
+        {
+            get => action.DiagonalRange;
+            set
+            {
+                if (action.DiagonalRange == value) return;
+                action.DiagonalRange = value;
+                DiagonalRangeChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler DiagonalRangeChanged;
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||
-                action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.NAME);
+                action.ChangedProperties.Contains(StickPadAction.PropertyKeyStrings.NAME);
         }
         public event EventHandler HighlightNameChanged;
+
+        public bool HighlightPadMode
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(StickPadAction.PropertyKeyStrings.PAD_MODE);
+        }
+        public event EventHandler HighlightPadModeChanged;
+
+        public bool HighlightDiagonalRange
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(StickPadAction.PropertyKeyStrings.DIAGONAL_RANGE);
+        }
+        public event EventHandler HighlightDiagonalRangeChanged;
+
+        public bool HighlightDeadZone
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(StickPadAction.PropertyKeyStrings.DEAD_ZONE);
+        }
+        public event EventHandler HighlightDeadZoneChanged;
 
         public event EventHandler ActionPropertyChanged;
         public event EventHandler<StickMapAction> ActionChanged;
@@ -51,6 +117,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
         {
             this.mapper = mapper;
             this.action = action as StickPadAction;
+            padModeItems = new List<PadModeItem>();
 
             // Check if base ActionLayer action from composite layer
             if (action.ParentAction == null &&
@@ -75,6 +142,17 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
             PrepareModel();
 
             NameChanged += StickPadActionPropViewModel_NameChanged;
+            SelectedPadModeIndexChanged += StickPadActionPropViewModel_SelectedPadModeIndexChanged;
+        }
+
+        private void StickPadActionPropViewModel_SelectedPadModeIndexChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickPadAction.PropertyKeyStrings.PAD_MODE))
+            {
+                action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_MODE);
+            }
+
+            HighlightPadModeChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void StickPadActionPropViewModel_NameChanged(object sender, EventArgs e)
@@ -116,7 +194,47 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
 
         private void PrepareModel()
         {
+            padModeItems.AddRange(new PadModeItem[]
+            {
+                new PadModeItem("Standard", StickPadAction.DPadMode.Standard),
+                new PadModeItem("Eight Way", StickPadAction.DPadMode.EightWay),
+                new PadModeItem("Four Way Cardinal", StickPadAction.DPadMode.FourWayCardinal),
+                new PadModeItem("Four Way Diagonal", StickPadAction.DPadMode.FourWayDiagonal),
+            });
 
+            int index = padModeItems.FindIndex((item) => item.DPadMode == action.CurrentMode);
+            if (index >= 0)
+            {
+                selectedPadModeIndex = index;
+            }
+        }
+    }
+
+    public class PadModeItem
+    {
+        private string displayName;
+        public string DisplayName
+        {
+            get => displayName;
+        }
+
+        private StickPadAction.DPadMode dpadMode = StickPadAction.DPadMode.Standard;
+        public StickPadAction.DPadMode DPadMode
+        {
+            get => dpadMode;
+            set
+            {
+                if (dpadMode == value) return;
+                dpadMode = value;
+                DPadModeChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler DPadModeChanged;
+
+        public PadModeItem(string displayName, StickPadAction.DPadMode dpadMode)
+        {
+            this.displayName = displayName;
+            this.dpadMode = dpadMode;
         }
     }
 }

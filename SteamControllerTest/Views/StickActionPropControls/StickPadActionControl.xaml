@@ -26,6 +26,21 @@
                 </TextBox>
             </StackPanel>
 
+            <StackPanel Orientation="Horizontal">
+                <Label Content="DPad Mode" />
+                <ComboBox ItemsSource="{Binding PadModeItems}" SelectedIndex="{Binding SelectedPadModeIndex}" DisplayMemberPath="DisplayName" Width="200">
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightPadModeChanged}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
+                </ComboBox>
+            </StackPanel>
+
             <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Bindings" />
                 <WrapPanel Orientation="Horizontal" Width="150" Height="100" Margin="8,0,0,0">
@@ -35,6 +50,36 @@
                     <Button x:Name="btnRightEdit" Content="Test Right" Click="btnRightEdit_Click" Margin="20,12,0,0" MinWidth="60" />
                 </WrapPanel>
                 
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Dead Zone" />
+                <TextBox Text="{Binding DeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightDeadZone}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Diagonal Range" />
+                <TextBox Text="{Binding DiagonalRange, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightDiagonalRange}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
             </StackPanel>
 
         </StackPanel>

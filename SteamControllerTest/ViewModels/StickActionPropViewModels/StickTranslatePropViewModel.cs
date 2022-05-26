@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SteamControllerTest.StickActions;
+using SteamControllerTest.ViewModels.Common;
 
 namespace SteamControllerTest.ViewModels.StickActionPropViewModels
 {
@@ -35,12 +36,35 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
         }
         public event EventHandler NameChanged;
 
+        private OutputStickSelectionItemList outputStickHolder = new OutputStickSelectionItemList();
+        public OutputStickSelectionItemList OutputStickHolder => outputStickHolder;
+
+        private int outputStickIndex = -1;
+        public int OutputStickIndex
+        {
+            get => outputStickIndex;
+            set
+            {
+                outputStickIndex = value;
+                OutputStickIndexChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler OutputStickIndexChanged;
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||
                 action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.NAME);
         }
         public event EventHandler HighlightNameChanged;
+
+        public bool HighlightOutputStick
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.OUTPUT_STICK);
+        }
+        public event EventHandler HighlightOutputStickChanged;
 
         public event EventHandler ActionPropertyChanged;
         public event EventHandler<StickMapAction> ActionChanged;
@@ -73,6 +97,29 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
             }
 
             PrepareModel();
+
+            NameChanged += StickTranslatePropViewModel_NameChanged;
+            OutputStickIndexChanged += StickTranslatePropViewModel_OutputStickIndexChanged;
+        }
+
+        private void StickTranslatePropViewModel_OutputStickIndexChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.OUTPUT_STICK))
+            {
+                action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.OUTPUT_STICK);
+            }
+
+            HighlightOutputStickChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void StickTranslatePropViewModel_NameChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.NAME))
+            {
+                action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.NAME);
+            }
+
+            HighlightNameChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void ReplaceExistingLayerAction(object sender, EventArgs e)
@@ -104,7 +151,8 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
 
         private void PrepareModel()
         {
-
+            outputStickIndex =
+                outputStickHolder.StickAliasIndex(action.OutputAction.StickCode);
         }
     }
 }
