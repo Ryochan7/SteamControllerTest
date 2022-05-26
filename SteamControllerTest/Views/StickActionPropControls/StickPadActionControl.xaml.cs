@@ -26,12 +26,12 @@ namespace SteamControllerTest.Views.StickActionPropControls
     {
         public class DirButtonBindingArgs : EventArgs
         {
-            private AxisDirButton pullBtn;
-            public AxisDirButton PullBtn => pullBtn;
+            private AxisDirButton dirBtn;
+            public AxisDirButton DirBtn => dirBtn;
 
-            public DirButtonBindingArgs(AxisDirButton pullBtn)
+            public DirButtonBindingArgs(AxisDirButton dirBtn)
             {
-                this.pullBtn = pullBtn;
+                this.dirBtn = dirBtn;
             }
         }
 

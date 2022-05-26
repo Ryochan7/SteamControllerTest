@@ -79,7 +79,7 @@ namespace SteamControllerTest.Views
         private void PropControl_RequestFuncEditor(object sender, StickPadActionControl.DirButtonBindingArgs e)
         {
             FuncBindingControl tempControl = new FuncBindingControl();
-            tempControl.PostInit(stickBindEditVM.Mapper, e.PullBtn);
+            tempControl.PostInit(stickBindEditVM.Mapper, e.DirBtn);
             tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
             UserControl oldControl = stickBindEditVM.DisplayControl;
             tempControl.RequestClose += (sender, args) =>
