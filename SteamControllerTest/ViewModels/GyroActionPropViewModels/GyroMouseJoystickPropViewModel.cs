@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using SteamControllerTest.ViewModels.Common;
 using SteamControllerTest.GyroActions;
 using SteamControllerTest.MapperUtil;
+using SteamControllerTest.StickModifiers;
 
 namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 {
@@ -92,6 +93,22 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler AntiDeadZoneYChanged;
 
+        //private List<GyroOutputCurveItem> outputCurveItems = new List<GyroOutputCurveItem>();
+        //public List<GyroOutputCurveItem> OutputCurveItems => outputCurveItems;
+
+        //private int outputCurveIndex = -1;
+        //public int OutputCurveIndex
+        //{
+        //    get => outputCurveIndex;
+        //    set
+        //    {
+        //        outputCurveIndex = value;
+        //        OutputCurveIndexChanged?.Invoke(this, EventArgs.Empty);
+        //        ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+        //    }
+        //}
+        //public event EventHandler OutputCurveIndexChanged;
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||
@@ -141,6 +158,13 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
                 action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.ANTIDEAD_ZONE_Y);
         }
         public event EventHandler HighlightAntiDeadZoneYChanged;
+
+        //public bool HighlightOutputCurve
+        //{
+        //    get => action.ParentAction == null ||
+        //        action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.ANTIDEAD_ZONE_Y);
+        //}
+        //public event EventHandler HighlightOutputCurveChanged;
 
         public override event EventHandler ActionPropertyChanged;
 
@@ -262,6 +286,16 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
             outputStickIndex =
                 outputStickHolder.StickAliasIndex(action.mStickParms.outputStick);
+
+            //outputCurveItems.AddRange(new GyroOutputCurveItem[]
+            //{
+            //    new GyroOutputCurveItem("Linear", StickOutCurve.Curve.Linear),
+            //    new GyroOutputCurveItem("Enhanced Precision", StickOutCurve.Curve.EnhancedPrecision),
+            //    new GyroOutputCurveItem("Quadratic", StickOutCurve.Curve.Quadratic),
+            //    new GyroOutputCurveItem("Cubic", StickOutCurve.Curve.Cubic),
+            //    new GyroOutputCurveItem("Easeout Quadratic", StickOutCurve.Curve.EaseoutQuad),
+            //    new GyroOutputCurveItem("Easeout Cubic", StickOutCurve.Curve.EaseoutCubic),
+            //});
         }
 
         private void GyroTriggerItem_EnabledChanged(object sender, EventArgs e)
@@ -293,6 +327,24 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             }
 
             HighlightNameChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    public class GyroOutputCurveItem
+    {
+        private string displayName;
+        public string DisplayName
+        {
+            get => displayName;
+        }
+
+        private StickOutCurve.Curve outputCurve = StickOutCurve.Curve.Linear;
+        public StickOutCurve.Curve OutputCurve => outputCurve;
+
+        public GyroOutputCurveItem(string displayName, StickOutCurve.Curve outputCurve)
+        {
+            this.displayName = displayName;
+            this.outputCurve = outputCurve;
         }
     }
 }

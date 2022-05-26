@@ -25,6 +25,18 @@
                     </TextBox.Style>
                 </TextBox>
             </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="Bindings" />
+                <WrapPanel Orientation="Horizontal" Width="150" Height="100" Margin="8,0,0,0">
+                    <Button x:Name="btnUpEdit" Content="Test Up" Click="btnUpEdit_Click" MinWidth="60" />
+                    <Button x:Name="btnDownEdit" Content="Test Down" Click="btnDownEdit_Click" Margin="20,0,0,0" MinWidth="60" />
+                    <Button x:Name="btnLeftEdit" Content="Test Left" Click="btnLeftEdit_Click" Margin="0,12,0,0" MinWidth="60" />
+                    <Button x:Name="btnRightEdit" Content="Test Right" Click="btnRightEdit_Click" Margin="20,12,0,0" MinWidth="60" />
+                </WrapPanel>
+                
+            </StackPanel>
+
         </StackPanel>
     </DockPanel>
 </UserControl>

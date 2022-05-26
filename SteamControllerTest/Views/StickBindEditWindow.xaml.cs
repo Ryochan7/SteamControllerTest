@@ -66,6 +66,7 @@ namespace SteamControllerTest.Views
                         StickPadActionControl propControl = new StickPadActionControl();
                         propControl.PostInit(stickBindEditVM.Mapper, stickBindEditVM.Action);
                         propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged; ;
+                        propControl.RequestFuncEditor += PropControl_RequestFuncEditor;
                         stickBindEditVM.DisplayControl = propControl;
                     }
 
@@ -73,6 +74,36 @@ namespace SteamControllerTest.Views
                 default:
                     break;
             }
+        }
+
+        private void PropControl_RequestFuncEditor(object sender, StickPadActionControl.DirButtonBindingArgs e)
+        {
+            FuncBindingControl tempControl = new FuncBindingControl();
+            tempControl.PostInit(stickBindEditVM.Mapper, e.PullBtn);
+            tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+            UserControl oldControl = stickBindEditVM.DisplayControl;
+            tempControl.RequestClose += (sender, args) =>
+            {
+                stickBindEditVM.DisplayControl = oldControl;
+            };
+
+            stickBindEditVM.DisplayControl = tempControl;
+        }
+
+        private void TempControl_RequestBindingEditor(object sender,
+            ActionUtil.ActionFunc e)
+        {
+            OutputBindingEditorControl tempControl = new OutputBindingEditorControl();
+            FuncBindingControl bindControl = sender as FuncBindingControl;
+            tempControl.PostInit(stickBindEditVM.Mapper, bindControl.FuncBindVM.Action, e);
+            UserControl oldControl = bindControl;
+            tempControl.Finished += (sender, args) =>
+            {
+                bindControl.RefreshView();
+                stickBindEditVM.DisplayControl = oldControl;
+            };
+
+            stickBindEditVM.DisplayControl = tempControl;
         }
 
         private void PropControl_ActionTypeIndexChanged(object sender, int ind)

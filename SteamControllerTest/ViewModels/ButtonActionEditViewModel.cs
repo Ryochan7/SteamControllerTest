@@ -755,24 +755,6 @@ namespace SteamControllerTest.ViewModels
 
             //if (mapper.ActionProfile.OutputGamepadSettings.outputGamepad == EmulatedControllerSettings.OutputControllerType.Xbox360)
             {
-                gamepadIndexAliases = new Dictionary<JoypadActionCodes, int>()
-                {
-                    [JoypadActionCodes.Empty] = tempInd++,
-                    [JoypadActionCodes.X360_A] = tempInd++,
-                    [JoypadActionCodes.X360_B] = tempInd++,
-                    [JoypadActionCodes.X360_X] = tempInd++,
-                    [JoypadActionCodes.X360_Y] = tempInd++,
-                    [JoypadActionCodes.X360_LB] = tempInd++,
-                    [JoypadActionCodes.X360_RB] = tempInd++,
-                    [JoypadActionCodes.X360_LT] = tempInd++,
-                    [JoypadActionCodes.X360_RT] = tempInd++,
-                    [JoypadActionCodes.X360_Guide] = tempInd++,
-                    [JoypadActionCodes.X360_Back] = tempInd++,
-                    [JoypadActionCodes.X360_Start] = tempInd++,
-                    [JoypadActionCodes.X360_ThumbL] = tempInd++,
-                    [JoypadActionCodes.X360_ThumbR] = tempInd++,
-                };
-
                 tempInd = 0;
                 gamepadComboItems.AddRange(new GamepadCodeItem[]
                 {
@@ -790,6 +772,16 @@ namespace SteamControllerTest.ViewModels
                     new GamepadCodeItem("X360_Start", JoypadActionCodes.X360_Start, tempInd++),
                     new GamepadCodeItem("X360_ThumbL", JoypadActionCodes.X360_ThumbL, tempInd++),
                     new GamepadCodeItem("X360_ThumbR", JoypadActionCodes.X360_ThumbR, tempInd++),
+                    new GamepadCodeItem("X360_DPad_Up", JoypadActionCodes.X360_DPAD_UP, tempInd++),
+                    new GamepadCodeItem("X360_DPad_Down", JoypadActionCodes.X360_DPAD_DOWN, tempInd++),
+                    new GamepadCodeItem("X360_DPad_Left", JoypadActionCodes.X360_DPAD_LEFT, tempInd++),
+                    new GamepadCodeItem("X360_DPad_Right", JoypadActionCodes.X360_DPAD_RIGHT, tempInd++),
+                });
+
+                gamepadIndexAliases = new Dictionary<JoypadActionCodes, int>();
+                gamepadComboItems.ForEach((item) =>
+                {
+                    gamepadIndexAliases.Add(item.Code, item.Index);
                 });
             }
 

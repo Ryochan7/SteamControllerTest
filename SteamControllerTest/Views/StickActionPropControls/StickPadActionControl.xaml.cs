@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using SteamControllerTest.Views;
 using SteamControllerTest.ViewModels.StickActionPropViewModels;
 using SteamControllerTest.StickActions;
+using SteamControllerTest.ButtonActions;
 
 namespace SteamControllerTest.Views.StickActionPropControls
 {
@@ -23,10 +24,22 @@ namespace SteamControllerTest.Views.StickActionPropControls
     /// </summary>
     public partial class StickPadActionControl : UserControl
     {
+        public class DirButtonBindingArgs : EventArgs
+        {
+            private AxisDirButton pullBtn;
+            public AxisDirButton PullBtn => pullBtn;
+
+            public DirButtonBindingArgs(AxisDirButton pullBtn)
+            {
+                this.pullBtn = pullBtn;
+            }
+        }
+
         private StickPadActionPropViewModel stickPadActVM;
         public StickPadActionPropViewModel StickPadActVM => stickPadActVM;
 
         public event EventHandler<int> ActionTypeIndexChanged;
+        public event EventHandler<DirButtonBindingArgs> RequestFuncEditor;
 
         public StickPadActionControl()
         {
@@ -46,6 +59,30 @@ namespace SteamControllerTest.Views.StickActionPropControls
         {
             ActionTypeIndexChanged?.Invoke(this,
                 stickSelectControl.StickActSelVM.SelectedIndex);
+        }
+
+        private void btnUpEdit_Click(object sender, RoutedEventArgs e)
+        {
+            RequestFuncEditor?.Invoke(this,
+                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.Up]));
+        }
+
+        private void btnDownEdit_Click(object sender, RoutedEventArgs e)
+        {
+            RequestFuncEditor?.Invoke(this,
+                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.Down]));
+        }
+
+        private void btnLeftEdit_Click(object sender, RoutedEventArgs e)
+        {
+            RequestFuncEditor?.Invoke(this,
+                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.Left]));
+        }
+
+        private void btnRightEdit_Click(object sender, RoutedEventArgs e)
+        {
+            RequestFuncEditor?.Invoke(this,
+                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.Right]));
         }
     }
 }

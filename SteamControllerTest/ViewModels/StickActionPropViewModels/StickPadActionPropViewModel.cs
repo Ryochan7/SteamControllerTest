@@ -16,8 +16,8 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
             get => mapper;
         }
 
-        private StickTranslate action;
-        public StickTranslate Action
+        private StickPadAction action;
+        public StickPadAction Action
         {
             get => action;
         }
@@ -50,7 +50,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
         public StickPadActionPropViewModel(Mapper mapper, StickMapAction action)
         {
             this.mapper = mapper;
-            this.action = action as StickTranslate;
+            this.action = action as StickPadAction;
 
             // Check if base ActionLayer action from composite layer
             if (action.ParentAction == null &&
@@ -59,8 +59,8 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 MapAction.IsSameType(mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId], action))
             {
                 // Test with temporary object
-                StickTranslate baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId] as StickTranslate;
-                StickTranslate tempAction = new StickTranslate();
+                StickPadAction baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId] as StickPadAction;
+                StickPadAction tempAction = new StickPadAction();
                 tempAction.SoftCopyFromParent(baseLayerAction);
                 //int tempLayerId = mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.Index;
                 int tempId = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.FindNextAvailableId();
