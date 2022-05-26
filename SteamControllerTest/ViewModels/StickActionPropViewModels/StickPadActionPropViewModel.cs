@@ -73,6 +73,18 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
             }
 
             PrepareModel();
+
+            NameChanged += StickPadActionPropViewModel_NameChanged;
+        }
+
+        private void StickPadActionPropViewModel_NameChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickPadAction.PropertyKeyStrings.NAME))
+            {
+                action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.NAME);
+            }
+
+            HighlightNameChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void ReplaceExistingLayerAction(object sender, EventArgs e)

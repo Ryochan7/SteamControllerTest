@@ -8,49 +8,47 @@ using SteamControllerTest.GyroActions;
 
 namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 {
-    public class GyroMouseActionPropViewModel
+    public class GyroMouseActionPropViewModel : GyroActionPropVMBase
     {
-        private Mapper mapper;
-        public Mapper Mapper
-        {
-            get => mapper;
-        }
-
-        private GyroMouse action;
+        protected GyroMouse action;
         public GyroMouse Action
         {
             get => action;
         }
 
-        public string Name
+        private int DeadZone
         {
-            get => action.Name;
+            get => action.mouseParams.deadzone;
             set
             {
-                if (action.Name == value) return;
-                action.Name = value;
-                NameChanged?.Invoke(this, EventArgs.Empty);
+                action.mouseParams.deadzone = value;
+                DeadZoneChanged?.Invoke(this, EventArgs.Empty);
                 ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler NameChanged;
+        public event EventHandler DeadZoneChanged;
 
         public bool HighlightName
         {
-            get => action.ParentAction == null ||
-                action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.NAME);
+            get => baseAction.ParentAction == null ||
+                baseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.NAME);
         }
         public event EventHandler HighlightNameChanged;
 
-        public event EventHandler ActionPropertyChanged;
-        public event EventHandler<GyroMapAction> ActionChanged;
+        public bool HighlightDeadZone
+        {
+            get => baseAction.ParentAction == null ||
+                baseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.DEAD_ZONE);
+        }
+        public event EventHandler HighlightDeadZoneChanged;
 
-        private bool replacedAction = false;
+        public override event EventHandler ActionPropertyChanged;
 
         public GyroMouseActionPropViewModel(Mapper mapper, GyroMapAction action)
         {
             this.mapper = mapper;
             this.action = action as GyroMouse;
+            this.baseAction = action;
 
             // Check if base ActionLayer action from composite layer
             if (action.ParentAction == null &&
@@ -68,36 +66,33 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
                 //tempAction.MappingId = this.action.MappingId;
 
                 this.action = tempAction;
+                this.baseAction = tempAction;
 
                 ActionPropertyChanged += ReplaceExistingLayerAction;
             }
+
+            NameChanged += GyroMouseActionPropViewModel_NameChanged;
+            DeadZoneChanged += GyroMouseActionPropViewModel_DeadZoneChanged;
         }
 
-        private void ReplaceExistingLayerAction(object sender, EventArgs e)
+        private void GyroMouseActionPropViewModel_DeadZoneChanged(object sender, EventArgs e)
         {
-            if (!replacedAction)
+            if (!action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.DEAD_ZONE))
             {
-                ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
-                mapper.QueueEvent(() =>
-                {
-                    this.action.ParentAction.Release(mapper, ignoreReleaseActions: true);
-
-                    mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddGyroAction(this.action);
-                    if (mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer)
-                    {
-                        mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
-                    }
-
-                    resetEvent.Set();
-                });
-
-                resetEvent.Wait();
-
-                replacedAction = true;
-
-                ActionChanged?.Invoke(this, action);
+                action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.DEAD_ZONE);
             }
+
+            HighlightDeadZoneChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void GyroMouseActionPropViewModel_NameChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.NAME))
+            {
+                action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.NAME);
+            }
+
+            HighlightNameChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }
