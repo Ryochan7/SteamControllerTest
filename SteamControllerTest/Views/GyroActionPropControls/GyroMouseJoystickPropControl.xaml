@@ -26,12 +26,89 @@
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
+                <Label Content="Output Stick" />
+                <ComboBox ItemsSource="{Binding OutputStickHolder.OutputStickItems}" SelectedIndex="{Binding OutputStickIndex}" DisplayMemberPath="DisplayName" Width="200">
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightOutputStick}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
+                </ComboBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
                 <Label Content="_Dead Zone" />
                 <TextBox Text="{Binding DeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
                     <TextBox.Style>
                         <Style TargetType="TextBox">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding HighlightDeadZone}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Trigger Buttons" />
+                <ListView ItemsSource="{Binding TriggerButtonItems}" Height="100">
+                    <ListView.View>
+                        <GridView>
+                            <GridView.Columns>
+                                <GridViewColumn Width="200" Header="Action">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding DisplayString}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Width="50" Header="Trigger">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding Enabled}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView.Columns>
+
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Trigger Activates (Ratchet)" />
+                <CheckBox IsChecked="{Binding TriggerActivates}" Width="20" VerticalAlignment="Center" Margin="8,0,0,0" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Content="AntiDead Zone X" />
+                <TextBox Text="{Binding AntiDeadZoneX, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightAntiDeadZoneX}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Content="_AntiDead Zone Y" />
+                <TextBox Text="{Binding AntiDeadZoneY, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightAntiDeadZoneY}" Value="False">
                                     <Setter Property="Opacity" Value="0.7" />
                                 </DataTrigger>
                             </Style.Triggers>

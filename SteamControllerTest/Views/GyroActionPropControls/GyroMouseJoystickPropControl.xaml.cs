@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using SteamControllerTest.ViewModels.GyroActionPropViewModels;
 using SteamControllerTest.GyroActions;
 
 namespace SteamControllerTest.Views.GyroActionPropControls
@@ -21,6 +22,9 @@ namespace SteamControllerTest.Views.GyroActionPropControls
     /// </summary>
     public partial class GyroMouseJoystickPropControl : UserControl
     {
+        private GyroMouseJoystickPropViewModel gyroMouseJoyVM;
+        public GyroMouseJoystickPropViewModel GyroMouseJoyVM => gyroMouseJoyVM;
+
 
         public event EventHandler<int> ActionTypeIndexChanged;
 
@@ -31,6 +35,9 @@ namespace SteamControllerTest.Views.GyroActionPropControls
 
         public void PostInit(Mapper mapper, GyroMapAction action)
         {
+            gyroMouseJoyVM = new GyroMouseJoystickPropViewModel(mapper, action);
+            DataContext = gyroMouseJoyVM;
+
             gyroSelectControl.PostInit(mapper, action);
             gyroSelectControl.GyroActSelVM.SelectedIndexChanged += GyroActSelVM_SelectedIndexChanged;
         }
