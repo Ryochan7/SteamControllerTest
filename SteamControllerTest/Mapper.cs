@@ -1332,6 +1332,14 @@ namespace SteamControllerTest
         }
         */
 
+        //private List<ActionFunc> removableFuns = new List<ActionFunc>();
+
+        public void RemoveReleaseFunc(ActionFunc actionFunc)
+        {
+            pendingReleaseFuns.Remove(actionFunc);
+        }
+
+        private List<int> removePendingCandidates = new List<int>();
         private void ControllerReader_Report(SteamControllerReader sender,
             SteamControllerDevice device)
         {
@@ -1368,6 +1376,35 @@ namespace SteamControllerTest
                 intermediateState = new IntermediateState();
                 currentLatency = currentMapperState.timeElapsed;
                 currentRate = 1.0 / currentLatency;
+
+                if (pendingReleaseFuns.Count > 0)
+                {
+                    ActionFuncEnumerator activeFuncEnumerator =
+                        new ActionFuncEnumerator(pendingReleaseFuns);
+                    int ind = 0;
+                    while (activeFuncEnumerator.MoveNext())
+                    {
+                        ActionFunc actionFunc = activeFuncEnumerator.Current;
+                        actionFunc.Event(this, MapAction.trueStateData);
+                        if (!actionFunc.active)
+                        {
+                            removePendingCandidates.Add(ind);
+                        }
+
+                        ind++;
+                    }
+
+                    if (removePendingCandidates.Count > 0)
+                    {
+                        removePendingCandidates.Reverse();
+                        foreach (int index in removePendingCandidates)
+                        {
+                            pendingReleaseFuns.RemoveAt(index);
+                        }
+
+                        removePendingCandidates.Clear();
+                    }
+                }
 
                 if (processCycle)
                 {

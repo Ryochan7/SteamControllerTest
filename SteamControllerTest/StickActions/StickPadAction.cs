@@ -169,7 +169,7 @@ namespace SteamControllerTest.StickActions
 
         protected StickPadAction parentPadAction;
         protected bool useParentActions;
-        private bool[] useParentDataDraft2 = new bool[13];
+        protected bool[] useParentDataDraft2 = new bool[13];
         private bool useParentRingButton;
 
         public StickPadAction()
@@ -277,7 +277,7 @@ namespace SteamControllerTest.StickActions
                 if (useParentActions)
                 {
                     //usedFuncList = parentPadAction.eventCodes4;
-                    usedFuncList = usedEventButtonsList;
+                    usedFuncList = eventCodes4;
                     usedRingButton = parentPadAction.ringButton;
                 }
                 else
@@ -1454,56 +1454,64 @@ namespace SteamControllerTest.StickActions
                         case PropertyKeyStrings.PAD_DIR_UP:
                             {
                                 int tempDir = (int)DpadDirections.Up;
-                                usedEventButtonsList[tempDir] = tempPadAction.eventCodes4[tempDir];
+                                eventCodes4[tempDir] = tempPadAction.eventCodes4[tempDir];
+                                useParentDataDraft2[tempDir] = true;
                             }
 
                             break;
                         case PropertyKeyStrings.PAD_DIR_DOWN:
                             {
                                 int tempDir = (int)DpadDirections.Down;
-                                usedEventButtonsList[tempDir] = tempPadAction.eventCodes4[tempDir];
+                                eventCodes4[tempDir] = tempPadAction.eventCodes4[tempDir];
+                                useParentDataDraft2[tempDir] = true;
                             }
 
                             break;
                         case PropertyKeyStrings.PAD_DIR_LEFT:
                             {
                                 int tempDir = (int)DpadDirections.Left;
-                                usedEventButtonsList[tempDir] = tempPadAction.eventCodes4[tempDir];
+                                eventCodes4[tempDir] = tempPadAction.eventCodes4[tempDir];
+                                useParentDataDraft2[tempDir] = true;
                             }
 
                             break;
                         case PropertyKeyStrings.PAD_DIR_RIGHT:
                             {
                                 int tempDir = (int)DpadDirections.Right;
-                                usedEventButtonsList[tempDir] = tempPadAction.eventCodes4[tempDir];
+                                eventCodes4[tempDir] = tempPadAction.eventCodes4[tempDir];
+                                useParentDataDraft2[tempDir] = true;
                             }
 
                             break;
                         case PropertyKeyStrings.PAD_DIR_UPLEFT:
                             {
                                 int tempDir = (int)DpadDirections.UpLeft;
-                                usedEventButtonsList[tempDir] = tempPadAction.eventCodes4[tempDir];
+                                eventCodes4[tempDir] = tempPadAction.eventCodes4[tempDir];
+                                useParentDataDraft2[tempDir] = true;
                             }
 
                             break;
                         case PropertyKeyStrings.PAD_DIR_UPRIGHT:
                             {
                                 int tempDir = (int)DpadDirections.UpRight;
-                                usedEventButtonsList[tempDir] = tempPadAction.eventCodes4[tempDir];
+                                eventCodes4[tempDir] = tempPadAction.eventCodes4[tempDir];
+                                useParentDataDraft2[tempDir] = true;
                             }
 
                             break;
                         case PropertyKeyStrings.PAD_DIR_DOWNLEFT:
                             {
                                 int tempDir = (int)DpadDirections.DownLeft;
-                                usedEventButtonsList[tempDir] = tempPadAction.eventCodes4[tempDir];
+                                eventCodes4[tempDir] = tempPadAction.eventCodes4[tempDir];
+                                useParentDataDraft2[tempDir] = true;
                             }
 
                             break;
                         case PropertyKeyStrings.PAD_DIR_DOWNRIGHT:
                             {
                                 int tempDir = (int)DpadDirections.DownRight;
-                                usedEventButtonsList[tempDir] = tempPadAction.eventCodes4[tempDir];
+                                eventCodes4[tempDir] = tempPadAction.eventCodes4[tempDir];
+                                useParentDataDraft2[tempDir] = true;
                             }
 
                             break;

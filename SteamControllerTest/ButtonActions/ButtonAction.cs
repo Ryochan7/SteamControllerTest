@@ -720,7 +720,11 @@ namespace SteamControllerTest.ButtonActions
                                     //if (action.checkTick) action.Release();
                                     //else if (action.breakSequence) break;
                                     bool currentBreakSequence = action.breakSequence;
-                                    action.Release();
+                                    if (action.OutputType != OutputActionData.ActionType.Keyboard)
+                                    {
+                                        action.Release();
+                                    }
+
                                     if (currentBreakSequence) break;
                                     //activeActions.Add(action);
                                 }
@@ -1131,7 +1135,8 @@ namespace SteamControllerTest.ButtonActions
                         }
 
                         stateData.state = false;
-                        func.Prepare(mapper, false, stateData);
+                        //func.Prepare(mapper, false, stateData);
+
                         //func.Prepare(mapper, new ActionFuncStateData()
                         //{
                         //    state = false,

@@ -90,10 +90,11 @@ namespace SteamControllerTest.ActionUtil
                     //delayEnd = false;
                     //finished = true;
                     //delayTimer.Reset();
-                    Release(mapper);
 
                     // Execute Up Events
                     ReleaseEvents(mapper);
+
+                    Release(mapper);
                 }
             }
         }
@@ -122,8 +123,6 @@ namespace SteamControllerTest.ActionUtil
                 {
                     mapper.RunEventFromButton(action, false);
                 }
-
-                //Trace.WriteLine($"active {action.activatedEvent}");
             }
 
             //mapper.RemoveReleaseFunc(this);
