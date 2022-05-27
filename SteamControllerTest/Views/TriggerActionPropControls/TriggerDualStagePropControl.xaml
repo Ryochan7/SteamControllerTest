@@ -32,7 +32,7 @@
                 <Label Content="Soft Pull" />
                 <Button x:Name="btnEditOpenSoftTest" Content="Test Soft Bind" Click="btnEditOpenSoftTest_Click"  Margin="8,0,0,0" MinWidth="60" />
             </StackPanel>
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal"  Margin="0,8,0,0">
                 <Label Content="Dead Zone" />
                 <TextBox Text="{Binding DeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
                     <TextBox.Style>
@@ -47,7 +47,7 @@
                 </TextBox>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="_AntiDead Zone" />
                 <TextBox Text="{Binding AntiDeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
                     <TextBox.Style>
@@ -62,7 +62,7 @@
                 </TextBox>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Soft Max Zone" />
                 <TextBox Text="{Binding MaxZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
                     <TextBox.Style>
@@ -77,7 +77,7 @@
                 </TextBox>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Hip Fire Delay (ms)" />
                 <TextBox Text="{Binding HipFireDelay, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
                     <TextBox.Style>
@@ -92,7 +92,7 @@
                 </TextBox>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Dual Stage Mode" />
                 <ComboBox SelectedIndex="{Binding SelectedDSModeIndex}">
                     <ComboBoxItem>Threshold</ComboBoxItem>

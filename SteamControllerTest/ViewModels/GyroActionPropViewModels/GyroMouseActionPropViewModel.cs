@@ -32,6 +32,19 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         private List<GyroTriggerButtonItem> triggerButtonItems;
         public List<GyroTriggerButtonItem> TriggerButtonItems => triggerButtonItems;
 
+        public bool TriggerActivates
+        {
+            get => action.mouseParams.triggerActivates;
+            set
+            {
+                if (action.mouseParams.triggerActivates == value) return;
+                action.mouseParams.triggerActivates = value;
+                TriggerActivatesChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler TriggerActivatesChanged;
+
         public bool HighlightName
         {
             get => baseAction.ParentAction == null ||
@@ -45,6 +58,13 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
                 baseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.DEAD_ZONE);
         }
         public event EventHandler HighlightDeadZoneChanged;
+
+        public bool HighlightTriggerActivates
+        {
+            get => baseAction.ParentAction == null ||
+                baseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.TRIGGER_ACTIVATE);
+        }
+        public event EventHandler HighlightTriggerActivatesChanged;
 
         public override event EventHandler ActionPropertyChanged;
 
@@ -79,6 +99,17 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
             NameChanged += GyroMouseActionPropViewModel_NameChanged;
             DeadZoneChanged += GyroMouseActionPropViewModel_DeadZoneChanged;
+            TriggerActivatesChanged += GyroMouseActionPropViewModel_TriggerActivatesChanged;
+        }
+
+        private void GyroMouseActionPropViewModel_TriggerActivatesChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.TRIGGER_ACTIVATE))
+            {
+                action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.TRIGGER_ACTIVATE);
+            }
+
+            HighlightTriggerActivatesChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void GyroMouseActionPropViewModel_DeadZoneChanged(object sender, EventArgs e)

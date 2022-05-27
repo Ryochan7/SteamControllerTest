@@ -22,7 +22,7 @@
                     </TextBox.Style>
                 </TextBox>
             </StackPanel>
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Output Stick" />
                 <ComboBox ItemsSource="{Binding OutputStickItems}" SelectedIndex="{Binding OutputStickIndex}" DisplayMemberPath="DisplayName" Width="200">
                     <ComboBox.Style>
@@ -36,7 +36,7 @@
                     </ComboBox.Style>
                 </ComboBox>
             </StackPanel>
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="_Dead Zone" />
                 <TextBox Text="{Binding DeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
                     <TextBox.Style>
@@ -50,7 +50,7 @@
                     </TextBox.Style>
                 </TextBox>
             </StackPanel>
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="_AntiDead Zone" />
                 <TextBox Text="{Binding AntiDeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
                     <TextBox.Style>
@@ -64,7 +64,7 @@
                     </TextBox.Style>
                 </TextBox>
             </StackPanel>
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="_Max Zone" />
                 <TextBox Text="{Binding MaxZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
                     <TextBox.Style>

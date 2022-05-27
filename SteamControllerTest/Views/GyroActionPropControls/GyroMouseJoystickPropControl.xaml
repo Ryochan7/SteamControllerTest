@@ -84,7 +84,17 @@
 
             <StackPanel Orientation="Horizontal">
                 <Label Content="Trigger Activates (Ratchet)" />
-                <CheckBox IsChecked="{Binding TriggerActivates}" Width="20" VerticalAlignment="Center" Margin="8,0,0,0" />
+                <CheckBox IsChecked="{Binding TriggerActivates}" Width="20" VerticalAlignment="Center" Margin="8,0,0,0">
+                    <CheckBox.Style>
+                        <Style TargetType="CheckBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightGyroTriggerActivates}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </CheckBox.Style>
+                </CheckBox>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">

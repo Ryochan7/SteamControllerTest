@@ -74,6 +74,7 @@ namespace SteamControllerTest.Views
                     {
                         TouchpadActionPadPropControl propActionPadControl = new TouchpadActionPadPropControl();
                         propActionPadControl.PostInit(touchBindEditVM.Mapper, touchBindEditVM.Action);
+                        propActionPadControl.RequestFuncEditor += PropActionPadControl_RequestFuncEditor;
                         touchBindEditVM.DisplayControl = propActionPadControl;
                     }
 
@@ -98,6 +99,37 @@ namespace SteamControllerTest.Views
                     touchBindEditVM.DisplayControl = null;
                     break;
             }
+        }
+
+        private void PropActionPadControl_RequestFuncEditor(object sender, TouchpadActionPadPropControl.DirButtonBindingArgs e)
+        {
+            FuncBindingControl tempControl = new FuncBindingControl();
+            tempControl.PostInit(touchBindEditVM.Mapper, e.DirBtn);
+            tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+            UserControl oldControl = touchBindEditVM.DisplayControl;
+            touchpadSelectControl.Visibility = Visibility.Collapsed;
+            tempControl.RequestClose += (sender, args) =>
+            {
+                touchBindEditVM.DisplayControl = oldControl;
+                touchpadSelectControl.Visibility = Visibility.Visible;
+            };
+
+            touchBindEditVM.DisplayControl = tempControl;
+        }
+
+        private void TempControl_RequestBindingEditor(object sender, ActionFunc e)
+        {
+            OutputBindingEditorControl tempControl = new OutputBindingEditorControl();
+            FuncBindingControl bindControl = sender as FuncBindingControl;
+            tempControl.PostInit(touchBindEditVM.Mapper, bindControl.FuncBindVM.Action, e);
+            UserControl oldControl = bindControl;
+            tempControl.Finished += (sender, args) =>
+            {
+                bindControl.RefreshView();
+                touchBindEditVM.DisplayControl = oldControl;
+            };
+
+            touchBindEditVM.DisplayControl = tempControl;
         }
 
         private void Window_Closed(object sender, EventArgs e)

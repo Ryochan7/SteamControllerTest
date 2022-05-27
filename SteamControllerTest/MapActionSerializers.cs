@@ -222,6 +222,7 @@ namespace SteamControllerTest
         {
             private DPadActions.DPadAction padAction;
 
+            [JsonConverter(typeof(StringEnumConverter))]
             public DPadActions.DPadAction.DPadMode PadMode
             {
                 get => padAction.CurrentMode;
@@ -533,6 +534,7 @@ namespace SteamControllerTest
         {
             private TriggerTranslate triggerAction;
 
+            [JsonConverter(typeof(StringEnumConverter))]
             public JoypadActionCodes OutputTrigger
             {
                 get => triggerAction.OutputData.JoypadCode;
@@ -683,6 +685,7 @@ namespace SteamControllerTest
             }
             public event EventHandler AntiDeadZoneChanged;
 
+            [JsonConverter(typeof(StringEnumConverter))]
             public TriggerDualStageAction.DualStageMode DualStageMode
             {
                 get => triggerDualAction.TriggerStateMode;
@@ -1034,6 +1037,7 @@ namespace SteamControllerTest
                 return touchActionPadAction.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.PAD_MODE);
             }
 
+            [JsonConverter(typeof(StringEnumConverter))]
             public StickDeadZone.DeadZoneTypes DeadZoneType
             {
                 get => touchActionPadAction.DeadMod.DeadZoneType;
@@ -2144,6 +2148,7 @@ namespace SteamControllerTest
             }
             public event EventHandler OutputStickChanged;
 
+            [JsonConverter(typeof(StringEnumConverter))]
             public StickOutCurve.Curve OutputCurve
             {
                 get => touchStickAction.OutputCurve;
@@ -4414,6 +4419,7 @@ namespace SteamControllerTest
             }
             public event EventHandler TriggerActivatesChanged;
 
+            [JsonConverter(typeof(StringEnumConverter))]
             public GyroActionsUtils.GyroTriggerEvalCond EvalCond
             {
                 get => gyroMouseAction.mouseParams.andCond ?
@@ -4428,6 +4434,7 @@ namespace SteamControllerTest
             }
             public event EventHandler EvalCondChanged;
 
+            [JsonConverter(typeof(StringEnumConverter))]
             public GyroMouseXAxisChoice UseForXAxis
             {
                 get => gyroMouseAction.mouseParams.useForXAxis;
@@ -4714,6 +4721,7 @@ namespace SteamControllerTest
             }
             public event EventHandler TriggerActivatesChanged;
 
+            [JsonConverter(typeof(StringEnumConverter))]
             public GyroActionsUtils.GyroTriggerEvalCond EvalCond
             {
                 get => gyroDirSwipeAction.swipeParams.andCond ?
@@ -5049,6 +5057,7 @@ namespace SteamControllerTest
             }
             public event EventHandler TriggerActivatesChanged;
 
+            [JsonConverter(typeof(StringEnumConverter))]
             public GyroActionsUtils.GyroTriggerEvalCond EvalCond
             {
                 get => gyroMouseStickAction.mStickParms.andCond ?
@@ -5140,6 +5149,7 @@ namespace SteamControllerTest
             }
             public event EventHandler OutputAxesChanged;
 
+            [JsonConverter(typeof(StringEnumConverter))]
             public StickActionCodes OutputStick
             {
                 get => gyroMouseStickAction.mStickParms.outputStick;

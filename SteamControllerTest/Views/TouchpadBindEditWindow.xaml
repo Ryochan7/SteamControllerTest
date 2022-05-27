@@ -6,10 +6,10 @@
         xmlns:local="clr-namespace:SteamControllerTest.Views"
         mc:Ignorable="d"
         Title="TouchpadBindEditWindow" Height="450" Width="800" Closed="Window_Closed">
-    <DockPanel>
-        <StackPanel>
-            <local:TouchpadActionSelectControl x:Name="touchpadSelectControl" />
-            <ContentControl x:Name="displayControl" Content="{Binding DisplayControl}" />
-        </StackPanel>
+    <DockPanel Margin="8">
+        <DockPanel DockPanel.Dock="Top">
+            <local:TouchpadActionSelectControl x:Name="touchpadSelectControl" DockPanel.Dock="Top" />
+            <ContentControl x:Name="displayControl" Content="{Binding DisplayControl}" DockPanel.Dock="Top" />
+        </DockPanel>
     </DockPanel>
 </Window>

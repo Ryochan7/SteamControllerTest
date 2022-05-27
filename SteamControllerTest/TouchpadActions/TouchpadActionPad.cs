@@ -167,6 +167,11 @@ namespace SteamControllerTest.TouchpadActions
         }
 
         private bool requiresClick;
+        public bool RequiresClick
+        {
+            get => requiresClick;
+            set => requiresClick = value;
+        }
 
         private bool[] useParentDataDraft2 = new bool[13];
         private bool useParentRingButton;
