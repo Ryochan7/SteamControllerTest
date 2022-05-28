@@ -44,6 +44,9 @@ namespace SteamControllerTest.ViewModels
                 case TriggerDualStageAction:
                     selectedIndex = 2;
                     break;
+                case TriggerButtonAction:
+                    selectedIndex = 3;
+                    break;
                 default:
                     selectedIndex = -1;
                     break;

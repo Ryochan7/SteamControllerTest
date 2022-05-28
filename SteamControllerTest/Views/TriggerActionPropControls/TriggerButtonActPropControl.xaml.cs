@@ -15,41 +15,40 @@ using System.Windows.Shapes;
 using SteamControllerTest.ViewModels.TriggerActionPropViewModels;
 using SteamControllerTest.TriggerActions;
 using SteamControllerTest.ButtonActions;
-using SteamControllerTest.ActionUtil;
 
 namespace SteamControllerTest.Views.TriggerActionPropControls
 {
     /// <summary>
-    /// Interaction logic for TriggerDualStagePropControl.xaml
+    /// Interaction logic for TriggerButtonActPropControl.xaml
     /// </summary>
-    public partial class TriggerDualStagePropControl : UserControl
+    public partial class TriggerButtonActPropControl : UserControl
     {
-        public class DualStageBindingArgs : EventArgs
+        public class TriggerButtonBindingArgs : EventArgs
         {
-            private AxisDirButton pullBtn;
-            public AxisDirButton PullBtn => pullBtn;
+            private AxisDirButton actionBtn;
+            public AxisDirButton ActionBtn => actionBtn;
 
-            public DualStageBindingArgs(AxisDirButton pullBtn)
+            public TriggerButtonBindingArgs(AxisDirButton actionBtn)
             {
-                this.pullBtn = pullBtn;
+                this.actionBtn = actionBtn;
             }
         }
 
-        private TriggerDualStagePropViewModel trigDualStagePropVM;
-        public TriggerDualStagePropViewModel TrigDualStagePropVM => trigDualStagePropVM;
+        private TriggerButtonActPropViewModel trigBtnActVM;
+        public TriggerButtonActPropViewModel TrigBtnActVM => trigBtnActVM;
 
         public event EventHandler<int> ActionTypeIndexChanged;
-        public event EventHandler<DualStageBindingArgs> RequestFuncEditor;
+        public event EventHandler<TriggerButtonBindingArgs> RequestFuncEditor;
 
-        public TriggerDualStagePropControl()
+        public TriggerButtonActPropControl()
         {
             InitializeComponent();
         }
 
         public void PostInit(Mapper mapper, TriggerMapAction action)
         {
-            trigDualStagePropVM = new TriggerDualStagePropViewModel(mapper, action);
-            DataContext = trigDualStagePropVM;
+            trigBtnActVM = new TriggerButtonActPropViewModel(mapper, action);
+            DataContext = trigBtnActVM;
 
             triggerSelectControl.PostInit(mapper, action);
             triggerSelectControl.TrigActionSelVM.SelectedIndexChanged += TrigActionSelVM_SelectedIndexChanged;
@@ -64,13 +63,7 @@ namespace SteamControllerTest.Views.TriggerActionPropControls
         private void btnEditOpenTest_Click(object sender, RoutedEventArgs e)
         {
             RequestFuncEditor?.Invoke(this,
-                new DualStageBindingArgs(trigDualStagePropVM.Action.FullPullActButton));
-        }
-
-        private void btnEditOpenSoftTest_Click(object sender, RoutedEventArgs e)
-        {
-            RequestFuncEditor?.Invoke(this,
-                new DualStageBindingArgs(trigDualStagePropVM.Action.SoftPullActButton));
+                new TriggerButtonBindingArgs(trigBtnActVM.Action.EventButton));
         }
     }
 }

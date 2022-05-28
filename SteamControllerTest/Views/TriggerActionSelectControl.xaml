@@ -13,6 +13,7 @@
                 <ComboBoxItem>Unbound</ComboBoxItem>
                 <ComboBoxItem>Trigger Translate</ComboBoxItem>
                 <ComboBoxItem>Dual Stage</ComboBoxItem>
+                <ComboBoxItem>Button</ComboBoxItem>
             </ComboBox>
         </StackPanel>
     </DockPanel>

@@ -73,11 +73,37 @@ namespace SteamControllerTest.Views
                     }
 
                     break;
+                case TriggerButtonAction:
+                    {
+                        TriggerButtonActPropControl propControl = new TriggerButtonActPropControl();
+                        propControl.PostInit(trigBindEditVM.Mapper, trigBindEditVM.Action);
+                        propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged;
+                        propControl.RequestFuncEditor += PropControl_RequestFuncEditor1;
+                        propControl.TrigBtnActVM.ActionChanged += TrigTransPropVM_ActionChanged;
+                        trigBindEditVM.DisplayControl = propControl;
+                    }
+
+                    break;
 
                 default:
                     trigBindEditVM.DisplayControl = null;
                     break;
             }
+        }
+
+        private void PropControl_RequestFuncEditor1(object sender,
+            TriggerButtonActPropControl.TriggerButtonBindingArgs e)
+        {
+            FuncBindingControl tempControl = new FuncBindingControl();
+            tempControl.PostInit(trigBindEditVM.Mapper, e.ActionBtn);
+            tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+            UserControl oldControl = trigBindEditVM.DisplayControl;
+            tempControl.RequestClose += (sender, args) =>
+            {
+                trigBindEditVM.DisplayControl = oldControl;
+            };
+
+            trigBindEditVM.DisplayControl = tempControl;
         }
 
         private void TrigTransPropVM_ActionChanged(object sender, TriggerMapAction e)

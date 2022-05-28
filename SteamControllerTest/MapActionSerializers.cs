@@ -891,7 +891,35 @@ namespace SteamControllerTest
 
     public class TriggerButtonActionSerializer : MapActionSerializer
     {
+        public class TriggerButtonActionSettings
+        {
+            private TriggerButtonAction _action;
+
+            public double DeadZone
+            {
+                get => _action.DeadZone.DeadZone;
+                set
+                {
+                    _action.DeadZone.DeadZone = Math.Clamp(value, 0.0, 1.0);
+                    DeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler DeadZoneChanged;
+
+            public TriggerButtonActionSettings(TriggerButtonAction action)
+            {
+                _action = action;
+            }
+        }
+
         private TriggerButtonAction trigBtnAction = new TriggerButtonAction();
+
+        private TriggerButtonActionSettings settings;
+        public TriggerButtonActionSettings Settings
+        {
+            get => settings;
+            set => settings = value;
+        }
 
         private List<ActionFuncSerializer> actionFuncSerializers =
                 new List<ActionFuncSerializer>();
@@ -911,6 +939,20 @@ namespace SteamControllerTest
         public TriggerButtonActionSerializer() : base()
         {
             mapAction = trigBtnAction;
+            this.settings = new TriggerButtonActionSettings(trigBtnAction);
+
+            NameChanged += TriggerButtonActionSerializer_NameChanged;
+            settings.DeadZoneChanged += Settings_DeadZoneChanged;
+        }
+
+        private void Settings_DeadZoneChanged(object sender, EventArgs e)
+        {
+            trigBtnAction.ChangedProperties.Add(TriggerButtonAction.PropertyKeyStrings.DEAD_ZONE);
+        }
+
+        private void TriggerButtonActionSerializer_NameChanged(object sender, EventArgs e)
+        {
+            trigBtnAction.ChangedProperties.Add(TriggerButtonAction.PropertyKeyStrings.NAME);
         }
 
         // Serialize
@@ -921,6 +963,7 @@ namespace SteamControllerTest
             {
                 trigBtnAction = temp;
                 this.mapAction = trigBtnAction;
+                this.settings = new TriggerButtonActionSettings(trigBtnAction);
                 PopulateFuncs();
             }
         }
@@ -5866,6 +5909,11 @@ namespace SteamControllerTest
                     break;
                 default:
                     break;
+            }
+
+            if (resultInstance == null)
+            {
+                throw new JsonException($"Failed to read invalid type of ({actionOutput})");
             }
 
             return resultInstance;

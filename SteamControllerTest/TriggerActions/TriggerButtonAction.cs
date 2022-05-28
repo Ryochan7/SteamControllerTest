@@ -10,6 +10,22 @@ namespace SteamControllerTest.TriggerActions
 {
     public class TriggerButtonAction : TriggerMapAction
     {
+        public class PropertyKeyStrings
+        {
+            public const string NAME = "Name";
+            public const string DEAD_ZONE = "DeadZone";
+            //public const string MAX_ZONE = "MaxZone";
+            //public const string ANTIDEAD_ZONE = "AntiDeadZone";
+        }
+
+        private HashSet<string> fullPropertySet = new HashSet<string>()
+        {
+            PropertyKeyStrings.NAME,
+            PropertyKeyStrings.DEAD_ZONE,
+            //PropertyKeyStrings.MAX_ZONE,
+            //PropertyKeyStrings.ANTIDEAD_ZONE,
+        };
+
         private bool inputStatus;
         private AxisDirButton eventButton = new AxisDirButton();
         public AxisDirButton EventButton
@@ -78,6 +94,26 @@ namespace SteamControllerTest.TriggerActions
 
                 this.parentAction = parentAction;
                 mappingId = tempBtnAction.mappingId;
+
+                // Determine the set with properties that should inherit
+                // from the parent action
+                IEnumerable<string> useParentProList =
+                    fullPropertySet.Except(changedProperties);
+
+                foreach (string parentPropType in useParentProList)
+                {
+                    switch (parentPropType)
+                    {
+                        case PropertyKeyStrings.NAME:
+                            name = tempBtnAction.name;
+                            break;
+                        case PropertyKeyStrings.DEAD_ZONE:
+                            deadZone.DeadZone = tempBtnAction.deadZone.DeadZone;
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
         }
     }

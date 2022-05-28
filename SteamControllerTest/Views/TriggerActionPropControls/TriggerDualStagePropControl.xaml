@@ -10,6 +10,7 @@
     <DockPanel>
         <StackPanel>
             <local1:TriggerActionSelectControl x:Name="triggerSelectControl" />
+
             <StackPanel Orientation="Horizontal"  Margin="0,8,0,0">
                 <Label Content="Name" />
                 <TextBox Text="{Binding Name,UpdateSourceTrigger=LostFocus}" Width="200">
