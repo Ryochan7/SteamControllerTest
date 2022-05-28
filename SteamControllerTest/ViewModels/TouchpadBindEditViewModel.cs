@@ -95,6 +95,15 @@ namespace SteamControllerTest.ViewModels
                     }
 
                     break;
+                case 6:
+                    {
+                        TouchpadAbsAction tempAction = new TouchpadAbsAction();
+                        //var joyDefaults = mapper.DeviceActionDefaults.GrabTouchMouseDefaults();
+                        //joyDefaults.Process(tempAction);
+                        result = tempAction;
+                    }
+
+                    break;
                 default:
                     break;
             }

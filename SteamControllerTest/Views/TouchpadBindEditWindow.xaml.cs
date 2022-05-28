@@ -95,10 +95,35 @@ namespace SteamControllerTest.Views
                     }
 
                     break;
+                case TouchpadAbsAction:
+                    {
+                        TouchpadAbsMousePropControl propControl = new TouchpadAbsMousePropControl();
+                        propControl.PostInit(touchBindEditVM.Mapper, touchBindEditVM.Action);
+                        propControl.RequestFuncEditor += PropControl_RequestFuncEditor;
+                        touchBindEditVM.DisplayControl = propControl;
+                    }
+
+                    break;
                 default:
                     touchBindEditVM.DisplayControl = null;
                     break;
             }
+        }
+
+        private void PropControl_RequestFuncEditor(object sender, TouchpadAbsMousePropControl.ButtonBindingArgs e)
+        {
+            FuncBindingControl tempControl = new FuncBindingControl();
+            tempControl.PostInit(touchBindEditVM.Mapper, e.ActionBtn);
+            tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+            UserControl oldControl = touchBindEditVM.DisplayControl;
+            touchpadSelectControl.Visibility = Visibility.Collapsed;
+            tempControl.RequestClose += (sender, args) =>
+            {
+                touchBindEditVM.DisplayControl = oldControl;
+                touchpadSelectControl.Visibility = Visibility.Visible;
+            };
+
+            touchBindEditVM.DisplayControl = tempControl;
         }
 
         private void PropActionPadControl_RequestFuncEditor(object sender, TouchpadActionPadPropControl.DirButtonBindingArgs e)
@@ -176,6 +201,17 @@ namespace SteamControllerTest.Views
                         {
                             touchBindEditVM.UpdateAction(tempControl.TouchMousePropVM.Action);
                             TouchActionUpdated?.Invoke(this, tempControl.TouchMousePropVM.Action);
+                        }
+                    }
+
+                    break;
+                case TouchpadAbsAction:
+                    {
+                        TouchpadAbsMousePropControl tempControl = touchBindEditVM.DisplayControl as TouchpadAbsMousePropControl;
+                        if (tempControl.TouchAbsMousePropVM.Action != touchBindEditVM.Action)
+                        {
+                            touchBindEditVM.UpdateAction(tempControl.TouchAbsMousePropVM.Action);
+                            TouchActionUpdated?.Invoke(this, tempControl.TouchAbsMousePropVM.Action);
                         }
                     }
 
