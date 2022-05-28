@@ -220,6 +220,8 @@ namespace SteamControllerTest.ViewModels
             buttonBindingsIndexDict.Clear();
             touchpadBindings.Clear();
             triggerBindings.Clear();
+            stickBindings.Clear();
+            gyroBindings.Clear();
 
             PopulateLayerItems();
             PopulateCurrentLayerBindings();
@@ -234,6 +236,8 @@ namespace SteamControllerTest.ViewModels
             buttonBindingsIndexDict.Clear();
             touchpadBindings.Clear();
             triggerBindings.Clear();
+            stickBindings.Clear();
+            gyroBindings.Clear();
 
             PopulateCurrentLayerBindings();
         }
