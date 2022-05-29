@@ -447,5 +447,23 @@ namespace SteamControllerTest.MapperUtil
             outputCodeProfileStr = "";
             changeToLayer = -1;
         }
+
+        public string Describe()
+        {
+            string result = "";
+            switch(outputType)
+            {
+                case ActionType.Keyboard:
+                    result = OutputDataAliasUtil.GetStringForKeyboardKey(outputCode);
+                    break;
+                case ActionType.MouseButton:
+                    result = OutputDataAliasUtil.GetStringForMouseButton(outputCode);
+                    break;
+                default:
+                    break;
+            }
+
+            return result;
+        }
     }
 }

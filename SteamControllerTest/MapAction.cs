@@ -98,5 +98,11 @@ namespace SteamControllerTest
             name = sourceAction.name;
             mappingId = sourceAction.mappingId;
         }
+
+        public virtual string Describe()
+        {
+            string result = "";
+            return result;
+        }
     }
 }

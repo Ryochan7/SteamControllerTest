@@ -51,6 +51,11 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
         }
         public event EventHandler DeadZoneChanged;
 
+        public string ActionBindName
+        {
+            get => action.EventButton.DescribeActions();
+        }
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||

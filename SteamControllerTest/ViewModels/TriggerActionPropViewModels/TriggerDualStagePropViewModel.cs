@@ -109,6 +109,16 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
         }
         public event EventHandler SelectedDSModeIndexChanged;
 
+        public string FullBtnDisplayBind
+        {
+            get => action.FullPullActButton.DescribeActions();
+        }
+
+        public string SoftBtnDisplayBind
+        {
+            get => action.SoftPullActButton.DescribeActions();
+        }
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||

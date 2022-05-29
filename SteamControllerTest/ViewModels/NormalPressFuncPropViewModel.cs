@@ -29,11 +29,7 @@ namespace SteamControllerTest.ViewModels
             get
             {
                 string result = "";
-                if (func.OutputActions.Count > 0)
-                {
-                    result = func.OutputActions[0].ToString();
-                }
-
+                result = func.Describe();
                 return result;
             }
         }

@@ -177,5 +177,22 @@ namespace SteamControllerTest.ActionUtil
                 turboStopwatch.Reset();
             }
         }
+
+        public override string Describe()
+        {
+            string result = "";
+            List<string> tempList = new List<string>();
+            foreach(OutputActionData data in outputActions)
+            {
+                tempList.Add(data.Describe());
+            }
+
+            if (tempList.Count > 0)
+            {
+                result = string.Join(", ", tempList);
+            }
+
+            return result;
+        }
     }
 }

@@ -15,7 +15,7 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Content="Bindings" />
-                <Button Content="{Binding DisplayBind}" Width="200" Click="Button_Click" />
+                <Button Content="{Binding DisplayBind,Mode=OneTime}" Width="200" Click="Button_Click" />
                 <!--<TextBlock Text="{Binding DisplayBind}" />-->
             </StackPanel>
             <StackPanel Orientation="Horizontal">

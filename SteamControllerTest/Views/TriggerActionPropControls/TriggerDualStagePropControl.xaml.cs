@@ -55,6 +55,12 @@ namespace SteamControllerTest.Views.TriggerActionPropControls
             triggerSelectControl.TrigActionSelVM.SelectedIndexChanged += TrigActionSelVM_SelectedIndexChanged;
         }
 
+        public void RefreshView()
+        {
+            btnEditOpenSoftTest.GetBindingExpression(Button.ContentProperty).UpdateTarget();
+            btnEditOpenTest.GetBindingExpression(Button.ContentProperty).UpdateTarget();
+        }
+
         private void TrigActionSelVM_SelectedIndexChanged(object sender, EventArgs e)
         {
             ActionTypeIndexChanged?.Invoke(this,

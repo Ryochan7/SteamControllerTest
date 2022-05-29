@@ -78,7 +78,7 @@ namespace SteamControllerTest.Views
                         TriggerButtonActPropControl propControl = new TriggerButtonActPropControl();
                         propControl.PostInit(trigBindEditVM.Mapper, trigBindEditVM.Action);
                         propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged;
-                        propControl.RequestFuncEditor += PropControl_RequestFuncEditor1;
+                        propControl.RequestFuncEditor += TrigBtnAct_PropControl_RequestFuncEditor;
                         propControl.TrigBtnActVM.ActionChanged += TrigTransPropVM_ActionChanged;
                         trigBindEditVM.DisplayControl = propControl;
                     }
@@ -91,7 +91,7 @@ namespace SteamControllerTest.Views
             }
         }
 
-        private void PropControl_RequestFuncEditor1(object sender,
+        private void TrigBtnAct_PropControl_RequestFuncEditor(object sender,
             TriggerButtonActPropControl.TriggerButtonBindingArgs e)
         {
             FuncBindingControl tempControl = new FuncBindingControl();
@@ -100,6 +100,7 @@ namespace SteamControllerTest.Views
             UserControl oldControl = trigBindEditVM.DisplayControl;
             tempControl.RequestClose += (sender, args) =>
             {
+                (oldControl as TriggerButtonActPropControl).RefreshView();
                 trigBindEditVM.DisplayControl = oldControl;
             };
 
@@ -125,6 +126,7 @@ namespace SteamControllerTest.Views
             UserControl oldControl = trigBindEditVM.DisplayControl;
             tempControl.RequestClose += (sender, args) =>
             {
+                (oldControl as TriggerDualStagePropControl).RefreshView();
                 trigBindEditVM.DisplayControl = oldControl;
             };
 

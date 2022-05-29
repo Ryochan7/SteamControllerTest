@@ -1369,6 +1369,29 @@ namespace SteamControllerTest.ButtonActions
             }
         }
 
+        public override string Describe()
+        {
+            string result = "ButtonAction";
+            return result;
+        }
+
+        public string DescribeActions()
+        {
+            string result = "";
+            List<string> tempList = new List<string>();
+            foreach(ActionFunc func in actionFuncs)
+            {
+                tempList.Add(func.Describe());
+            }
+
+            if (tempList.Count > 0)
+            {
+                result = string.Join("|", tempList);
+            }
+
+            return result;
+        }
+
         //public void CopyPropsTo(ButtonAction secondAction)
         //{
         //    base.CopyBaseProps(secondAction);

@@ -79,5 +79,11 @@ namespace SteamControllerTest.ActionUtil
             secondFunc.outputActionEnumerator =
                 new OutputActionDataEnumerator(secondFunc.outputActions);
         }
+
+        public virtual string Describe()
+        {
+            string result = "";
+            return result;
+        }
     }
 }
