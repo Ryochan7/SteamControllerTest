@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using SteamControllerTest.MapperUtil;
 
 namespace SteamControllerTest.ActionUtil
@@ -83,6 +84,24 @@ namespace SteamControllerTest.ActionUtil
             activeEvent = false;
             finished = true;
             chordActive = false;
+        }
+
+        public override string Describe()
+        {
+            string result = "";
+            List<string> tempList = new List<string>();
+            foreach (OutputActionData data in outputActions)
+            {
+                tempList.Add(data.Describe());
+            }
+
+            if (tempList.Count > 0)
+            {
+
+                result = $"Chord({string.Join(", ", tempList)})";
+            }
+
+            return result;
         }
     }
 }

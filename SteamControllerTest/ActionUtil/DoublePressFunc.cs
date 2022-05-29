@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SteamControllerTest.MapperUtil;
 
 namespace SteamControllerTest.ActionUtil
 {
@@ -170,6 +171,24 @@ namespace SteamControllerTest.ActionUtil
         {
             currentTapStatus = TapStatus.Inactive;
             elapsed.Reset();
+        }
+
+        public override string Describe()
+        {
+            string result = "";
+            List<string> tempList = new List<string>();
+            foreach (OutputActionData data in outputActions)
+            {
+                tempList.Add(data.Describe());
+            }
+
+            if (tempList.Count > 0)
+            {
+
+                result = $"DP({string.Join(", ", tempList)})";
+            }
+
+            return result;
         }
     }
 }

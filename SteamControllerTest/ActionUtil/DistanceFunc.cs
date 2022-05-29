@@ -100,5 +100,23 @@ namespace SteamControllerTest.ActionUtil
             activeEvent = false;
             finished = true;
         }
+
+        public override string Describe()
+        {
+            string result = "";
+            List<string> tempList = new List<string>();
+            foreach (OutputActionData data in outputActions)
+            {
+                tempList.Add(data.Describe());
+            }
+
+            if (tempList.Count > 0)
+            {
+
+                result = $"Dist({string.Join(", ", tempList)})";
+            }
+
+            return result;
+        }
     }
 }
