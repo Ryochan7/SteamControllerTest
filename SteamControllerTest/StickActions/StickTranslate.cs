@@ -47,6 +47,8 @@ namespace SteamControllerTest.StickActions
             PropertyKeyStrings.SQUARE_STICK_ROUNDNESS,
         };
 
+        public const string ACTION_TYPE_NAME = "StickTranslateAction";
+
         private OutputActionData outputAction;
         public OutputActionData OutputAction
         {
@@ -127,6 +129,7 @@ namespace SteamControllerTest.StickActions
 
         public StickTranslate()
         {
+            actionTypeName = ACTION_TYPE_NAME;
             this.outputAction = new OutputActionData(OutputActionData.ActionType.GamepadControl, StickActionCodes.Empty);
             deadMod = new StickDeadZone(0.30, 1.0, 0.0);
         }
@@ -134,6 +137,7 @@ namespace SteamControllerTest.StickActions
         public StickTranslate(StickDefinition stickDefinition,
             OutputActionData outputAction)
         {
+            actionTypeName = ACTION_TYPE_NAME;
             this.stickDefinition = stickDefinition;
             deadMod = new StickDeadZone(0.30, 1.0, 0.0);
             deadMod.CircleDead = true;
@@ -142,6 +146,7 @@ namespace SteamControllerTest.StickActions
 
         public StickTranslate(StickTranslate parentAction)
         {
+            actionTypeName = ACTION_TYPE_NAME;
             deadMod = new StickDeadZone(0.30, 1.0, 0.0);
 
             if (parentAction != null)

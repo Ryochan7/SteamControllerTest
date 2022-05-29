@@ -129,7 +129,9 @@ namespace SteamControllerTest.ViewModels
                     //oldAction.Release(mapper, ignoreReleaseActions: true);
 
                     //mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddTouchpadAction(this.action);
-                    if (oldAction.Id != MapAction.DEFAULT_UNBOUND_ID)
+                    bool exists = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.LayerActions.Contains(oldAction);
+                    //if (oldAction.Id != MapAction.DEFAULT_UNBOUND_ID)
+                    if (exists)
                     {
                         mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.ReplaceTouchpadAction(oldAction, newAction);
                     }
@@ -147,6 +149,10 @@ namespace SteamControllerTest.ViewModels
                         }
 
                         mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
+                    }
+                    else
+                    {
+                        mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.SyncActions();
                     }
                 }
 

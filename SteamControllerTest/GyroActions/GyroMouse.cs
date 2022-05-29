@@ -76,6 +76,8 @@ namespace SteamControllerTest.GyroActions
             PropertyKeyStrings.SMOOTHING_MINBETA,
         };
 
+        public const string ACTION_TYPE_NAME = "GyroMouseAction";
+
         private double xMotion;
         private double yMotion;
         public GyroMouseParams mouseParams;
@@ -85,6 +87,7 @@ namespace SteamControllerTest.GyroActions
 
         public GyroMouse()
         {
+            actionTypeName = ACTION_TYPE_NAME;
             mouseParams = new GyroMouseParams()
             {
                 sensitivity = 1.0,
@@ -97,11 +100,13 @@ namespace SteamControllerTest.GyroActions
 
         public GyroMouse(GyroMouseParams mouseParams)
         {
+            actionTypeName = ACTION_TYPE_NAME;
             this.mouseParams = mouseParams;
         }
 
         public GyroMouse(GyroMouse parentAction)
         {
+            actionTypeName = ACTION_TYPE_NAME;
             this.parentAction = parentAction;
             this.mouseParams = parentAction.mouseParams;
         }

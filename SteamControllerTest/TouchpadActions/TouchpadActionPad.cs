@@ -91,6 +91,8 @@ namespace SteamControllerTest.TouchpadActions
             DownLeft = 12,
         }
 
+        public const string ACTION_TYPE_NAME = "TouchActionPadAction";
+
         // Allow individual AxisDirButton instances to be overridden
         private ButtonAction[] usedEventButtonsList = new ButtonAction[13];
         private ButtonAction[] usedFuncList;
@@ -195,6 +197,8 @@ namespace SteamControllerTest.TouchpadActions
 
         public TouchpadActionPad()
         {
+            actionTypeName = ACTION_TYPE_NAME;
+
             FillDirectionalButtons();
             deadMod = new StickDeadZone(0.0, 1.0, 0.0);
         }

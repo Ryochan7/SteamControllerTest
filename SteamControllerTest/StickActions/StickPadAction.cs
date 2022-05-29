@@ -87,6 +87,8 @@ namespace SteamControllerTest.StickActions
             DownLeft = 12,
         }
 
+        public const string ACTION_TYPE_NAME = "StickPadAction";
+
         // Cardinal direction codes. Use 0 for Centered and intermediate diagonals
         //private OutputActionData[] eventCodes = new OutputActionData[13];
         //private ActionFunc[] eventCodes3 = new ActionFunc[13];
@@ -174,6 +176,7 @@ namespace SteamControllerTest.StickActions
 
         public StickPadAction()
         {
+            actionTypeName = ACTION_TYPE_NAME;
             stickDefinition = new StickDefinition(new StickDefinition.StickAxisData(), new StickDefinition.StickAxisData(), StickActionCodes.Empty);
             deadMod = new StickDeadZone(0.30, 1.0, 0.0);
             //deadMod.CircleDead = true;
@@ -183,6 +186,7 @@ namespace SteamControllerTest.StickActions
 
         public StickPadAction(StickDefinition stickDefinition)
         {
+            actionTypeName = ACTION_TYPE_NAME;
             this.stickDefinition = stickDefinition;
             deadMod = new StickDeadZone(0.30, 1.0, 0.0);
             //deadMod.CircleDead = true;
@@ -192,6 +196,7 @@ namespace SteamControllerTest.StickActions
 
         public StickPadAction(StickPadAction parentAction)
         {
+            actionTypeName = ACTION_TYPE_NAME;
             if (parentAction != null)
             {
                 this.parentAction = parentAction;

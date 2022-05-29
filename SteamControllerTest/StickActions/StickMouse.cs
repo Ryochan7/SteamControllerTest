@@ -103,6 +103,7 @@ namespace SteamControllerTest.StickActions
         private const int MOUSESPEED = 100;
         //private const double MOUSE_VELOCITY_OFFSET = 0.12;
         private const double MOUSE_VELOCITY_OFFSET = 0.013;
+        public const string ACTION_TYPE_NAME = "StickMouseAction";
 
         private StickDeadZone deadMod;
         private StickOutCurve.Curve outputCurve = StickOutCurve.Curve.Linear;
@@ -129,6 +130,7 @@ namespace SteamControllerTest.StickActions
 
         public StickMouse()
         {
+            actionTypeName = ACTION_TYPE_NAME;
             //deadMod = new StickDeadZone(0.10, 0.9, 0.0);
             deadMod = new StickDeadZone(0.10, 1.0, 0.0);
             deadMod.CircleDead = true;
@@ -136,6 +138,7 @@ namespace SteamControllerTest.StickActions
 
         public StickMouse(StickDefinition stickDefinition)
         {
+            actionTypeName = ACTION_TYPE_NAME;
             this.stickDefinition = stickDefinition;
             //deadMod = new StickDeadZone(0.10, 0.9, 0.0);
             deadMod = new StickDeadZone(0.10, 1.0, 0.0);
@@ -144,6 +147,7 @@ namespace SteamControllerTest.StickActions
 
         public StickMouse(StickMouse parentAction)
         {
+            actionTypeName = ACTION_TYPE_NAME;
             this.parentAction = parentAction;
             parentAction.hasLayeredAction = true;
             mappingId = parentAction.mappingId;

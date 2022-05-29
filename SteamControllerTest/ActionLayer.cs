@@ -379,8 +379,15 @@ namespace SteamControllerTest
                 reverseActionDict.Remove(tempAction);
 
                 mappedInd = mappedActions.FindIndex((item) => (item == tempAction));
-                mappedActions.RemoveAt(mappedInd);
-                mappedActions.Insert(mappedInd, action);
+                if (mappedInd != -1)
+                {
+                    mappedActions.RemoveAt(mappedInd);
+                    mappedActions.Insert(mappedInd, action);
+                }
+                else
+                {
+                    mappedActions.Add(action);
+                }
             }
             else
             {
@@ -397,11 +404,11 @@ namespace SteamControllerTest
         public void AddButtonMapAction(ButtonMapAction action)
         {
             layerActions.Add(action);
-            mappedActions.Add(action);
+            //mappedActions.Add(action);
             buttonActionDict[action.MappingId] = action;
 
-            normalActionDict.Add(action.MappingId, action);
-            reverseActionDict.Add(action, action.MappingId);
+            normalActionDict[action.MappingId] = action;
+            reverseActionDict[action] = action.MappingId;
         }
 
         public void ReplaceTriggerAction(TriggerMapAction oldAction, TriggerMapAction action)
@@ -419,8 +426,15 @@ namespace SteamControllerTest
                 reverseActionDict.Remove(tempAction);
 
                 mappedInd = mappedActions.FindIndex((item) => (item == tempAction));
-                mappedActions.RemoveAt(mappedInd);
-                mappedActions.Insert(mappedInd, action);
+                if (mappedInd != -1)
+                {
+                    mappedActions.RemoveAt(mappedInd);
+                    mappedActions.Insert(mappedInd, action);
+                }
+                else
+                {
+                    mappedActions.Add(action);
+                }
             }
             else
             {
@@ -437,11 +451,11 @@ namespace SteamControllerTest
         public void AddTriggerAction(TriggerMapAction action)
         {
             layerActions.Add(action);
-            mappedActions.Add(action);
+            //mappedActions.Add(action);
             triggerActionDict[action.MappingId] = action;
 
-            normalActionDict.Add(action.MappingId, action);
-            reverseActionDict.Add(action, action.MappingId);
+            normalActionDict[action.MappingId] = action;
+            reverseActionDict[action] = action.MappingId;
         }
 
         public void ReplaceStickAction(StickMapAction oldAction, StickMapAction action)
@@ -459,8 +473,15 @@ namespace SteamControllerTest
                 reverseActionDict.Remove(tempAction);
 
                 mappedInd = mappedActions.FindIndex((item) => (item == tempAction));
-                mappedActions.RemoveAt(mappedInd);
-                mappedActions.Insert(mappedInd, action);
+                if (mappedInd != -1)
+                {
+                    mappedActions.RemoveAt(mappedInd);
+                    mappedActions.Insert(mappedInd, action);
+                }
+                else
+                {
+                    mappedActions.Add(action);
+                }
             }
             else
             {
@@ -477,11 +498,11 @@ namespace SteamControllerTest
         public void AddStickAction(StickMapAction action)
         {
             layerActions.Add(action);
-            mappedActions.Add(action);
+            //mappedActions.Add(action);
             stickActionDict[action.MappingId] = action;
 
-            normalActionDict.Add(action.MappingId, action);
-            reverseActionDict.Add(action, action.MappingId);
+            normalActionDict[action.MappingId] = action;
+            reverseActionDict[action] = action.MappingId;
         }
 
         public void ReplaceGyroAction(GyroMapAction oldAction, GyroMapAction action)
@@ -499,8 +520,15 @@ namespace SteamControllerTest
                 reverseActionDict.Remove(tempAction);
 
                 mappedInd = mappedActions.FindIndex((item) => (item == tempAction));
-                mappedActions.RemoveAt(mappedInd);
-                mappedActions.Insert(mappedInd, action);
+                if (mappedInd != -1)
+                {
+                    mappedActions.RemoveAt(mappedInd);
+                    mappedActions.Insert(mappedInd, action);
+                }
+                else
+                {
+                    mappedActions.Add(action);
+                }
             }
             else
             {
@@ -517,7 +545,7 @@ namespace SteamControllerTest
         public void AddGyroAction(GyroMapAction action)
         {
             layerActions.Add(action);
-            mappedActions.Add(action);
+            //mappedActions.Add(action);
             gyroActionDict[action.MappingId] = action;
 
             normalActionDict.Add(action.MappingId, action);
@@ -541,8 +569,15 @@ namespace SteamControllerTest
                 touchpadActionDict[mapId] = action;
                 mappedInd = mappedActions.FindIndex((item) => (item == tempAction));
 
-                mappedActions.RemoveAt(mappedInd);
-                mappedActions.Insert(mappedInd, action);
+                if (mappedInd != -1)
+                {
+                    mappedActions.RemoveAt(mappedInd);
+                    mappedActions.Insert(mappedInd, action);
+                }
+                else
+                {
+                    mappedActions.Add(action);
+                }
 
                 normalActionDict.Add(mapId, action);
                 reverseActionDict.Add(action, mapId);
@@ -552,11 +587,11 @@ namespace SteamControllerTest
         public void AddTouchpadAction(TouchpadMapAction action)
         {
             layerActions.Add(action);
-            mappedActions.Add(action);
+            //mappedActions.Add(action);
             touchpadActionDict[action.MappingId] = action;
 
-            normalActionDict.Add(action.MappingId, action);
-            reverseActionDict.Add(action, action.MappingId);
+            normalActionDict[action.MappingId] = action;
+            reverseActionDict[action] = action.MappingId;
         }
 
         public int FindNextAvailableId()

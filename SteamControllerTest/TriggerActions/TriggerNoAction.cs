@@ -8,6 +8,13 @@ namespace SteamControllerTest.TriggerActions
 {
     public class TriggerNoAction : TriggerMapAction
     {
+        public const string ACTION_TYPE_NAME = "TriggerNoAction";
+
+        public TriggerNoAction()
+        {
+            actionTypeName = ACTION_TYPE_NAME;
+        }
+
         public override void Prepare(Mapper mapper, ref TriggerEventFrame eventFrame, bool alterState = true)
         {
         }

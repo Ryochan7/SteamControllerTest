@@ -26,6 +26,8 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.TRACKBALL_FRICTION,
         };
 
+        public const string ACTION_TYPE_NAME = "TouchMouseAction";
+
         private double xNorm = 0.0, yNorm = 0.0;
         private double xMotion;
         private double yMotion;
@@ -100,6 +102,7 @@ namespace SteamControllerTest.TouchpadActions
 
         public TouchpadMouse()
         {
+            actionTypeName = ACTION_TYPE_NAME;
             trackData = new TrackballVelData();
             //trackData.trackballAccel = TRACKBALL_RADIUS * TRACKBALL_JOY_FRICTION / TRACKBALL_INERTIA;
             trackData.trackballAccel = TRACKBALL_RADIUS * trackballFriction / TRACKBALL_INERTIA;

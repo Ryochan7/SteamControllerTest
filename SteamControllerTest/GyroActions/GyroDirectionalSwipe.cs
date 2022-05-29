@@ -68,6 +68,8 @@ namespace SteamControllerTest.GyroActions
             PropertyKeyStrings.TRIGGER_EVAL_COND,
         };
 
+        public const string ACTION_TYPE_NAME = "GyroDirSwipeAction";
+
         private ButtonAction[] usedEventsButtonsX =
             new ButtonAction[3];
 
@@ -117,6 +119,7 @@ namespace SteamControllerTest.GyroActions
 
         public GyroDirectionalSwipe()
         {
+            actionTypeName = ACTION_TYPE_NAME;
             swipeParams = new GyroDirectionalSwipeParams()
             {
                 deadzoneX = 80,

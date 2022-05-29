@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using SteamControllerTest.ButtonActions;
 using SteamControllerTest.MapperUtil;
@@ -60,13 +61,22 @@ namespace SteamControllerTest
         public string Name { get => tempProfile.Name; set => tempProfile.Name = value; }
 
         public string Description { get => tempProfile.Description; set => tempProfile.Description = value; }
+        public bool ShouldSerializeDescription()
+        {
+            return !string.IsNullOrEmpty(tempProfile.Description);
+        }
 
         public string Creator { get => tempProfile.Creator; set => tempProfile.Creator = value; }
 
         [JsonProperty(Required = Required.Always)]
         public DateTime CreationDate { get => tempProfile.CreationDate; set => tempProfile.CreationDate = value; }
 
+        [JsonIgnore]
         public string ControllerType { get => tempProfile.ControllerType; set => tempProfile.ControllerType = value; }
+        public bool ShouldSerializeControllerType()
+        {
+            return !string.IsNullOrEmpty(tempProfile.ControllerType);
+        }
 
         public EmulatedControllerSettings OutputGamepadSettings { get => tempProfile.OutputGamepadSettings; set => tempProfile.OutputGamepadSettings = value; }
 
@@ -274,6 +284,10 @@ namespace SteamControllerTest
         public string Name { get => tempActionSet.Name; set => tempActionSet.Name = value; }
 
         public string Description { get => tempActionSet.Description; set => tempActionSet.Description = value; }
+        public bool ShouldSerializeDescription()
+        {
+            return !string.IsNullOrEmpty(tempActionSet.Description);
+        }
 
         private List<ActionLayerSerializer> actionLayers = new List<ActionLayerSerializer>();
         [JsonProperty(PropertyName = "ActionLayers", Required = Required.Always)]
@@ -368,6 +382,10 @@ namespace SteamControllerTest
         public string Description
         {
             get => actionLayer.Description; set => actionLayer.Description = value;
+        }
+        public bool ShouldSerializeDescription()
+        {
+            return !string.IsNullOrEmpty(actionLayer.Description);
         }
 
         private List<MapActionSerializer> mapActionSerializers =

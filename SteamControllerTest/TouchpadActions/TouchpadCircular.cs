@@ -36,6 +36,7 @@ namespace SteamControllerTest.TouchpadActions
         private const double CLICK_ANGLE_THRESHOLD = 12.0;
         private const double CLICK_RAD_THRESHOLD = CLICK_ANGLE_THRESHOLD * Math.PI / 180.0;
         private const double DEFAULT_DEADZONE = 0.25;
+        public const string ACTION_TYPE_NAME = "TouchCircularAction";
 
         private double startAngleRad;
         private double currentAngleRad;
@@ -66,6 +67,8 @@ namespace SteamControllerTest.TouchpadActions
 
         public TouchpadCircular()
         {
+            actionTypeName = ACTION_TYPE_NAME;
+
             OutputActionData clockwiseOutputAction =
                 new OutputActionData(OutputActionData.ActionType.MouseWheel, (int)MouseWheelCodes.WheelDown);
 

@@ -88,6 +88,8 @@ namespace SteamControllerTest.StickActions
             }
         }
 
+        public const string ACTION_TYPE_NAME = "StickAbsMouseAction";
+
         // Specify the input state of the button
         private bool inputStatus;
 
@@ -134,6 +136,7 @@ namespace SteamControllerTest.StickActions
 
         public StickAbsMouse()
         {
+            actionTypeName = ACTION_TYPE_NAME;
             //deadMod = new StickDeadZone(0.10, 0.9, 0.0);
             deadMod = new StickDeadZone(0.10, 1.0, 0.0);
             deadMod.CircleDead = true;
@@ -153,6 +156,7 @@ namespace SteamControllerTest.StickActions
 
         public StickAbsMouse(StickDefinition stickDefinition)
         {
+            actionTypeName = ACTION_TYPE_NAME;
             this.stickDefinition = stickDefinition;
             //deadMod = new StickDeadZone(0.10, 0.9, 0.0);
             deadMod = new StickDeadZone(0.10, 1.0, 0.0);

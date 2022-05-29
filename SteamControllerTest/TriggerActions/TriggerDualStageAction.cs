@@ -62,6 +62,8 @@ namespace SteamControllerTest.TriggerActions
             HipFireExclusiveButtons
         }
 
+        public const string ACTION_TYPE_NAME = "TriggerDualStageAction";
+
         private double axisNorm;
         private AxisDeadZone deadMod;
 
@@ -114,6 +116,7 @@ namespace SteamControllerTest.TriggerActions
 
         public TriggerDualStageAction()
         {
+            actionTypeName = ACTION_TYPE_NAME;
             deadMod = new AxisDeadZone(0.0, 1.0, 0.0);
         }
 

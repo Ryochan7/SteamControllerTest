@@ -102,6 +102,8 @@ namespace SteamControllerTest.GyroActions
             PropertyKeyStrings.SMOOTHING_MINBETA,
         };
 
+        public const string ACTION_TYPE_NAME = "GyroMouseJoystickAction";
+
         public GyroMouseJoystickParams mStickParms;
         private double xNorm, yNorm;
         private double prevXNorm, prevYNorm;
@@ -112,6 +114,7 @@ namespace SteamControllerTest.GyroActions
 
         public GyroMouseJoystick()
         {
+            actionTypeName = ACTION_TYPE_NAME;
             mStickParms = new GyroMouseJoystickParams()
             {
                 deadZone = 24,
@@ -133,12 +136,14 @@ namespace SteamControllerTest.GyroActions
 
         public GyroMouseJoystick(GyroMouseJoystickParams mstickParams)
         {
+            actionTypeName = ACTION_TYPE_NAME;
             this.mStickParms = mstickParams;
             mStickParms.OutputStickChanged += MStickParms_OutputStickChanged;
         }
 
         public GyroMouseJoystick(GyroMouseJoystick parentAction)
         {
+            actionTypeName = ACTION_TYPE_NAME;
             this.parentAction = parentAction;
             this.mStickParms = parentAction.mStickParms;
             mStickParms.OutputStickChanged += MStickParms_OutputStickChanged;

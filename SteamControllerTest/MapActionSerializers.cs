@@ -49,6 +49,10 @@ namespace SteamControllerTest
                 NameChanged?.Invoke(this, EventArgs.Empty);
             }
         }
+        public bool ShouldSerializeName()
+        {
+            return !string.IsNullOrEmpty(mapAction.Name);
+        }
 
         [JsonProperty(Order = -2)]
         public string ActionMode
@@ -723,6 +727,10 @@ namespace SteamControllerTest
                 get => actionDirName;
                 set => actionDirName = value;
             }
+            public bool ShouldSerializeActionDirName()
+            {
+                return !string.IsNullOrEmpty(actionDirName);
+            }
 
             private List<ActionFuncSerializer> actionFuncSerializers =
                 new List<ActionFuncSerializer>();
@@ -760,6 +768,11 @@ namespace SteamControllerTest
             }
         }
         public event EventHandler SoftPullChanged;
+        public bool ShouldSerializeSoftPull()
+        {
+            return softPullStageButton.ActionFuncSerializers != null &&
+                softPullStageButton.ActionFuncSerializers.Count > 0;
+        }
 
         private StageButtonBinding fullPullStageButton = new StageButtonBinding();
         public StageButtonBinding FullPull
@@ -772,6 +785,11 @@ namespace SteamControllerTest
             }
         }
         public event EventHandler FullPullChanged;
+        public bool ShouldSerializeFullPull()
+        {
+            return fullPullStageButton.ActionFuncSerializers != null &&
+                fullPullStageButton.ActionFuncSerializers.Count > 0;
+        }
 
         // Deserialize
         public TriggerDualStageActionSerializer() : base()
@@ -2497,6 +2515,10 @@ namespace SteamControllerTest
                 get => actionDirName;
                 set => actionDirName = value;
             }
+            public bool ShouldSerializeActionDirName()
+            {
+                return !string.IsNullOrEmpty(actionDirName);
+            }
 
             private List<ActionFuncSerializer> actionFuncSerializers =
                 new List<ActionFuncSerializer>();
@@ -2649,6 +2671,10 @@ namespace SteamControllerTest
             }
         }
         public event EventHandler RingBindingChanged;
+        public bool ShouldSerializeRingBinding()
+        {
+            return touchAbsAct.ChangedProperties.Contains(TouchpadAbsAction.PropertyKeyStrings.OUTER_RING_BUTTON);
+        }
 
         private TouchpadAbsActionSettings settings;
         public TouchpadAbsActionSettings Settings
@@ -2719,6 +2745,25 @@ namespace SteamControllerTest
                 touchAbsAct = temp;
                 mapAction = touchAbsAct;
                 settings = new TouchpadAbsActionSettings(touchAbsAct);
+                PopulateFuncs();
+            }
+        }
+
+        private void PopulateFuncs()
+        {
+            if (touchAbsAct.RingButton != null)
+            {
+                ringBinding = new OuterRingBinding();
+                ringBinding.ActionDirName = touchAbsAct.RingButton.Name;
+                foreach (ActionFunc tempFunc in touchAbsAct.RingButton.ActionFuncs)
+                {
+                    ActionFuncSerializer tempSerializer =
+                        ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                    if (tempSerializer != null)
+                    {
+                        ringBinding.ActionFuncSerializers.Add(tempSerializer);
+                    }
+                }
             }
         }
 
@@ -2750,6 +2795,23 @@ namespace SteamControllerTest
         private void TouchpadAbsActionSerializer_RingBindingChanged(object sender, EventArgs e)
         {
             touchAbsAct.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.OUTER_RING_BUTTON);
+        }
+
+        public override void PopulateMap()
+        {
+            if (ringBinding != null)
+            {
+                touchAbsAct.RingButton.Name = ringBinding.ActionDirName;
+                List<ActionFuncSerializer> tempSerializers = ringBinding.ActionFuncSerializers;
+                foreach (ActionFuncSerializer serializer in tempSerializers)
+                {
+                    serializer.PopulateFunc();
+                    touchAbsAct.RingButton.ActionFuncs.Add(serializer.ActionFunc);
+                }
+
+                touchAbsAct.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.OUTER_RING_BUTTON);
+                //stickPadAct.RingButton.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.OUTER_RING_BUTTON);
+            }
         }
     }
 

@@ -10,6 +10,8 @@ namespace SteamControllerTest.ButtonActions
 {
     public class CycleButton : ButtonMapAction
     {
+        public const string ACTION_TYPE_NAME = "CycleButtonAction";
+
         public override double ButtonDistance
         {
             get
@@ -42,6 +44,7 @@ namespace SteamControllerTest.ButtonActions
 
         public CycleButton(string cycleIdentifier)
         {
+            actionTypeName = ACTION_TYPE_NAME;
             this.cycleIdentifier = cycleIdentifier;
             actionsEnumerator = new OutputActionDataEnumerator(actions);
         }

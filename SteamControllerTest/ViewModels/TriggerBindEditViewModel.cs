@@ -67,9 +67,19 @@ namespace SteamControllerTest.ViewModels
                     }
 
                     break;
+                case 3:
+                    {
+                        TriggerButtonAction tempAction = new TriggerButtonAction();
+                        //var joyDefaults = mapper.DeviceActionDefaults.GrabTouchActionPadDefaults();
+                        //joyDefaults.Process(tempAction);
+                        result = tempAction;
+                    }
+
+                    break;
                 default:
                     break;
             }
+
             return result;
         }
 
@@ -110,6 +120,10 @@ namespace SteamControllerTest.ViewModels
                         }
 
                         mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
+                    }
+                    else
+                    {
+                        mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.SyncActions();
                     }
                 }
 

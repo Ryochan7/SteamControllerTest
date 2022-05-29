@@ -83,6 +83,8 @@ namespace SteamControllerTest.GyroActions
         private const int MAX_ACCEL_LEAN_Y = MAX_ACCEL_LEAN_X;
         private const int MIN_ACCEL_LEAN_Y = MIN_ACCEL_LEAN_X;
 
+        public const string ACTION_TYPE_NAME = "GyroPadAction";
+
         private StickDeadZone deadMod;
         public StickDeadZone DeadMod { get => deadMod; }
 
@@ -107,12 +109,14 @@ namespace SteamControllerTest.GyroActions
 
         public GyroPadAction()
         {
+            actionTypeName = ACTION_TYPE_NAME;
             deadMod = new StickDeadZone(0.30, 0.30, 0.9, 0.9, 0.0, 0.0);
             deadMod.CircleDead = false;
         }
 
         public GyroPadAction(GyroPadParams padParams)
         {
+            actionTypeName = ACTION_TYPE_NAME;
             this.padParams = padParams;
             deadMod = new StickDeadZone(0.30, 0.30, 0.9, 0.9, 0.0, 0.0);
             deadMod.CircleDead = false;
@@ -120,6 +124,7 @@ namespace SteamControllerTest.GyroActions
 
         public GyroPadAction(GyroPadAction parentAction)
         {
+            actionTypeName = ACTION_TYPE_NAME;
             this.parentAction = parentAction;
             this.padParams = parentAction.padParams;
         }

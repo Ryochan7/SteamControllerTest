@@ -249,6 +249,10 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                     {
                         mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
                     }
+                    else
+                    {
+                        mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.SyncActions();
+                    }
 
                     resetEvent.Set();
                 });

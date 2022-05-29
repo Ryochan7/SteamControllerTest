@@ -30,6 +30,8 @@ namespace SteamControllerTest.TriggerActions
             PropertyKeyStrings.OUTPUT_TRIGGER,
         };
 
+        public const string ACTION_TYPE_NAME = "TriggerTranslateAction";
+
         private double axisNorm;
         private OutputActionData outputData;
         private AxisDeadZone deadMod;
@@ -46,6 +48,7 @@ namespace SteamControllerTest.TriggerActions
 
         public TriggerTranslate()
         {
+            actionTypeName = ACTION_TYPE_NAME;
             outputData = new OutputActionData(OutputActionData.ActionType.GamepadControl,
                 JoypadActionCodes.AxisLTrigger);
 

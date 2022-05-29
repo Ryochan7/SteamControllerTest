@@ -206,6 +206,10 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
                     {
                         mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
                     }
+                    else
+                    {
+                        mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.SyncActions();
+                    }
 
                     resetEvent.Set();
                 });

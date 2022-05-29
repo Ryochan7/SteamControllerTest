@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using SteamControllerTest.ButtonActions;
 
 namespace SteamControllerTest
@@ -136,10 +137,15 @@ namespace SteamControllerTest
             set => enabled = value;
         }
 
+        [JsonConverter(typeof(StringEnumConverter))]
         public OutputControllerType OutputGamepad
         {
             get => outputGamepad;
             set => outputGamepad = value;
+        }
+        public bool ShouldSerializeOutputGamepad()
+        {
+            return enabled;
         }
     }
 

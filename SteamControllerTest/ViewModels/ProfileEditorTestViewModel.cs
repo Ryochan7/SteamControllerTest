@@ -356,6 +356,8 @@ namespace SteamControllerTest.ViewModels
             ProfileEntity tempEntity = entity;
             Profile tempProfile = profile;
             string tempOutJson = string.Empty;
+            actionResetEvent.Reset();
+
             mapper.QueueEvent(() =>
             {
                 ProfileSerializer profileSerializer = new ProfileSerializer(tempProfile);

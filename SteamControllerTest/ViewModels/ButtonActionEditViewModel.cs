@@ -833,6 +833,7 @@ namespace SteamControllerTest.ViewModels
                 new KeyboardCodeItem("Right Shift", VirtualKeys.RightShift, "RightShift", tempInd++),
                 new KeyboardCodeItem("Left Control", VirtualKeys.LeftControl, "LeftControl", tempInd++),
                 new KeyboardCodeItem("Right Control", VirtualKeys.RightControl, "RightControl", tempInd++),
+                new KeyboardCodeItem("Tilde", VirtualKeys.OEM3, "Tilde", tempInd++),
             });
 
             tempInd = 0;

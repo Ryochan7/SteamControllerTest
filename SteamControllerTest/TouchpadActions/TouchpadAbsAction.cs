@@ -69,6 +69,8 @@ namespace SteamControllerTest.TouchpadActions
             }
         }
 
+        public const string ACTION_TYPE_NAME = "TouchAbsPadAction";
+
         // Specify the input state of the button
         private bool inputStatus;
 
@@ -79,7 +81,7 @@ namespace SteamControllerTest.TouchpadActions
         /// <summary>
         /// Used to determine outer ring mode or inner ring mode. Will change to using an Enum later
         /// </summary>
-        private bool outerRing;
+        private bool outerRing = true;
         /// <summary>
         /// Specify whether to interpret a ring binging at all
         /// </summary>
@@ -87,7 +89,7 @@ namespace SteamControllerTest.TouchpadActions
         /// <summary>
         /// Displacement threshold when a ring binding should execute
         /// </summary>
-        private double outerRingDeadZone = 1.0;
+        private double outerRingDeadZone = 0.7;
         private OuterRingUseRange usedOuterRingRange;
 
         private StickDeadZone deadMod;
@@ -127,6 +129,8 @@ namespace SteamControllerTest.TouchpadActions
 
         public TouchpadAbsAction()
         {
+            actionTypeName = ACTION_TYPE_NAME;
+
             deadMod = new StickDeadZone(0.0, 1.0, 0.0);
             absRange = new AbsCoordRange()
             {
@@ -136,6 +140,7 @@ namespace SteamControllerTest.TouchpadActions
                 xcenter = 0.5,
                 ycenter = 0.5,
             };
+            outerRing = true;
         }
 
         public override void Prepare(Mapper mapper, ref TouchEventFrame touchFrame, bool alterState = true)
@@ -260,7 +265,7 @@ namespace SteamControllerTest.TouchpadActions
             {
                 inputStatus = false;
 
-                active = ringDistance != 0.0;
+                active = ringDistance != 0.0 || (usedRingButton != null && usedRingButton.active);
                 //usedRingButton = ringButton;
             }
         }
@@ -275,6 +280,7 @@ namespace SteamControllerTest.TouchpadActions
                 double tempRingDistance = activeMod ? ringDistance : 0.0;
                 double tempRingUnit = activeMod ? 1.0 : 0.0;
 
+                bool oldRingActive = usedRingButton.active;
                 usedRingButton.PrepareAnalog(mapper, tempRingDistance, tempRingUnit);
                 // Treat as boolean button for now
                 //usedRingButton.Prepare(mapper, activeMod);
@@ -283,6 +289,10 @@ namespace SteamControllerTest.TouchpadActions
                 {
                     usedRingButton.Event(mapper);
                 }
+                //else if (oldRingActive)
+                //{
+                //    usedRingButton.Event(mapper);
+                //}
             }
 
             //if (xMotion != 0.0 || yMotion != 0.0)

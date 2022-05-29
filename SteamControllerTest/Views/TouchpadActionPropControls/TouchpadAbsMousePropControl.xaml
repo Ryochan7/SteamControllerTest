@@ -78,6 +78,21 @@
                 </TextBox>
             </StackPanel>
 
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="Snap To Center On Release" />
+                <CheckBox IsChecked="{Binding SnapToCenterRelease}" Width="20" VerticalAlignment="Center">
+                    <CheckBox.Style>
+                        <Style TargetType="CheckBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightSnapToCenterRelease}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </CheckBox.Style>
+                </CheckBox>
+            </StackPanel>
+
         </StackPanel>
     </DockPanel>
 </UserControl>

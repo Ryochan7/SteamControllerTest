@@ -236,6 +236,10 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                     {
                         mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
                     }
+                    else
+                    {
+                        mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.SyncActions();
+                    }
 
                     resetEvent.Set();
                 });

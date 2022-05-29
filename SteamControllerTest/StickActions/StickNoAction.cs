@@ -9,12 +9,15 @@ namespace SteamControllerTest.StickActions
 {
     public class StickNoAction : StickMapAction
     {
+        public const string ACTION_TYPE_NAME = "StickNoAction";
         public StickNoAction()
         {
+            actionTypeName = ACTION_TYPE_NAME;
         }
 
         public StickNoAction(StickNoAction parentAction)
         {
+            actionTypeName = ACTION_TYPE_NAME;
             if (parentAction != null)
             {
                 this.parentAction = parentAction;

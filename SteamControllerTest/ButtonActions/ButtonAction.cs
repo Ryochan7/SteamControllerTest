@@ -12,7 +12,7 @@ namespace SteamControllerTest.ButtonActions
 {
     public class ButtonAction : ButtonMapAction
     {
-        private const string ACTION_TYPE = "ButtonAction";
+        public const string ACTION_TYPE_NAME = "ButtonAction";
 
         public class PropertyKeyStrings
         {
@@ -79,7 +79,7 @@ namespace SteamControllerTest.ButtonActions
         public ButtonAction()
         {
             privateState = new PrivateStateData();
-            actionTypeName = ACTION_TYPE;
+            actionTypeName = ACTION_TYPE_NAME;
         }
 
         protected ButtonAction(ButtonAction parentAction)
@@ -100,7 +100,7 @@ namespace SteamControllerTest.ButtonActions
                 privateState = parentAction.privateState;
             }
 
-            actionTypeName = ACTION_TYPE;
+            actionTypeName = ACTION_TYPE_NAME;
         }
 
         public ButtonAction(ActionFunc actionFunc)
@@ -108,7 +108,7 @@ namespace SteamControllerTest.ButtonActions
             actionFuncs.Add(actionFunc);
             privateState = new PrivateStateData();
 
-            actionTypeName = ACTION_TYPE;
+            actionTypeName = ACTION_TYPE_NAME;
         }
 
         public ButtonAction(OutputActionData outputAction)
@@ -121,7 +121,7 @@ namespace SteamControllerTest.ButtonActions
             privateState = new PrivateStateData();
             //actionFuncCandidates.Add(pressFunc);
 
-            actionTypeName = ACTION_TYPE;
+            actionTypeName = ACTION_TYPE_NAME;
         }
 
         public ButtonAction(IEnumerable<OutputActionData> outputActions)
@@ -135,7 +135,7 @@ namespace SteamControllerTest.ButtonActions
             privateState = new PrivateStateData();
             //actionFuncCandidates.Add(pressFunc);
 
-            actionTypeName = ACTION_TYPE;
+            actionTypeName = ACTION_TYPE_NAME;
         }
 
         public override void Prepare(Mapper mapper, bool status, bool alterState = true)

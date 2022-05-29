@@ -26,6 +26,8 @@ namespace SteamControllerTest.TriggerActions
             //PropertyKeyStrings.ANTIDEAD_ZONE,
         };
 
+        public const string ACTION_TYPE_NAME = "TriggerButtonAction";
+
         private bool inputStatus;
         private AxisDirButton eventButton = new AxisDirButton();
         public AxisDirButton EventButton
@@ -43,6 +45,8 @@ namespace SteamControllerTest.TriggerActions
 
         public TriggerButtonAction()
         {
+            actionTypeName = ACTION_TYPE_NAME;
+
             double tempDeadZone = 30 / 255.0;
             deadZone = new AxisDeadZone(tempDeadZone, 1.0, 0.0);
         }

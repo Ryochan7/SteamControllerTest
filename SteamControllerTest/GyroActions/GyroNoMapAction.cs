@@ -9,12 +9,15 @@ namespace SteamControllerTest.GyroActions
 {
     public class GyroNoMapAction : GyroMapAction
     {
+        public const string ACTION_TYPE_NAME = "GyroNoAction";
         public GyroNoMapAction()
         {
+            actionTypeName = ACTION_TYPE_NAME;
         }
 
         public GyroNoMapAction(GyroNoMapAction parentAction)
         {
+            actionTypeName = ACTION_TYPE_NAME;
             this.parentAction = parentAction;
             parentAction.hasLayeredAction = true;
             mappingId = parentAction.mappingId;
