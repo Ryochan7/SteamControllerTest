@@ -659,6 +659,21 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler MappedActionTypeChanged;
 
+        public string DisplayBind
+        {
+            get
+            {
+                string result = mappedAction.DescribeActions();
+                if (string.IsNullOrEmpty(result))
+                {
+                    result = "Unknown";
+                }
+
+                return result;
+            }
+        }
+        public event EventHandler DisplayBindChanged;
+
         public BindingItemsTest(string bindingName, string displayInputMap, MapAction mappedAction)
         {
             this.bindingName = bindingName;
@@ -675,6 +690,7 @@ namespace SteamControllerTest.ViewModels
         private void RaiseUIUpdate()
         {
             MappedActionTypeChanged?.Invoke(this, EventArgs.Empty);
+            DisplayBindChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 

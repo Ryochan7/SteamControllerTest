@@ -65,5 +65,10 @@ namespace SteamControllerTest.ButtonActions
                 mappingId = tempNoAction.mappingId;
             }
         }
+
+        public override string DescribeActions()
+        {
+            return "None";
+        }
     }
 }

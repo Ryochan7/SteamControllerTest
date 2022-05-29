@@ -45,7 +45,7 @@
 
             <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Outer Ring Bind" />
-                <Button x:Name="btnEditTest" Content="Test Bind" Click="btnEditTest_Click" Margin="8,0,0,0" MinWidth="60" />
+                <Button x:Name="btnEditTest" Content="{Binding ActionRingDisplayBind,Mode=OneWay,FallbackValue='Test Bind'}" Click="btnEditTest_Click" Margin="8,0,0,0" MinWidth="60" />
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" Margin="0,8,0,0">

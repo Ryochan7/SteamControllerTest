@@ -98,7 +98,7 @@
                                     <TextBlock Text="JOE BIDEN. WAKE UP" />
                                     <TextBlock Text="{Binding DisplayInputMapString}" Margin="10,0,0,0" />
                                     <TextBlock Text="{Binding MappedActionType}" Margin="10,0,0,0" />
-                                    <Button Content="Test" Click="ButtonActionEditButton_Click" Tag="{Binding BindingName}" Margin="10,0,0,0" />
+                                    <Button Content="{Binding DisplayBind,Mode=OneWay,FallbackValue='Test'}" Click="ButtonActionEditButton_Click" Tag="{Binding BindingName}" Margin="10,0,0,0" />
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

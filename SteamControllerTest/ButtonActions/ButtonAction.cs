@@ -1375,7 +1375,7 @@ namespace SteamControllerTest.ButtonActions
             return result;
         }
 
-        public string DescribeActions()
+        public override string DescribeActions()
         {
             string result = "";
             List<string> tempList = new List<string>();

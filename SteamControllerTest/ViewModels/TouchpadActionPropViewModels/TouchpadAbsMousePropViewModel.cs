@@ -104,6 +104,20 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler SnapToCenterReleaseChanged;
 
+        public string ActionRingDisplayBind
+        {
+            get
+            {
+                string result = "";
+                if (action.RingButton != null)
+                {
+                    result = action.RingButton.DescribeActions();
+                }
+
+                return result;
+            }
+        }
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||

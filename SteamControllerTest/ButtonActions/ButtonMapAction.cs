@@ -38,5 +38,11 @@ namespace SteamControllerTest.ButtonActions
             OutputActionData action)
         {
         }
+
+        public virtual string DescribeActions()
+        {
+            string result = "";
+            return result;
+        }
     }
 }

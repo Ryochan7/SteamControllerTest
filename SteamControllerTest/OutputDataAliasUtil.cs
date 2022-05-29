@@ -97,6 +97,15 @@ namespace SteamControllerTest
                 case KeyboardKey.Tilde:
                     result = "Tilde";
                     break;
+                case KeyboardKey.Tab:
+                    result = "Tab";
+                    break;
+                case KeyboardKey.Spacebar:
+                    result = "Space";
+                    break;
+                case KeyboardKey.Escape:
+                    result = "Escape";
+                    break;
                 default:
                     break;
             }
