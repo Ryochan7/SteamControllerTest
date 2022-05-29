@@ -266,7 +266,7 @@ namespace SteamControllerTest.ViewModels
                 if (tempProfile.CurrentActionSet.CurrentActionLayer.buttonActionDict.
                     TryGetValue(meta.id, out ButtonMapAction tempBtnAct))
                 {
-                    BindingItemsTest tempItem = new BindingItemsTest(meta.id, meta.displayName, tempBtnAct);
+                    BindingItemsTest tempItem = new BindingItemsTest(meta.id, meta.displayName, tempBtnAct, mapper);
                     buttonBindings.Add(tempItem);
                     buttonBindingsIndexDict.Add(meta.id, tempBtnInd++);
                 }
@@ -278,7 +278,7 @@ namespace SteamControllerTest.ViewModels
                 if (tempProfile.CurrentActionSet.CurrentActionLayer.touchpadActionDict.
                         TryGetValue(meta.id, out TouchpadMapAction tempTouchAct))
                 {
-                    TouchBindingItemsTest tempItem = new TouchBindingItemsTest(meta.id, meta.displayName, tempTouchAct);
+                    TouchBindingItemsTest tempItem = new TouchBindingItemsTest(meta.id, meta.displayName, tempTouchAct, mapper);
                     touchpadBindings.Add(tempItem);
                 }
             }
@@ -289,7 +289,7 @@ namespace SteamControllerTest.ViewModels
                 if (tempProfile.CurrentActionSet.CurrentActionLayer.triggerActionDict.
                         TryGetValue(meta.id, out TriggerMapAction tempTrigAct))
                 {
-                    TriggerBindingItemsTest tempItem = new TriggerBindingItemsTest(meta.id, meta.displayName, tempTrigAct);
+                    TriggerBindingItemsTest tempItem = new TriggerBindingItemsTest(meta.id, meta.displayName, tempTrigAct, mapper);
                     triggerBindings.Add(tempItem);
                 }
             }
@@ -300,7 +300,7 @@ namespace SteamControllerTest.ViewModels
                 if (tempProfile.CurrentActionSet.CurrentActionLayer.stickActionDict.
                         TryGetValue(meta.id, out StickMapAction tempTrigAct))
                 {
-                    StickBindingItemsTest tempItem = new StickBindingItemsTest(meta.id, meta.displayName, tempTrigAct);
+                    StickBindingItemsTest tempItem = new StickBindingItemsTest(meta.id, meta.displayName, tempTrigAct, mapper);
                     stickBindings.Add(tempItem);
                 }
             }
@@ -311,7 +311,7 @@ namespace SteamControllerTest.ViewModels
                 if (tempProfile.CurrentActionSet.CurrentActionLayer.gyroActionDict.
                         TryGetValue(meta.id, out GyroMapAction tempTrigAct))
                 {
-                    GyroBindingItemsTest tempItem = new GyroBindingItemsTest(meta.id, meta.displayName, tempTrigAct);
+                    GyroBindingItemsTest tempItem = new GyroBindingItemsTest(meta.id, meta.displayName, tempTrigAct, mapper);
                     gyroBindings.Add(tempItem);
                 }
             }
@@ -611,12 +611,19 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler MappedActionTypeChanged;
 
+        private Mapper mapper;
+        public Mapper Mapper
+        {
+            get => mapper;
+        }
+
         public TouchBindingItemsTest(string bindingName, string displayInputMap,
-            MapAction mappedAction)
+            MapAction mappedAction, Mapper mapper)
         {
             this.bindingName = bindingName;
             this.displayInputMapString = displayInputMap;
             this.mappedAction = mappedAction as TouchpadMapAction;
+            this.mapper = mapper;
         }
 
         public void UpdateAction(TouchpadMapAction action)
@@ -663,7 +670,7 @@ namespace SteamControllerTest.ViewModels
         {
             get
             {
-                string result = mappedAction.DescribeActions();
+                string result = mappedAction.DescribeActions(mapper);
                 if (string.IsNullOrEmpty(result))
                 {
                     result = "Unknown";
@@ -674,11 +681,18 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler DisplayBindChanged;
 
-        public BindingItemsTest(string bindingName, string displayInputMap, MapAction mappedAction)
+        private Mapper mapper;
+        public Mapper Mapper
+        {
+            get => mapper;
+        }
+
+        public BindingItemsTest(string bindingName, string displayInputMap, MapAction mappedAction, Mapper mapper)
         {
             this.bindingName = bindingName;
             this.displayInputMapString = displayInputMap;
             this.mappedAction = mappedAction as ButtonMapAction;
+            this.mapper = mapper;
         }
 
         public void UpdateAction(MapAction action)
@@ -722,12 +736,19 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler MappedActionTypeChanged;
 
+        private Mapper mapper;
+        public Mapper Mapper
+        {
+            get => mapper;
+        }
+
         public TriggerBindingItemsTest(string bindingName, string displayInputMap,
-            MapAction mappedAction)
+            MapAction mappedAction, Mapper mapper)
         {
             this.bindingName = bindingName;
             this.displayInputMapString = displayInputMap;
             this.mappedAction = mappedAction as TriggerMapAction;
+            this.mapper = mapper;
         }
 
         public void UpdateAction(TriggerMapAction action)
@@ -770,12 +791,19 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler MappedActionTypeChanged;
 
+        private Mapper mapper;
+        public Mapper Mapper
+        {
+            get => mapper;
+        }
+
         public StickBindingItemsTest(string bindingName, string displayInputMap,
-            MapAction mappedAction)
+            MapAction mappedAction, Mapper mapper)
         {
             this.bindingName = bindingName;
             this.displayInputMapString = displayInputMap;
             this.mappedAction = mappedAction as StickMapAction;
+            this.mapper = mapper;
         }
 
         public void UpdateAction(StickMapAction action)
@@ -818,12 +846,19 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler MappedActionTypeChanged;
 
+        private Mapper mapper;
+        public Mapper Mapper
+        {
+            get => mapper;
+        }
+
         public GyroBindingItemsTest(string bindingName, string displayInputMap,
-            MapAction mappedAction)
+            MapAction mappedAction, Mapper mapper)
         {
             this.bindingName = bindingName;
             this.displayInputMapString = displayInputMap;
             this.mappedAction = mappedAction as GyroMapAction;
+            this.mapper = mapper;
         }
 
         public void UpdateAction(GyroMapAction action)

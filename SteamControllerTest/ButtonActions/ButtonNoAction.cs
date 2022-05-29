@@ -66,7 +66,7 @@ namespace SteamControllerTest.ButtonActions
             }
         }
 
-        public override string DescribeActions()
+        public override string DescribeActions(Mapper mapper)
         {
             return "None";
         }

@@ -111,7 +111,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 string result = "";
                 if (action.RingButton != null)
                 {
-                    result = action.RingButton.DescribeActions();
+                    result = action.RingButton.DescribeActions(mapper);
                 }
 
                 return result;

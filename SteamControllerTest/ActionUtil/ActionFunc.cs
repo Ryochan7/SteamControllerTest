@@ -80,7 +80,7 @@ namespace SteamControllerTest.ActionUtil
                 new OutputActionDataEnumerator(secondFunc.outputActions);
         }
 
-        public virtual string Describe()
+        public virtual string Describe(Mapper mapper)
         {
             string result = "";
             return result;

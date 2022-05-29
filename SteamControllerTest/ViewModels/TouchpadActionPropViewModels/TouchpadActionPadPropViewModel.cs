@@ -92,42 +92,42 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
         public string ActionUpBtnDisplayBind
         {
-            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Up].DescribeActions();
+            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Up].DescribeActions(mapper);
         }
 
         public string ActionDownBtnDisplayBind
         {
-            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Down].DescribeActions();
+            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Down].DescribeActions(mapper);
         }
 
         public string ActionLeftBtnDisplayBind
         {
-            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Left].DescribeActions();
+            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Left].DescribeActions(mapper);
         }
 
         public string ActionRightBtnDisplayBind
         {
-            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Right].DescribeActions();
+            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Right].DescribeActions(mapper);
         }
 
         public string ActionUpLeftBtnDisplayBind
         {
-            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.UpLeft].DescribeActions();
+            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.UpLeft].DescribeActions(mapper);
         }
 
         public string ActionUpRightBtnDisplayBind
         {
-            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.UpRight].DescribeActions();
+            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.UpRight].DescribeActions(mapper);
         }
 
         public string ActionDownLeftBtnDisplayBind
         {
-            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.DownLeft].DescribeActions();
+            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.DownLeft].DescribeActions(mapper);
         }
 
         public string ActionDownRightBtnDisplayBind
         {
-            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.DownRight].DescribeActions();
+            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.DownRight].DescribeActions(mapper);
         }
 
         public bool HighlightName

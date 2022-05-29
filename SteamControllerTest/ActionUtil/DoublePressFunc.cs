@@ -173,13 +173,13 @@ namespace SteamControllerTest.ActionUtil
             elapsed.Reset();
         }
 
-        public override string Describe()
+        public override string Describe(Mapper mapper)
         {
             string result = "";
             List<string> tempList = new List<string>();
             foreach (OutputActionData data in outputActions)
             {
-                tempList.Add(data.Describe());
+                tempList.Add(data.Describe(mapper));
             }
 
             if (tempList.Count > 0)

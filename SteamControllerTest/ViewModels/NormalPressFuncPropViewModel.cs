@@ -29,7 +29,7 @@ namespace SteamControllerTest.ViewModels
             get
             {
                 string result = "";
-                result = func.Describe();
+                result = func.Describe(mapper);
                 return result;
             }
         }

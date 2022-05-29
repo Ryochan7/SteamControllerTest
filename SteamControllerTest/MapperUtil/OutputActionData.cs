@@ -448,10 +448,10 @@ namespace SteamControllerTest.MapperUtil
             changeToLayer = -1;
         }
 
-        public string Describe()
+        public string Describe(Mapper mapper)
         {
             string result = "";
-            switch(outputType)
+            switch (outputType)
             {
                 case ActionType.Keyboard:
                     result = OutputDataAliasUtil.GetStringForKeyboardKey(outputCode);
@@ -465,8 +465,91 @@ namespace SteamControllerTest.MapperUtil
                 case ActionType.GamepadControl:
                     result = OutputDataAliasUtil.GetStringForX360GamepadCode(joypadCode);
                     break;
+                case ActionType.SwitchSet:
+                    {
+                        string tempSetName = $"{ChangeToSet}";
+                        if (changeToSet >= 0 && changeToSet < mapper.ActionProfile.ActionSets.Count)
+                        {
+                            ActionSet tempSet = mapper.ActionProfile.ActionSets[changeToSet];
+                            if (tempSet != null)
+                            {
+                                tempSetName = tempSet.Name;
+                            }
+                        }
+
+                        result = $"Switch Set ({tempSetName})";
+                    }
+
+                    break;
+                case ActionType.HoldActionLayer:
+                    {
+                        string tempLayerName = $"{changeToLayer}";
+                        if (changeToLayer >= 0 && changeToLayer < mapper.ActionProfile.CurrentActionSet.ActionLayers.Count)
+                        {
+                            ActionLayer tempLayer = mapper.ActionProfile.CurrentActionSet.ActionLayers[changeToLayer];
+                            if (tempLayer != null)
+                            {
+                                tempLayerName = tempLayer.Name;
+                            }
+                        }
+
+                        result = $"Hold Layer ({tempLayerName})";
+                    }
+
+                    break;
+                case ActionType.ApplyActionLayer:
+                    {
+                        string tempLayerName = $"{changeToLayer}";
+                        if (changeToLayer >= 0 && changeToLayer < mapper.ActionProfile.CurrentActionSet.ActionLayers.Count)
+                        {
+                            ActionLayer tempLayer = mapper.ActionProfile.CurrentActionSet.ActionLayers[changeToLayer];
+                            if (tempLayer != null)
+                            {
+                                tempLayerName = tempLayer.Name;
+                            }
+                        }
+
+                        result = $"Apply Layer ({tempLayerName})";
+                    }
+
+                    break;
+                case ActionType.RemoveActionLayer:
+                    {
+                        string tempLayerName = $"{changeToLayer}";
+                        if (changeToLayer >= 0 && changeToLayer < mapper.ActionProfile.CurrentActionSet.ActionLayers.Count)
+                        {
+                            ActionLayer tempLayer = mapper.ActionProfile.CurrentActionSet.ActionLayers[changeToLayer];
+                            if (tempLayer != null)
+                            {
+                                tempLayerName = tempLayer.Name;
+                            }
+                        }
+
+                        result = $"Remove Layer ({tempLayerName})";
+                    }
+
+                    break;
+                case ActionType.SwitchActionLayer:
+                    {
+                        string tempLayerName = $"{changeToLayer}";
+                        if (changeToLayer >= 0 && changeToLayer < mapper.ActionProfile.CurrentActionSet.ActionLayers.Count)
+                        {
+                            ActionLayer tempLayer = mapper.ActionProfile.CurrentActionSet.ActionLayers[changeToLayer];
+                            if (tempLayer != null)
+                            {
+                                tempLayerName = tempLayer.Name;
+                            }
+                        }
+
+                        result = $"Switch Layer ({tempLayerName})";
+                    }
+
+                    break;
                 case ActionType.Wait:
                     result = $"Wait {durationMs}";
+                    break;
+                case ActionType.Empty:
+                    result = "Empty";
                     break;
                 default:
                     break;

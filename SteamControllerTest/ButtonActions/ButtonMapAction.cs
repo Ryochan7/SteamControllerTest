@@ -39,7 +39,7 @@ namespace SteamControllerTest.ButtonActions
         {
         }
 
-        public virtual string DescribeActions()
+        public virtual string DescribeActions(Mapper mapper)
         {
             string result = "";
             return result;

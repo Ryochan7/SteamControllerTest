@@ -111,12 +111,12 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
 
         public string FullBtnDisplayBind
         {
-            get => action.FullPullActButton.DescribeActions();
+            get => action.FullPullActButton.DescribeActions(mapper);
         }
 
         public string SoftBtnDisplayBind
         {
-            get => action.SoftPullActButton.DescribeActions();
+            get => action.SoftPullActButton.DescribeActions(mapper);
         }
 
         public bool HighlightName

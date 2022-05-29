@@ -53,7 +53,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
 
         public string ActionBindName
         {
-            get => action.EventButton.DescribeActions();
+            get => action.EventButton.DescribeActions(mapper);
         }
 
         public bool HighlightName

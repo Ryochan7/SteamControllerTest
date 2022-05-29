@@ -1375,13 +1375,13 @@ namespace SteamControllerTest.ButtonActions
             return result;
         }
 
-        public override string DescribeActions()
+        public override string DescribeActions(Mapper mapper)
         {
             string result = "";
             List<string> tempList = new List<string>();
             foreach(ActionFunc func in actionFuncs)
             {
-                tempList.Add(func.Describe());
+                tempList.Add(func.Describe(mapper));
             }
 
             if (tempList.Count > 0)
