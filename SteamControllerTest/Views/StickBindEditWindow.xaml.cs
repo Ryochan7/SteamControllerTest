@@ -66,7 +66,7 @@ namespace SteamControllerTest.Views
                         StickPadActionControl propControl = new StickPadActionControl();
                         propControl.PostInit(stickBindEditVM.Mapper, stickBindEditVM.Action);
                         propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged; ;
-                        propControl.RequestFuncEditor += PropControl_RequestFuncEditor;
+                        propControl.RequestFuncEditor += StickPadAct_PropControl_RequestFuncEditor;
                         stickBindEditVM.DisplayControl = propControl;
                     }
 
@@ -76,7 +76,7 @@ namespace SteamControllerTest.Views
             }
         }
 
-        private void PropControl_RequestFuncEditor(object sender, StickPadActionControl.DirButtonBindingArgs e)
+        private void StickPadAct_PropControl_RequestFuncEditor(object sender, StickPadActionControl.DirButtonBindingArgs e)
         {
             FuncBindingControl tempControl = new FuncBindingControl();
             tempControl.PostInit(stickBindEditVM.Mapper, e.DirBtn);
@@ -84,6 +84,7 @@ namespace SteamControllerTest.Views
             UserControl oldControl = stickBindEditVM.DisplayControl;
             tempControl.RequestClose += (sender, args) =>
             {
+                (oldControl as StickPadActionControl).RefreshView();
                 stickBindEditVM.DisplayControl = oldControl;
             };
 

@@ -55,6 +55,13 @@ namespace SteamControllerTest.Views.StickActionPropControls
             stickSelectControl.StickActSelVM.SelectedIndexChanged += StickActSelVM_SelectedIndexChanged;
         }
 
+        public void RefreshView()
+        {
+            // Force re-eval of bindings
+            DataContext = null;
+            DataContext = stickPadActVM;
+        }
+
         private void StickActSelVM_SelectedIndexChanged(object sender, EventArgs e)
         {
             ActionTypeIndexChanged?.Invoke(this,

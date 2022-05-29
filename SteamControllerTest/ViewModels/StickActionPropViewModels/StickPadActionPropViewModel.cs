@@ -95,6 +95,46 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
         }
         public event EventHandler DiagonalRangeChanged;
 
+        public string ActionUpBtnDisplayBind
+        {
+            get => action.EventCodes4[(int)StickPadAction.DpadDirections.Up].DescribeActions();
+        }
+
+        public string ActionDownBtnDisplayBind
+        {
+            get => action.EventCodes4[(int)StickPadAction.DpadDirections.Down].DescribeActions();
+        }
+
+        public string ActionLeftBtnDisplayBind
+        {
+            get => action.EventCodes4[(int)StickPadAction.DpadDirections.Left].DescribeActions();
+        }
+
+        public string ActionRightBtnDisplayBind
+        {
+            get => action.EventCodes4[(int)StickPadAction.DpadDirections.Right].DescribeActions();
+        }
+
+        public string ActionUpLeftBtnDisplayBind
+        {
+            get => action.EventCodes4[(int)StickPadAction.DpadDirections.UpLeft].DescribeActions();
+        }
+
+        public string ActionUpRightBtnDisplayBind
+        {
+            get => action.EventCodes4[(int)StickPadAction.DpadDirections.UpRight].DescribeActions();
+        }
+
+        public string ActionDownLeftBtnDisplayBind
+        {
+            get => action.EventCodes4[(int)StickPadAction.DpadDirections.DownLeft].DescribeActions();
+        }
+
+        public string ActionDownRightBtnDisplayBind
+        {
+            get => action.EventCodes4[(int)StickPadAction.DpadDirections.DownRight].DescribeActions();
+        }
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||

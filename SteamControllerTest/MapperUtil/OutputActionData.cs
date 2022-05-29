@@ -459,6 +459,15 @@ namespace SteamControllerTest.MapperUtil
                 case ActionType.MouseButton:
                     result = OutputDataAliasUtil.GetStringForMouseButton(outputCode);
                     break;
+                case ActionType.MouseWheel:
+                    result = OutputDataAliasUtil.GetStringForMouseWheelBtn(outputCode);
+                    break;
+                case ActionType.GamepadControl:
+                    result = OutputDataAliasUtil.GetStringForX360GamepadCode(joypadCode);
+                    break;
+                case ActionType.Wait:
+                    result = $"Wait {durationMs}";
+                    break;
                 default:
                     break;
             }

@@ -90,6 +90,46 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler ShowCardinalPadChanged;
 
+        public string ActionUpBtnDisplayBind
+        {
+            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Up].DescribeActions();
+        }
+
+        public string ActionDownBtnDisplayBind
+        {
+            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Down].DescribeActions();
+        }
+
+        public string ActionLeftBtnDisplayBind
+        {
+            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Left].DescribeActions();
+        }
+
+        public string ActionRightBtnDisplayBind
+        {
+            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Right].DescribeActions();
+        }
+
+        public string ActionUpLeftBtnDisplayBind
+        {
+            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.UpLeft].DescribeActions();
+        }
+
+        public string ActionUpRightBtnDisplayBind
+        {
+            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.UpRight].DescribeActions();
+        }
+
+        public string ActionDownLeftBtnDisplayBind
+        {
+            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.DownLeft].DescribeActions();
+        }
+
+        public string ActionDownRightBtnDisplayBind
+        {
+            get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.DownRight].DescribeActions();
+        }
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||

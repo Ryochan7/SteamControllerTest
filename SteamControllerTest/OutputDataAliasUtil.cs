@@ -246,5 +246,32 @@ namespace SteamControllerTest
 
             return result;
         }
+
+        public static string GetStringForMouseWheelBtn(int code)
+        {
+            string result = "";
+            MouseWheelCodes tempCode = (MouseWheelCodes)code;
+            switch(tempCode)
+            {
+                case MouseWheelCodes.WheelUp:
+                    result = "Wheel Up";
+                    break;
+                case MouseWheelCodes.WheelDown:
+                    result = "Wheel Down";
+                    break;
+                case MouseWheelCodes.WheelLeft:
+                    result = "Wheel Left";
+                    break;
+                case MouseWheelCodes.WheelRight:
+                    result = "Wheel Right";
+                    break;
+                case MouseWheelCodes.None:
+                    result = "None";
+                    break;
+                default:
+                    break;
+            }
+            return result;
+        }
     }
 }
