@@ -1,6 +1,7 @@
 ## TODO
 
-* Integrate HandyControl controls to UI
+* Maybe make OutputActionData purge check when removing ActionSet or ActionLayer from profile
+* ~~Integrate HandyControl controls to UI. Not actively used but linking NuGet package~~
 * Possibly integration Font Awesome into project
 * ~~Decide on locking mechanism for main mapper routine. Needed for external
 routines to not interfere (loading profiles primarily)~~
