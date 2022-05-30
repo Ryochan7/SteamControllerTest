@@ -35,6 +35,21 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler DisplayControlChanged;
 
+        public string InputControlName
+        {
+            get
+            {
+                string result = "";
+                if (mapper.BindingDict.TryGetValue(action.MappingId,
+                    out InputBindingMeta tempMeta))
+                {
+                    result = tempMeta.displayName;
+                }
+
+                return result;
+            }
+        }
+
         public GyroBindEditViewModel(Mapper mapper, GyroMapAction action)
         {
             this.mapper = mapper;

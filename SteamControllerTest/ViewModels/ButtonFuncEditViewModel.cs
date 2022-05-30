@@ -75,6 +75,21 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler TopTransformPanelVisibleChanged;
 
+        public string InputControlName
+        {
+            get
+            {
+                string result = "";
+                if (mapper.BindingDict.TryGetValue(action.MappingId,
+                    out InputBindingMeta tempMeta))
+                {
+                    result = tempMeta.displayName;
+                }
+
+                return result;
+            }
+        }
+
         public ButtonFuncEditViewModel(Mapper mapper, ButtonMapAction action)
         {
             this.mapper = mapper;

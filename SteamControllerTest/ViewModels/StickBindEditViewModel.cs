@@ -35,6 +35,21 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler DisplayControlChanged;
 
+        public string InputControlName
+        {
+            get
+            {
+                string result = "";
+                if (mapper.BindingDict.TryGetValue(action.MappingId,
+                    out InputBindingMeta tempMeta))
+                {
+                    result = tempMeta.displayName;
+                }
+
+                return result;
+            }
+        }
+
         public StickBindEditViewModel(Mapper mapper, StickMapAction action)
         {
             this.mapper = mapper;

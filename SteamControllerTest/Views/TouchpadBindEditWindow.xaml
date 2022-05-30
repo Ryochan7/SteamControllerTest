@@ -5,7 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SteamControllerTest.Views"
         mc:Ignorable="d"
-        Title="TouchpadBindEditWindow" Height="450" Width="800" Closed="Window_Closed">
+        Height="450" Width="800" Closed="Window_Closed">
+    <Window.Title>
+        <MultiBinding StringFormat="{}TouchpadBindEditWindow ({0})">
+            <Binding Path="InputControlName" FallbackValue="Touchpad" />
+        </MultiBinding>
+    </Window.Title>
     <DockPanel Margin="8">
         <DockPanel DockPanel.Dock="Top">
             <local:TouchpadActionSelectControl x:Name="touchpadSelectControl" DockPanel.Dock="Top" />

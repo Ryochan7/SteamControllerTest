@@ -5,7 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SteamControllerTest"
         mc:Ignorable="d"
-        Title="ButtonFuncEditWindow" Height="450" Width="800" Closed="Window_Closed">
+        Height="450" Width="800" Closed="Window_Closed">
+    <Window.Title>
+        <MultiBinding StringFormat="{}ButtonFuncEditWindow ({0})">
+            <Binding Path="InputControlName" FallbackValue="Button" />
+        </MultiBinding>
+    </Window.Title>
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="transformPanelVisConverter" />
     </Window.Resources>
