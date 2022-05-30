@@ -57,5 +57,14 @@ namespace SteamControllerTest.Views
 
             DataContext = buttonActionEditVM;
         }
+
+        private void UnboundBtn_Click(object sender, RoutedEventArgs e)
+        {
+            DataContext = null;
+
+            buttonActionEditVM.AssignUnbound();
+
+            DataContext = buttonActionEditVM;
+        }
     }
 }

@@ -116,7 +116,6 @@ namespace SteamControllerTest
         public static string GetStringForMouseButton(int mouseBtnCode)
         {
             string result = "";
-            MouseButtonCodes btn;
             switch(mouseBtnCode)
             {
                 case MouseButtonCodes.MOUSE_LEFT_BUTTON:

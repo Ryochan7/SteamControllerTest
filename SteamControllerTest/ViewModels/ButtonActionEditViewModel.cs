@@ -229,6 +229,22 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler HasMultipleSlotsChanged;
 
+        public bool UnboundActive
+        {
+            get
+            {
+                bool result = false;
+                if (selectedSlotItemIndex >= 0)
+                {
+                    result =
+                        slotItems[selectedSlotItemIndex].Data.OutputType == OutputActionData.ActionType.Empty;
+                }
+
+                return result;
+            }
+        }
+        public event EventHandler UnboundActiveChanged;
+
         public ButtonActionEditViewModel(Mapper mapper, ButtonAction currentAction, ActionFunc func)
         {
             this.currentAction = currentAction;
@@ -522,8 +538,14 @@ namespace SteamControllerTest.ViewModels
             SelectedSetChangeConditionIndexChanged -= ButtonActionEditViewModel_SelectedSetChangeConditionIndexChanged;
         }
 
+        private void PostSlotChangeChecks()
+        {
+            UnboundActiveChanged?.Invoke(this, EventArgs.Empty);
+        }
+
         private void PrepareControlsForSlot(OutputSlotItem item)
         {
+            UnboundActiveChanged?.Invoke(this, EventArgs.Empty);
             ResetComboBoxIndex(ActionComboBoxTypes.None);
 
             DisconnectOutputSlotEvents();
@@ -625,6 +647,7 @@ namespace SteamControllerTest.ViewModels
 
             ResetComboBoxIndex(ActionComboBoxTypes.Keyboard);
             KeyboardCodeItem item = keyboardComboItems[index];
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
             mapper.QueueEvent(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
@@ -647,7 +670,12 @@ namespace SteamControllerTest.ViewModels
                     tempData.Prepare(OutputActionData.ActionType.Keyboard, tempCode);
                     tempData.OutputCodeStr = item.CodeAlias;
                 }
+
+                resetEvent.Set();
             });
+
+            resetEvent.Wait();
+            PostSlotChangeChecks();
         }
 
         private void ButtonActionEditViewModel_SelectedIndexChanged(object sender, EventArgs e)
@@ -661,6 +689,7 @@ namespace SteamControllerTest.ViewModels
             ResetComboBoxIndex(ActionComboBoxTypes.Gamepad);
             JoypadActionCodes temp = revGamepadIndexAliases[index];
             OutputSlotItem item = slotItems[selectedSlotItemIndex];
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
             mapper.QueueEvent(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
@@ -683,7 +712,12 @@ namespace SteamControllerTest.ViewModels
                     //tempData =
                     //    new OutputActionData(OutputActionData.ActionType.GamepadControl, temp);
                 }
+
+                resetEvent.Set();
             });
+
+            resetEvent.Wait();
+            PostSlotChangeChecks();
         }
 
         private void ButtonActionEditViewModel_SelectedMouseButtonIndexChanged(object sender, EventArgs e)
@@ -705,12 +739,14 @@ namespace SteamControllerTest.ViewModels
                 tempData.Reset();
 
                 tempData.Prepare(OutputActionData.ActionType.MouseButton, item.Code);
-                tempData.OutputCodeStr = ((OutputActionDataSerializer.MouseButtonAliases)item.Code).ToString();
+                tempData.OutputCodeStr = ((OutputActionDataSerializer.MouseButtonOutputAliases)item.Code).ToString();
 
                 resetEvent.Set();
             });
 
             resetEvent.Wait();
+
+            PostSlotChangeChecks();
         }
 
         private void ResetComboBoxIndex(ActionComboBoxTypes ignoreCombo)
@@ -826,7 +862,7 @@ namespace SteamControllerTest.ViewModels
                 new KeyboardCodeItem("9", VirtualKeys.N9, "N9", tempInd++),
                 new KeyboardCodeItem("Escape", VirtualKeys.Escape, "Escape", tempInd++),
                 new KeyboardCodeItem("Tab", VirtualKeys.Tab, "Tab", tempInd++),
-                new KeyboardCodeItem("Space", VirtualKeys.Space, "Tab", tempInd++),
+                new KeyboardCodeItem("Space", VirtualKeys.Space, "Space", tempInd++),
                 new KeyboardCodeItem("Left Alt", VirtualKeys.LeftMenu, "LeftAlt", tempInd++),
                 new KeyboardCodeItem("Right Alt", VirtualKeys.RightMenu, "RightAlt", tempInd++),
                 new KeyboardCodeItem("Left Shift", VirtualKeys.LeftShift, "LeftShift", tempInd++),
@@ -906,6 +942,30 @@ namespace SteamControllerTest.ViewModels
             //PrepareControlsForSlot(item);
         }
 
+        public void AssignUnbound()
+        {
+            if (selectedSlotItemIndex <= -1) return;
+
+            OutputSlotItem item = slotItems[selectedSlotItemIndex];
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            mapper.QueueEvent(() =>
+            {
+                currentAction.Release(mapper, ignoreReleaseActions: true);
+
+                OutputActionData tempData = item.Data;
+                tempData.Reset();
+
+                tempData.Prepare(OutputActionData.ActionType.Empty, 0);
+                tempData.OutputCodeStr = OutputActionData.ActionType.Empty.ToString();
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
+            ResetComboBoxIndex(ActionComboBoxTypes.None);
+            PostSlotChangeChecks();
+        }
+
         public void RemoveOutputSlot(int ind)
         {
             if (slotItems.Count == 1)
@@ -920,12 +980,15 @@ namespace SteamControllerTest.ViewModels
             int tempInd = ind;
             slotItems.RemoveAt(tempInd);
             SelectedSlotItemIndex = ind < slotItems.Count ? ind : slotItems.Count - 1;
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
             mapper.QueueEvent(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
                 func.OutputActions.RemoveAt(tempInd);
+                resetEvent.Set();
             });
 
+            resetEvent.Wait();
             int tempSlotInd = 0;
             foreach (OutputSlotItem item in slotItems)
             {

@@ -749,14 +749,6 @@ namespace SteamControllerTest
 
         private TriggerDualStageAction triggerDualAction = new TriggerDualStageAction();
 
-
-        private TriggerDualStageSettings settings;
-        public TriggerDualStageSettings Settings
-        {
-            get => settings;
-            set => settings = value;
-        }
-
         private StageButtonBinding softPullStageButton = new StageButtonBinding();
         public StageButtonBinding SoftPull
         {
@@ -789,6 +781,13 @@ namespace SteamControllerTest
         {
             return fullPullStageButton.ActionFuncSerializers != null &&
                 fullPullStageButton.ActionFuncSerializers.Count > 0;
+        }
+
+        private TriggerDualStageSettings settings;
+        public TriggerDualStageSettings Settings
+        {
+            get => settings;
+            set => settings = value;
         }
 
         // Deserialize
@@ -932,13 +931,6 @@ namespace SteamControllerTest
 
         private TriggerButtonAction trigBtnAction = new TriggerButtonAction();
 
-        private TriggerButtonActionSettings settings;
-        public TriggerButtonActionSettings Settings
-        {
-            get => settings;
-            set => settings = value;
-        }
-
         private List<ActionFuncSerializer> actionFuncSerializers =
                 new List<ActionFuncSerializer>();
         [JsonProperty("Functions", Required = Required.Always)]
@@ -952,6 +944,13 @@ namespace SteamControllerTest
             }
         }
         public event EventHandler ActionFuncSerializersChanged;
+
+        private TriggerButtonActionSettings settings;
+        public TriggerButtonActionSettings Settings
+        {
+            get => settings;
+            set => settings = value;
+        }
 
         // Deserialize
         public TriggerButtonActionSerializer() : base()
@@ -6352,6 +6351,16 @@ namespace SteamControllerTest
             XButton2 = MouseButtonCodes.MOUSE_XBUTTON2,
         }
 
+        public enum MouseButtonOutputAliases : int
+        {
+            None,
+            LeftButton = MouseButtonCodes.MOUSE_LEFT_BUTTON,
+            RightButton = MouseButtonCodes.MOUSE_RIGHT_BUTTON,
+            MiddleButton = MouseButtonCodes.MOUSE_MIDDLE_BUTTON,
+            XButton1 = MouseButtonCodes.MOUSE_XBUTTON1,
+            XButton2 = MouseButtonCodes.MOUSE_XBUTTON2,
+        }
+
         public enum MouseWheelAliases : uint
         {
             None = 0,
@@ -6614,12 +6623,31 @@ namespace SteamControllerTest
             switch (current.ActionType)
             {
                 case ActionType.Keyboard:
-                    tempJ.Add("Code", current.OutputData.OutputCodeStr);
+                    if (!string.IsNullOrEmpty(current.OutputData.OutputCodeStr))
+                    {
+                        tempJ.Add("Code", current.OutputData.OutputCodeStr);
+                    }
+                    else
+                    {
+                        tempJ.Add("Code", current.OutputData.OutputCode);
+                    }
+
                     SerializeExtraJSONProperties(current.OutputData, tempJ);
                     break;
                 case ActionType.RelativeMouse:
+                    tempJ.Add("Dir", current.OutputData.OutputCodeStr);
+                    SerializeExtraJSONProperties(current.OutputData, tempJ);
+                    break;
                 case ActionType.MouseButton:
-                    tempJ.Add("Code", current.OutputData.OutputCode);
+                    if (!string.IsNullOrEmpty(current.OutputData.OutputCodeStr))
+                    {
+                        tempJ.Add("Code", current.OutputData.OutputCodeStr);
+                    }
+                    else
+                    {
+                        tempJ.Add("Code", current.OutputData.OutputCode);
+                    }
+
                     SerializeExtraJSONProperties(current.OutputData, tempJ);
                     break;
                 case ActionType.MouseWheel:

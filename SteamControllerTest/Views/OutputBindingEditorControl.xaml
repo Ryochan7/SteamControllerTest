@@ -17,6 +17,19 @@
             <ComboBox ItemsSource="{Binding SlotItems}" SelectedIndex="{Binding SelectedSlotItemIndex}" DisplayMemberPath="DisplayName" />
             <Button x:Name="addOutputSlot" Content="Add +" Click="AddOutputSlot_Click" Margin="8,0,0,0" />
             <Button x:Name="removeOutputSlot" Content="Remove -" Click="RemoveOutputSlot_Click" IsEnabled="{Binding HasMultipleSlots}" Margin="8,0,0,0" />
+            <Button x:Name="unboundBtn" Content="Unbound" Click="UnboundBtn_Click" Margin="8,0,0,0">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding UnboundActive}" Value="True">
+                                <DataTrigger.Setters>
+                                    <Setter Property="Background" Value="#FFA6F3E7" />
+                                </DataTrigger.Setters>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
         </StackPanel>
 
         <ScrollViewer DockPanel.Dock="Top">
