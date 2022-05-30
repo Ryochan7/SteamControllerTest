@@ -9,7 +9,7 @@
     <DockPanel LastChildFill="False">
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
             <Label Content="Type" />
-            <ComboBox SelectedIndex="{Binding SelectedIndex}" MinWidth="100">
+            <ComboBox SelectedIndex="{Binding SelectedIndex}" MinWidth="100" Margin="8,0,0,0">
                 <ComboBoxItem>None - Remove</ComboBoxItem>
                 <ComboBoxItem>Normal Press</ComboBoxItem>
                 <ComboBoxItem>Hold Press</ComboBoxItem>

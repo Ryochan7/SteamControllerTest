@@ -46,6 +46,7 @@ namespace SteamControllerTest.Views
                 FuncBindItem item = funcBindVM.FuncList[ind];
                 funcBindVM.CurrentItem = item;
                 funcBindVM.CurrentBindItemIndex = ind;
+                item.ItemActive = true;
 
                 //CheckSelectionActionType(item);
                 SwitchPropView(item);
@@ -90,8 +91,11 @@ namespace SteamControllerTest.Views
             FuncBindItem item = funcBindVM.FuncList[ind];
             if (item != funcBindVM.CurrentItem)
             {
+                funcBindVM.CurrentItem.ItemActive = false;
+
                 funcBindVM.CurrentItem = item;
                 funcBindVM.CurrentBindItemIndex = ind;
+                item.ItemActive = true;
 
                 DataContext = null;
 
@@ -131,6 +135,16 @@ namespace SteamControllerTest.Views
                     {
                         HoldPressFuncPropControl propControl = new HoldPressFuncPropControl();
                         propControl.PostInit(funcBindVM.Mapper, funcBindVM.Action, holdPress);
+                        propControl.RequestBindingEditor += PropControl_RequestBindingEditor;
+                        propControl.RequestChangeFuncType += PropControl_RequestChangeFuncType;
+                        funcBindVM.DisplayPropControl = propControl;
+                    }
+
+                    break;
+                case ReleaseFunc releaseFunc:
+                    {
+                        ReleaseFuncPropControl propControl = new ReleaseFuncPropControl();
+                        propControl.PostInit(funcBindVM.Mapper, funcBindVM.Action, releaseFunc);
                         propControl.RequestBindingEditor += PropControl_RequestBindingEditor;
                         propControl.RequestChangeFuncType += PropControl_RequestChangeFuncType;
                         funcBindVM.DisplayPropControl = propControl;

@@ -8,20 +8,21 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel>
         <StackPanel>
-            <local:ButtonActionFuncSelectControl x:Name="funcTypeControl" />
-            <StackPanel Orientation="Horizontal">
+            <local:ButtonActionFuncSelectControl x:Name="funcTypeControl" Margin="0,8,0,0" />
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Name" />
                 <TextBox Text="{Binding Name, UpdateSourceTrigger=LostFocus}" Width="300" />
             </StackPanel>
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Bindings" />
                 <Button Content="{Binding DisplayBind}" Width="200" Click="Button_Click" />
                 <!--<TextBlock Text="{Binding DisplayBind}" />-->
             </StackPanel>
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Hold Time" />
-                <Slider Value="{Binding HoldMs}" Minimum="0" Maximum="10000" Width="200" Margin="8,0,0,0" />
-                <TextBlock Text="{Binding HoldMs,FallbackValue=0}" Width="50" Margin="8,0,0,0" />
+                <TextBox Text="{Binding HoldMs, UpdateSourceTrigger=LostFocus}" Width="300" Margin="8,0,0,0" />
+                <!--<Slider Value="{Binding HoldMs}" Minimum="0" Maximum="10000" Width="200" Margin="8,0,0,0" />
+                <TextBlock Text="{Binding HoldMs,FallbackValue=0}" Width="50" Margin="8,0,0,0" />-->
             </StackPanel>
         </StackPanel>
     </DockPanel>

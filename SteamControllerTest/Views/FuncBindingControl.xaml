@@ -16,7 +16,19 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Button Content="{Binding DisplayName}" Tag="{Binding Index}" Click="Button_Click" />
+                        <Button Content="{Binding DisplayName}" Tag="{Binding Index}" Click="Button_Click" Margin="8,0,0,0">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ItemActive}" Value="True">
+                                            <DataTrigger.Setters>
+                                                <Setter Property="Background" Value="#FFA6F3E7" />
+                                            </DataTrigger.Setters>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

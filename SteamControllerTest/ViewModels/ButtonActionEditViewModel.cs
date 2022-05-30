@@ -605,6 +605,7 @@ namespace SteamControllerTest.ViewModels
                         if (ind >= 0)
                         {
                             SelectedSetChoiceIndex = ind;
+                            SelectedSetChangeConditionIndex = (int)item.Data.ChangeCondition;
                             ShowAvailableSets = true;
                         }
                     }
@@ -624,7 +625,7 @@ namespace SteamControllerTest.ViewModels
 
                             if (item.Data.OutputType != OutputActionData.ActionType.HoldActionLayer)
                             {
-                                SelectedLayerChangeConditionIndex = (int)item.Data.ChangeCondition;
+                                SelectedLayerChangeConditionIndex = (int)item.Data.LayerChangeCondition;
                             }
                         }
                     }

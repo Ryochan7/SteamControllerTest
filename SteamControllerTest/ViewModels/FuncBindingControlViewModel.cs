@@ -277,6 +277,18 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler DisplayNameChanged;
 
+        private bool itemActive;
+        public bool ItemActive
+        {
+            get => itemActive;
+            set
+            {
+                itemActive = value;
+                ItemActiveChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler ItemActiveChanged;
+
         public FuncBindItem(ButtonAction action, ActionFunc func, int index)
         {
             this.action = action;
