@@ -828,7 +828,7 @@ namespace SteamControllerTest
             actionProfile.Name = "Blank";
             Profile tempProfile = actionProfile;
 
-            tempProfile.ActionSets.Clear();
+            //tempProfile.ActionSets.Clear();
             PrepareProfileActions(null);
         }
 
@@ -864,12 +864,24 @@ namespace SteamControllerTest
                                 case InputBindingMeta.InputControlType.Stick:
                                     StickNoAction stickNoAct = new StickNoAction();
                                     stickNoAct.MappingId = tempMeta.Key;
+                                    if (tempMeta.Key == "Stick")
+                                    {
+                                        stickNoAct.StickDefinition = lsDefintion;
+                                    }
                                     layer.stickActionDict.Add(tempMeta.Key, stickNoAct);
                                     break;
                                 case InputBindingMeta.InputControlType.Trigger:
                                     {
                                         TriggerNoAction trigNoAct = new TriggerNoAction();
                                         trigNoAct.MappingId = tempMeta.Key;
+                                        if (tempMeta.Key == "LT")
+                                        {
+                                            trigNoAct.TriggerDef = leftTriggerDefinition;
+                                        }
+                                        else if (tempMeta.Key == "RT")
+                                        {
+                                            trigNoAct.TriggerDef = rightTriggerDefinition;
+                                        }
                                         layer.triggerActionDict.Add(tempMeta.Key, trigNoAct);
                                     }
 
@@ -878,6 +890,14 @@ namespace SteamControllerTest
                                     {
                                         TouchpadNoAction touchNoAct = new TouchpadNoAction();
                                         touchNoAct.MappingId = tempMeta.Key;
+                                        if (tempMeta.Key == "LeftTouchpad")
+                                        {
+                                            touchNoAct.TouchDefinition = leftPadDefiniton;
+                                        }
+                                        else if (tempMeta.Key == "RightTouchpad")
+                                        {
+                                            touchNoAct.TouchDefinition = rightPadDefinition;
+                                        }
                                         layer.touchpadActionDict.Add(tempMeta.Key, touchNoAct);
                                     }
 
@@ -885,6 +905,7 @@ namespace SteamControllerTest
                                 case InputBindingMeta.InputControlType.Gyro:
                                     GyroNoMapAction gyroNoMapAct = new GyroNoMapAction();
                                     gyroNoMapAct.MappingId = tempMeta.Key;
+                                    gyroNoMapAct.GyroSensDefinition = gyroSensDefinition;
                                     layer.gyroActionDict.Add(tempMeta.Key, gyroNoMapAct);
                                     break;
                                 default:
@@ -1217,7 +1238,15 @@ namespace SteamControllerTest
                 profileFile = profilePath;
 
                 // Read file
-                ReadFromProfile();
+                try
+                {
+                    ReadFromProfile();
+                }
+                catch(JsonException e)
+                {
+                    UseBlankProfile();
+                    throw e;
+                }
 
                 // Create virtual controller if desired
                 if (actionProfile.OutputGamepadSettings.Enabled && outputX360 == null)

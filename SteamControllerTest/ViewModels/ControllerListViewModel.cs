@@ -7,10 +7,26 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using Newtonsoft.Json;
 using SteamControllerTest.SteamControllerLibrary;
 
 namespace SteamControllerTest.ViewModels
 {
+    public class ReadProfileFailException : Exception
+    {
+        private JsonException innerJsonException;
+        public JsonException InnerJsonException => innerJsonException;
+
+        private string extraMessage;
+        public string ExtraMessage => extraMessage;
+
+        public ReadProfileFailException(JsonException e, string extraMessage)
+        {
+            innerJsonException = e;
+            this.extraMessage = extraMessage;
+        }
+    }
+
     public class ControllerListViewModel
     {
         private ReaderWriterLockSlim _colListLocker = new ReaderWriterLockSlim();
@@ -40,6 +56,7 @@ namespace SteamControllerTest.ViewModels
             }
         }
         public event EventHandler SelectedIndexChanged;
+        public event EventHandler<ReadProfileFailException> ReadProfileFailure;
 
 
         public ControllerListViewModel(BackendManager manager)
@@ -124,9 +141,19 @@ namespace SteamControllerTest.ViewModels
             DeviceListItem item = sender as DeviceListItem;
             Mapper map = backendManager.MapperDict[item.Device.Index];
             string profilePath = DeviceProfileList.ProfileListCol[item.ProfileIndex].ProfilePath;
+
             map.QueueEvent(() =>
             {
-                map.ChangeProfile(profilePath);
+                //map.UseBlankProfile();
+                //ReadProfileFailure?.Invoke(this, new ReadProfileFailException(new JsonException(), $"Failed to read profile {profilePath}"));
+                try
+                {
+                    map.ChangeProfile(profilePath);
+                }
+                catch (JsonException e)
+                {
+                    ReadProfileFailure?.Invoke(this, new ReadProfileFailException(e, $"Failed to read profile {profilePath}"));
+                }
                 //backendManager.ProfileFile = DeviceProfileList.ProfileListCol[item.ProfileIndex].ProfilePath;
             });
         }

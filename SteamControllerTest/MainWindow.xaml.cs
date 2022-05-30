@@ -71,7 +71,21 @@ namespace SteamControllerTest
 
             BackendManager manager = (App.Current as App).Manager;
             controlListVM = new ControllerListViewModel(manager);
+            controlListVM.ReadProfileFailure += ControlListVM_ReadProfileFailure;
             deviceListView.DataContext = controlListVM;
+        }
+
+        private void ControlListVM_ReadProfileFailure(object sender,
+            ReadProfileFailException e)
+        {
+            // Assume event will be invoked from non-GUI thread
+            Dispatcher.BeginInvoke((Action)(() =>
+            {
+                string windowMessage = $"{e.ExtraMessage}\n\n{e.InnerJsonException.Message}";
+                string titleCaption = $"Profile read failed";
+                MessageBox.Show(windowMessage, titleCaption,
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }));
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
