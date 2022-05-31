@@ -90,6 +90,8 @@ namespace SteamControllerTest
             appGlobal.RefreshBaseDriverInfo();
             appGlobal.LoadAppSettings();
 
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
             testThread = new Thread(() =>
             {
                 manager = new BackendManager(tempProfilePath, appGlobal);
@@ -114,6 +116,17 @@ namespace SteamControllerTest
             window.Show();
 
             window.StartCheckProcess();
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Exception exp = e.ExceptionObject as Exception;
+            bool canAccessMain = Current.Dispatcher.CheckAccess();
+            //Trace.WriteLine($"CRASHED {help}");
+            if (e.IsTerminating)
+            {
+                CleanShutDown();
+            }
         }
 
         private void Window_ProfilePathChanged(object sender,
@@ -147,10 +160,16 @@ namespace SteamControllerTest
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
-            if (manager.IsRunning)
+            CleanShutDown();
+        }
+
+        private void CleanShutDown()
+        {
+            //if (manager.IsRunning)
             {
                 Task tempTask = Task.Run(() =>
                 {
+                    manager?.PreAppStopDown();
                     manager?.Stop();
                 });
                 tempTask.Wait();

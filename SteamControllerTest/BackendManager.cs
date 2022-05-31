@@ -201,10 +201,10 @@ namespace SteamControllerTest
                 }
 
                 Mapper testMapper = new Mapper(device, tempProfilePath, appGlobal);
+                mapperDict.Add(ind, testMapper);
                 //testMapper.Start(device, reader);
                 testMapper.Start(vigemTestClient, fakerInputHandler, device, reader);
                 testMapper.RequestOSD += TestMapper_RequestOSD;
-                mapperDict.Add(ind, testMapper);
 
                 controllerList[ind] = device;
                 ind++;
@@ -270,6 +270,7 @@ namespace SteamControllerTest
             vigemTestClient?.Dispose();
             vigemTestClient = null;
 
+            fakerInputHandler.Sync();
             fakerInputHandler.Disconnect();
 
             changingService = false;
@@ -284,6 +285,12 @@ namespace SteamControllerTest
 
             eventDispatcher = null;
             eventDispatchThread = null;
+        }
+
+        public void PreAppStopDown()
+        {
+            PreServiceStop = null;
+            ServiceStopped = null;
         }
 
         public void Hotplug()
