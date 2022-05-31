@@ -89,10 +89,16 @@ namespace SteamControllerTest.ViewModels
                     if (device != null)
                     {
                         DeviceListItem devItem = new DeviceListItem(device, i, DeviceProfileList);
-                        if (!string.IsNullOrWhiteSpace(backendManager.ProfileFile))
+                        Mapper map = backendManager.MapperDict[device.Index];
+                        if (map.ProfileFile != string.Empty)
                         {
-                            devItem.PostInit(backendManager.ProfileFile);
+                            devItem.PostInit(map.ProfileFile);
                         }
+
+                        //if (!string.IsNullOrWhiteSpace(backendManager.ProfileFile))
+                        //{
+                        //    devItem.PostInit(backendManager.ProfileFile);
+                        //}
 
                         devItem.ProfileIndexChanged += DevItem_ProfileIndexChanged;
                         device.Removal += Device_Removal;
@@ -183,7 +189,7 @@ namespace SteamControllerTest.ViewModels
         private int itemIndex;
         private SteamControllerDevice device;
         private ProfileList profileListHolder;
-        private int profileIndex;
+        private int profileIndex = -1;
 
         public SteamControllerDevice Device
         {
@@ -236,6 +242,10 @@ namespace SteamControllerTest.ViewModels
             {
                 int ind = profileListHolder.ProfileListCol.IndexOf(temp);
                 ProfileIndex = ind;
+            }
+            else
+            {
+                ProfileIndex = -1;
             }
         }
     }

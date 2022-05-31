@@ -105,7 +105,7 @@ namespace SteamControllerTest
 
             MainWindow window = new MainWindow();
             window.PostInit(appGlobal);
-            window.MainWinVM.ProfilePath = tempProfilePath;
+            //window.MainWinVM.ProfilePath = tempProfilePath;
             window.ProfilePathChanged += Window_ProfilePathChanged;
             MainWindow = window;
 

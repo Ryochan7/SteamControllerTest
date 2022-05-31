@@ -187,9 +187,15 @@ namespace SteamControllerTest
 
                 appGlobal.LoadControllerDeviceSettings(device, device.DeviceOptions);
 
-                string tempProfilePath = profileFile;
-                if (string.IsNullOrEmpty(profileFile) &&
-                    deviceProfileList.ProfileListCol.Count > 0)
+                //string tempProfilePath = profileFile;
+                //if (string.IsNullOrEmpty(profileFile) &&
+                //    deviceProfileList.ProfileListCol.Count > 0)
+                //{
+                //    tempProfilePath = deviceProfileList.ProfileListCol[0].ProfilePath;
+                //}
+
+                string tempProfilePath = string.Empty;
+                if (deviceProfileList.ProfileListCol.Count > 0)
                 {
                     tempProfilePath = deviceProfileList.ProfileListCol[0].ProfilePath;
                 }
@@ -351,9 +357,15 @@ namespace SteamControllerTest
 
             appGlobal.LoadControllerDeviceSettings(device, device.DeviceOptions);
 
-            string tempProfilePath = profileFile;
-            if (string.IsNullOrEmpty(profileFile) &&
-                deviceProfileList.ProfileListCol.Count > 0)
+            //string tempProfilePath = profileFile;
+            //if (string.IsNullOrEmpty(profileFile) &&
+            //    deviceProfileList.ProfileListCol.Count > 0)
+            //{
+            //    tempProfilePath = deviceProfileList.ProfileListCol[0].ProfilePath;
+            //}
+
+            string tempProfilePath = string.Empty;
+            if (deviceProfileList.ProfileListCol.Count > 0)
             {
                 tempProfilePath = deviceProfileList.ProfileListCol[0].ProfilePath;
             }

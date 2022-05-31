@@ -827,6 +827,7 @@ namespace SteamControllerTest
             actionProfile = new Profile();
             actionProfile.Name = "Blank";
             Profile tempProfile = actionProfile;
+            profileFile = string.Empty;
 
             //tempProfile.ActionSets.Clear();
             PrepareProfileActions(null);
@@ -1245,6 +1246,7 @@ namespace SteamControllerTest
                 catch(JsonException e)
                 {
                     UseBlankProfile();
+                    profileFile = string.Empty;
                     throw e;
                 }
 
