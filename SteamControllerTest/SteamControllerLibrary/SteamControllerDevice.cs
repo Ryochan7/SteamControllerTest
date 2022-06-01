@@ -268,13 +268,14 @@ namespace SteamControllerTest.SteamControllerLibrary
 
             string baseS = System.Text.Encoding.Default.GetString(retReportData, 4, 12);
             string MACAddr = baseS.Replace("\0", string.Empty).ToUpper();
-            List<string> tempStrList = new List<string>();
-            for (int i=0; i < MACAddr.Length; i += 2)
-            {
-                tempStrList.Add($"{MACAddr[i]}{MACAddr[i + 1]}");
-            }
+            //List<string> tempStrList = new List<string>();
+            //for (int i=0; i < MACAddr.Length; i += 2)
+            //{
+            //    tempStrList.Add($"{MACAddr[i]}{MACAddr[i + 1]}");
+            //}
 
-            serial = string.Join(":", tempStrList);
+            //serial = string.Join(":", tempStrList);
+            serial = MACAddr;
         }
 
         public static bool TestDongleSCConnected(HidDevice device)
