@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -81,6 +82,7 @@ namespace SteamControllerTest
 
         public delegate void HotplugControllerHandler(SteamControllerDevice device, int ind);
         public event HotplugControllerHandler HotplugController;
+        public event HotplugControllerHandler UnplugController;
 
         public BackendManager(string profileFile, AppGlobalData appGlobal)
         {
@@ -179,11 +181,27 @@ namespace SteamControllerTest
                     reader = new SteamControllerReader(device);
                 }
 
+                if (!device.Synced)
+                {
+                    //device.SetOperational();
+                    deviceReadersMap.Add(device, reader);
+                    device.Removal += Device_Removal;
+                    device.SyncedChanged += Device_SyncedChanged;
+                    // Attempt to run reader early
+                    reader.StartUpdate();
+
+                    continue;
+                }
+
                 device.Index = ind;
                 device.SetOperational();
                 deviceReadersMap.Add(device, reader);
 
                 device.Removal += Device_Removal;
+                if (device.CheckForSyncChange)
+                {
+                    device.SyncedChanged += Device_SyncedChanged;
+                }
 
                 appGlobal.LoadControllerDeviceSettings(device, device.DeviceOptions);
 
@@ -216,6 +234,73 @@ namespace SteamControllerTest
             ServiceStarted?.Invoke(this, EventArgs.Empty);
         }
 
+        private void Device_SyncedChanged(object sender, EventArgs e)
+        {
+            SteamControllerDevice device = sender as SteamControllerDevice;
+            if (device.Synced)
+            {
+                Func<bool> tempFoundDevFunc = () =>
+                {
+                    bool found = false;
+                    for (int i = 0, arlen = controllerList.Length; i < arlen; i++)
+                    {
+                        if (controllerList[i] != null &&
+                            controllerList[i].Serial == device.Serial)
+                        {
+                            found = true;
+                        }
+                    }
+
+                    return found;
+                };
+
+                bool alreadyExists = tempFoundDevFunc();
+                if (!alreadyExists)
+                {
+                    for (int ind = 0, arlen = controllerList.Length; ind < arlen; ind++)
+                    {
+                        // No controller in input slot. Insert newly created
+                        // device in slot
+                        if (controllerList[ind] == null)
+                        {
+                            if (deviceReadersMap.TryGetValue(device,
+                                out SteamControllerReader reader))
+                            {
+                                PrepareSyncedInputDevice(device, reader, ind);
+                                HotplugController?.Invoke(device, ind);
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                UnplugController?.Invoke(device, device.Index);
+
+                if (mapperDict.TryGetValue(device.Index, out Mapper tempMapper))
+                {
+                    Task tempTask = Task.Run(() =>
+                    {
+                        tempMapper.Stop();
+                        tempMapper = null;
+                    });
+                    //tempTask.Wait();
+
+                    mapperDict.Remove(device.Index);
+                }
+
+                eventDispatcher.Invoke(() =>
+                {
+                    if (device.Index >= 0)
+                    {
+                        controllerList[device.Index] = null;
+                    }
+                });
+            }
+        }
+
         private void Device_Removal(object sender, EventArgs e)
         {
             SteamControllerDevice device = sender as SteamControllerDevice;
@@ -235,7 +320,10 @@ namespace SteamControllerTest
             enumerator.RemoveDevice(device);
             eventDispatcher.Invoke(() =>
             {
-                controllerList[device.Index] = null;
+                if (device.Index >= 0)
+                {
+                    controllerList[device.Index] = null;
+                }
             });
         }
 
@@ -251,14 +339,14 @@ namespace SteamControllerTest
 
             PreServiceStop?.Invoke(this, EventArgs.Empty);
 
-            foreach (SteamControllerReader readers in deviceReadersMap.Values)
-            {
-                //readers.StopUpdate();
-            }
-
             foreach (Mapper mapper in mapperDict.Values)
             {
                 mapper.Stop();
+            }
+
+            foreach (SteamControllerReader readers in deviceReadersMap.Values)
+            {
+                readers.StopUpdate();
             }
 
             mapperDict.Clear();
@@ -309,6 +397,11 @@ namespace SteamControllerTest
                 for (var devEnum = devices.GetEnumerator(); devEnum.MoveNext();)
                 {
                     SteamControllerDevice device = devEnum.Current;
+                    if (!device.Synced)
+                    {
+                        continue;
+                    }
+
                     Func<bool> tempFoundDevFunc = () =>
                     {
                         bool found = false;
@@ -336,12 +429,33 @@ namespace SteamControllerTest
                         if (controllerList[ind] == null)
                         {
                             PrepareAddInputDevice(device, ind);
-                            HotplugController(device, ind);
+                            HotplugController?.Invoke(device, ind);
                             break;
                         }
                     }
                 }
             }
+        }
+
+        private void PrepareSyncedInputDevice(SteamControllerDevice device,
+            SteamControllerReader reader, int ind)
+        {
+            device.Index = ind;
+            //device.Removal += Device_Removal;
+
+            string tempProfilePath = string.Empty;
+            if (deviceProfileList.ProfileListCol.Count > 0)
+            {
+                tempProfilePath = deviceProfileList.ProfileListCol[0].ProfilePath;
+            }
+
+            Mapper testMapper = new Mapper(device, tempProfilePath, appGlobal);
+            //testMapper.Start(device, reader);
+            testMapper.Start(vigemTestClient, fakerInputHandler, device, reader);
+            testMapper.RequestOSD += TestMapper_RequestOSD;
+            mapperDict.Add(ind, testMapper);
+
+            controllerList[ind] = device;
         }
 
         private void PrepareAddInputDevice(SteamControllerDevice device, int ind)
@@ -361,6 +475,10 @@ namespace SteamControllerTest
             deviceReadersMap.Add(device, reader);
 
             device.Removal += Device_Removal;
+            if (device.CheckForSyncChange)
+            {
+                device.SyncedChanged += Device_SyncedChanged;
+            }
 
             appGlobal.LoadControllerDeviceSettings(device, device.DeviceOptions);
 

@@ -66,9 +66,23 @@ namespace SteamControllerTest.ViewModels
             backendManager.ServiceStarted += BackendManager_ServiceStarted;
             backendManager.ServiceStopped += BackendManager_ServiceStopped;
             backendManager.HotplugController += BackendManager_HotplugController;
+            backendManager.UnplugController += BackendManager_UnplugController;
             
             BindingOperations.EnableCollectionSynchronization(controllerList, _colListLocker,
                             ColLockCallback);
+        }
+
+        private void BackendManager_UnplugController(SteamControllerDevice device, int ind)
+        {
+            using (WriteLocker locker = new WriteLocker(_colListLocker))
+            {
+                //int ind = controllerList.Where((item) => item.ItemIndex == device.Index)
+                //    .Select((item) => item.ItemIndex).DefaultIfEmpty(-1).First();
+                if (ind >= 0)
+                {
+                    controllerList.RemoveAt(ind);
+                }
+            }
         }
 
         private void BackendManager_ServiceStopped(object sender, EventArgs e)
@@ -116,8 +130,8 @@ namespace SteamControllerTest.ViewModels
             using (WriteLocker locker = new WriteLocker(_colListLocker))
             {
                 int ind = controllerList.Where((item) => item.ItemIndex == device.Index)
-                    .Select((item) => item.ItemIndex).FirstOrDefault();
-                if (ind >= 0)
+                    .Select((item) => item.ItemIndex).DefaultIfEmpty(-1).First();
+                if (device.Synced && ind >= 0)
                 {
                     controllerList.RemoveAt(ind);
                 }

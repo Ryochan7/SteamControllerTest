@@ -141,6 +141,24 @@ namespace SteamControllerTest.SteamControllerLibrary
 
         public event EventHandler Removal;
 
+        private bool synced;
+        public bool Synced
+        {
+            get => synced;
+            set
+            {
+                synced = value;
+                SyncedChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SyncedChanged;
+
+        private bool checkForSyncChange;
+        public bool CheckForSyncChange
+        {
+            get => checkForSyncChange;
+        }
+
         public SteamControllerDevice(HidDevice device)
         {
             hidDevice = device;
@@ -148,6 +166,30 @@ namespace SteamControllerTest.SteamControllerLibrary
             baseElapsedReference = 125.0;
 
             deviceOptions = new SteamControllerControllerOptions(InputDeviceType.SteamController);
+            if (conType != ConnectionType.SCDongle)
+            {
+                synced = true;
+            }
+            else
+            {
+                // Temporary check to attempt to see if controller is
+                // connected to Dongle. Might have to rely on polls in the
+                // reader class instead
+                synced = TestDongleSCConnected(hidDevice);
+                checkForSyncChange = true;
+            }
+
+            if (!hidDevice.IsFileStreamOpen())
+            {
+                hidDevice.OpenFileStream(OutputReportLen);
+            }
+
+            if (synced)
+            {
+                ReadSerial();
+            }
+
+            SyncedChanged += SteamControllerDevice_SyncedChanged;
         }
 
         public static ConnectionType DetermineConnectionType(HidDevice device)
@@ -176,11 +218,6 @@ namespace SteamControllerTest.SteamControllerLibrary
                 return;
             }
 
-            if (!hidDevice.IsFileStreamOpen())
-            {
-                hidDevice.OpenFileStream(OutputReportLen);
-            }
-
             ClearMappings();
             ReadSerial();
             Configure();
@@ -189,6 +226,15 @@ namespace SteamControllerTest.SteamControllerLibrary
 
             controllerModeState = SCControllerState.SS_READY;
             modeChangeDone = true;
+        }
+
+        private void SteamControllerDevice_SyncedChanged(object sender, EventArgs e)
+        {
+            if (!synced)
+            {
+                modeChangeDone = false;
+                controllerModeState = SCControllerState.SS_NOT_CONFIGURED;
+            }
         }
 
         public void Detach()
@@ -241,12 +287,12 @@ namespace SteamControllerTest.SteamControllerLibrary
             featureData[3] = 0x01;
             device.WriteFeatureReport(featureData);
             // Sleep seems to be needed when probing from a Dongle connection
-            Thread.Sleep(50);
+            Thread.Sleep(100);
 
             byte[] retReportData = new byte[FEATURE_REPORT_LEN];
             device.readFeatureData(retReportData);
 
-            if (retReportData[3] != 0)
+            if (retReportData[4] != 0)
             {
                 result = true;
             }

@@ -18,6 +18,7 @@ namespace SteamControllerTest.SteamControllerLibrary
         protected byte[] inputReportBuffer;
         protected byte[] outputReportBuffer;
         protected byte[] rumbleReportBuffer;
+        private bool started;
 
         public delegate void SteamControllerReportDelegate(SteamControllerReader sender,
             SteamControllerDevice device);
@@ -37,11 +38,27 @@ namespace SteamControllerTest.SteamControllerLibrary
             NativeMethods.HidD_SetNumInputBuffers(device.HidDevice.safeReadHandle.DangerousGetHandle(),
                 2);
 
+            if (device.Synced)
+            {
+                device.SetOperational();
+            }
+        }
+
+        private void PrepareSyncedDevice()
+        {
+            //NativeMethods.HidD_SetNumInputBuffers(device.HidDevice.safeReadHandle.DangerousGetHandle(),
+            //    2);
+
             device.SetOperational();
         }
 
         public virtual void StartUpdate()
         {
+            if (started)
+            {
+                return;
+            }
+
             PrepareDevice();
 
             inputThread = new Thread(ReadInput);
@@ -49,10 +66,17 @@ namespace SteamControllerTest.SteamControllerLibrary
             inputThread.Priority = ThreadPriority.AboveNormal;
             inputThread.Name = "Steam Controller Reader Thread";
             inputThread.Start();
+
+            started = true;
         }
 
         public void StopUpdate()
         {
+            if (!started)
+            {
+                return;
+            }
+
             activeInputLoop = false;
             Report = null;
             device.PurgeRemoval();
@@ -62,6 +86,8 @@ namespace SteamControllerTest.SteamControllerLibrary
             {
                 inputThread.Join();
             }
+
+            started = false;
         }
 
         protected virtual void ReadInput()
@@ -89,16 +115,36 @@ namespace SteamControllerTest.SteamControllerLibrary
                     {
                         //Trace.WriteLine(string.Format("{0}", string.Join(" ", inputReportBuffer)));
                         tempByte = inputReportBuffer[3];
-                        //Trace.WriteLine($"{inputReportBuffer[0]} {inputReportBuffer[2]} {inputReportBuffer[3]}");
+                        //Trace.WriteLine($"{inputReportBuffer[0]} {inputReportBuffer[2]} {inputReportBuffer[3]} {inputReportBuffer[4]}");
 
                         ref SteamControllerState current = ref device.CurrentStateRef;
                         ref SteamControllerState previous = ref device.PreviousStateRef;
 
-                        if (tempByte != SteamControllerDevice.SCPacketType.PT_INPUT &&
+                        if (tempByte == SteamControllerDevice.SCPacketType.PT_HOTPLUG)
+                        {
+                            byte statusByte = inputReportBuffer[5];
+                            // 2 means a new device was connected. Looks like
+                            // 1 means a device was disconnected
+                            bool hasConnected = statusByte == 2;
+                            if (!device.Synced && hasConnected)
+                            {
+                                // Disable lizard mode and activate components of newly
+                                // connected Steam Controller
+                                PrepareSyncedDevice();
+                                device.Synced = true;
+                                continue;
+                            }
+                            else if (device.Synced && !hasConnected)
+                            {
+                                device.Synced = false;
+                                continue;
+                            }
+                        }
+                        else if (tempByte != SteamControllerDevice.SCPacketType.PT_INPUT &&
                             tempByte != SteamControllerDevice.SCPacketType.PT_IDLE)
                         {
-                            Console.WriteLine("Got unexpected input report id 0x{0:X2}. Try again",
-                                inputReportBuffer[3]);
+                            Trace.WriteLine(String.Format("Got unexpected input report id 0x{0:X2}. Try again",
+                                inputReportBuffer[3]));
 
                             continue;
                         }

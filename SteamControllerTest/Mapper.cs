@@ -4706,7 +4706,7 @@ namespace SteamControllerTest
 
         public void Stop()
         {
-            reader.StopUpdate();
+            //reader.StopUpdate();
 
             quit = true;
 
