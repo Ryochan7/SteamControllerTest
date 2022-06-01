@@ -280,7 +280,6 @@ namespace SteamControllerTest
 
         public void ShutDown()
         {
-            eventDispatcher.InvokeShutdown();
             eventDispatchThread.Join();
 
             eventDispatcher = null;
@@ -291,6 +290,7 @@ namespace SteamControllerTest
         {
             PreServiceStop = null;
             ServiceStopped = null;
+            eventDispatcher.InvokeShutdown();
         }
 
         public void Hotplug()

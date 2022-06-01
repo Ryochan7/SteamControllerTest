@@ -210,6 +210,12 @@ namespace SteamControllerTest.SteamControllerLibrary
             hidDevice.WriteFeatureReport(featureData);
             hidDevice.fileStream.Flush();
 
+            // Sleep seems to be needed when probing from a Dongle connection
+            if (conType == ConnectionType.SCDongle)
+            {
+                Thread.Sleep(100);
+            }
+
             byte[] retReportData = new byte[FEATURE_REPORT_LEN];
             hidDevice.readFeatureData(retReportData);
             //Console.WriteLine("LKJDKJLLD: {0}", retReportData[1]);
@@ -223,6 +229,29 @@ namespace SteamControllerTest.SteamControllerLibrary
             }
 
             serial = string.Join(":", tempStrList);
+        }
+
+        public static bool TestDongleSCConnected(HidDevice device)
+        {
+            bool result = false;
+
+            byte[] featureData = new byte[FEATURE_REPORT_LEN];
+            featureData[1] = SCPacketType.PT_GET_SERIAL;
+            featureData[2] = 0x15;
+            featureData[3] = 0x01;
+            device.WriteFeatureReport(featureData);
+            // Sleep seems to be needed when probing from a Dongle connection
+            Thread.Sleep(50);
+
+            byte[] retReportData = new byte[FEATURE_REPORT_LEN];
+            device.readFeatureData(retReportData);
+
+            if (retReportData[3] != 0)
+            {
+                result = true;
+            }
+
+            return result;
         }
 
         protected virtual void ClearMappings()

@@ -56,6 +56,7 @@ namespace SteamControllerTest.SteamControllerLibrary
             activeInputLoop = false;
             Report = null;
             device.PurgeRemoval();
+            device.HidDevice.CancelIO();
             //inputThread.Interrupt();
             if (inputThread != null && inputThread.IsAlive)
             {

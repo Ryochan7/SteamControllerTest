@@ -56,7 +56,9 @@ namespace SteamControllerTest.SteamControllerLibrary
                         else if (hDevice.Attributes.ProductId == STEAM_DONGLE_CONTROLLER_PRODUCT_ID)
                         {
                             // Only care about interface 1 for this test
-                            if (endpointIdx == 1)
+                            //if (endpointIdx == 1)
+                            //if (hDevice.DevicePath.Contains("&mi_02#"))
+                            if (SteamControllerDevice.TestDongleSCConnected(hDevice))
                             {
                                 SteamControllerDevice tempDev = new SteamControllerDevice(hDevice);
                                 foundDevices.Add(hDevice.DevicePath, tempDev);
