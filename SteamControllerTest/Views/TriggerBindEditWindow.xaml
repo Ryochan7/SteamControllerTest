@@ -11,7 +11,10 @@
             <Binding Path="InputControlName" FallbackValue="Trigger" />
         </MultiBinding>
     </Window.Title>
-    <DockPanel>
+    <Window.Background>
+        <SolidColorBrush Color="{DynamicResource RegionColor}"/>
+    </Window.Background>
+    <DockPanel Margin="8">
         <ContentControl x:Name="displayControl" Content="{Binding DisplayControl}" Margin="8" />
     </DockPanel>
 </Window>

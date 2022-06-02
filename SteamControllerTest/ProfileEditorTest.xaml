@@ -6,6 +6,9 @@
         xmlns:local="clr-namespace:SteamControllerTest"
         mc:Ignorable="d"
         Title="ProfileEditorTest" Height="450" Width="800">
+    <Window.Background>
+        <SolidColorBrush Color="{DynamicResource RegionColor}"/>
+    </Window.Background>
     <DockPanel Margin="8">
         <StackPanel DockPanel.Dock="Top">
             <DockPanel LastChildFill="False">
@@ -17,7 +20,7 @@
                 <Button Content="Test Out JSON" Click="Button_Click_4" DockPanel.Dock="Right" />
                 <CheckBox IsChecked="{Binding OverwriteFile}" Content="Overwrite" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="0,0,8,0" />
             </DockPanel>
-            
+
         </StackPanel>
 
         <StackPanel DockPanel.Dock="Top">
@@ -32,11 +35,11 @@
                         <DataTemplate>
                             <Button Content="{Binding DisplayName}" Click="Button_Click_2" Tag="{Binding SetIndex}">
                                 <Button.Style>
-                                    <Style TargetType="Button">
+                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonDefault}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding ItemActive}" Value="True">
                                                 <DataTrigger.Setters>
-                                                    <Setter Property="Background" Value="#FFA6F3E7" />
+                                                    <Setter Property="Background" Value="{StaticResource AccentBrush}" />
                                                 </DataTrigger.Setters>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -61,11 +64,11 @@
                         <DataTemplate>
                             <Button Content="{Binding DisplayName}" Tag="{Binding LayerIndex}"  Click="Button_Click_3">
                                 <Button.Style>
-                                    <Style TargetType="Button">
+                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonDefault}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding ItemActive}" Value="True">
                                                 <DataTrigger.Setters>
-                                                    <Setter Property="Background" Value="#FFA6F3E7" />
+                                                    <Setter Property="Background" Value="{StaticResource AccentBrush}" />
                                                 </DataTrigger.Setters>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -104,7 +107,7 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </ScrollViewer>
-                
+
             </TabItem>
             <TabItem Header="Touchpads">
                 <ListView ItemsSource="{Binding TouchpadBindings}" SelectedIndex="{Binding SelectTouchBindIndex}">

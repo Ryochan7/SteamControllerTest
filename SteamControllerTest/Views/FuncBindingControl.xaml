@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:SteamControllerTest.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <DockPanel>
+    <DockPanel Margin="8">
         <WrapPanel DockPanel.Dock="Top">
             <ItemsControl ItemsSource="{Binding FuncList}" IsEnabled="{Binding IsRealAction}">
                 <ItemsControl.ItemsPanel>
@@ -18,11 +18,11 @@
                     <DataTemplate>
                         <Button Content="{Binding DisplayName}" Tag="{Binding Index}" Click="Button_Click" Margin="8,0,0,0">
                             <Button.Style>
-                                <Style TargetType="Button">
+                                <Style TargetType="Button" BasedOn="{StaticResource ButtonDefault}">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding ItemActive}" Value="True">
                                             <DataTrigger.Setters>
-                                                <Setter Property="Background" Value="#FFA6F3E7" />
+                                                <Setter Property="Background" Value="{StaticResource AccentBrush}" />
                                             </DataTrigger.Setters>
                                         </DataTrigger>
                                     </Style.Triggers>

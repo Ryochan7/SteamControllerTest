@@ -7,8 +7,11 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="300" Width="600" Closed="Window_Closed">
     <DockPanel>
+        <DockPanel.Background>
+            <SolidColorBrush Color="{StaticResource RegionColor}"/>
+        </DockPanel.Background>
         <StackPanel DockPanel.Dock="Bottom" Margin="6,10,6,10" Orientation="Vertical">
-            <Button x:Name="serviceChangeBtn" Content="{Binding ServiceBtnText,Mode=OneWay,FallbackValue='Start'}" Click="Button_Click" />
+            <Button x:Name="serviceChangeBtn" Content="{Binding ServiceBtnText,Mode=OneWay,FallbackValue='Start'}" Click="Button_Click" HorizontalAlignment="Stretch" />
         </StackPanel>
 
         <DockPanel Margin="6,10,6,10" DockPanel.Dock="Bottom" Visibility="Collapsed">

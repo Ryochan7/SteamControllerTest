@@ -15,7 +15,7 @@
                 <Label Content="Name" />
                 <TextBox Text="{Binding Name,UpdateSourceTrigger=LostFocus}" Width="200">
                     <TextBox.Style>
-                        <Style TargetType="TextBox">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding HighlightName}" Value="False">
                                     <Setter Property="Opacity" Value="0.7" />
@@ -37,7 +37,7 @@
                 <Label Content="Dead Zone" />
                 <TextBox Text="{Binding DeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
                     <TextBox.Style>
-                        <Style TargetType="TextBox">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding HighlightDeadZone}" Value="False">
                                     <Setter Property="Opacity" Value="0.7" />
@@ -52,7 +52,7 @@
                 <Label Content="_AntiDead Zone" />
                 <TextBox Text="{Binding AntiDeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
                     <TextBox.Style>
-                        <Style TargetType="TextBox">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding HighlightAntiDeadZone}" Value="False">
                                     <Setter Property="Opacity" Value="0.7" />
@@ -67,7 +67,7 @@
                 <Label Content="Soft Max Zone" />
                 <TextBox Text="{Binding MaxZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
                     <TextBox.Style>
-                        <Style TargetType="TextBox">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding HighlightMaxZone}" Value="False">
                                     <Setter Property="Opacity" Value="0.7" />
@@ -82,7 +82,7 @@
                 <Label Content="Hip Fire Delay (ms)" />
                 <TextBox Text="{Binding HipFireDelay, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
                     <TextBox.Style>
-                        <Style TargetType="TextBox">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding HighlightHipFireDelay}" Value="False">
                                     <Setter Property="Opacity" Value="0.7" />
@@ -95,7 +95,7 @@
 
             <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Dual Stage Mode" />
-                <ComboBox SelectedIndex="{Binding SelectedDSModeIndex}">
+                <ComboBox SelectedIndex="{Binding SelectedDSModeIndex}" MinWidth="200">
                     <ComboBoxItem>Threshold</ComboBoxItem>
                     <ComboBoxItem>Exclusive Buttons</ComboBoxItem>
                     <ComboBoxItem>Hair Trigger</ComboBoxItem>
@@ -103,7 +103,7 @@
                     <ComboBoxItem>Hip Fire Exclusive Buttons</ComboBoxItem>
 
                     <ComboBox.Style>
-                        <Style TargetType="ComboBox">
+                        <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding HighlightDSMode}" Value="False">
                                     <Setter Property="Opacity" Value="0.7" />

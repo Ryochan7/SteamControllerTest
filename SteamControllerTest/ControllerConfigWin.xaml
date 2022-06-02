@@ -6,7 +6,10 @@
         xmlns:local="clr-namespace:SteamControllerTest"
         mc:Ignorable="d"
         Title="ControllerConfigWin" Height="450" Width="800" Closed="Window_Closed">
-    <DockPanel>
+    <Window.Background>
+        <SolidColorBrush Color="{StaticResource RegionColor}"/>
+    </Window.Background>
+    <DockPanel Margin="8">
         <TabControl SelectedIndex="0">
             <TabItem x:Name="steamControllerTabItem" Header="SteamController" Visibility="Collapsed">
                 <StackPanel Orientation="Vertical">

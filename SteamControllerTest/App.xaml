@@ -4,10 +4,17 @@
              xmlns:local="clr-namespace:SteamControllerTest"
              Startup="Application_Startup" Exit="Application_Exit" ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
-        <Style TargetType="{x:Type Window}">
-            <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-            <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-            <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
-        </Style>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/SkinDark.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/Theme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="{x:Type Window}">
+                <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+                <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
+                <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
+            </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -11,6 +11,9 @@
             <Binding Path="InputControlName" FallbackValue="Touchpad" />
         </MultiBinding>
     </Window.Title>
+    <Window.Background>
+        <SolidColorBrush Color="{StaticResource RegionColor}"/>
+    </Window.Background>
     <DockPanel Margin="8">
         <DockPanel DockPanel.Dock="Top">
             <local:TouchpadActionSelectControl x:Name="touchpadSelectControl" DockPanel.Dock="Top" />

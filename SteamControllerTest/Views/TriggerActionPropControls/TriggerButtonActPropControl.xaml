@@ -15,7 +15,7 @@
                 <Label Content="Name" />
                 <TextBox Text="{Binding Name,UpdateSourceTrigger=LostFocus}" Width="200">
                     <TextBox.Style>
-                        <Style TargetType="TextBox">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding HighlightName}" Value="False">
                                     <Setter Property="Opacity" Value="0.7" />
@@ -35,7 +35,7 @@
                 <Label Content="Dead Zone" />
                 <TextBox Text="{Binding DeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
                     <TextBox.Style>
-                        <Style TargetType="TextBox">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding HighlightDeadZone}" Value="False">
                                     <Setter Property="Opacity" Value="0.7" />

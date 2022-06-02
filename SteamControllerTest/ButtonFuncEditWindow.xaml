@@ -14,6 +14,9 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="transformPanelVisConverter" />
     </Window.Resources>
+    <Window.Background>
+        <SolidColorBrush Color="{StaticResource RegionColor}"/>
+    </Window.Background>
     <DockPanel Margin="8">
         <StackPanel x:Name="transformStackPanel" Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,10" Visibility="{Binding TopTransformPanelVisible,Converter={StaticResource transformPanelVisConverter}}">
             <StackPanel Orientation="Horizontal" Visibility="{Binding IsTransformOutputVisible,Converter={StaticResource transformPanelVisConverter}}" Margin="8,0,8,0">
@@ -23,9 +26,9 @@
                     <ComboBoxItem>Function Button</ComboBoxItem>
                 </ComboBox>
             </StackPanel>
-            <Button Width="20" Click="Button_Click">
+            <Button MinWidth="20" Click="Button_Click">
                 <Button.Style>
-                    <Style TargetType="Button">
+                    <Style TargetType="Button" BasedOn="{StaticResource ButtonDefault}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsTransformOutputVisible}" Value="False">
                                 <!--<Setter Property="Background" Value="Lime" />-->
