@@ -37,6 +37,7 @@ namespace SteamControllerTest
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), APP_FOLDER_NAME);
         public string baseProfilesPath;
         public string controllerConfigsPath;
+        public string ControllerConfigsPath => controllerConfigsPath;
 
         public const string BLANK_VIGEMBUS_VERSION = "0.0.0.0";
         public const string MIN_SUPPORTED_VIGEMBUS_VERSION = "1.17.333.0";
@@ -56,6 +57,7 @@ namespace SteamControllerTest
         public bool hidHideInstalled;
 
         public bool appSettingsDirFound;
+        public string ConfigPath => Path.Combine(appdatapath, APP_SETTINGS_FILENAME);
 
         public const int CONFIG_VERSION = 0;
         public const int APP_CONFIG_VERSION = 0;
@@ -114,11 +116,30 @@ namespace SteamControllerTest
             appSettings.LoadConfig();
         }
 
+        public void CreateAppSettings()
+        {
+            string configPath = Path.Combine(appdatapath, APP_SETTINGS_FILENAME);
+            appSettings = new AppSettingsStore(configPath);
+            appSettings.SaveConfig();
+        }
+
         public void SaveAppSettings()
         {
             if (appSettings != null)
             {
                 appSettings.SaveConfig();
+            }
+        }
+
+        public void StartupLoadAppSettings()
+        {
+            if (File.Exists(ConfigPath))
+            {
+                LoadAppSettings();
+            }
+            else
+            {
+                CreateAppSettings();
             }
         }
 
@@ -349,6 +370,9 @@ namespace SteamControllerTest
             using (StreamWriter swriter = new StreamWriter(controllerConfigsPath))
             using (JsonTextWriter jwriter = new JsonTextWriter(swriter))
             {
+                jwriter.Formatting = Formatting.Indented;
+                jwriter.Indentation = 2;
+
                 JObject.Parse(newJson).WriteTo(jwriter);
             }
         }
@@ -408,7 +432,7 @@ namespace SteamControllerTest
                             token = (from controller in tempRootJObj.SelectToken($"$.Controllers")
                                      where controller.Type == JTokenType.Object && controller.Value<string>("Mac") == testDev.Serial &&
                                      controller.Value<string>("Type") == store.DeviceType.ToString()
-                                     select controller).First();
+                                     select controller).FirstOrDefault();
                         }
                         else
                         {
@@ -447,17 +471,22 @@ namespace SteamControllerTest
 
                             // No current object found. Create a new object and add it to JArray
                             string controllerJson = @"{
-                                ""Mac"": """"
-                                ""Type"": """",
-                                ""Settings"": {
-
-                                }
+                                ""Mac"": """",
+                                ""Type"": """"
                             }";
 
                             JObject controllerObj = JObject.Parse(controllerJson);
-                            tempRootJObj["Controllers"].ToObject<JArray>().Add(controllerObj);
+                            //JObject controllerObj = new JObject();
+                            string macAddr = testDev.Serial;
+                            string devType = InputDeviceType.SteamController.ToString();
+                            controllerObj["Mac"] = testDev.Serial;
+                            controllerObj["Type"] = devType;
 
                             store.PersistSettings(controllerObj);
+
+                            JArray controllersJArray = tempRootJObj["Controllers"].ToObject<JArray>();
+                            controllersJArray.Add(controllerObj);
+                            tempRootJObj["Controllers"].Replace(controllersJArray);
                         }
                     }
                     catch (JsonReaderException)

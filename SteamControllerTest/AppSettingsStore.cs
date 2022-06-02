@@ -25,11 +25,6 @@ namespace SteamControllerTest
 
         public AppSettingsStore(string configPath)
         {
-            if (!File.Exists(configPath))
-            {
-                throw new Exception($"Passed path {configPath} does not exist");
-            }
-
             this.configPath = configPath;
         }
 
@@ -40,7 +35,7 @@ namespace SteamControllerTest
             if (string.IsNullOrEmpty(configPath) ||
                 !File.Exists(configPath))
             {
-                return result;
+                throw new Exception($"Passed path {configPath} does not exist");
             }
 
             using (StreamReader sreader = new StreamReader(configPath))
@@ -68,7 +63,7 @@ namespace SteamControllerTest
 
             if (string.IsNullOrEmpty(configPath))
             {
-                return result;
+                return false;
             }
 
             AppSettingsSerializer settingsSerializer =

@@ -88,7 +88,11 @@ namespace SteamControllerTest
             }
 
             appGlobal.RefreshBaseDriverInfo();
-            appGlobal.LoadAppSettings();
+            appGlobal.StartupLoadAppSettings();
+            if (!File.Exists(appGlobal.ControllerConfigsPath))
+            {
+                appGlobal.CreateControllerDeviceSettingsFile();
+            }
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
