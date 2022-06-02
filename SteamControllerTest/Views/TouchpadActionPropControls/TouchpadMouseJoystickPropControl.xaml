@@ -10,7 +10,7 @@
         <StackPanel DockPanel.Dock="Top">
             <StackPanel Orientation="Horizontal">
                 <Label Content="Name" />
-                <TextBox Text="{Binding Name,UpdateSourceTrigger=LostFocus}" Width="200" />
+                <TextBox Text="{Binding Name,UpdateSourceTrigger=LostFocus}" Width="200" Margin="8,0,0,0" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
             </StackPanel>

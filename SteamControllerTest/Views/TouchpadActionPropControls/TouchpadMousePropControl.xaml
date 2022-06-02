@@ -12,7 +12,7 @@
                 <Label Content="Name" />
                 <TextBox Text="{Binding Name, UpdateSourceTrigger=LostFocus}" Width="200">
                     <TextBox.Style>
-                        <Style TargetType="TextBox">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding HighlightNameChanged}" Value="False">
                                     <Setter Property="Opacity" Value="0.7" />
@@ -22,11 +22,11 @@
                     </TextBox.Style>
                 </TextBox>
             </StackPanel>
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Dead Zone" />
                 <TextBox Text="{Binding DeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
                     <TextBox.Style>
-                        <Style TargetType="TextBox">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding HighlightDeadZone}" Value="False">
                                     <Setter Property="Opacity" Value="0.7" />
@@ -38,11 +38,11 @@
 
             </StackPanel>
             
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Trackball" />
-                <CheckBox IsChecked="{Binding TrackballEnabled}" VerticalAlignment="Center">
+                <CheckBox IsChecked="{Binding TrackballEnabled}" VerticalAlignment="Center" Margin="8,0,0,0">
                     <CheckBox.Style>
-                        <Style TargetType="CheckBox">
+                        <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding HighlightTrackballEnabled}" Value="False">
                                     <Setter Property="Opacity" Value="0.7" />
@@ -53,11 +53,11 @@
                 </CheckBox>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Trackball Friction" />
                 <TextBox Text="{Binding TrackballFriction, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
                     <TextBox.Style>
-                        <Style TargetType="TextBox">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding HighlightTrackballFriction}" Value="False">
                                     <Setter Property="Opacity" Value="0.7" />
