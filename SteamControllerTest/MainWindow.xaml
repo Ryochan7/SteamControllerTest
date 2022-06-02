@@ -38,10 +38,10 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Width="150">
+                            <GridViewColumn x:Name="profileOptionsColumn" Width="150">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <ComboBox ItemsSource="{Binding DevProfileList}" DisplayMemberPath="Name" SelectedIndex="{Binding ProfileIndex, FallbackValue='0'}" />
+                                        <ComboBox ItemsSource="{Binding DevProfileList}" DisplayMemberPath="Name" SelectedIndex="{Binding ProfileIndex, FallbackValue='0'}" MinWidth="130" />
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
@@ -51,7 +51,7 @@
                                         <hc:SplitButton Content="Edit" Command="{Binding EditProfCommand}" CommandParameter="Hurricane">
                                             <hc:SplitButton.DropDownContent>
                                                 <StackPanel>
-                                                    <MenuItem Header="New" Click="MenuItem_Click" />
+                                                    <MenuItem Header="New" Click="NewProfMenuItem_Click" />
                                                 </StackPanel>
                                             </hc:SplitButton.DropDownContent>
                                         </hc:SplitButton>

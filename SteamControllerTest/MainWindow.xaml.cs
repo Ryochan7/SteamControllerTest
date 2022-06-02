@@ -268,29 +268,28 @@ namespace SteamControllerTest
             }));
         }
 
-        private void EditPro_Click(object sender, RoutedEventArgs e)
+        //private void EditPro_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (controlListVM.SelectedIndex >= 0)
+        //    {
+        //        int selectedIndex = controlListVM.SelectedIndex;
+        //        Mapper mapper = (App.Current as App).Manager.MapperDict[selectedIndex];
+        //        DeviceListItem item = controlListVM.ControllerList[selectedIndex];
+        //        if (item.ProfileIndex >= 0)
+        //        {
+        //            ProfileEntity profileEnt = controlListVM.DeviceProfileList.ProfileListCol[item.ProfileIndex];
+        //            //string profilePath = controlListVM.DeviceProfileList.ProfileListCol[item.ProfileIndex].ProfilePath;
+        //            //SteamControllerDevice device = controlListVM.ControllerList[selectedIndex].Device;
+
+        //            ProfileEditorTest profileWin = new ProfileEditorTest();
+        //            profileWin.PostInit(mapper, profileEnt, mapper.ActionProfile);
+        //            profileWin.ShowDialog();
+        //        }
+        //    }
+        //}
+
+        private void NewProfMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            if (controlListVM.SelectedIndex >= 0)
-            {
-                int selectedIndex = controlListVM.SelectedIndex;
-                Mapper mapper = (App.Current as App).Manager.MapperDict[selectedIndex];
-                DeviceListItem item = controlListVM.ControllerList[selectedIndex];
-                if (item.ProfileIndex >= 0)
-                {
-                    ProfileEntity profileEnt = controlListVM.DeviceProfileList.ProfileListCol[item.ProfileIndex];
-                    //string profilePath = controlListVM.DeviceProfileList.ProfileListCol[item.ProfileIndex].ProfilePath;
-                    //SteamControllerDevice device = controlListVM.ControllerList[selectedIndex].Device;
-
-                    ProfileEditorTest profileWin = new ProfileEditorTest();
-                    profileWin.PostInit(mapper, profileEnt, mapper.ActionProfile);
-                    profileWin.ShowDialog();
-                }
-            }
-        }
-
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }
