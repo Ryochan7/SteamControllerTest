@@ -106,6 +106,72 @@ namespace SteamControllerTest
                 case KeyboardKey.Escape:
                     result = "Escape";
                     break;
+                case KeyboardKey.Number1:
+                    result = "1";
+                    break;
+                case KeyboardKey.Number2:
+                    result = "2";
+                    break;
+                case KeyboardKey.Number3:
+                    result = "3";
+                    break;
+                case KeyboardKey.Number4:
+                    result = "4";
+                    break;
+                case KeyboardKey.Number5:
+                    result = "5";
+                    break;
+                case KeyboardKey.Number6:
+                    result = "6";
+                    break;
+                case KeyboardKey.Number7:
+                    result = "7";
+                    break;
+                case KeyboardKey.Number8:
+                    result = "8";
+                    break;
+                case KeyboardKey.Number9:
+                    result = "9";
+                    break;
+                case KeyboardKey.Number0:
+                    result = "0";
+                    break;
+                case KeyboardKey.F1:
+                    result = "F1";
+                    break;
+                case KeyboardKey.F2:
+                    result = "F2";
+                    break;
+                case KeyboardKey.F3:
+                    result = "F3";
+                    break;
+                case KeyboardKey.F4:
+                    result = "F4";
+                    break;
+                case KeyboardKey.F5:
+                    result = "F5";
+                    break;
+                case KeyboardKey.F6:
+                    result = "F6";
+                    break;
+                case KeyboardKey.F7:
+                    result = "F7";
+                    break;
+                case KeyboardKey.F8:
+                    result = "F8";
+                    break;
+                case KeyboardKey.F9:
+                    result = "F9";
+                    break;
+                case KeyboardKey.F10:
+                    result = "F10";
+                    break;
+                case KeyboardKey.F11:
+                    result = "F11";
+                    break;
+                case KeyboardKey.F12:
+                    result = "F12";
+                    break;
                 default:
                     break;
             }
