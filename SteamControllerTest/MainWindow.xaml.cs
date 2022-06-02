@@ -12,13 +12,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Diagnostics;
 using Microsoft.Win32;
-
-using SteamControllerTest.ViewModels;
-using SteamControllerTest.SteamControllerLibrary;
 using System.Windows.Interop;
 using HidLibrary;
-using System.Diagnostics;
+using SteamControllerTest.ViewModels;
+using SteamControllerTest.SteamControllerLibrary;
 
 namespace SteamControllerTest
 {
@@ -72,7 +71,29 @@ namespace SteamControllerTest
             BackendManager manager = (App.Current as App).Manager;
             controlListVM = new ControllerListViewModel(manager);
             controlListVM.ReadProfileFailure += ControlListVM_ReadProfileFailure;
+            controlListVM.EditProfileRequested += ControlListVM_EditProfileRequested;
             deviceListView.DataContext = controlListVM;
+        }
+
+        private void ControlListVM_EditProfileRequested(object sender, DeviceListItem e)
+        {
+            if (controlListVM.SelectedIndex >= 0)
+            {
+                int selectedIndex = controlListVM.SelectedIndex;
+                Mapper mapper = (App.Current as App).Manager.MapperDict[selectedIndex];
+                //DeviceListItem item = controlListVM.ControllerList[selectedIndex];
+                DeviceListItem item = e;
+                if (item.ProfileIndex >= 0)
+                {
+                    ProfileEntity profileEnt = controlListVM.DeviceProfileList.ProfileListCol[item.ProfileIndex];
+                    //string profilePath = controlListVM.DeviceProfileList.ProfileListCol[item.ProfileIndex].ProfilePath;
+                    //SteamControllerDevice device = controlListVM.ControllerList[selectedIndex].Device;
+
+                    ProfileEditorTest profileWin = new ProfileEditorTest();
+                    profileWin.PostInit(mapper, profileEnt, mapper.ActionProfile);
+                    profileWin.ShowDialog();
+                }
+            }
         }
 
         private void ControlListVM_ReadProfileFailure(object sender,
@@ -265,6 +286,11 @@ namespace SteamControllerTest
                     profileWin.ShowDialog();
                 }
             }
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

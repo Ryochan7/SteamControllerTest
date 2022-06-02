@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:local="clr-namespace:SteamControllerTest"
         mc:Ignorable="d"
         Title="MainWindow" Height="300" Width="600" Closed="Window_Closed">
@@ -47,7 +48,14 @@
                             <GridViewColumn>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button x:Name="editPro" Content="Edit" Width="50" Click="EditPro_Click" />
+                                        <hc:SplitButton Content="Edit" Command="{Binding EditProfCommand}" CommandParameter="Hurricane">
+                                            <hc:SplitButton.DropDownContent>
+                                                <StackPanel>
+                                                    <MenuItem Header="New" Click="MenuItem_Click" />
+                                                </StackPanel>
+                                            </hc:SplitButton.DropDownContent>
+                                        </hc:SplitButton>
+                                        <!--<Button x:Name="editPro" Content="Edit" Width="50" Click="EditPro_Click" />-->
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>

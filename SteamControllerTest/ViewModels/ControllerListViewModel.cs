@@ -7,8 +7,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Windows.Input;
 using Newtonsoft.Json;
 using SteamControllerTest.SteamControllerLibrary;
+using SteamControllerTest.Common;
 
 namespace SteamControllerTest.ViewModels
 {
@@ -57,7 +59,7 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler SelectedIndexChanged;
         public event EventHandler<ReadProfileFailException> ReadProfileFailure;
-
+        public event EventHandler<DeviceListItem> EditProfileRequested;
 
         public ControllerListViewModel(BackendManager manager)
         {
@@ -115,6 +117,7 @@ namespace SteamControllerTest.ViewModels
                         //}
 
                         devItem.ProfileIndexChanged += DevItem_ProfileIndexChanged;
+                        devItem.EditProfileRequested += DevItem_EditProfileRequested;
                         device.Removal += Device_Removal;
                         controllerList.Add(devItem);
 
@@ -122,6 +125,11 @@ namespace SteamControllerTest.ViewModels
                     }
                 }
             }
+        }
+
+        private void DevItem_EditProfileRequested(object sender, EventArgs e)
+        {
+            EditProfileRequested?.Invoke(this, sender as DeviceListItem);
         }
 
         private void Device_Removal(object sender, EventArgs e)
@@ -242,11 +250,24 @@ namespace SteamControllerTest.ViewModels
             get => profileListHolder.ProfileListCol;
         }
 
+        //private EditProfileCommand editProfCommand;
+        //public EditProfileCommand EditProfCommand => editProfCommand;
+
+        private BasicActionCommand editProfCommand;
+        public BasicActionCommand EditProfCommand => editProfCommand;
+
+        public event EventHandler EditProfileRequested;
+
         public DeviceListItem(SteamControllerDevice device, int itemIndex, ProfileList profileListHolder)
         {
             this.device = device;
             this.itemIndex = itemIndex;
             this.profileListHolder = profileListHolder;
+
+            editProfCommand = new BasicActionCommand((parameter) =>
+            {
+                EditProfileRequested?.Invoke(this, EventArgs.Empty);
+            });
         }
 
         public void PostInit(string profilePath)
