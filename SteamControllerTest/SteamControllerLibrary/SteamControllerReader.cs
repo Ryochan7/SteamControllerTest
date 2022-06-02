@@ -132,13 +132,13 @@ namespace SteamControllerTest.SteamControllerLibrary
                                 // connected Steam Controller
                                 PrepareSyncedDevice();
                                 device.Synced = true;
-                                continue;
                             }
                             else if (device.Synced && !hasConnected)
                             {
                                 device.Synced = false;
-                                continue;
                             }
+
+                            continue;
                         }
                         else if (tempByte != SteamControllerDevice.SCPacketType.PT_INPUT &&
                             tempByte != SteamControllerDevice.SCPacketType.PT_IDLE)
