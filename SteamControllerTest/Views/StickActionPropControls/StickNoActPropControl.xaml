@@ -8,6 +8,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel LastChildFill="False">
-        <local1:StickActionSelectControl x:Name="stickSelectControl" DockPanel.Dock="Top" />
+        <local1:StickActionSelectControl x:Name="stickSelectControl" DockPanel.Dock="Top" Margin="8,0,0,0" />
     </DockPanel>
 </UserControl>

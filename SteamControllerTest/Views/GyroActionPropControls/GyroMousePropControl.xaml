@@ -10,11 +10,12 @@
     <DockPanel>
         <StackPanel>
             <local1:GyroActionSelectControl x:Name="gyroSelectControl" />
-            <StackPanel Orientation="Horizontal">
+            
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Name" />
-                <TextBox Text="{Binding Name,UpdateSourceTrigger=LostFocus}" Width="200">
+                <TextBox Text="{Binding Name,UpdateSourceTrigger=LostFocus}" Width="200" Margin="8,0,0,0">
                     <TextBox.Style>
-                        <Style TargetType="TextBox">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding HighlightName}" Value="False">
                                     <Setter Property="Opacity" Value="0.7" />
@@ -25,11 +26,11 @@
                 </TextBox>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="_Dead Zone" />
                 <TextBox Text="{Binding DeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
                     <TextBox.Style>
-                        <Style TargetType="TextBox">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding HighlightDeadZone}" Value="False">
                                     <Setter Property="Opacity" Value="0.7" />
@@ -40,9 +41,9 @@
                 </TextBox>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Trigger Buttons" />
-                <ListView ItemsSource="{Binding TriggerButtonItems}" Height="50">
+                <ListView ItemsSource="{Binding TriggerButtonItems}" Height="50" Margin="8,0,0,0">
                     <ListView.View>
                         <GridView>
                             <GridView.Columns>
@@ -67,11 +68,11 @@
                 </ListView>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Trigger Activates (Ratchet)" />
                 <CheckBox IsChecked="{Binding TriggerActivates}" Width="20" VerticalAlignment="Center" Margin="8,0,0,0">
                     <CheckBox.Style>
-                        <Style TargetType="CheckBox">
+                        <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding HighlightTriggerActivates}" Value="False">
                                     <Setter Property="Opacity" Value="0.7" />
