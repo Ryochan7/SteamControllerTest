@@ -561,8 +561,15 @@ namespace SteamControllerTest.ViewModels
                     break;
                 case OutputActionData.ActionType.Keyboard:
                     {
-                        int keyInd = revKeyCodeDict[item.Data.OutputCode];
-                        SelectedKeyboardIndex = keyInd;
+                        if (item.Data.OutputCode > 0)
+                        {
+                            int keyInd = revKeyCodeDict[item.Data.OutputCode];
+                            SelectedKeyboardIndex = keyInd;
+                        }
+                        else
+                        {
+                            SelectedKeyboardIndex = -1;
+                        }
                     }
 
                     break;
@@ -658,18 +665,20 @@ namespace SteamControllerTest.ViewModels
                 {
                     tempData.Reset();
 
-                    int tempCode = (int)ProfileSerializer.FakerInputMapper.GetRealEventKey((uint)item.Code);
-                    tempData.Prepare(OutputActionData.ActionType.Keyboard, tempCode);
+                    uint tempCode = ProfileSerializer.FakerInputMapper.GetRealEventKey((uint)item.Code);
+                    tempData.Prepare(OutputActionData.ActionType.Keyboard, (int)tempCode);
                     tempData.OutputCodeStr = item.CodeAlias;
+                    tempData.OutputCodeAlias = tempCode;
                 }
                 else
                 {
                     tempData.Reset();
 
-                    int tempCode = (int)ProfileSerializer.FakerInputMapper.GetRealEventKey((uint)item.Code);
+                    uint tempCode = ProfileSerializer.FakerInputMapper.GetRealEventKey((uint)item.Code);
                     //tempData = new OutputActionData(OutputActionData.ActionType.Keyboard, tempCode);
-                    tempData.Prepare(OutputActionData.ActionType.Keyboard, tempCode);
+                    tempData.Prepare(OutputActionData.ActionType.Keyboard, (int)tempCode);
                     tempData.OutputCodeStr = item.CodeAlias;
+                    tempData.OutputCodeAlias = tempCode;
                 }
 
                 resetEvent.Set();
@@ -861,9 +870,13 @@ namespace SteamControllerTest.ViewModels
                 new KeyboardCodeItem("7", VirtualKeys.N7, "N7", tempInd++),
                 new KeyboardCodeItem("8", VirtualKeys.N8, "N8", tempInd++),
                 new KeyboardCodeItem("9", VirtualKeys.N9, "N9", tempInd++),
+
                 new KeyboardCodeItem("Escape", VirtualKeys.Escape, "Escape", tempInd++),
-                new KeyboardCodeItem("Tab", VirtualKeys.Tab, "Tab", tempInd++),
                 new KeyboardCodeItem("Space", VirtualKeys.Space, "Space", tempInd++),
+                new KeyboardCodeItem("Tab", VirtualKeys.Tab, "Tab", tempInd++),
+                new KeyboardCodeItem("Tilde", VirtualKeys.OEM3, "Tilde", tempInd++),
+                new KeyboardCodeItem("Caps Lock", VirtualKeys.CapsLock, "CapsLock", tempInd++),
+
                 new KeyboardCodeItem("Enter", VirtualKeys.Return, "Enter", tempInd++),
                 new KeyboardCodeItem("Left Alt", VirtualKeys.LeftMenu, "LeftAlt", tempInd++),
                 new KeyboardCodeItem("Right Alt", VirtualKeys.RightMenu, "RightAlt", tempInd++),
@@ -871,7 +884,12 @@ namespace SteamControllerTest.ViewModels
                 new KeyboardCodeItem("Right Shift", VirtualKeys.RightShift, "RightShift", tempInd++),
                 new KeyboardCodeItem("Left Control", VirtualKeys.LeftControl, "LeftControl", tempInd++),
                 new KeyboardCodeItem("Right Control", VirtualKeys.RightControl, "RightControl", tempInd++),
-                new KeyboardCodeItem("Tilde", VirtualKeys.OEM3, "Tilde", tempInd++),
+                new KeyboardCodeItem("LWin", VirtualKeys.LeftWindows, "LeftWindows", tempInd++),
+                new KeyboardCodeItem("RLWin", VirtualKeys.RightWindows, "RightWindows", tempInd++),
+                new KeyboardCodeItem("Up", VirtualKeys.Up, "Up", tempInd++),
+                new KeyboardCodeItem("Down", VirtualKeys.Down, "Down", tempInd++),
+                new KeyboardCodeItem("Left", VirtualKeys.Left, "Left", tempInd++),
+                new KeyboardCodeItem("Right", VirtualKeys.Right, "Right", tempInd++),
             });
 
             tempInd = 0;

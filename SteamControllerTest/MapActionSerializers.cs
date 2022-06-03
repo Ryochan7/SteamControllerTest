@@ -6464,8 +6464,8 @@ namespace SteamControllerTest
                         if (uint.TryParse(tempKeyAlias, out uint temp))
                         {
                             // String parses to a uint. Assume native code
-                            tempInstance.OutputCode = (int)ProfileSerializer.FakerInputMapper.GetRealEventKey(temp);
-                            tempInstance.OutputCodeAlias = (int)temp;
+                            tempInstance.OutputCode = (int)temp;
+                            tempInstance.OutputCodeAlias = ProfileSerializer.FakerInputMapper.GetRealEventKey(temp);
                             tempInstance.OutputCodeStr = tempKeyAlias;
                             //tempInstance.OutputCode = temp;
                         }
@@ -6478,18 +6478,27 @@ namespace SteamControllerTest
                                     uint.TryParse(tempKeyAlias.Remove(0, 2), System.Globalization.NumberStyles.HexNumber, null, out temp))
                                 {
                                     // alias is a hex number (copied from MS docs?)
-                                    tempInstance.OutputCode = (int)ProfileSerializer.FakerInputMapper.GetRealEventKey(temp);
-                                    tempInstance.OutputCodeAlias = (int)temp;
+                                    tempInstance.OutputCode = (int)temp;
+                                    tempInstance.OutputCodeAlias = ProfileSerializer.FakerInputMapper.GetRealEventKey(temp);
                                     tempInstance.OutputCodeStr = tempKeyAlias;
                                 }
                                 else
                                 {
                                     // Check alias for known mapping
                                     temp = OutputActionDataSerializer.ParseKeyboardCodeString(tempKeyAlias);
-                                    temp = ProfileSerializer.FakerInputMapper.GetRealEventKey(temp);
-                                    tempInstance.OutputCode = (int)temp;
-                                    tempInstance.OutputCodeAlias = (int)temp;
-                                    tempInstance.OutputCodeStr = tempKeyAlias;
+                                    if (temp > 0)
+                                    {
+                                        temp = ProfileSerializer.FakerInputMapper.GetRealEventKey(temp);
+                                        tempInstance.OutputCode = (int)temp;
+                                        tempInstance.OutputCodeAlias = temp;
+                                        tempInstance.OutputCodeStr = tempKeyAlias;
+                                    }
+                                    else
+                                    {
+                                        tempInstance.OutputCode = 0;
+                                        tempInstance.OutputCodeAlias = 0;
+                                        tempInstance.OutputCodeStr = tempKeyAlias;
+                                    }
                                 }
                             }
                         }
@@ -6694,7 +6703,7 @@ namespace SteamControllerTest
                     }
                     else
                     {
-                        tempJ.Add("Code", current.OutputData.OutputCode);
+                        tempJ.Add("Code", current.OutputData.OutputCodeAlias);
                     }
 
                     SerializeExtraJSONProperties(current.OutputData, tempJ);

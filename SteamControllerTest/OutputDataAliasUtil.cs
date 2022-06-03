@@ -10,7 +10,7 @@ namespace SteamControllerTest
 {
     public static class OutputDataAliasUtil
     {
-        public static string GetStringForKeyboardKey(int keyCode)
+        public static string GetStringForKeyboardKey(uint keyCode)
         {
             string result = "";
             if (keyCode < FakerInputHandler.MODIFIER_MASK)
@@ -111,6 +111,21 @@ namespace SteamControllerTest
                     case KeyboardKey.Enter:
                         result = "Enter";
                         break;
+                    case KeyboardKey.UpArrow:
+                        result = "Up";
+                        break;
+                    case KeyboardKey.DownArrow:
+                        result = "Down";
+                        break;
+                    case KeyboardKey.LeftArrow:
+                        result = "Left";
+                        break;
+                    case KeyboardKey.RightArrow:
+                        result = "Right";
+                        break;
+                    case KeyboardKey.CapsLock:
+                        result = "CapsLock";
+                        break;
                     case KeyboardKey.Number1:
                         result = "1";
                         break;
@@ -178,46 +193,52 @@ namespace SteamControllerTest
                         result = "F12";
                         break;
                     default:
+                        result = "Empty";
                         break;
                 }
             }
-            //else if (keyCode < FakerInputHandler.MODIFIER_ENHANCED)
-            //else
-            //{
-            //    KeyboardModifier tempKeyCode = (KeyboardModifier)keyCode;
-            //    switch (tempKeyCode)
-            //    {
-            //        case KeyboardModifier.LAlt:
-            //            result = "LAlt";
-            //            break;
-            //        case KeyboardModifier.RAlt:
-            //            result = "RAlt";
-            //            break;
-            //        case KeyboardModifier.LControl:
-            //            result = "LCtrl";
-            //            break;
-            //        case KeyboardModifier.RControl:
-            //            result = "RCtrl";
-            //            break;
-            //        case KeyboardModifier.LWin:
-            //            result = "LWin";
-            //            break;
-            //        case KeyboardModifier.RWin:
-            //            result = "RWin";
-            //            break;
-            //        default:
-            //            break;
-            //    }
-            //}
-            //else
-            //{
-            //    EnhancedKey tempKeyCode = (EnhancedKey)(keyCode & ~FakerInputHandler.MODIFIER_ENHANCED);
-            //    switch(tempKeyCode)
-            //    {
-            //        default:
-            //            break;
-            //    }
-            //}
+            else if (keyCode < FakerInputHandler.MODIFIER_ENHANCED)
+            {
+                KeyboardModifier tempKeyCode = (KeyboardModifier)keyCode;
+                switch (tempKeyCode)
+                {
+                    case KeyboardModifier.LShift:
+                        result = "LShift";
+                        break;
+                    case KeyboardModifier.RShift:
+                        result = "RShift";
+                        break;
+                    case KeyboardModifier.LAlt:
+                        result = "LAlt";
+                        break;
+                    case KeyboardModifier.RAlt:
+                        result = "RAlt";
+                        break;
+                    case KeyboardModifier.LControl:
+                        result = "LCtrl";
+                        break;
+                    case KeyboardModifier.RControl:
+                        result = "RCtrl";
+                        break;
+                    case KeyboardModifier.LWin:
+                        result = "LWin";
+                        break;
+                    case KeyboardModifier.RWin:
+                        result = "RWin";
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                EnhancedKey tempKeyCode = (EnhancedKey)(keyCode & ~FakerInputHandler.MODIFIER_ENHANCED);
+                switch (tempKeyCode)
+                {
+                    default:
+                        break;
+                }
+            }
 
             return result;
         }

@@ -188,11 +188,11 @@ namespace SteamControllerTest
             new List<OutputActionData>();
 
         // VK, Count
-        private static Dictionary<int, int> keyReferenceCountDict = new Dictionary<int, int>();
+        private static Dictionary<uint, int> keyReferenceCountDict = new Dictionary<uint, int>();
         // VK
-        private static HashSet<int> activeKeys = new HashSet<int>();
+        private static HashSet<uint> activeKeys = new HashSet<uint>();
         // VK
-        private static HashSet<int> releasedKeys = new HashSet<int>();
+        private static HashSet<uint> releasedKeys = new HashSet<uint>();
 
         private static HashSet<int> currentMouseButtons = new HashSet<int>();
         private static HashSet<int> activeMouseButtons = new HashSet<int>();
@@ -3768,14 +3768,14 @@ namespace SteamControllerTest
         {
             var removed = releasedKeys.Except(activeKeys);
             var added = activeKeys.Except(releasedKeys);
-            foreach (int vk in removed)
+            foreach (uint vk in removed)
             {
                 if (keyReferenceCountDict.TryGetValue(vk, out int refCount))
                 {
                     refCount--;
                     if (refCount <= 0)
                     {
-                        fakerInputHandler.PerformKeyRelease((uint)vk);
+                        fakerInputHandler.PerformKeyRelease(vk);
                         //keyboardReport.KeyUp((KeyboardKey)vk);
                         //InputMethods.performKeyRelease((ushort)vk);
                         keyReferenceCountDict.Remove(vk);
@@ -3787,11 +3787,11 @@ namespace SteamControllerTest
                 }
             }
 
-            foreach (int vk in added)
+            foreach (uint vk in added)
             {
                 if (!keyReferenceCountDict.TryGetValue(vk, out int refCount))
                 {
-                    fakerInputHandler.PerformKeyPress((uint)vk);
+                    fakerInputHandler.PerformKeyPress(vk);
                     //keyboardReport.KeyDown((KeyboardKey)vk);
                     //InputMethods.performKeyPress((ushort)vk);
                     keyReferenceCountDict.Add(vk, 1);
@@ -4047,7 +4047,7 @@ namespace SteamControllerTest
                         {
                             if (!actionData.activatedEvent)
                             {
-                                activeKeys.Add(actionData.OutputCode);
+                                activeKeys.Add(actionData.OutputCodeAlias);
                                 actionData.activatedEvent = true;
                             }
                         }
@@ -4055,7 +4055,7 @@ namespace SteamControllerTest
                         {
                             if (actionData.activatedEvent)
                             {
-                                releasedKeys.Add(actionData.OutputCode);
+                                releasedKeys.Add(actionData.OutputCodeAlias);
                                 actionData.activatedEvent = false;
                             }
                         }
@@ -4187,7 +4187,7 @@ namespace SteamControllerTest
                         {
                             if (!actionData.activatedEvent)
                             {
-                                activeKeys.Add(actionData.OutputCode);
+                                activeKeys.Add(actionData.OutputCodeAlias);
                                 actionData.activatedEvent = true;
                             }
                         }
@@ -4195,7 +4195,7 @@ namespace SteamControllerTest
                         {
                             if (actionData.activatedEvent)
                             {
-                                releasedKeys.Add(actionData.OutputCode);
+                                releasedKeys.Add(actionData.OutputCodeAlias);
                                 actionData.activatedEvent = false;
                             }
                         }

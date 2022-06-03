@@ -75,7 +75,7 @@ namespace SteamControllerTest.MapperUtil
         }
 
         private int outputCode;
-        private int outputCodeAlias;
+        private uint outputCodeAlias;
         // Hold string as stored in the profile
         private string outputCodeProfileStr;
 
@@ -134,7 +134,7 @@ namespace SteamControllerTest.MapperUtil
 
         public ActionType OutputType { get => outputType; set => outputType = value; }
         public int OutputCode { get => outputCode; set => outputCode = value; }
-        public int OutputCodeAlias { get => outputCodeAlias; set => outputCodeAlias = value; }
+        public uint OutputCodeAlias { get => outputCodeAlias; set => outputCodeAlias = value; }
         public string OutputCodeStr { get => outputCodeProfileStr; set => outputCodeProfileStr = value; }
         public JoypadActionCodes JoypadCode { get => joypadCode; set => joypadCode = value; }
         public bool Negative { get => negative; set => negative = value; }
@@ -163,11 +163,11 @@ namespace SteamControllerTest.MapperUtil
             outputCode = code;
             if (codeAlias == 0)
             {
-                outputCodeAlias = code;
+                outputCodeAlias = (uint)code;
             }
             else
             {
-                outputCodeAlias = codeAlias;
+                outputCodeAlias = (uint)codeAlias;
             }
 
             if (type == ActionType.Keyboard)
@@ -444,6 +444,7 @@ namespace SteamControllerTest.MapperUtil
 
             outputType = ActionType.Empty;
             outputCode = 0;
+            outputCodeAlias = 0;
             outputCodeProfileStr = "";
             changeToLayer = -1;
         }
@@ -454,7 +455,7 @@ namespace SteamControllerTest.MapperUtil
             switch (outputType)
             {
                 case ActionType.Keyboard:
-                    result = OutputDataAliasUtil.GetStringForKeyboardKey(outputCode);
+                    result = OutputDataAliasUtil.GetStringForKeyboardKey(outputCodeAlias);
                     break;
                 case ActionType.MouseButton:
                     result = OutputDataAliasUtil.GetStringForMouseButton(outputCode);
