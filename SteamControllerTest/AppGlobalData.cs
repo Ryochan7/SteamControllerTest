@@ -21,6 +21,7 @@ namespace SteamControllerTest
         public const string LOGS_FOLDER_NAME = "Logs";
         public const string STEAM_CONTROLLER_PROFILE_DIR = "SteamController";
         public const string SWITCH_PRO_PROFILE_DIR = "SwitchPro";
+        public const string TEMPLATE_PROFILES_DIRNAME = "template_profiles";
 
         public static string exelocation = Process.GetCurrentProcess().MainModule.FileName;
         public static string exedirpath = Directory.GetParent(exelocation).FullName;
@@ -63,7 +64,6 @@ namespace SteamControllerTest
         public const int APP_CONFIG_VERSION = 0;
         public const string ASSEMBLY_RESOURCE_PREFIX = "pack://application:,,,/SteamControllerTest;";
         public const string RESOURCES_PREFIX = "/SteamControllertest;component/Resources";
-
         public AppSettingsStore appSettings;
 
         public AppGlobalData()
@@ -107,7 +107,7 @@ namespace SteamControllerTest
             bool result = true;
             try
             {
-                string exampleSCProfilesPath = Path.Combine(exedirpath, "example_profiles", "SteamController");
+                string exampleSCProfilesPath = Path.Combine(exedirpath, TEMPLATE_PROFILES_DIRNAME, "SteamController");
                 string destSCProfilePath = Path.Combine(appdatapath, PROFILES_FOLDER_NAME, "SteamController");
                 if (!Directory.Exists(destSCProfilePath))
                 {

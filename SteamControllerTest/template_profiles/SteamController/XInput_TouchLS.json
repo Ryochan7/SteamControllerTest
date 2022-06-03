@@ -1,0 +1,405 @@
+{
+  "Name": "XInput LPad LS",
+  "Description": "XInput profile with Left Touchpad bound to LS",
+  "Creator": "ryochan7",
+  "CreationDate": "2022-04-07T11:23:39-05:00",
+  "OutputGamepadSettings": {
+    "Enabled": true,
+    "OutputGamepad": "Xbox360"
+  },
+  "ActionSets": [
+    {
+      "Index": 0,
+      "Name": "Main",
+      "Description": "Only ActionSets",
+      "ActionLayers": [
+        {
+          "Index": 0,
+          "Name": "Default",
+          "Description": "Only Action Layer",
+          "MappedActions": [
+            {
+              "Id": 0,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "GamepadControl",
+                      "PadOutput": "X360_A"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 1,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "GamepadControl",
+                      "PadOutput": "X360_B"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 2,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "GamepadControl",
+                      "PadOutput": "X360_X"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 3,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "GamepadControl",
+                      "PadOutput": "X360_Y"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 4,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "GamepadControl",
+                      "PadOutput": "X360_Back"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 5,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "GamepadControl",
+                      "PadOutput": "X360_Start"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 6,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "GamepadControl",
+                      "PadOutput": "X360_LB"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 7,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "GamepadControl",
+                      "PadOutput": "X360_RB"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 8,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "GamepadControl",
+                      "PadOutput": "X360_ThumbL"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 9,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "GamepadControl",
+                      "PadOutput": "X360_X"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 10,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "GamepadControl",
+                      "PadOutput": "X360_A"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 11,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "GamepadControl",
+                      "PadOutput": "X360_Guide"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 12,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "GamepadControl",
+                      "PadOutput": "X360_ThumbR"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 13,
+              "Name": "Xbox LS",
+              "ActionMode": "TouchStickTranslateAction",
+              "Settings": {
+                "OutputStick": "X360_LS",
+                "DeadZone": 0.05,
+                "MaxZone": 0.7,
+                "AntiDeadZone": 0.35
+              }
+            },
+            {
+              "Id": 14,
+              "Name": "Xbox DPad",
+              "ActionMode": "StickPadAction",
+              "Bindings": {
+                "Up": {
+                  "Functions": [
+                    {
+                      "Type": "NormalPress",
+                      "OutputActions": [
+                        {
+                          "Type": "GamepadControl",
+                          "PadOutput": "X360_DPAD_UP"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "Down": {
+                  "Functions": [
+                    {
+                      "Type": "NormalPress",
+                      "OutputActions": [
+                        {
+                          "Type": "GamepadControl",
+                          "PadOutput": "X360_DPAD_DOWN"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "Left": {
+                  "Functions": [
+                    {
+                      "Type": "NormalPress",
+                      "OutputActions": [
+                        {
+                          "Type": "GamepadControl",
+                          "PadOutput": "X360_DPAD_LEFT"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "Right": {
+                  "Functions": [
+                    {
+                      "Type": "NormalPress",
+                      "OutputActions": [
+                        {
+                          "Type": "GamepadControl",
+                          "PadOutput": "X360_DPAD_RIGHT"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "Settings": {}
+            },
+            {
+              "Id": 15,
+              "Name": "Xbox LT",
+              "ActionMode": "TriggerTranslateAction",
+              "Settings": {
+                "OutputTrigger": "X360_LT",
+                "DeadZone": 0.05,
+                "MaxZone": 1.0,
+                "AntiDeadZone": 0.1
+              }
+            },
+            {
+              "Id": 16,
+              "Name": "Xbox RT",
+              "ActionMode": "TriggerTranslateAction",
+              "Settings": {
+                "OutputTrigger": "X360_LT",
+                "DeadZone": 0.05,
+                "MaxZone": 1.0,
+                "AntiDeadZone": 0.1
+              }
+            },
+            {
+              "Id": 17,
+              "Name": "Xbox RS",
+              "ActionMode": "TouchStickTranslateAction",
+              "Settings": {
+                "OutputStick": "X360_RS",
+                "DeadZone": 0.05,
+                "MaxZone": 0.7,
+                "AntiDeadZone": 0.35
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "Mappings": [
+    {
+      "ActionSet": 0,
+      "ActionLayer": 0,
+      "InputMappings": [
+        {
+          "Input": "A",
+          "Action": 0
+        },
+        {
+          "Input": "B",
+          "Action": 1
+        },
+        {
+          "Input": "X",
+          "Action": 2
+        },
+        {
+          "Input": "Y",
+          "Action": 3
+        },
+        {
+          "Input": "Back",
+          "Action": 4
+        },
+        {
+          "Input": "Start",
+          "Action": 5
+        },
+        {
+          "Input": "LShoulder",
+          "Action": 6
+        },
+        {
+          "Input": "RShoulder",
+          "Action": 7
+        },
+        {
+          "Input": "LSClick",
+          "Action": 8
+        },
+        {
+          "Input": "LeftGrip",
+          "Action": 9
+        },
+        {
+          "Input": "RightGrip",
+          "Action": 10
+        },
+        {
+          "Input": "Steam",
+          "Action": 11
+        },
+        {
+          "Input": "RightPadClick",
+          "Action": 12
+        },
+        {
+          "Input": "LeftTouchpad",
+          "Action": 13
+        },
+        {
+          "Input": "Stick",
+          "Action": 14
+        },
+        {
+          "Input": "LT",
+          "Action": 15
+        },
+        {
+          "Input": "RT",
+          "Action": 16
+        },
+        {
+          "Input": "RightTouchpad",
+          "Action": 17
+        }
+      ]
+    }
+  ]
+}
