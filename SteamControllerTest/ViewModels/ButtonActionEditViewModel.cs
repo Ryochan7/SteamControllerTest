@@ -864,6 +864,7 @@ namespace SteamControllerTest.ViewModels
                 new KeyboardCodeItem("Escape", VirtualKeys.Escape, "Escape", tempInd++),
                 new KeyboardCodeItem("Tab", VirtualKeys.Tab, "Tab", tempInd++),
                 new KeyboardCodeItem("Space", VirtualKeys.Space, "Space", tempInd++),
+                new KeyboardCodeItem("Enter", VirtualKeys.Return, "Enter", tempInd++),
                 new KeyboardCodeItem("Left Alt", VirtualKeys.LeftMenu, "LeftAlt", tempInd++),
                 new KeyboardCodeItem("Right Alt", VirtualKeys.RightMenu, "RightAlt", tempInd++),
                 new KeyboardCodeItem("Left Shift", VirtualKeys.LeftShift, "LeftShift", tempInd++),

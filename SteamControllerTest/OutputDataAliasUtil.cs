@@ -13,168 +13,211 @@ namespace SteamControllerTest
         public static string GetStringForKeyboardKey(int keyCode)
         {
             string result = "";
-            KeyboardKey tempKeyCode = (KeyboardKey)keyCode;
-            switch (tempKeyCode)
+            if (keyCode < FakerInputHandler.MODIFIER_MASK)
             {
-                case KeyboardKey.A:
-                    result = "A";
-                    break;
-                case KeyboardKey.B:
-                    result = "B";
-                    break;
-                case KeyboardKey.C:
-                    result = "C";
-                    break;
-                case KeyboardKey.D:
-                    result = "D";
-                    break;
-                case KeyboardKey.E:
-                    result = "E";
-                    break;
-                case KeyboardKey.F:
-                    result = "F";
-                    break;
-                case KeyboardKey.G:
-                    result = "G";
-                    break;
-                case KeyboardKey.H:
-                    result = "H";
-                    break;
-                case KeyboardKey.I:
-                    result = "I";
-                    break;
-                case KeyboardKey.J:
-                    result = "J";
-                    break;
-                case KeyboardKey.K:
-                    result = "K";
-                    break;
-                case KeyboardKey.L:
-                    result = "L";
-                    break;
-                case KeyboardKey.M:
-                    result = "M";
-                    break;
-                case KeyboardKey.N:
-                    result = "N";
-                    break;
-                case KeyboardKey.O:
-                    result = "O";
-                    break;
-                case KeyboardKey.P:
-                    result = "P";
-                    break;
-                case KeyboardKey.Q:
-                    result = "Q";
-                    break;
-                case KeyboardKey.R:
-                    result = "R";
-                    break;
-                case KeyboardKey.S:
-                    result = "S";
-                    break;
-                case KeyboardKey.T:
-                    result = "T";
-                    break;
-                case KeyboardKey.U:
-                    result = "U";
-                    break;
-                case KeyboardKey.V:
-                    result = "V";
-                    break;
-                case KeyboardKey.W:
-                    result = "W";
-                    break;
-                case KeyboardKey.X:
-                    result = "X";
-                    break;
-                case KeyboardKey.Y:
-                    result = "Y";
-                    break;
-                case KeyboardKey.Z:
-                    result = "Z";
-                    break;
-                case KeyboardKey.Tilde:
-                    result = "Tilde";
-                    break;
-                case KeyboardKey.Tab:
-                    result = "Tab";
-                    break;
-                case KeyboardKey.Spacebar:
-                    result = "Space";
-                    break;
-                case KeyboardKey.Escape:
-                    result = "Escape";
-                    break;
-                case KeyboardKey.Number1:
-                    result = "1";
-                    break;
-                case KeyboardKey.Number2:
-                    result = "2";
-                    break;
-                case KeyboardKey.Number3:
-                    result = "3";
-                    break;
-                case KeyboardKey.Number4:
-                    result = "4";
-                    break;
-                case KeyboardKey.Number5:
-                    result = "5";
-                    break;
-                case KeyboardKey.Number6:
-                    result = "6";
-                    break;
-                case KeyboardKey.Number7:
-                    result = "7";
-                    break;
-                case KeyboardKey.Number8:
-                    result = "8";
-                    break;
-                case KeyboardKey.Number9:
-                    result = "9";
-                    break;
-                case KeyboardKey.Number0:
-                    result = "0";
-                    break;
-                case KeyboardKey.F1:
-                    result = "F1";
-                    break;
-                case KeyboardKey.F2:
-                    result = "F2";
-                    break;
-                case KeyboardKey.F3:
-                    result = "F3";
-                    break;
-                case KeyboardKey.F4:
-                    result = "F4";
-                    break;
-                case KeyboardKey.F5:
-                    result = "F5";
-                    break;
-                case KeyboardKey.F6:
-                    result = "F6";
-                    break;
-                case KeyboardKey.F7:
-                    result = "F7";
-                    break;
-                case KeyboardKey.F8:
-                    result = "F8";
-                    break;
-                case KeyboardKey.F9:
-                    result = "F9";
-                    break;
-                case KeyboardKey.F10:
-                    result = "F10";
-                    break;
-                case KeyboardKey.F11:
-                    result = "F11";
-                    break;
-                case KeyboardKey.F12:
-                    result = "F12";
-                    break;
-                default:
-                    break;
+                KeyboardKey tempKeyCode = (KeyboardKey)keyCode;
+                switch (tempKeyCode)
+                {
+                    case KeyboardKey.A:
+                        result = "A";
+                        break;
+                    case KeyboardKey.B:
+                        result = "B";
+                        break;
+                    case KeyboardKey.C:
+                        result = "C";
+                        break;
+                    case KeyboardKey.D:
+                        result = "D";
+                        break;
+                    case KeyboardKey.E:
+                        result = "E";
+                        break;
+                    case KeyboardKey.F:
+                        result = "F";
+                        break;
+                    case KeyboardKey.G:
+                        result = "G";
+                        break;
+                    case KeyboardKey.H:
+                        result = "H";
+                        break;
+                    case KeyboardKey.I:
+                        result = "I";
+                        break;
+                    case KeyboardKey.J:
+                        result = "J";
+                        break;
+                    case KeyboardKey.K:
+                        result = "K";
+                        break;
+                    case KeyboardKey.L:
+                        result = "L";
+                        break;
+                    case KeyboardKey.M:
+                        result = "M";
+                        break;
+                    case KeyboardKey.N:
+                        result = "N";
+                        break;
+                    case KeyboardKey.O:
+                        result = "O";
+                        break;
+                    case KeyboardKey.P:
+                        result = "P";
+                        break;
+                    case KeyboardKey.Q:
+                        result = "Q";
+                        break;
+                    case KeyboardKey.R:
+                        result = "R";
+                        break;
+                    case KeyboardKey.S:
+                        result = "S";
+                        break;
+                    case KeyboardKey.T:
+                        result = "T";
+                        break;
+                    case KeyboardKey.U:
+                        result = "U";
+                        break;
+                    case KeyboardKey.V:
+                        result = "V";
+                        break;
+                    case KeyboardKey.W:
+                        result = "W";
+                        break;
+                    case KeyboardKey.X:
+                        result = "X";
+                        break;
+                    case KeyboardKey.Y:
+                        result = "Y";
+                        break;
+                    case KeyboardKey.Z:
+                        result = "Z";
+                        break;
+                    case KeyboardKey.Tilde:
+                        result = "Tilde";
+                        break;
+                    case KeyboardKey.Tab:
+                        result = "Tab";
+                        break;
+                    case KeyboardKey.Spacebar:
+                        result = "Space";
+                        break;
+                    case KeyboardKey.Escape:
+                        result = "Escape";
+                        break;
+                    case KeyboardKey.Enter:
+                        result = "Enter";
+                        break;
+                    case KeyboardKey.Number1:
+                        result = "1";
+                        break;
+                    case KeyboardKey.Number2:
+                        result = "2";
+                        break;
+                    case KeyboardKey.Number3:
+                        result = "3";
+                        break;
+                    case KeyboardKey.Number4:
+                        result = "4";
+                        break;
+                    case KeyboardKey.Number5:
+                        result = "5";
+                        break;
+                    case KeyboardKey.Number6:
+                        result = "6";
+                        break;
+                    case KeyboardKey.Number7:
+                        result = "7";
+                        break;
+                    case KeyboardKey.Number8:
+                        result = "8";
+                        break;
+                    case KeyboardKey.Number9:
+                        result = "9";
+                        break;
+                    case KeyboardKey.Number0:
+                        result = "0";
+                        break;
+                    case KeyboardKey.F1:
+                        result = "F1";
+                        break;
+                    case KeyboardKey.F2:
+                        result = "F2";
+                        break;
+                    case KeyboardKey.F3:
+                        result = "F3";
+                        break;
+                    case KeyboardKey.F4:
+                        result = "F4";
+                        break;
+                    case KeyboardKey.F5:
+                        result = "F5";
+                        break;
+                    case KeyboardKey.F6:
+                        result = "F6";
+                        break;
+                    case KeyboardKey.F7:
+                        result = "F7";
+                        break;
+                    case KeyboardKey.F8:
+                        result = "F8";
+                        break;
+                    case KeyboardKey.F9:
+                        result = "F9";
+                        break;
+                    case KeyboardKey.F10:
+                        result = "F10";
+                        break;
+                    case KeyboardKey.F11:
+                        result = "F11";
+                        break;
+                    case KeyboardKey.F12:
+                        result = "F12";
+                        break;
+                    default:
+                        break;
+                }
             }
+            //else if (keyCode < FakerInputHandler.MODIFIER_ENHANCED)
+            //else
+            //{
+            //    KeyboardModifier tempKeyCode = (KeyboardModifier)keyCode;
+            //    switch (tempKeyCode)
+            //    {
+            //        case KeyboardModifier.LAlt:
+            //            result = "LAlt";
+            //            break;
+            //        case KeyboardModifier.RAlt:
+            //            result = "RAlt";
+            //            break;
+            //        case KeyboardModifier.LControl:
+            //            result = "LCtrl";
+            //            break;
+            //        case KeyboardModifier.RControl:
+            //            result = "RCtrl";
+            //            break;
+            //        case KeyboardModifier.LWin:
+            //            result = "LWin";
+            //            break;
+            //        case KeyboardModifier.RWin:
+            //            result = "RWin";
+            //            break;
+            //        default:
+            //            break;
+            //    }
+            //}
+            //else
+            //{
+            //    EnhancedKey tempKeyCode = (EnhancedKey)(keyCode & ~FakerInputHandler.MODIFIER_ENHANCED);
+            //    switch(tempKeyCode)
+            //    {
+            //        default:
+            //            break;
+            //    }
+            //}
 
             return result;
         }

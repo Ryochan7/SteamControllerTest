@@ -3303,6 +3303,10 @@ namespace SteamControllerTest
                 get => actionDirName;
                 set => actionDirName = value;
             }
+            public bool ShouldSerializeActionDirName()
+            {
+                return !string.IsNullOrEmpty(actionDirName);
+            }
 
             private List<ActionFuncSerializer> actionFuncSerializers =
                 new List<ActionFuncSerializer>();
