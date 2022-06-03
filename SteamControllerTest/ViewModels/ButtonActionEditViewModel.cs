@@ -561,7 +561,7 @@ namespace SteamControllerTest.ViewModels
                     break;
                 case OutputActionData.ActionType.Keyboard:
                     {
-                        if (item.Data.OutputCode > 0)
+                        if (item.Data.OutputCodeAlias > 0)
                         {
                             int keyInd = revKeyCodeDict[item.Data.OutputCodeAlias];
                             SelectedKeyboardIndex = keyInd;
