@@ -67,6 +67,7 @@ namespace SteamControllerTest.Views
                         TouchpadStickActionPropControl propControl = new TouchpadStickActionPropControl();
                         propControl.PostInit(touchBindEditVM.Mapper, touchBindEditVM.Action);
                         touchBindEditVM.DisplayControl = propControl;
+                        touchBindEditVM.ActionBaseDisplayControl = propControl;
                     }
 
                     break;
@@ -76,6 +77,7 @@ namespace SteamControllerTest.Views
                         propActionPadControl.PostInit(touchBindEditVM.Mapper, touchBindEditVM.Action);
                         propActionPadControl.RequestFuncEditor += PropActionPadControl_RequestFuncEditor;
                         touchBindEditVM.DisplayControl = propActionPadControl;
+                        touchBindEditVM.ActionBaseDisplayControl = propActionPadControl;
                     }
 
                     break;
@@ -84,6 +86,7 @@ namespace SteamControllerTest.Views
                         TouchpadMouseJoystickPropControl propControl = new TouchpadMouseJoystickPropControl();
                         propControl.PostInit(touchBindEditVM.Mapper, touchBindEditVM.Action);
                         touchBindEditVM.DisplayControl = propControl;
+                        touchBindEditVM.ActionBaseDisplayControl = propControl;
                     }
 
                     break;
@@ -92,6 +95,7 @@ namespace SteamControllerTest.Views
                         TouchpadMousePropControl propControl = new TouchpadMousePropControl();
                         propControl.PostInit(touchBindEditVM.Mapper, touchBindEditVM.Action);
                         touchBindEditVM.DisplayControl = propControl;
+                        touchBindEditVM.ActionBaseDisplayControl = propControl;
                     }
 
                     break;
@@ -101,11 +105,13 @@ namespace SteamControllerTest.Views
                         propControl.PostInit(touchBindEditVM.Mapper, touchBindEditVM.Action);
                         propControl.RequestFuncEditor += PropControl_RequestFuncEditor;
                         touchBindEditVM.DisplayControl = propControl;
+                        touchBindEditVM.ActionBaseDisplayControl = propControl;
                     }
 
                     break;
                 default:
                     touchBindEditVM.DisplayControl = null;
+                    touchBindEditVM.ActionBaseDisplayControl = null;
                     break;
             }
         }
@@ -135,6 +141,7 @@ namespace SteamControllerTest.Views
             touchpadSelectControl.Visibility = Visibility.Collapsed;
             tempControl.RequestClose += (sender, args) =>
             {
+                (oldControl as TouchpadActionPadPropControl).RefreshView();
                 touchBindEditVM.DisplayControl = oldControl;
                 touchpadSelectControl.Visibility = Visibility.Visible;
             };
@@ -163,7 +170,7 @@ namespace SteamControllerTest.Views
             {
                 case TouchpadStickAction:
                     {
-                        TouchpadStickActionPropControl tempControl = touchBindEditVM.DisplayControl as TouchpadStickActionPropControl;
+                        TouchpadStickActionPropControl tempControl = touchBindEditVM.ActionBaseDisplayControl as TouchpadStickActionPropControl;
                         if (tempControl.TouchStickPropVM.Action != touchBindEditVM.Action)
                         {
                             touchBindEditVM.UpdateAction(tempControl.TouchStickPropVM.Action);
@@ -174,7 +181,7 @@ namespace SteamControllerTest.Views
                     break;
                 case TouchpadActionPad:
                     {
-                        TouchpadActionPadPropControl tempControl = touchBindEditVM.DisplayControl as TouchpadActionPadPropControl;
+                        TouchpadActionPadPropControl tempControl = touchBindEditVM.ActionBaseDisplayControl as TouchpadActionPadPropControl;
                         if (tempControl.TouchActionPropVM.Action != touchBindEditVM.Action)
                         {
                             touchBindEditVM.UpdateAction(tempControl.TouchActionPropVM.Action);
@@ -185,7 +192,7 @@ namespace SteamControllerTest.Views
                     break;
                 case TouchpadMouseJoystick:
                     {
-                        TouchpadMouseJoystickPropControl tempControl = touchBindEditVM.DisplayControl as TouchpadMouseJoystickPropControl;
+                        TouchpadMouseJoystickPropControl tempControl = touchBindEditVM.ActionBaseDisplayControl as TouchpadMouseJoystickPropControl;
                         if (tempControl.TouchMouseJoyPropVM.Action != touchBindEditVM.Action)
                         {
                             touchBindEditVM.UpdateAction(tempControl.TouchMouseJoyPropVM.Action);
@@ -196,7 +203,7 @@ namespace SteamControllerTest.Views
                     break;
                 case TouchpadMouse:
                     {
-                        TouchpadMousePropControl tempControl = touchBindEditVM.DisplayControl as TouchpadMousePropControl;
+                        TouchpadMousePropControl tempControl = touchBindEditVM.ActionBaseDisplayControl as TouchpadMousePropControl;
                         if (tempControl.TouchMousePropVM.Action != touchBindEditVM.Action)
                         {
                             touchBindEditVM.UpdateAction(tempControl.TouchMousePropVM.Action);
@@ -207,7 +214,7 @@ namespace SteamControllerTest.Views
                     break;
                 case TouchpadAbsAction:
                     {
-                        TouchpadAbsMousePropControl tempControl = touchBindEditVM.DisplayControl as TouchpadAbsMousePropControl;
+                        TouchpadAbsMousePropControl tempControl = touchBindEditVM.ActionBaseDisplayControl as TouchpadAbsMousePropControl;
                         if (tempControl.TouchAbsMousePropVM.Action != touchBindEditVM.Action)
                         {
                             touchBindEditVM.UpdateAction(tempControl.TouchAbsMousePropVM.Action);

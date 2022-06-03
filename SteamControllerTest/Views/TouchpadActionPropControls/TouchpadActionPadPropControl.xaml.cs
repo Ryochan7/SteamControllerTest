@@ -52,6 +52,13 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
             DataContext = touchActionPropVM;
         }
 
+        public void RefreshView()
+        {
+            // Force re-eval of bindings
+            DataContext = null;
+            DataContext = touchActionPropVM;
+        }
+
         private void btnUpEdit_Click(object sender, RoutedEventArgs e)
         {
             RequestFuncEditor?.Invoke(this,

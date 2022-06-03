@@ -35,7 +35,7 @@
                     <ComboBox.Style>
                         <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding HighlightPadModeChanged}" Value="False">
+                                <DataTrigger Binding="{Binding HighlightPadMode}" Value="False">
                                     <Setter Property="Opacity" Value="0.7" />
                                 </DataTrigger>
                             </Style.Triggers>

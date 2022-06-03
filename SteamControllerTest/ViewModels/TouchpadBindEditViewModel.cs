@@ -24,6 +24,7 @@ namespace SteamControllerTest.ViewModels
             get => action;
         }
 
+        // Keep reference to current screen
         private UserControl displayControl;
         public UserControl DisplayControl
         {
@@ -35,6 +36,17 @@ namespace SteamControllerTest.ViewModels
             }
         }
         public event EventHandler DisplayControlChanged;
+
+        // Keep reference to main screen for action editor
+        private UserControl actionBaseDisplayControl;
+        public UserControl ActionBaseDisplayControl
+        {
+            get => actionBaseDisplayControl;
+            set
+            {
+                actionBaseDisplayControl = value;
+            }
+        }
 
         public string InputControlName
         {
