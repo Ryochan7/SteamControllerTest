@@ -1455,7 +1455,7 @@ namespace SteamControllerTest
                     new TouchPadDirBinding()
                     {
                         ActionDirName = dirButton.Name,
-                        ActionFuncSerializers = tempFuncs,
+                        ActionFuncSerializers = new List<ActionFuncSerializer>(tempFuncs),
                     });
             }
 
@@ -3684,7 +3684,7 @@ namespace SteamControllerTest
                     new StickPadDirBinding()
                     {
                         ActionDirName = dirButton.Name,
-                        ActionFuncSerializers = tempFuncs,
+                        ActionFuncSerializers = new List<ActionFuncSerializer>(tempFuncs),
                     });
             }
 
