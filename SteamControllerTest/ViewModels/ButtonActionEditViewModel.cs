@@ -52,7 +52,7 @@ namespace SteamControllerTest.ViewModels
         public List<AvailableSetChoiceItem> AvailableSetsComboItems => availableSetsComboItems;
 
         // Keycode, Index
-        private Dictionary<int, int> revKeyCodeDict = new Dictionary<int, int>();
+        private Dictionary<uint, int> revKeyCodeDict = new Dictionary<uint, int>();
 
         private ButtonAction currentAction;
         public ButtonAction CurrentAction
@@ -271,7 +271,7 @@ namespace SteamControllerTest.ViewModels
             int tempKeyInd = 0;
             keyboardComboItems.ForEach((item) =>
             {
-                int tempCode = (int)ProfileSerializer.FakerInputMapper.GetRealEventKey((uint)item.Code);
+                uint tempCode = ProfileSerializer.FakerInputMapper.GetRealEventKey((uint)item.Code);
                 revKeyCodeDict.Add(tempCode, tempKeyInd++);
             });
 
@@ -563,7 +563,7 @@ namespace SteamControllerTest.ViewModels
                     {
                         if (item.Data.OutputCode > 0)
                         {
-                            int keyInd = revKeyCodeDict[item.Data.OutputCode];
+                            int keyInd = revKeyCodeDict[item.Data.OutputCodeAlias];
                             SelectedKeyboardIndex = keyInd;
                         }
                         else
