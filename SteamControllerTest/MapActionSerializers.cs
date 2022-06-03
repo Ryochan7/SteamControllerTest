@@ -1030,6 +1030,10 @@ namespace SteamControllerTest
                 get => actionDirName;
                 set => actionDirName = value;
             }
+            public bool ShouldSerializeActionDirName()
+            {
+                return !string.IsNullOrEmpty(actionDirName);
+            }
 
             private List<ActionFuncSerializer> actionFuncSerializers =
                 new List<ActionFuncSerializer>();
@@ -1044,6 +1048,11 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler ActionFuncSerializersChanged;
+            public bool ShouldSerializeActionFuncSerializers()
+            {
+                return actionFuncSerializers != null &&
+                    actionFuncSerializers.Count > 0;
+            }
         }
 
         public class TouchpadActionPadSettings
@@ -2186,7 +2195,6 @@ namespace SteamControllerTest
         public class TouchStickActionSettings
         {
             private TouchpadStickAction touchStickAction;
-
 
             [JsonProperty("OutputStick")]
             //public StickActionCodes OutputStick
@@ -3946,6 +3954,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler DeadZoneChanged;
+            public bool ShouldSerializeDeadZone()
+            {
+                return stickTransAct.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.DEAD_ZONE);
+            }
 
             public double MaxZone
             {
@@ -3957,6 +3969,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler MaxZoneChanged;
+            public bool ShouldSerializeMaxZone()
+            {
+                return stickTransAct.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.MAX_ZONE);
+            }
 
             public double AntiDeadZone
             {
@@ -3968,7 +3984,12 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler AntiZoneChanged;
+            public bool ShouldSerializeAntiDeadZone()
+            {
+                return stickTransAct.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.ANTIDEAD_ZONE);
+            }
 
+            [JsonConverter(typeof(StringEnumConverter))]
             public StickOutCurve.Curve OutputCurve
             {
                 get => stickTransAct.OutputCurve;
@@ -3979,6 +4000,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler OutputCurveChanged;
+            public bool ShouldSerializeOutputCurve()
+            {
+                return stickTransAct.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.OUTPUT_CURVE);
+            }
 
             public bool InvertX
             {
@@ -3990,6 +4015,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler InvertXChanged;
+            public bool ShouldSerializeInvertX()
+            {
+                return stickTransAct.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.INVERT_X);
+            }
 
             public bool InvertY
             {
@@ -4001,6 +4030,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler InvertYChanged;
+            public bool ShouldSerializeInvertY()
+            {
+                return stickTransAct.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.INVERT_Y);
+            }
 
             public int Rotation
             {
@@ -4012,6 +4045,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler RotationChanged;
+            public bool ShouldSerializeRotation()
+            {
+                return stickTransAct.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.ROTATION);
+            }
 
             public double VerticalScale
             {
@@ -4023,6 +4060,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler VerticalScaleChanged;
+            public bool ShouldSerializeVerticalScale()
+            {
+                return stickTransAct.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.VERTICAL_SCALE);
+            }
 
             public bool MaxOutputEnabled
             {
@@ -4034,6 +4075,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler MaxOutputEnabledChanged;
+            public bool ShouldSerializeMaxOutputEnabled()
+            {
+                return stickTransAct.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.MAX_OUTPUT_ENABLED);
+            }
 
             public double MaxOutput
             {
@@ -4045,6 +4090,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler MaxOutputChanged;
+            public bool ShouldSerializeMaxOutput()
+            {
+                return stickTransAct.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.MAX_OUTPUT);
+            }
 
             public bool SquareStickEnabled
             {
@@ -4056,6 +4105,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler SquareStickEnabledChanged;
+            public bool ShouldSerializeSquareStickEnabled()
+            {
+                return stickTransAct.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.SQUARE_STICK_ENABLED);
+            }
 
             public double SquareStickRoundness
             {
@@ -4067,6 +4120,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler SquareStickRoundnessChanged;
+            public bool ShouldSerializeSquareStickRoundness()
+            {
+                return stickTransAct.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.SQUARE_STICK_ROUNDNESS);
+            }
 
             public StickTranslateSettings(StickTranslate action)
             {
@@ -4082,6 +4139,10 @@ namespace SteamControllerTest
         {
             get => settings;
             set => settings = value;
+        }
+        public bool ShouldSerializeSettings()
+        {
+            return stickTransAct.ChangedProperties.Count > 0;
         }
 
         // Deserialize

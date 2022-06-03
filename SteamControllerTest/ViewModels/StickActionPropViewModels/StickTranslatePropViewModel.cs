@@ -165,10 +165,32 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
             PrepareModel();
 
             NameChanged += StickTranslatePropViewModel_NameChanged;
+            OutputStickIndexChanged += ChangeOutputStickMode;
             OutputStickIndexChanged += StickTranslatePropViewModel_OutputStickIndexChanged;
             DeadZoneChanged += StickTranslatePropViewModel_DeadZoneChanged;
             AntiDeadZoneChanged += StickTranslatePropViewModel_AntiDeadZoneChanged;
             MaxZoneChanged += StickTranslatePropViewModel_MaxZoneChanged;
+        }
+
+        private void ChangeOutputStickMode(object sender, EventArgs e)
+        {
+            if (outputStickIndex == -1) return;
+
+            OutputStickSelectionItem item = outputStickHolder.OutputStickItems[outputStickIndex];
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+
+            mapper.QueueEvent(() =>
+            {
+                action.Release(mapper, ignoreReleaseActions: true);
+
+                action.OutputAction.Reset();
+                action.OutputAction.Prepare(MapperUtil.OutputActionData.ActionType.GamepadControl, 0);
+                action.OutputAction.StickCode = item.Code;
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
         }
 
         private void StickTranslatePropViewModel_MaxZoneChanged(object sender, EventArgs e)

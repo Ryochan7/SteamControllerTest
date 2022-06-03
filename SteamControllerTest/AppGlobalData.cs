@@ -102,6 +102,33 @@ namespace SteamControllerTest
             return result;
         }
 
+        public bool CheckAndCopyExampleProfiles()
+        {
+            bool result = true;
+            try
+            {
+                string exampleSCProfilesPath = Path.Combine(exedirpath, "example_profiles", "SteamController");
+                string destSCProfilePath = Path.Combine(appdatapath, PROFILES_FOLDER_NAME, "SteamController");
+                if (!Directory.Exists(destSCProfilePath))
+                {
+                    Directory.CreateDirectory(destSCProfilePath);
+
+                    foreach (string file in Directory.EnumerateFiles(exampleSCProfilesPath))
+                    {
+                        string destFilePath = Path.Combine(appdatapath, PROFILES_FOLDER_NAME,
+                            "SteamController", Path.GetFileName(file));
+                        File.Copy(file, destFilePath);
+                    }
+                }
+            }
+            catch(UnauthorizedAccessException)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
         public void RefreshBaseDriverInfo()
         {
             RefreshViGEmBusInfo();

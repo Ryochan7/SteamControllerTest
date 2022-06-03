@@ -46,6 +46,8 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.SQUARE_STICK_ROUNDNESS,
         };
 
+        public const string ACTION_TYPE_NAME = "TouchStickTranslateAction";
+
         private double xNorm = 0.0, yNorm = 0.0;
         private double prevXNorm = 0.0, prevYNorm = 0.0;
         private StickDeadZone deadMod;
@@ -130,6 +132,7 @@ namespace SteamControllerTest.TouchpadActions
         {
             this.outputAction = new OutputActionData(OutputActionData.ActionType.GamepadControl, StickActionCodes.X360_LS);
             this.deadMod = new StickDeadZone(0.00, 1.00, 0.00);
+            actionTypeName = ACTION_TYPE_NAME;
         }
 
         public override void Prepare(Mapper mapper, ref TouchEventFrame touchFrame, bool alterState = true)
