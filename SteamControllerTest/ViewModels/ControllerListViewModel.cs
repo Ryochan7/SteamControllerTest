@@ -40,7 +40,7 @@ namespace SteamControllerTest.ViewModels
         }
 
         private BackendManager backendManager;
-        private int selectedIndex;
+        private int selectedIndex = -1;
 
         public ProfileList DeviceProfileList
         {

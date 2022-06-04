@@ -78,8 +78,10 @@ namespace SteamControllerTest
 
         private void ControlListVM_EditProfileRequested(object sender, DeviceListItem e)
         {
-            if (controlListVM.SelectedIndex >= 0)
+            //if (controlListVM.SelectedIndex >= 0)
+            if (e.ItemIndex >= 0)
             {
+                controlListVM.SelectedIndex = e.ItemIndex;
                 int selectedIndex = controlListVM.SelectedIndex;
                 Mapper mapper = (App.Current as App).Manager.MapperDict[selectedIndex];
                 //DeviceListItem item = controlListVM.ControllerList[selectedIndex];
@@ -291,9 +293,14 @@ namespace SteamControllerTest
 
         private void NewProfMenuItem_Click(object sender, RoutedEventArgs _)
         {
-            if (controlListVM.SelectedIndex >= 0)
+            Control tempControl = sender as Control;
+            int itemIndex = Convert.ToInt32(tempControl.Tag);
+            //if (controlListVM.SelectedIndex >= 0)
+            if (itemIndex >= 0)
             {
-                int selectedIndex = controlListVM.SelectedIndex;
+                int selectedIndex = itemIndex;
+                controlListVM.SelectedIndex = selectedIndex;
+                //int selectedIndex = controlListVM.SelectedIndex;
                 BackendManager manager = (App.Current as App).Manager;
                 Mapper mapper = manager.MapperDict[selectedIndex];
                 NewProfileCreateWindow newProfCreateWin = new NewProfileCreateWindow();
