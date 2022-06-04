@@ -54,7 +54,7 @@ namespace SteamControllerTest
             {
                 ProfileEntity tempEntity =
                     new ProfileEntity(profilePath, profileName, deviceType);
-                int insertIdx = profileListCol.TakeWhile((item) => string.Compare(item.Name, profileName) > 0).Count();
+                int insertIdx = profileListCol.TakeWhile((item) => string.Compare(item.Name, profileName) < 0).Count();
                 if (insertIdx > 0 && insertIdx < profileListCol.Count-1)
                 {
                     profileListCol.Insert(insertIdx, tempEntity);
