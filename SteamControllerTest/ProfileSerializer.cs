@@ -68,7 +68,7 @@ namespace SteamControllerTest
 
         public string Creator { get => tempProfile.Creator; set => tempProfile.Creator = value; }
 
-        [JsonProperty(Required = Required.Always)]
+        //[JsonProperty(Required = Required.Always)]
         public DateTime CreationDate { get => tempProfile.CreationDate; set => tempProfile.CreationDate = value; }
 
         [JsonIgnore]

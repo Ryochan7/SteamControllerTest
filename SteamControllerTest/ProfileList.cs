@@ -46,6 +46,25 @@ namespace SteamControllerTest
                 }
             }
         }
+
+        public void CreateProfileItem(string profilePath, string profileName,
+            InputDeviceType deviceType)
+        {
+            lock (_proLockobj)
+            {
+                ProfileEntity tempEntity =
+                    new ProfileEntity(profilePath, profileName, deviceType);
+                int insertIdx = profileListCol.TakeWhile((item) => string.Compare(item.Name, profileName) > 0).Count();
+                if (insertIdx > 0 && insertIdx < profileListCol.Count-1)
+                {
+                    profileListCol.Insert(insertIdx, tempEntity);
+                }
+                else
+                {
+                    profileListCol.Add(tempEntity);
+                }
+            }
+        }
     }
 
     public class ProfilePreview

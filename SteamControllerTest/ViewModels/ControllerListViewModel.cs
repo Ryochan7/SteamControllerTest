@@ -204,6 +204,18 @@ namespace SteamControllerTest.ViewModels
                 }
             }
         }
+
+        public void WaitMapperEvent(DeviceListItem item)
+        {
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            Mapper map = backendManager.MapperDict[item.Device.Index];
+            map.QueueEvent(() =>
+            {
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
+        }
     }
 
     public class DeviceListItem

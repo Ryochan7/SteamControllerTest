@@ -325,6 +325,8 @@ namespace SteamControllerTest
             get => appGlobal;
         }
 
+        public InputDeviceType DeviceType => InputDeviceType.SteamController;
+
         private DeviceActionDefaultsCreator deviceActionDefaults = new SteamControllerActionDefaultsCreator();
         public DeviceActionDefaultsCreator DeviceActionDefaults => deviceActionDefaults;
 

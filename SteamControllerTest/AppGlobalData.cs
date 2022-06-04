@@ -542,6 +542,69 @@ namespace SteamControllerTest
                 }
             }
         }
+
+        public void CreateBlankProfile(string blankProfilePath, Profile tempProfile)
+        {
+            ProfileSerializer profileSerializer = new ProfileSerializer(tempProfile);
+            string tempOutJson = JsonConvert.SerializeObject(profileSerializer, Formatting.Indented,
+                new JsonSerializerSettings()
+                {
+                        //Converters = new List<JsonConverter>()
+                        //{
+                        //    new MapActionSubTypeConverter(),
+                        //}
+                        //TypeNameHandling = TypeNameHandling.Objects
+                        //ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                });
+            Trace.WriteLine(tempOutJson);
+
+            if (!string.IsNullOrEmpty(tempOutJson))
+            {
+                using (StreamWriter writer = new StreamWriter(blankProfilePath))
+                using (JsonTextWriter jwriter = new JsonTextWriter(writer))
+                {
+                    jwriter.Formatting = Formatting.Indented;
+                    jwriter.Indentation = 2;
+                    JObject tempJObj = JObject.Parse(tempOutJson);
+                    tempJObj.WriteTo(jwriter);
+                    //writer.Write(tempOutJson);
+                }
+            }
+
+            //using (FileStream fs = new FileStream(blankProfilePath,
+            //   FileMode.Truncate, FileAccess.Write))
+            //{
+            //    string tempProfileName = Path.GetFileNameWithoutExtension(blankProfilePath);
+
+            //    //if (tempRootJObj != null)
+            //    //{
+            //    //    using (StreamWriter swriter = new StreamWriter(fs))
+            //    //    using (JsonTextWriter jwriter = new JsonTextWriter(swriter))
+            //    //    {
+            //    //        jwriter.Formatting = Formatting.Indented;
+            //    //        jwriter.Indentation = 2;
+            //    //        string temp = tempRootJObj.ToString();
+            //    //        //Trace.WriteLine(temp);
+            //    //        tempRootJObj.WriteTo(jwriter);
+            //    //    }
+            //    //}
+            //}
+        }
+
+        public string GetDeviceProfileFolderLocation(InputDeviceType deviceType)
+        {
+            string result = string.Empty;
+            switch (deviceType)
+            {
+                case InputDeviceType.SteamController:
+                    result = Path.Combine(baseProfilesPath, STEAM_CONTROLLER_PROFILE_DIR);
+                    break;
+                default:
+                    break;
+            }
+
+            return result;
+        }
     }
 
     public class ViGEmBusInfo

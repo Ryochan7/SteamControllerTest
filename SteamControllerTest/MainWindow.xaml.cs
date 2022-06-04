@@ -18,6 +18,7 @@ using System.Windows.Interop;
 using HidLibrary;
 using SteamControllerTest.ViewModels;
 using SteamControllerTest.SteamControllerLibrary;
+using SteamControllerTest.Views;
 
 namespace SteamControllerTest
 {
@@ -288,8 +289,41 @@ namespace SteamControllerTest
         //    }
         //}
 
-        private void NewProfMenuItem_Click(object sender, RoutedEventArgs e)
+        private void NewProfMenuItem_Click(object sender, RoutedEventArgs _)
         {
+            if (controlListVM.SelectedIndex >= 0)
+            {
+                int selectedIndex = controlListVM.SelectedIndex;
+                BackendManager manager = (App.Current as App).Manager;
+                Mapper mapper = manager.MapperDict[selectedIndex];
+                NewProfileCreateWindow newProfCreateWin = new NewProfileCreateWindow();
+                newProfCreateWin.PostInit(mapper, manager);
+                newProfCreateWin.ShowDialog();
+
+                NewProfileCreateViewModel newProfVM = newProfCreateWin.NewProfCreateVM;
+                if (newProfVM.ProfileCreated)
+                {
+                    DeviceListItem item = controlListVM.ControllerList[selectedIndex];
+                    ProfileEntity profileEnt = manager.DeviceProfileList.ProfileListCol.Where((profEnt) => profEnt.ProfilePath == newProfVM.ProfilePath).Select((profEnt) => profEnt).FirstOrDefault();
+                    ////DeviceListItem item = e;
+                    if (profileEnt != null)
+                    //if (item.ProfileIndex >= 0)
+                    {
+                        // Switch to new profile
+                        item.ProfileIndex = manager.DeviceProfileList.ProfileListCol.IndexOf(profileEnt);
+
+                        // Indirect way to wait for profile change event to occur
+                        controlListVM.WaitMapperEvent(item);
+                        //ProfileEntity profileEnt = controlListVM.DeviceProfileList.ProfileListCol[item.ProfileIndex];
+                        //string profilePath = controlListVM.DeviceProfileList.ProfileListCol[item.ProfileIndex].ProfilePath;
+                        //SteamControllerDevice device = controlListVM.ControllerList[selectedIndex].Device;
+
+                        ProfileEditorTest profileWin = new ProfileEditorTest();
+                        profileWin.PostInit(mapper, profileEnt, mapper.ActionProfile);
+                        profileWin.ShowDialog();
+                    }
+                }
+            }
         }
     }
 }
