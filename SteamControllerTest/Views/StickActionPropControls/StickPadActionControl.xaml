@@ -55,14 +55,30 @@
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Center">
+                        <Label Content="U" />
+                        <Button x:Name="btnUpEdit" Content="{Binding ActionUpBtnDisplayBind,Mode=OneWay,FallbackValue='Test Up'}" Click="btnUpEdit_Click" MinWidth="60" Margin="8,0,0,0" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Center" Margin="20,0,0,0">
+                        <Label Content="D" />
+                        <Button x:Name="btnDownEdit" Content="{Binding ActionDownBtnDisplayBind,Mode=OneWay,FallbackValue='Test Down'}" Click="btnDownEdit_Click" Margin="8,0,0,0" MinWidth="60"  />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" Margin="0,8,0,0">
+                        <Label Content="L" />
+                        <Button x:Name="btnLeftEdit" Content="{Binding ActionLeftBtnDisplayBind,Mode=OneWay,FallbackValue='Test Left'}" Click="btnLeftEdit_Click" Margin="8,0,0,0" MinWidth="60" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" Margin="20,8,0,0">
+                        <Label Content="R" />
+                        <Button x:Name="btnRightEdit" Content="{Binding ActionRightBtnDisplayBind,Mode=OneWay,FallbackValue='Test Right'}" Click="btnRightEdit_Click" Margin="8,0,0,0" MinWidth="60" />
+                    </StackPanel>
                     
-                    <Button x:Name="btnUpEdit" Content="{Binding ActionUpBtnDisplayBind,Mode=OneWay,FallbackValue='Test Up'}" Click="btnUpEdit_Click" MinWidth="60" Grid.Column="0" />
-                    <Button x:Name="btnDownEdit" Content="{Binding ActionDownBtnDisplayBind,Mode=OneWay,FallbackValue='Test Down'}" Click="btnDownEdit_Click" Margin="20,0,0,0" MinWidth="60" Grid.Column="1" />
-                    <Button x:Name="btnLeftEdit" Content="{Binding ActionLeftBtnDisplayBind,Mode=OneWay,FallbackValue='Test Left'}" Click="btnLeftEdit_Click" Margin="0,12,0,0" MinWidth="60" Grid.Row="1" Grid.Column="0" />
-                    <Button x:Name="btnRightEdit" Content="{Binding ActionRightBtnDisplayBind,Mode=OneWay,FallbackValue='Test Right'}" Click="btnRightEdit_Click" Margin="20,12,0,0" MinWidth="60" Grid.Row="1" Grid.Column="1" />
                 </Grid>
 
-                <Grid MinWidth="200" Margin="8,0,0,0" Visibility="{Binding ShowDiagonalPad, FallbackValue='Collapsed', Converter={StaticResource boolVisConv}}">
+                <Grid MinWidth="200" Margin="20,0,0,0" Visibility="{Binding ShowDiagonalPad, FallbackValue='Collapsed', Converter={StaticResource boolVisConv}}">
                     <Grid.RowDefinitions>
                         <RowDefinition />
                         <RowDefinition />
@@ -71,11 +87,27 @@
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Label Content="UL" />
+                        <Button x:Name="btnUpLeftEdit" Content="{Binding ActionUpLeftBtnDisplayBind,Mode=OneWay,FallbackValue='Test UpLeft'}" Click="btnUpLeftEdit_Click" MinWidth="60" Margin="8,0,0,0" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1" Margin="20,0,0,0">
+                        <Label Content="UR" />
+                        <Button x:Name="btnUpRightEdit" Content="{Binding ActionUpRightBtnDisplayBind,Mode=OneWay,FallbackValue='Test UpRight'}" Click="btnUpRightEdit_Click" MinWidth="60" Margin="8,0,0,0" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="0" Margin="0,8,0,0">
+                        <Label Content="DL" />
+                        <Button x:Name="btnDownLeftEdit" Content="{Binding ActionDownLeftBtnDisplayBind,Mode=OneWay,FallbackValue='Test DownLeft'}" Click="btnDownLeftEdit_Click" Margin="8,0,0,0" MinWidth="60" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="1" Margin="20,8,0,0">
+                        <Label Content="DR" />
+                        <Button x:Name="btnDownRightEdit" Content="{Binding ActionDownRightBtnDisplayBind,Mode=OneWay,FallbackValue='Test DownRight'}" Click="btnDownRightEdit_Click" Margin="8,0,0,0" MinWidth="60" />
+                    </StackPanel>
                     
-                    <Button x:Name="btnUpLeftEdit" Content="{Binding ActionUpLeftBtnDisplayBind,Mode=OneWay,FallbackValue='Test UpLeft'}" Click="btnUpLeftEdit_Click" MinWidth="60" />
-                    <Button x:Name="btnUpRightEdit" Content="{Binding ActionUpRightBtnDisplayBind,Mode=OneWay,FallbackValue='Test UpRight'}" Click="btnUpRightEdit_Click" Margin="20,0,0,0" MinWidth="60" Grid.Column="1" />
-                    <Button x:Name="btnDownLeftEdit" Content="{Binding ActionDownLeftBtnDisplayBind,Mode=OneWay,FallbackValue='Test DownLeft'}" Click="btnDownLeftEdit_Click" Margin="0,12,0,0" MinWidth="60" Grid.Row="1" Grid.Column="0" />
-                    <Button x:Name="btnDownRightEdit" Content="{Binding ActionDownRightBtnDisplayBind,Mode=OneWay,FallbackValue='Test DownRight'}" Click="btnDownRightEdit_Click" Margin="20,12,0,0" MinWidth="60" Grid.Row="1" Grid.Column="1" />
                 </Grid>
 
             </StackPanel>
