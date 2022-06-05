@@ -91,7 +91,7 @@ namespace SteamControllerTest
                 }
             }
 
-            //appGlobal.CheckAndCopyExampleProfiles();
+            appGlobal.CheckAndCopyExampleProfiles();
             appGlobal.RefreshBaseDriverInfo();
             appGlobal.StartupLoadAppSettings();
             if (!File.Exists(appGlobal.ControllerConfigsPath))

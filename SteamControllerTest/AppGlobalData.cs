@@ -109,10 +109,10 @@ namespace SteamControllerTest
             {
                 string exampleSCProfilesPath = Path.Combine(exedirpath, TEMPLATE_PROFILES_DIRNAME, "SteamController");
                 string destSCProfilePath = Path.Combine(appdatapath, PROFILES_FOLDER_NAME, "SteamController");
-                if (!Directory.Exists(destSCProfilePath))
+                //if (!Directory.Exists(destSCProfilePath))
+                // Check if profiles dir is empty
+                if (!Directory.EnumerateFileSystemEntries(destSCProfilePath).Any())
                 {
-                    Directory.CreateDirectory(destSCProfilePath);
-
                     foreach (string file in Directory.EnumerateFiles(exampleSCProfilesPath))
                     {
                         string destFilePath = Path.Combine(appdatapath, PROFILES_FOLDER_NAME,
