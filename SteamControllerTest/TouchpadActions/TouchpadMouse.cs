@@ -91,7 +91,7 @@ namespace SteamControllerTest.TouchpadActions
         }
         //private bool useParentTrackball;
 
-        private int trackballFriction = TRACKBALL_JOY_FRICTION;
+        private int trackballFriction = TRACKBALL_INIT_FRICTION;
         public int TrackballFriction
         {
             get => trackballFriction;
