@@ -55,7 +55,7 @@ namespace SteamControllerTest
     {
         public const string SETTINGS_PROP_NAME = "SteamControllerSettings";
 
-        private int leftTouchpadRotation;
+        private int leftTouchpadRotation = -15;
         public int LeftTouchpadRotation
         {
             get => leftTouchpadRotation;
@@ -67,7 +67,7 @@ namespace SteamControllerTest
         }
         public event EventHandler LeftTouchpadRotationChanged;
 
-        private int rightTouchpadRotation;
+        private int rightTouchpadRotation = 15;
         public int RightTouchpadRotation
         {
             get => rightTouchpadRotation;
