@@ -392,6 +392,47 @@ namespace SteamControllerTest.ViewModels
             }
         }
 
+        public void TestSave(ProfileEntity entity, Profile profile)
+        {
+            ProfileEntity tempEntity = entity;
+            Profile tempProfile = profile;
+            string tempOutJson = string.Empty;
+            actionResetEvent.Reset();
+
+            mapper.QueueEvent(() =>
+            {
+                ProfileSerializer profileSerializer = new ProfileSerializer(tempProfile);
+                tempOutJson = JsonConvert.SerializeObject(profileSerializer, Formatting.Indented,
+                    new JsonSerializerSettings()
+                    {
+                        //Converters = new List<JsonConverter>()
+                        //{
+                        //    new MapActionSubTypeConverter(),
+                        //}
+                        //TypeNameHandling = TypeNameHandling.Objects
+                        //ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                    });
+                //Trace.WriteLine(tempOutJson);
+
+                actionResetEvent.Set();
+            });
+
+            actionResetEvent.Wait();
+
+            if (!string.IsNullOrEmpty(tempOutJson))
+            {
+                using (StreamWriter writer = new StreamWriter(tempEntity.ProfilePath))
+                using (JsonTextWriter jwriter = new JsonTextWriter(writer))
+                {
+                    jwriter.Formatting = Formatting.Indented;
+                    jwriter.Indentation = 2;
+                    JObject tempJObj = JObject.Parse(tempOutJson);
+                    tempJObj.WriteTo(jwriter);
+                    //writer.Write(tempOutJson);
+                }
+            }
+        }
+
         public void AddLayer()
         {
             ActionLayer tempLayer = null;

@@ -1,5 +1,6 @@
 ## TODO
 
+* Create view for Touchpad Circular action type
 * Maybe make OutputActionData purge check when removing ActionSet or ActionLayer from profile
 * ~~Integrate HandyControl controls to UI. Not actively used but linking NuGet package~~
 * Possibly integration Font Awesome into project

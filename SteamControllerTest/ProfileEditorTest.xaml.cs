@@ -271,5 +271,19 @@ namespace SteamControllerTest
                 editorTestVM.GyroBindings[selectedInd].UpdateAction(gyroBindEditWin.GyroBindEditVM.Action);
             }
         }
+
+        private async void SaveProfileButton_Click(object sender, RoutedEventArgs e)
+        {
+            IsEnabled = false;
+
+            editorTestVM.TestSave(editorTestVM.ProfileEnt, editorTestVM.DeviceMapper.ActionProfile);
+
+            await Task.Run(() =>
+            {
+                editorTestVM.ActionResetEvent.Wait();
+            });
+
+            IsEnabled = true;
+        }
     }
 }
