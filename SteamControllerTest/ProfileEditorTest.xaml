@@ -131,7 +131,7 @@
                                 <GridViewColumn Width="300">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Content="Edit" Click="Button_Click_1" />
+                                            <Button Content="Edit" Click="Button_Click_1" Tag="{Binding}" />
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
@@ -162,7 +162,7 @@
                                 <GridViewColumn Width="300">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Content="Edit" Click="TiggerActionEdit_Button_Click" />
+                                            <Button Content="Edit" Click="TiggerActionEdit_Button_Click" Tag="{Binding}" />
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
@@ -193,7 +193,7 @@
                                 <GridViewColumn Width="300">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Content="Edit" Click="StickActionEdit_Button_Click" />
+                                            <Button Content="Edit" Click="StickActionEdit_Button_Click" Tag="{Binding}" />
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
@@ -224,7 +224,7 @@
                                 <GridViewColumn Width="300">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Content="Edit" Click="GyroActionEdit_Button_Click" />
+                                            <Button Content="Edit" Click="GyroActionEdit_Button_Click" Tag="{Binding}" />
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>

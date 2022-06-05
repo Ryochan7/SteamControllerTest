@@ -76,10 +76,16 @@ namespace SteamControllerTest
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            int selectedInd = editorTestVM.SelectTouchBindIndex;
+            Control tempControl = sender as Control;
+            TouchBindingItemsTest tempItem = tempControl.Tag as TouchBindingItemsTest;
+            int selectedInd = editorTestVM.TouchpadBindings.IndexOf(tempItem);
+            //Trace.WriteLine($"HAMHAM {tempItem}");
+            //int selectedInd = editorTestVM.SelectTouchBindIndex;
             if (selectedInd >= 0)
             {
-                TouchpadMapAction tempAction = editorTestVM.TouchpadBindings[selectedInd].MappedAction;
+                editorTestVM.SelectTouchBindIndex = selectedInd;
+                //TouchpadMapAction tempAction = editorTestVM.TouchpadBindings[selectedInd].MappedAction;
+                TouchpadMapAction tempAction = tempItem.MappedAction;
                 TouchpadBindEditWindow touchBindEditWin = new TouchpadBindEditWindow();
                 touchBindEditWin.PostInit(editorTestVM.DeviceMapper, tempAction);
                 touchBindEditWin.ShowDialog();
@@ -214,9 +220,13 @@ namespace SteamControllerTest
 
         private void TiggerActionEdit_Button_Click(object sender, RoutedEventArgs e)
         {
-            int selectedInd = editorTestVM.SelectTriggerBindIndex;
+            //int selectedInd = editorTestVM.SelectTriggerBindIndex;
+            Control tempControl = sender as Control;
+            TriggerBindingItemsTest tempItem = tempControl.Tag as TriggerBindingItemsTest;
+            int selectedInd = editorTestVM.TriggerBindings.IndexOf(tempItem);
             if (selectedInd >= 0)
             {
+                editorTestVM.SelectTriggerBindIndex = selectedInd;
                 TriggerMapAction tempAction = editorTestVM.TriggerBindings[selectedInd].MappedAction;
                 TriggerBindEditWindow trigBindEditWin = new TriggerBindEditWindow();
                 trigBindEditWin.PostInit(editorTestVM.DeviceMapper, tempAction);
@@ -228,9 +238,13 @@ namespace SteamControllerTest
 
         private void StickActionEdit_Button_Click(object sender, RoutedEventArgs e)
         {
-            int selectedInd = editorTestVM.SelectStickBindIndex;
+            //int selectedInd = editorTestVM.SelectStickBindIndex;
+            Control tempControl = sender as Control;
+            StickBindingItemsTest tempItem = tempControl.Tag as StickBindingItemsTest;
+            int selectedInd = editorTestVM.StickBindings.IndexOf(tempItem);
             if (selectedInd >= 0)
             {
+                editorTestVM.SelectStickBindIndex = selectedInd;
                 StickMapAction tempAction = editorTestVM.StickBindings[selectedInd].MappedAction;
                 StickBindEditWindow stickBindEditWin = new StickBindEditWindow();
                 stickBindEditWin.PostInit(editorTestVM.DeviceMapper, tempAction);
@@ -242,9 +256,13 @@ namespace SteamControllerTest
 
         private void GyroActionEdit_Button_Click(object sender, RoutedEventArgs e)
         {
-            int selectedInd = editorTestVM.SelectGyroBindIndex;
+            //int selectedInd = editorTestVM.SelectGyroBindIndex;
+            Control tempControl = sender as Control;
+            GyroBindingItemsTest tempItem = tempControl.Tag as GyroBindingItemsTest;
+            int selectedInd = editorTestVM.GyroBindings.IndexOf(tempItem);
             if (selectedInd >= 0)
             {
+                editorTestVM.SelectGyroBindIndex = selectedInd;
                 GyroMapAction tempAction = editorTestVM.GyroBindings[selectedInd].MappedAction;
                 GyroBindEditWindow gyroBindEditWin = new GyroBindEditWindow();
                 gyroBindEditWin.PostInit(editorTestVM.DeviceMapper, tempAction);
