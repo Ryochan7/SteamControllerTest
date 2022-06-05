@@ -360,7 +360,7 @@
           "Action": 7
         },
         {
-          "Input": "LSClick",
+          "Input": "LeftPadClick",
           "Action": 8
         },
         {
