@@ -6,7 +6,7 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:local="clr-namespace:SteamControllerTest"
         mc:Ignorable="d"
-        Title="SCAutism" Height="300" Width="600" Closed="Window_Closed">
+        Title="SteamControllerTest" Height="300" Width="600" Closed="Window_Closed">
     <DockPanel>
         <DockPanel.Background>
             <SolidColorBrush Color="{StaticResource RegionColor}"/>
