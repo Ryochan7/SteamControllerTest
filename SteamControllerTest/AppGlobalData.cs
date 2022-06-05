@@ -16,7 +16,7 @@ namespace SteamControllerTest
     {
         public const string APP_SETTINGS_FILENAME = "Settings.json";
         public const string CONTROLLER_CONFIGS_FILENAME = "ControllerConfigs.json";
-        public const string APP_FOLDER_NAME = "SCAutism";
+        public const string APP_FOLDER_NAME = "SCTest";
         public const string PROFILES_FOLDER_NAME = "Profiles";
         public const string LOGS_FOLDER_NAME = "Logs";
         public const string STEAM_CONTROLLER_PROFILE_DIR = "SteamController";
