@@ -332,5 +332,20 @@ namespace SteamControllerTest
                 }
             }
         }
+
+        private void ContSettingsBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Control tempControl = sender as Control;
+            int itemIndex = Convert.ToInt32(tempControl.Tag);
+            if (itemIndex >= 0)
+            {
+                int selectedIndex = itemIndex;
+                controlListVM.SelectedIndex = selectedIndex;
+                SteamControllerDevice device = controlListVM.ControllerList[selectedIndex].Device;
+                ControllerConfigWin dialog = new ControllerConfigWin();
+                dialog.PostInit(device);
+                dialog.ShowDialog();
+            }
+        }
     }
 }
