@@ -115,7 +115,7 @@ namespace SteamControllerTest.SteamControllerLibrary
         public double currentLeftAmpRatio = 0.0;
         public double currentRightAmpRatio = 0.0;
 
-        private string serial;
+        protected string serial;
         public string Serial
         {
             get => serial;
@@ -219,7 +219,11 @@ namespace SteamControllerTest.SteamControllerLibrary
             }
 
             ClearMappings();
-            ReadSerial();
+            if (string.IsNullOrEmpty(serial))
+            {
+                ReadSerial();
+            }
+
             Configure();
 
             Thread.Sleep(100);

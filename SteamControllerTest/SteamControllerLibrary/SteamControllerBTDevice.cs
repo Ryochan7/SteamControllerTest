@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using HidLibrary;
 
@@ -18,6 +19,9 @@ namespace SteamControllerTest.SteamControllerLibrary
 
         private const byte FEATURE_REPORT_ID = 0x03;
         private const int FEATURE_REPORT_BT_PREFIX = 0xC0;
+        // Windows seems to need array len to be 65 when reading feature reports.
+        // Thanks to VSCView for pointing this out
+        private const int READ_FEATURE_REPORT_LEN = 65;
 
         public override int InputReportLen { get => INPUT_REPORT_LEN; }
         public override int OutputReportLen { get => OUTPUT_REPORT_LEN; }
@@ -40,11 +44,19 @@ namespace SteamControllerTest.SteamControllerLibrary
             int error = Marshal.GetLastWin32Error();
             hidDevice.fileStream.Flush();
 
-            byte[] retReportData = new byte[FEATURE_REPORT_LEN];
+            byte[] retReportData = new byte[READ_FEATURE_REPORT_LEN];
             retReportData[0] = FEATURE_REPORT_ID;
             retReportData[1] = FEATURE_REPORT_BT_PREFIX;
             hidDevice.readFeatureData(retReportData);
-            Console.WriteLine("LKJDKJLLD: {0}", retReportData[1]);
+            //Console.WriteLine("LKJDKJLLD: {0}", retReportData[1]);
+
+            string baseS = System.Text.Encoding.Default.GetString(retReportData, 6, 12);
+            string MACAddr = baseS.Replace("\0", string.Empty).ToUpper();
+
+            if (!string.IsNullOrEmpty(MACAddr))
+            {
+                serial = MACAddr;
+            }
         }
 
         protected override void ClearMappings()

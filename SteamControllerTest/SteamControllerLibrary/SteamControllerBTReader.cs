@@ -367,6 +367,7 @@ namespace SteamControllerTest.SteamControllerLibrary
                     else
                     {
                         activeInputLoop = false;
+                        device.RaiseRemoval();
                     }
                 }
             }
