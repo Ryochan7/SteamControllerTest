@@ -3163,6 +3163,17 @@ namespace SteamControllerTest
         {
             private TouchpadSingleButton touchpadSingleBtnAct;
 
+            public double DeadZone
+            {
+                get => touchpadSingleBtnAct.DeadMod.DeadZone;
+                set
+                {
+                    touchpadSingleBtnAct.DeadMod.DeadZone = Math.Clamp(value, 0.0, 1.0);
+                    DeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler DeadZoneChanged;
+
             public TouchpadSingleButtonSettings(TouchpadSingleButton action)
             {
                 touchpadSingleBtnAct = action;
@@ -3185,13 +3196,22 @@ namespace SteamControllerTest
         }
         public event EventHandler ActionFuncSerializersChanged;
 
+        private TouchpadSingleButtonSettings settings;
+        public TouchpadSingleButtonSettings Settings
+        {
+            get => settings;
+            set => settings = value;
+        }
+
         // De-serialize
         public TouchpadSingleButtonSerializer() : base()
         {
             mapAction = buttonAction;
+            settings = new TouchpadSingleButtonSettings(buttonAction);
 
             NameChanged += TouchpadSingleButtonSerializer_NameChanged;
             ActionFuncSerializersChanged += TouchpadSingleButtonSerializer_ActionFuncSerializersChanged;
+            settings.DeadZoneChanged += Settings_DeadZoneChanged;
         }
 
         // Pre-serialize
@@ -3215,7 +3235,10 @@ namespace SteamControllerTest
                 {
                     ActionFuncSerializer tempSerializer =
                         ActionFuncSerializerFactory.CreateSerializer(tempFunc);
-                    actionFuncSerializers.Add(tempSerializer);
+                    if (tempSerializer != null)
+                    {
+                        actionFuncSerializers.Add(tempSerializer);
+                    }
                 }
             }
         }
@@ -3229,6 +3252,11 @@ namespace SteamControllerTest
                 serializer.PopulateFunc();
                 buttonAction.EventButton.ActionFuncs.Add(serializer.ActionFunc);
             }
+        }
+
+        private void Settings_DeadZoneChanged(object sender, EventArgs e)
+        {
+            buttonAction.ChangedProperties.Add(TouchpadSingleButton.PropertyKeyStrings.DEAD_ZONE);
         }
 
         private void TouchpadSingleButtonSerializer_ActionFuncSerializersChanged(object sender, EventArgs e)

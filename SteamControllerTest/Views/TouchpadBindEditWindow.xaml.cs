@@ -119,11 +119,38 @@ namespace SteamControllerTest.Views
                     }
 
                     break;
+                case TouchpadSingleButton:
+                    {
+                        TouchpadSingleButtonPropControl propControl = new TouchpadSingleButtonPropControl();
+                        propControl.PostInit(touchBindEditVM.Mapper, touchBindEditVM.Action);
+                        propControl.RequestFuncEditor += TouchpadSingleBtnPropControl_RequestFuncEditor;
+                        touchBindEditVM.DisplayControl = propControl;
+                        touchBindEditVM.ActionBaseDisplayControl = propControl;
+                    }
+
+                    break;
                 default:
                     touchBindEditVM.DisplayControl = null;
                     touchBindEditVM.ActionBaseDisplayControl = null;
                     break;
             }
+        }
+
+        private void TouchpadSingleBtnPropControl_RequestFuncEditor(object sender, TouchpadActionPadPropControl.DirButtonBindingArgs e)
+        {
+            FuncBindingControl tempControl = new FuncBindingControl();
+            tempControl.PostInit(touchBindEditVM.Mapper, e.DirBtn);
+            tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+            UserControl oldControl = touchBindEditVM.DisplayControl;
+            touchpadSelectControl.Visibility = Visibility.Collapsed;
+            tempControl.RequestClose += (sender, args) =>
+            {
+                (oldControl as TouchpadSingleButtonPropControl).RefreshView();
+                touchBindEditVM.DisplayControl = oldControl;
+                touchpadSelectControl.Visibility = Visibility.Visible;
+            };
+
+            touchBindEditVM.DisplayControl = tempControl;
         }
 
         private void TouchCircularPropControl_RequestFuncEditor(object sender, TouchpadActionPadPropControl.DirButtonBindingArgs e)
@@ -257,6 +284,17 @@ namespace SteamControllerTest.Views
                         {
                             touchBindEditVM.UpdateAction(tempControl.TouchCircVM.Action);
                             TouchActionUpdated?.Invoke(this, tempControl.TouchCircVM.Action);
+                        }
+                    }
+
+                    break;
+                case TouchpadSingleButton:
+                    {
+                        TouchpadSingleButtonPropControl tempControl = touchBindEditVM.ActionBaseDisplayControl as TouchpadSingleButtonPropControl;
+                        if (tempControl.TouchSingleBtnVM.Action != touchBindEditVM.Action)
+                        {
+                            touchBindEditVM.UpdateAction(tempControl.TouchSingleBtnVM.Action);
+                            TouchActionUpdated?.Invoke(this, tempControl.TouchSingleBtnVM.Action);
                         }
                     }
 

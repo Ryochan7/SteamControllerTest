@@ -131,6 +131,17 @@ namespace SteamControllerTest.ViewModels
                     }
 
                     break;
+                case 7:
+                    break;
+                case 8:
+                    {
+                        TouchpadSingleButton tempAction = new TouchpadSingleButton();
+                        //var joyDefaults = mapper.DeviceActionDefaults.GrabTouchCircularActionDefaults();
+                        //joyDefaults.Process(tempAction);
+                        result = tempAction;
+                    }
+
+                    break;
                 default:
                     break;
             }

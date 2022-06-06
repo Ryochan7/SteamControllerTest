@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SteamControllerTest.ButtonActions;
+using SteamControllerTest.StickModifiers;
 
 namespace SteamControllerTest.TouchpadActions
 {
@@ -13,13 +14,18 @@ namespace SteamControllerTest.TouchpadActions
         {
             public const string NAME = "Name";
             public const string FUNCTIONS = "Functions";
+            public const string DEAD_ZONE = "DeadZone";
         }
 
         private HashSet<string> fullPropertySet = new HashSet<string>()
         {
             PropertyKeyStrings.NAME,
             PropertyKeyStrings.FUNCTIONS,
+            PropertyKeyStrings.DEAD_ZONE,
         };
+
+        private const double DEFAULT_DEAD_ZONE = 0.25;
+        public const string ACTION_TYPE_NAME = "TouchSingleButtonAction";
 
         private bool inputStatus;
 
@@ -36,16 +42,49 @@ namespace SteamControllerTest.TouchpadActions
             set => usedEventButton = value;
         }
 
+        private StickDeadZone deadMod;
+        public StickDeadZone DeadMod
+        {
+            get => deadMod;
+        }
+
+        private double xNorm = 0.0, yNorm = 0.0;
+
         public TouchpadSingleButton()
         {
+            actionTypeName = ACTION_TYPE_NAME;
+            deadMod = new StickDeadZone(DEFAULT_DEAD_ZONE, 1.0, 0.0);
         }
 
         public override void Prepare(Mapper mapper, ref TouchEventFrame touchFrame, bool alterState = true)
         {
-            active = touchFrame.Touch;
-            if (touchFrame.Touch != inputStatus)
+            //active = touchFrame.Touch;
+            //if (touchFrame.Touch != inputStatus)
+            //{
+            //    inputStatus = touchFrame.Touch;
+            //    active = true;
+            //}
+
+            active = false;
+            xNorm = 0.0; yNorm = 0.0;
+
+            int axisXVal = touchFrame.X;
+            int axisYVal = touchFrame.Y;
+            int axisXMid = touchpadDefinition.xAxis.mid, axisYMid = touchpadDefinition.yAxis.mid;
+            int axisXDir = axisXVal - axisXMid, axisYDir = axisYVal - axisYMid;
+            bool xNegative = axisXDir < 0;
+            bool yNegative = axisYDir < 0;
+            int maxDirX = (!xNegative ? touchpadDefinition.xAxis.max : touchpadDefinition.xAxis.min) - axisXMid;
+            int maxDirY = (!yNegative ? touchpadDefinition.yAxis.max : touchpadDefinition.yAxis.min) - axisYMid;
+            deadMod.CalcOutValues(axisXDir, axisYDir, maxDirX, maxDirY, out xNorm, out yNorm);
+            if (deadMod.inSafeZone)
             {
-                inputStatus = touchFrame.Touch;
+                inputStatus = true;
+                active = true;
+            }
+            else if (inputStatus)
+            {
+                inputStatus = false;
                 active = true;
             }
 
@@ -102,6 +141,9 @@ namespace SteamControllerTest.TouchpadActions
                         case PropertyKeyStrings.FUNCTIONS:
                             useParentActions = true;
                             usedEventButton = tempButtonAct.usedEventButton;
+                            break;
+                        case PropertyKeyStrings.DEAD_ZONE:
+                            deadMod.DeadZone = tempButtonAct.deadMod.DeadZone;
                             break;
                         default:
                             break;
