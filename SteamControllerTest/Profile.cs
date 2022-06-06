@@ -130,6 +130,8 @@ namespace SteamControllerTest
         public bool enabled = true;
         [JsonIgnore]
         public OutputControllerType outputGamepad = OutputControllerType.Xbox360;
+        [JsonIgnore]
+        public bool forceFeedbackEnabled = false;
 
         public bool Enabled
         {
@@ -144,6 +146,16 @@ namespace SteamControllerTest
             set => outputGamepad = value;
         }
         public bool ShouldSerializeOutputGamepad()
+        {
+            return enabled;
+        }
+
+        public bool ForceFeedbackEnabled
+        {
+            get => forceFeedbackEnabled;
+            set => forceFeedbackEnabled = value;
+        }
+        public bool ShouldSerializeForceFeedbackEnabled()
         {
             return enabled;
         }

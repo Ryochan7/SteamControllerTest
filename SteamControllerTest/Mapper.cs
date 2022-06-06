@@ -330,6 +330,8 @@ namespace SteamControllerTest
         private DeviceActionDefaultsCreator deviceActionDefaults = new SteamControllerActionDefaultsCreator();
         public DeviceActionDefaultsCreator DeviceActionDefaults => deviceActionDefaults;
 
+        private Xbox360FeedbackReceivedEventHandler outputForceFeedbackDel;
+
         private bool hasInputEvts;
         //private object eventQueueLock = new object();
         private ReaderWriterLockSlim eventQueueLocker = new ReaderWriterLockSlim();
@@ -1266,22 +1268,35 @@ namespace SteamControllerTest
                     contThr.Start();
                     contThr.Join(); // Wait for bus object start
                     contThr = null;
-
-                    /*//if (outputX360 != null)
-                    {
-                        outputX360.FeedbackReceived += (sender, e) =>
-                        {
-                            device.currentLeftAmpRatio = e.LargeMotor / 255.0;
-                            device.currentRightAmpRatio = e.SmallMotor / 255.0;
-                            reader.WriteRumbleReport();
-                        };
-                    }
-                    */
                 }
                 else if (!actionProfile.OutputGamepadSettings.enabled && outputX360 != null)
                 {
                     outputX360.Disconnect();
                     outputX360 = null;
+                }
+
+                // Check for current output controller and check for desired vibration
+                // status
+                if (outputX360 != null)
+                {
+                    if (actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
+                        outputForceFeedbackDel == null)
+                    {
+                        outputForceFeedbackDel = (sender, e) =>
+                        {
+                            device.currentLeftAmpRatio = e.LargeMotor / 255.0;
+                            device.currentRightAmpRatio = e.SmallMotor / 255.0;
+                            reader.WriteRumbleReport();
+                        };
+
+                        outputX360.FeedbackReceived += outputForceFeedbackDel;
+                    }
+                    else if (!actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
+                        outputForceFeedbackDel != null)
+                    {
+                        outputX360.FeedbackReceived -= outputForceFeedbackDel;
+                        outputForceFeedbackDel = null;
+                    }
                 }
 
                 if (calibrationFinished)

@@ -182,6 +182,24 @@ namespace SteamControllerTest.ViewModels
             set => overwriteFile = value;
         }
 
+        public bool OutControllerEnabled
+        {
+            get => tempProfile.OutputGamepadSettings.enabled;
+            set
+            {
+                tempProfile.OutputGamepadSettings.enabled = value;
+            }
+        }
+
+        public bool ForceFeedbackEnabled
+        {
+            get => tempProfile.OutputGamepadSettings.ForceFeedbackEnabled;
+            set
+            {
+                tempProfile.OutputGamepadSettings.ForceFeedbackEnabled = value;
+            }
+        }
+
         public ProfileEditorTestViewModel(Mapper mapper, ProfileEntity profileEnt, Profile currentProfile)
         {
             this.mapper = mapper;
