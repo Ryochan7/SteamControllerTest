@@ -109,11 +109,38 @@ namespace SteamControllerTest.Views
                     }
 
                     break;
+                case TouchpadCircular:
+                    {
+                        TouchpadCircularPropControl propControl = new TouchpadCircularPropControl();
+                        propControl.PostInit(touchBindEditVM.Mapper, touchBindEditVM.Action);
+                        propControl.RequestFuncEditor += TouchCircularPropControl_RequestFuncEditor;
+                        touchBindEditVM.DisplayControl = propControl;
+                        touchBindEditVM.ActionBaseDisplayControl = propControl;
+                    }
+
+                    break;
                 default:
                     touchBindEditVM.DisplayControl = null;
                     touchBindEditVM.ActionBaseDisplayControl = null;
                     break;
             }
+        }
+
+        private void TouchCircularPropControl_RequestFuncEditor(object sender, TouchpadActionPadPropControl.DirButtonBindingArgs e)
+        {
+            FuncBindingControl tempControl = new FuncBindingControl();
+            tempControl.PostInit(touchBindEditVM.Mapper, e.DirBtn);
+            tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+            UserControl oldControl = touchBindEditVM.DisplayControl;
+            touchpadSelectControl.Visibility = Visibility.Collapsed;
+            tempControl.RequestClose += (sender, args) =>
+            {
+                (oldControl as TouchpadCircularPropControl).RefreshView();
+                touchBindEditVM.DisplayControl = oldControl;
+                touchpadSelectControl.Visibility = Visibility.Visible;
+            };
+
+            touchBindEditVM.DisplayControl = tempControl;
         }
 
         private void PropControl_RequestFuncEditor(object sender, TouchpadAbsMousePropControl.ButtonBindingArgs e)
@@ -219,6 +246,17 @@ namespace SteamControllerTest.Views
                         {
                             touchBindEditVM.UpdateAction(tempControl.TouchAbsMousePropVM.Action);
                             TouchActionUpdated?.Invoke(this, tempControl.TouchAbsMousePropVM.Action);
+                        }
+                    }
+
+                    break;
+                case TouchpadCircular:
+                    {
+                        TouchpadCircularPropControl tempControl = touchBindEditVM.ActionBaseDisplayControl as TouchpadCircularPropControl;
+                        if (tempControl.TouchCircVM.Action != touchBindEditVM.Action)
+                        {
+                            touchBindEditVM.UpdateAction(tempControl.TouchCircVM.Action);
+                            TouchActionUpdated?.Invoke(this, tempControl.TouchCircVM.Action);
                         }
                     }
 

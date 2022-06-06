@@ -399,7 +399,7 @@ namespace SteamControllerTest
                 dictPadBindings.Add(tempDir, new DPadPadDirBinding()
                 {
                     ActionDirName = dirButton.Name,
-                    ActionFuncSerializers = tempFuncs,
+                    ActionFuncSerializers = new List<ActionFuncSerializer>(tempFuncs),
                 });
             }
         }
@@ -1447,7 +1447,12 @@ namespace SteamControllerTest
                 tempFuncs.Clear();
                 foreach (ActionFunc tempFunc in dirButton.ActionFuncs)
                 {
-                    tempFuncs.Add(ActionFuncSerializerFactory.CreateSerializer(tempFunc));
+                    ActionFuncSerializer tempSerializer =
+                        ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                    if (tempSerializer != null)
+                    {
+                        tempFuncs.Add(tempSerializer);
+                    }
                 }
 
                 //dictPadBindings.Add(tempDir, tempFuncs);
@@ -1465,7 +1470,12 @@ namespace SteamControllerTest
                 ringBinding.ActionDirName = touchActionPadAction.RingButton.Name;
                 foreach (ActionFunc tempFunc in touchActionPadAction.RingButton.ActionFuncs)
                 {
-                    ringBinding.ActionFuncSerializers.Add(ActionFuncSerializerFactory.CreateSerializer(tempFunc));
+                    ActionFuncSerializer tempSerializer =
+                        ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                    if (tempSerializer != null)
+                    {
+                        ringBinding.ActionFuncSerializers.Add(tempSerializer);
+                    }
                 }
             }
         }
@@ -2160,7 +2170,9 @@ namespace SteamControllerTest
             clockwiseBinding.ActionDirName = touchCircAct.ClockWiseBtn.Name;
             foreach(ActionFunc tempFunc in touchCircAct.ClockWiseBtn.ActionFuncs)
             {
-                tempFuncs.Add(new ActionFuncSerializer(tempFunc));
+                ActionFuncSerializer tempSerializer =
+                        ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                tempFuncs.Add(tempSerializer);
             }
             clockwiseBinding.ActionFuncSerializers.AddRange(tempFuncs);
 
@@ -2169,7 +2181,9 @@ namespace SteamControllerTest
             counterClockwiseBinding.ActionDirName = touchCircAct.CounterClockwiseBtn.Name;
             foreach (ActionFunc tempFunc in touchCircAct.CounterClockwiseBtn.ActionFuncs)
             {
-                tempFuncs.Add(new ActionFuncSerializer(tempFunc));
+                ActionFuncSerializer tempSerializer =
+                        ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                tempFuncs.Add(tempSerializer);
             }
             counterClockwiseBinding.ActionFuncSerializers.AddRange(tempFuncs);
         }
@@ -3063,7 +3077,12 @@ namespace SteamControllerTest
                 tempFuncs.Clear();
                 foreach (ActionFunc tempFunc in dirButton.ActionFuncs)
                 {
-                    tempFuncs.Add(new ActionFuncSerializer(tempFunc));
+                    ActionFuncSerializer tempSerializer =
+                        ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                    if (tempSerializer != null)
+                    {
+                        tempFuncs.Add(tempSerializer);
+                    }
                 }
 
                 SwipeDirBinding.SwipeDir swipeDir = SwipeDirBinding.SwipeDir.Left;
@@ -3079,7 +3098,7 @@ namespace SteamControllerTest
                 dictDirBindings.Add(swipeDir, new SwipeDirBinding()
                 {
                     ActionDirName = dirButton.Name,
-                    ActionFuncSerializers = tempFuncs,
+                    ActionFuncSerializers = new List<ActionFuncSerializer>(tempFuncs),
                 });
             }
 
@@ -3091,7 +3110,12 @@ namespace SteamControllerTest
                 tempFuncs.Clear();
                 foreach (ActionFunc tempFunc in dirButton.ActionFuncs)
                 {
-                    tempFuncs.Add(new ActionFuncSerializer(tempFunc));
+                    ActionFuncSerializer tempSerializer =
+                        ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                    if (tempSerializer != null)
+                    {
+                        tempFuncs.Add(tempSerializer);
+                    }
                 }
 
                 SwipeDirBinding.SwipeDir swipeDir = SwipeDirBinding.SwipeDir.Left;
@@ -3107,7 +3131,7 @@ namespace SteamControllerTest
                 dictDirBindings.Add(swipeDir, new SwipeDirBinding()
                 {
                     ActionDirName = dirButton.Name,
-                    ActionFuncSerializers = tempFuncs,
+                    ActionFuncSerializers = new List<ActionFuncSerializer>(tempFuncs),
                 });
             }
         }
@@ -3189,7 +3213,9 @@ namespace SteamControllerTest
             {
                 foreach (ActionFunc tempFunc in buttonAction.EventButton.ActionFuncs)
                 {
-                    actionFuncSerializers.Add(new ActionFuncSerializer(tempFunc));
+                    ActionFuncSerializer tempSerializer =
+                        ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                    actionFuncSerializers.Add(tempSerializer);
                 }
             }
         }
@@ -3250,7 +3276,12 @@ namespace SteamControllerTest
         {
             foreach (ActionFunc tempFunc in axisDirButton.ActionFuncs)
             {
-                actionFuncSerializers.Add(new ActionFuncSerializer(tempFunc));
+                ActionFuncSerializer tempSerializer =
+                        ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                if (tempSerializer != null)
+                {
+                    actionFuncSerializers.Add(tempSerializer);
+                }
             }
         }
 
@@ -5095,7 +5126,12 @@ namespace SteamControllerTest
                 tempFuncs.Clear();
                 foreach (ActionFunc tempFunc in dirButton.ActionFuncs)
                 {
-                    tempFuncs.Add(new ActionFuncSerializer(tempFunc));
+                    ActionFuncSerializer tempSerializer =
+                        ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                    if (tempSerializer != null)
+                    {
+                        tempFuncs.Add(tempSerializer);
+                    }
                 }
 
                 SwipeDirBinding.SwipeDir swipeDir = SwipeDirBinding.SwipeDir.Left;
@@ -5111,7 +5147,7 @@ namespace SteamControllerTest
                 dictDirBindings.Add(swipeDir, new SwipeDirBinding()
                 {
                     ActionDirName = dirButton.Name,
-                    ActionFuncSerializers = tempFuncs,
+                    ActionFuncSerializers = new List<ActionFuncSerializer>(tempFuncs),
                 });
             }
 
@@ -5123,7 +5159,12 @@ namespace SteamControllerTest
                 tempFuncs.Clear();
                 foreach (ActionFunc tempFunc in dirButton.ActionFuncs)
                 {
-                    tempFuncs.Add(new ActionFuncSerializer(tempFunc));
+                    ActionFuncSerializer tempSerializer =
+                        ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                    if (tempSerializer != null)
+                    {
+                        tempFuncs.Add(tempSerializer);
+                    }
                 }
 
                 SwipeDirBinding.SwipeDir swipeDir = SwipeDirBinding.SwipeDir.Left;
@@ -5139,7 +5180,7 @@ namespace SteamControllerTest
                 dictDirBindings.Add(swipeDir, new SwipeDirBinding()
                 {
                     ActionDirName = dirButton.Name,
-                    ActionFuncSerializers = tempFuncs,
+                    ActionFuncSerializers = new List<ActionFuncSerializer>(tempFuncs),
                 });
             }
         }
@@ -5797,14 +5838,19 @@ namespace SteamControllerTest
                 tempFuncs.Clear();
                 foreach (ActionFunc tempFunc in dirButton.ActionFuncs)
                 {
-                    tempFuncs.Add(new ActionFuncSerializer(tempFunc));
+                    ActionFuncSerializer tempSerializer =
+                        ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                    if (tempSerializer != null)
+                    {
+                        tempFuncs.Add(tempSerializer);
+                    }
                 }
 
                 //dictPadBindings.Add(tempDir, tempFuncs);
                 dictPadBindings.Add(tempDir, new GyroPadDirBinding()
                 {
                     ActionDirName = dirButton.Name,
-                    ActionFuncSerializers = tempFuncs,
+                    ActionFuncSerializers = new List<ActionFuncSerializer>(tempFuncs),
                 });
             }
         }
