@@ -16,6 +16,8 @@ namespace SteamControllerTest.TouchpadActions
             public const string DEAD_ZONE = "DeadZone";
             public const string TRACKBALL_MODE = "Trackball";
             public const string TRACKBALL_FRICTION = "TrackballFriction";
+            public const string SENSITIVITY = "Sensitivity";
+            public const string VERTICAL_SCALE = "VerticalScale";
         }
 
         private HashSet<string> fullPropertySet = new HashSet<string>()
@@ -24,6 +26,8 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.DEAD_ZONE,
             PropertyKeyStrings.TRACKBALL_MODE,
             PropertyKeyStrings.TRACKBALL_FRICTION,
+            PropertyKeyStrings.SENSITIVITY,
+            PropertyKeyStrings.VERTICAL_SCALE,
         };
 
         public const string ACTION_TYPE_NAME = "TouchMouseAction";
@@ -53,6 +57,8 @@ namespace SteamControllerTest.TouchpadActions
         private const int TRACKBALL_BUFFER_LEN = 8;
 
         private const int DEFAULT_DEADZONE = 8;
+        private const double DEFAULT_SENSITIVITY = 1.0;
+        private const double DEFAULT_VERTICAL_SCALE = 1.0;
 
         private class TrackballVelData
         {
@@ -96,6 +102,20 @@ namespace SteamControllerTest.TouchpadActions
         {
             get => trackballFriction;
             set => trackballFriction = value;
+        }
+
+        private double sensitivity = DEFAULT_SENSITIVITY;
+        public double Sensitivity
+        {
+            get => sensitivity;
+            set => sensitivity = value;
+        }
+
+        private double verticalScale = DEFAULT_VERTICAL_SCALE;
+        public double VerticalScale
+        {
+            get => verticalScale;
+            set => verticalScale = value;
         }
 
         private bool useParentTrackFriction;
@@ -305,6 +325,11 @@ namespace SteamControllerTest.TouchpadActions
 
             double timeElapsed = touchFrame.timeElapsed;
             double coefficient = TOUCHPAD_COEFFICIENT;
+            if (sensitivity != DEFAULT_SENSITIVITY)
+            {
+                coefficient = coefficient * sensitivity;
+            }
+
             double offset = TOUCHPAD_MOUSE_OFFSET;
             // Base speed 8 ms
             double tempDouble = timeElapsed * 125.0;
@@ -335,6 +360,10 @@ namespace SteamControllerTest.TouchpadActions
 
             double yMotion = dy != 0 ? coefficient * (dy * tempDouble)
                 + (normY * (offset * signY)) : 0;
+            if (verticalScale != DEFAULT_VERTICAL_SCALE)
+            {
+                yMotion *= verticalScale;
+            }
 
             double throttla = 1.428;
             //double offman = 10;
@@ -452,6 +481,12 @@ namespace SteamControllerTest.TouchpadActions
                             trackballFriction = tempMouseAction.trackballFriction;
                             useParentTrackFriction = true;
                             CalcTrackAccel();
+                            break;
+                        case PropertyKeyStrings.SENSITIVITY:
+                            sensitivity = tempMouseAction.sensitivity;
+                            break;
+                        case PropertyKeyStrings.VERTICAL_SCALE:
+                            verticalScale = tempMouseAction.verticalScale;
                             break;
                         default:
                             break;

@@ -73,6 +73,30 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler TrackballFrictionChanged;
 
+        public double Sensitivity
+        {
+            get => action.Sensitivity;
+            set
+            {
+                action.Sensitivity = Math.Clamp(value, 0.0, 10.0);
+                SensitivityChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SensitivityChanged;
+
+        public double VerticalScale
+        {
+            get => action.VerticalScale;
+            set
+            {
+                action.VerticalScale = Math.Clamp(value, 0.0, 10.0);
+                VerticalScaleChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler VerticalScaleChanged;
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||
@@ -100,6 +124,20 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 action.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.TRACKBALL_FRICTION);
         }
         public event EventHandler HighlightTrackballFrictionChanged;
+
+        public bool HighlightSensitivity
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.SENSITIVITY);
+        }
+        public event EventHandler HighlightSensitivityChanged;
+
+        public bool HighlightVerticalScale
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.VERTICAL_SCALE);
+        }
+        public event EventHandler HighlightVerticalScaleChanged;
 
         public event EventHandler ActionPropertyChanged;
 
@@ -134,7 +172,29 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
             DeadZoneChanged += TouchpadMousePropViewModel_DeadZoneChanged;
             TrackballEnabledChanged += TouchpadMousePropViewModel_TrackballEnabledChanged;
             TrackballFrictionChanged += TouchpadMousePropViewModel_TrackballFrictionChanged;
+            SensitivityChanged += TouchpadMousePropViewModel_SensitivityChanged;
+            VerticalScaleChanged += TouchpadMousePropViewModel_VerticalScaleChanged;
             ActionPropertyChanged += SetProfileDirty;
+        }
+
+        private void TouchpadMousePropViewModel_VerticalScaleChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.VERTICAL_SCALE))
+            {
+                this.action.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.VERTICAL_SCALE);
+            }
+
+            HighlightVerticalScaleChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TouchpadMousePropViewModel_SensitivityChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.SENSITIVITY))
+            {
+                this.action.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.SENSITIVITY);
+            }
+
+            HighlightSensitivityChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void TouchpadMousePropViewModel_TrackballFrictionChanged(object sender, EventArgs e)

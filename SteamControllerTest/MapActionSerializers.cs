@@ -1587,6 +1587,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler DeadZoneChanged;
+            public bool ShouldSerializeDeadZone()
+            {
+                return touchMouseAct.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.DEAD_ZONE);
+            }
 
             public bool TrackballEnabled
             {
@@ -1598,6 +1602,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler TrackballEnabledChanged;
+            public bool ShouldSerializeTrackballEnabled()
+            {
+                return touchMouseAct.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.TRACKBALL_MODE);
+            }
 
             public int TrackballFriction
             {
@@ -1609,6 +1617,40 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler TrackballFrictionChanged;
+            public bool ShouldSerializeTrackballFriction()
+            {
+                return touchMouseAct.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.TRACKBALL_FRICTION);
+            }
+
+            public double Sensitivity
+            {
+                get => touchMouseAct.Sensitivity;
+                set
+                {
+                    touchMouseAct.Sensitivity = Math.Clamp(value, 0.0, 10.0);
+                    SensitivityChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler SensitivityChanged;
+            public bool ShouldSerializeSensitivity()
+            {
+                return touchMouseAct.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.SENSITIVITY);
+            }
+
+            public double VerticalScale
+            {
+                get => touchMouseAct.VerticalScale;
+                set
+                {
+                    touchMouseAct.VerticalScale = Math.Clamp(value, 0.0, 10.0);
+                    VerticalScaleChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler VerticalScaleChanged;
+            public bool ShouldSerializeVerticalScale()
+            {
+                return touchMouseAct.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.VERTICAL_SCALE);
+            }
 
             public TouchpadMouseSettings(TouchpadMouse action)
             {
@@ -1624,6 +1666,10 @@ namespace SteamControllerTest
             get => settings;
             set => settings = value;
         }
+        public bool ShouldSerializeSettings()
+        {
+            return touchMouseAction.ChangedProperties.Count > 0;
+        }
 
         // Deserialize
         public TouchpadMouseSerializer() : base()
@@ -1635,6 +1681,18 @@ namespace SteamControllerTest
             settings.DeadZoneChanged += Settings_DeadZoneChanged;
             settings.TrackballEnabledChanged += Settings_TrackballEnabledChanged;
             settings.TrackballFrictionChanged += Settings_TrackballFrictionChanged;
+            settings.SensitivityChanged += Settings_SensitivityChanged;
+            settings.VerticalScaleChanged += Settings_VerticalScaleChanged;
+        }
+
+        private void Settings_VerticalScaleChanged(object sender, EventArgs e)
+        {
+            touchMouseAction.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.VERTICAL_SCALE);
+        }
+
+        private void Settings_SensitivityChanged(object sender, EventArgs e)
+        {
+            touchMouseAction.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.SENSITIVITY);
         }
 
         private void Settings_TrackballFrictionChanged(object sender, EventArgs e)
