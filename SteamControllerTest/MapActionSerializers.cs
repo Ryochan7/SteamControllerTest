@@ -2919,6 +2919,10 @@ namespace SteamControllerTest
                 get => actionDirName;
                 set => actionDirName = value;
             }
+            public bool ShouldSerializeActionDirName()
+            {
+                return !string.IsNullOrEmpty(actionDirName);
+            }
 
             private List<ActionFuncSerializer> actionFuncSerializers =
                 new List<ActionFuncSerializer>();
@@ -2949,6 +2953,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler DeadZoneXChanged;
+            public bool ShouldSerializeDeadZoneX()
+            {
+                return touchDirSwipeAction.ChangedProperties.Contains(TouchpadDirectionalSwipe.PropertyKeyStrings.DEAD_ZONE_X);
+            }
 
             public int DeadZoneY
             {
@@ -2960,6 +2968,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler DeadZoneYChanged;
+            public bool ShouldSerializeDeadZoneY()
+            {
+                return touchDirSwipeAction.ChangedProperties.Contains(TouchpadDirectionalSwipe.PropertyKeyStrings.DEAD_ZONE_Y);
+            }
 
             public int DelayTime
             {
@@ -2971,6 +2983,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler DelayTimeChanged;
+            public bool ShouldSerializeDelayTime()
+            {
+                return touchDirSwipeAction.ChangedProperties.Contains(TouchpadDirectionalSwipe.PropertyKeyStrings.DELAY_TIME);
+            }
 
             public TouchpadDirSwipeSettings(TouchpadDirectionalSwipe swipeAction)
             {

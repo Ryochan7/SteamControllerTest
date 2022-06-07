@@ -132,6 +132,13 @@ namespace SteamControllerTest.ViewModels
 
                     break;
                 case 7:
+                    {
+                        TouchpadDirectionalSwipe tempAction = new TouchpadDirectionalSwipe();
+                        //var joyDefaults = mapper.DeviceActionDefaults.GrabTouchCircularActionDefaults();
+                        //joyDefaults.Process(tempAction);
+                        result = tempAction;
+                    }
+
                     break;
                 case 8:
                     {

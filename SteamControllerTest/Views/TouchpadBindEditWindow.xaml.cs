@@ -129,11 +129,38 @@ namespace SteamControllerTest.Views
                     }
 
                     break;
+                case TouchpadDirectionalSwipe:
+                    {
+                        TouchpadDirSwipePropControl propControl = new TouchpadDirSwipePropControl();
+                        propControl.PostInit(touchBindEditVM.Mapper, touchBindEditVM.Action);
+                        propControl.RequestFuncEditor += TouchDirSwipePropControl_RequestFuncEditor;
+                        touchBindEditVM.DisplayControl = propControl;
+                        touchBindEditVM.ActionBaseDisplayControl = propControl;
+                    }
+
+                    break;
                 default:
                     touchBindEditVM.DisplayControl = null;
                     touchBindEditVM.ActionBaseDisplayControl = null;
                     break;
             }
+        }
+
+        private void TouchDirSwipePropControl_RequestFuncEditor(object sender, TouchpadActionPadPropControl.DirButtonBindingArgs e)
+        {
+            FuncBindingControl tempControl = new FuncBindingControl();
+            tempControl.PostInit(touchBindEditVM.Mapper, e.DirBtn);
+            tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+            UserControl oldControl = touchBindEditVM.DisplayControl;
+            touchpadSelectControl.Visibility = Visibility.Collapsed;
+            tempControl.RequestClose += (sender, args) =>
+            {
+                (oldControl as TouchpadDirSwipePropControl).RefreshView();
+                touchBindEditVM.DisplayControl = oldControl;
+                touchpadSelectControl.Visibility = Visibility.Visible;
+            };
+
+            touchBindEditVM.DisplayControl = tempControl;
         }
 
         private void TouchpadSingleBtnPropControl_RequestFuncEditor(object sender, TouchpadActionPadPropControl.DirButtonBindingArgs e)
@@ -295,6 +322,17 @@ namespace SteamControllerTest.Views
                         {
                             touchBindEditVM.UpdateAction(tempControl.TouchSingleBtnVM.Action);
                             TouchActionUpdated?.Invoke(this, tempControl.TouchSingleBtnVM.Action);
+                        }
+                    }
+
+                    break;
+                case TouchpadDirectionalSwipe:
+                    {
+                        TouchpadDirSwipePropControl tempControl = touchBindEditVM.ActionBaseDisplayControl as TouchpadDirSwipePropControl;
+                        if (tempControl.TouchDirSwipeVM.Action != touchBindEditVM.Action)
+                        {
+                            touchBindEditVM.UpdateAction(tempControl.TouchDirSwipeVM.Action);
+                            TouchActionUpdated?.Invoke(this, tempControl.TouchDirSwipeVM.Action);
                         }
                     }
 

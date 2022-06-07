@@ -103,7 +103,7 @@ namespace SteamControllerTest.TouchpadActions
             {
                 deadzoneX = 250,
                 deadzoneY = 250,
-                delayTime = 0,
+                delayTime = 30,
             };
 
             FillDirectionalButtons();
