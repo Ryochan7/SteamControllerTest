@@ -571,8 +571,12 @@ namespace SteamControllerTest.ViewModels
                     {
                         if (item.Data.OutputCodeAlias > 0)
                         {
-                            int keyInd = revKeyCodeDict[item.Data.OutputCodeAlias];
-                            SelectedKeyboardIndex = keyInd;
+                            if (revKeyCodeDict.TryGetValue(item.Data.OutputCodeAlias,
+                                out int keyInd))
+                            {
+                                //int keyInd = revKeyCodeDict[item.Data.OutputCodeAlias];
+                                SelectedKeyboardIndex = keyInd;
+                            }
                         }
                         else
                         {
