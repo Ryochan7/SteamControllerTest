@@ -3913,24 +3913,32 @@ namespace SteamControllerTest
                             case 1: // Wheel Up
                                     //vWheel = 120;
                                 vWheel = (int)(1 * absValue);
+                                mouseWheelY = vWheel;
+                                mouseWheelSync = true;
                                 break;
                             case 2: // Wheel Down
                                     //vWheel = -120;
                                 vWheel = (int)(-1 * absValue);
+                                mouseWheelY = vWheel;
+                                mouseWheelSync = true;
                                 break;
                             case 3: // Wheel Left
                                     //hWheel = 120;
                                 hWheel = (int)(1 * absValue);
+                                mouseWheelX = hWheel;
+                                mouseWheelSync = true;
                                 break;
                             case 4: // Wheel Right
                                     //hWheel = -120;
                                 hWheel = (int)(-1 * absValue);
+                                mouseWheelX = hWheel;
+                                mouseWheelSync = true;
                                 break;
                             default:
                                 break;
                         }
 
-                        fakerInputHandler.PerformMouseWheelEvent(vWheel, hWheel);
+                        //fakerInputHandler.PerformMouseWheelEvent(vWheel, hWheel);
                         //InputMethods.MouseWheel(vWheel, hWheel);
                         actionData.activatedEvent = true;
                     }

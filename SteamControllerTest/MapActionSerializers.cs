@@ -6861,7 +6861,15 @@ namespace SteamControllerTest
                     SerializeExtraJSONProperties(current.OutputData, tempJ);
                     break;
                 case ActionType.MouseWheel:
-                    tempJ.Add("Code", current.OutputData.OutputCode);
+                    if (!string.IsNullOrEmpty(current.OutputData.OutputCodeStr))
+                    {
+                        tempJ.Add("Code", current.OutputData.OutputCodeStr);
+                    }
+                    else
+                    {
+                        tempJ.Add("Code", current.OutputData.OutputCode);
+                    }
+
                     SerializeExtraJSONProperties(current.OutputData, tempJ);
                     break;
                 case ActionType.GamepadControl:
@@ -7009,7 +7017,7 @@ namespace SteamControllerTest
                     break;
                 case ActionType.MouseWheel:
                     JObject settingsJ = new JObject();
-                    if (!actionData.checkTick && actionData.DurationMs != 0)
+                    if (actionData.checkTick && actionData.DurationMs != 0)
                     {
                         settingsJ.Add("TickTime", actionData.DurationMs);
                     }

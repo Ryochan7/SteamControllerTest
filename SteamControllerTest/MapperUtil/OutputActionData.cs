@@ -447,6 +447,7 @@ namespace SteamControllerTest.MapperUtil
             outputCodeAlias = 0;
             outputCodeProfileStr = "";
             changeToLayer = -1;
+            checkTick = false;
         }
 
         public string Describe(Mapper mapper)
