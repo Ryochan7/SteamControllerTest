@@ -71,9 +71,11 @@ namespace SteamControllerTest.TouchpadActions
 
             OutputActionData clockwiseOutputAction =
                 new OutputActionData(OutputActionData.ActionType.MouseWheel, (int)MouseWheelCodes.WheelDown);
+            clockwiseOutputAction.OutputCodeStr = MouseWheelCodes.WheelDown.ToString();
 
             OutputActionData counterClockwiseOutputAction =
                 new OutputActionData(OutputActionData.ActionType.MouseWheel, (int)MouseWheelCodes.WheelUp);
+            counterClockwiseOutputAction.OutputCodeStr = MouseWheelCodes.WheelUp.ToString();
 
             clockwiseBtn = new TouchpadCircularButton();
             clockwiseBtn.ActionFuncs.AddRange(new ActionFunc[]
