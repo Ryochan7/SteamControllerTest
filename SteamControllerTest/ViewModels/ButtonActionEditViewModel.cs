@@ -890,6 +890,19 @@ namespace SteamControllerTest.ViewModels
                 new KeyboardCodeItem("Down", VirtualKeys.Down, "Down", tempInd++),
                 new KeyboardCodeItem("Left", VirtualKeys.Left, "Left", tempInd++),
                 new KeyboardCodeItem("Right", VirtualKeys.Right, "Right", tempInd++),
+
+                new KeyboardCodeItem("F1", VirtualKeys.F1, "F1", tempInd++),
+                new KeyboardCodeItem("F2", VirtualKeys.F2, "F2", tempInd++),
+                new KeyboardCodeItem("F3", VirtualKeys.F3, "F3", tempInd++),
+                new KeyboardCodeItem("F4", VirtualKeys.F4, "F4", tempInd++),
+                new KeyboardCodeItem("F5", VirtualKeys.F5, "F5", tempInd++),
+                new KeyboardCodeItem("F6", VirtualKeys.F6, "F6", tempInd++),
+                new KeyboardCodeItem("F7", VirtualKeys.F7, "F7", tempInd++),
+                new KeyboardCodeItem("F8", VirtualKeys.F8, "F8", tempInd++),
+                new KeyboardCodeItem("F9", VirtualKeys.F9, "F9", tempInd++),
+                new KeyboardCodeItem("F10", VirtualKeys.F10, "F10", tempInd++),
+                new KeyboardCodeItem("F11", VirtualKeys.F11, "F11", tempInd++),
+                new KeyboardCodeItem("F12", VirtualKeys.F12, "F12", tempInd++),
             });
 
             tempInd = 0;

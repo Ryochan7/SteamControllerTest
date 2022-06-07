@@ -85,5 +85,11 @@ namespace SteamControllerTest.ActionUtil
             string result = "";
             return result;
         }
+
+        public virtual string DescribeOutputActions(Mapper mapper)
+        {
+            string result = "";
+            return result;
+        }
     }
 }

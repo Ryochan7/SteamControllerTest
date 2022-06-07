@@ -103,5 +103,22 @@ namespace SteamControllerTest.ActionUtil
 
             return result;
         }
+
+        public override string DescribeOutputActions(Mapper mapper)
+        {
+            string result = "";
+            List<string> tempList = new List<string>();
+            foreach (OutputActionData data in outputActions)
+            {
+                tempList.Add(data.Describe(mapper));
+            }
+
+            if (tempList.Count > 0)
+            {
+                result = $"{string.Join(", ", tempList)}";
+            }
+
+            return result;
+        }
     }
 }

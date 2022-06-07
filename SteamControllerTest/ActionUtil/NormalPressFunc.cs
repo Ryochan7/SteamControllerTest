@@ -194,5 +194,10 @@ namespace SteamControllerTest.ActionUtil
 
             return result;
         }
+
+        public override string DescribeOutputActions(Mapper mapper)
+        {
+            return Describe(mapper);
+        }
     }
 }
