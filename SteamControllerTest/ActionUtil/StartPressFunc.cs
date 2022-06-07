@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SteamControllerTest.MapperUtil;
 
 namespace SteamControllerTest.ActionUtil
 {
@@ -136,6 +137,41 @@ namespace SteamControllerTest.ActionUtil
             waited = false;
             finished = false;
             inToggleState = false;
+        }
+
+        public override string Describe(Mapper mapper)
+        {
+            string result = "";
+            List<string> tempList = new List<string>();
+            foreach (OutputActionData data in outputActions)
+            {
+                tempList.Add(data.Describe(mapper));
+            }
+
+            if (tempList.Count > 0)
+            {
+
+                result = $"S({string.Join(", ", tempList)})";
+            }
+
+            return result;
+        }
+
+        public override string DescribeOutputActions(Mapper mapper)
+        {
+            string result = "";
+            List<string> tempList = new List<string>();
+            foreach (OutputActionData data in outputActions)
+            {
+                tempList.Add(data.Describe(mapper));
+            }
+
+            if (tempList.Count > 0)
+            {
+                result = $"{string.Join(", ", tempList)}";
+            }
+
+            return result;
         }
     }
 }

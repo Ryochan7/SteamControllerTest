@@ -151,6 +151,16 @@ namespace SteamControllerTest.Views
                     }
 
                     break;
+                case StartPressFunc startFunc:
+                    {
+                        StartPressFuncPropControl propControl = new StartPressFuncPropControl();
+                        propControl.PostInit(funcBindVM.Mapper, funcBindVM.Action, startFunc);
+                        propControl.RequestBindingEditor += PropControl_RequestBindingEditor;
+                        propControl.RequestChangeFuncType += PropControl_RequestChangeFuncType;
+                        funcBindVM.DisplayPropControl = propControl;
+                    }
+
+                    break;
                 default:
                     break;
             }

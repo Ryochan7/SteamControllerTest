@@ -392,6 +392,7 @@ namespace SteamControllerTest
             return !settings.IsDefault();
         }
 
+        // Deserialize
         public StartPressFuncSerializer() : base()
         {
             this.type = typeString;
@@ -399,6 +400,7 @@ namespace SteamControllerTest
             settings = new StartPressFuncSettings(startPressFuncInstance);
         }
 
+        // Pre-serialize
         public StartPressFuncSerializer(ActionFunc tempFunc) : base(tempFunc)
         {
             if (tempFunc is StartPressFunc temp)

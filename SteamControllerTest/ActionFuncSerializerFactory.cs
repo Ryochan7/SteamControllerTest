@@ -20,6 +20,9 @@ namespace SteamControllerTest
                 case HoldPressFunc:
                     serializer = new HoldPressFuncSerializer(tempFunc);
                     break;
+                case StartPressFunc:
+                    serializer = new StartPressFuncSerializer(tempFunc);
+                    break;
                 case DoublePressFunc:
                     break;
                 case DistanceFunc:
