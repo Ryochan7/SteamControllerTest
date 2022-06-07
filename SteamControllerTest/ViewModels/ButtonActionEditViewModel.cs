@@ -355,6 +355,7 @@ namespace SteamControllerTest.ViewModels
             int index = selectedSetChoiceIndex;
             if (index == -1) return;
 
+            ResetComboBoxIndex(ActionComboBoxTypes.SetChange);
             AvailableSetChoiceItem tempItem = availableSetsComboItems[index];
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
             bool fireConditionChangedEvent = false;
@@ -396,6 +397,8 @@ namespace SteamControllerTest.ViewModels
                 // Re-connect event
                 SelectedSetChangeConditionIndexChanged += ButtonActionEditViewModel_SelectedSetChangeConditionIndexChanged;
             }
+
+            PostSlotChangeChecks();
         }
 
         private void ButtonActionEditViewModel_SelectedMouseDirIndexChanged(object sender, EventArgs e)
@@ -422,6 +425,7 @@ namespace SteamControllerTest.ViewModels
             });
 
             resetEvent.Wait();
+            PostSlotChangeChecks();
         }
 
         private void ButtonActionEditViewModel_SelectedMouseWheelButtonIndexChanged(object sender, EventArgs e)
@@ -523,6 +527,8 @@ namespace SteamControllerTest.ViewModels
                 default:
                     break;
             }
+
+            PostSlotChangeChecks();
         }
 
         private void DisconnectOutputSlotEvents()
