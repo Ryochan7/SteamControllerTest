@@ -453,6 +453,8 @@ namespace SteamControllerTest.ViewModels
             });
 
             resetEvent.Wait();
+
+            PostSlotChangeChecks();
         }
 
         private void ButtonActionEditViewModel_SelectedLayerChangeConditionIndexChanged(object sender, EventArgs e)
