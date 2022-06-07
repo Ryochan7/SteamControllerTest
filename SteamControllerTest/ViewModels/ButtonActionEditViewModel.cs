@@ -563,7 +563,14 @@ namespace SteamControllerTest.ViewModels
                 case OutputActionData.ActionType.GamepadControl:
                     {
                         JoypadActionCodes temp = item.Data.JoypadCode;
-                        SelectedIndex = gamepadIndexAliases[temp];
+                        if (gamepadIndexAliases.TryGetValue(temp, out int tempInd))
+                        {
+                            SelectedIndex = tempInd;
+                        }
+                        else
+                        {
+                            SelectedIndex = -1;
+                        }
                     }
 
                     break;
