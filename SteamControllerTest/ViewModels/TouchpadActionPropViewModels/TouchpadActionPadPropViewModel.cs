@@ -213,6 +213,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_MODE);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TouchpadActionPad.PropertyKeyStrings.PAD_MODE);
             HighlightPadModeChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -231,6 +232,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.DEAD_ZONE);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TouchpadActionPad.PropertyKeyStrings.DEAD_ZONE);
             HighlightDeadZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -241,6 +243,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.DIAGONAL_RANGE);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TouchpadActionPad.PropertyKeyStrings.DIAGONAL_RANGE);
             HighlightDiagonalRangeChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -251,6 +254,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.REQUIRES_CLICK);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TouchpadActionPad.PropertyKeyStrings.REQUIRES_CLICK);
             HighlightRequiresClickChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -261,6 +265,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.NAME);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TouchpadActionPad.PropertyKeyStrings.NAME);
             HighlightNameChanged?.Invoke(this, EventArgs.Empty);
         }
 

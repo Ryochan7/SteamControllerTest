@@ -79,6 +79,21 @@ namespace SteamControllerTest
 
         //protected ActionFuncStateData actionStateData = new ActionFuncStateData();
 
+        protected class NotifyPropertyChangeArgs
+        {
+            private string propertyName;
+            public string PropertyName => propertyName;
+
+            private Mapper mapper;
+            public Mapper Mapper => mapper;
+
+            public NotifyPropertyChangeArgs(Mapper mapper, string propertyName)
+            {
+                this.mapper = mapper;
+                this.propertyName = propertyName;
+            }
+        }
+
         public abstract void Event(Mapper mapper);
 
         public abstract void Release(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false);

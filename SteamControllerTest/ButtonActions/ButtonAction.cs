@@ -49,6 +49,7 @@ namespace SteamControllerTest.ButtonActions
         private List<ActionFunc> usedFuncList;
 
         protected event EventHandler ActionFuncsUpdated;
+        private event EventHandler<NotifyPropertyChangeArgs> NotifyPropertyChanged;
 
         public List<ActionFunc> ReleaseFuns { get => releaseFuns; }
         public List<ActionFunc> ActionFuncs { get => actionFuncs; }
@@ -1301,6 +1302,8 @@ namespace SteamControllerTest.ButtonActions
                 privateState = parentBtnAction.privateState;
                 parentBtnAction.hasLayeredAction = true;
 
+                parentBtnAction.NotifyPropertyChanged += ParentBtnAction_NotifyPropertyChanged;
+
                 // Determine the set with properties that should inherit
                 // from the parent action
                 IEnumerable<string> useParentProList =
@@ -1341,6 +1344,12 @@ namespace SteamControllerTest.ButtonActions
             }
         }
 
+        private void ParentBtnAction_NotifyPropertyChanged(object sender,
+            NotifyPropertyChangeArgs e)
+        {
+            CascadePropertyChange(e.Mapper, e.PropertyName);
+        }
+
         public override void CopyAction(ButtonMapAction sourceAction)
         {
             if (sourceAction is ButtonAction tempSrcBtnAction)
@@ -1367,6 +1376,45 @@ namespace SteamControllerTest.ButtonActions
                     }
                 }
             }
+        }
+
+        protected override void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+            if (changedProperties.Contains(propertyName))
+            {
+                // Property already overrridden in action. Leave
+                return;
+            }
+            else if (parentButtonAct == null)
+            {
+                // No parent action. Leave
+                return;
+            }
+
+            switch (propertyName)
+            {
+                case PropertyKeyStrings.NAME:
+                    name = parentButtonAct.name;
+                    break;
+                case PropertyKeyStrings.FUNCTIONS:
+                    if (active)
+                    {
+                        Release(mapper, ignoreReleaseActions: true);
+                    }
+
+                    actionFuncs.Clear();
+                    actionFuncs.AddRange(parentButtonAct.actionFuncs);
+                    useParentActions = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public override void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
+        {
+            NotifyPropertyChanged?.Invoke(this,
+                new NotifyPropertyChangeArgs(mapper, propertyName));
         }
 
         public override string Describe()

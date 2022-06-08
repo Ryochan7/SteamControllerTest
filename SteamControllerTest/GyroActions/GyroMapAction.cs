@@ -50,5 +50,13 @@ namespace SteamControllerTest.GyroActions
         public virtual void SoftCopyFromParent(GyroMapAction parentAction)
         {
         }
+
+        protected virtual void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+        }
+
+        public virtual void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
+        {
+        }
     }
 }

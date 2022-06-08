@@ -112,6 +112,8 @@ namespace SteamControllerTest.GyroActions
         private bool toggleActiveState;
         private OneEuroFilter smoothFilter = new OneEuroFilter(1.0, 1.0);
 
+        private event EventHandler<NotifyPropertyChangeArgs> NotifyPropertyChanged;
+
         public GyroMouseJoystick()
         {
             actionTypeName = ACTION_TYPE_NAME;
@@ -481,6 +483,104 @@ namespace SteamControllerTest.GyroActions
                 {
                     UpdateSmoothingFilter();
                 }
+            }
+        }
+
+        public override void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
+        {
+            NotifyPropertyChanged?.Invoke(this,
+                new NotifyPropertyChangeArgs(mapper, propertyName));
+        }
+
+        protected override void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+            if (changedProperties.Contains(propertyName))
+            {
+                // Property already overrridden in action. Leave
+                return;
+            }
+            else if (parentAction == null)
+            {
+                // No parent action. Leave
+                return;
+            }
+
+            GyroMouseJoystick tempGyroStickAction = parentAction as GyroMouseJoystick;
+            bool updateSmoothing = false;
+            switch (propertyName)
+            {
+                case PropertyKeyStrings.NAME:
+                    name = tempGyroStickAction.name;
+                    break;
+                case PropertyKeyStrings.DEAD_ZONE:
+                    mStickParms.deadZone = tempGyroStickAction.mStickParms.deadZone;
+                    break;
+                case PropertyKeyStrings.MAX_ZONE:
+                    mStickParms.maxZone = tempGyroStickAction.mStickParms.maxZone;
+                    break;
+                case PropertyKeyStrings.ANTIDEAD_ZONE_X:
+                    mStickParms.antiDeadzoneX = tempGyroStickAction.mStickParms.antiDeadzoneX;
+                    break;
+                case PropertyKeyStrings.ANTIDEAD_ZONE_Y:
+                    mStickParms.antiDeadzoneY = tempGyroStickAction.mStickParms.antiDeadzoneY;
+                    break;
+                case PropertyKeyStrings.INVERT_X:
+                    mStickParms.invertX = tempGyroStickAction.mStickParms.invertX;
+                    break;
+                case PropertyKeyStrings.INVERT_Y:
+                    mStickParms.invertY = tempGyroStickAction.mStickParms.invertY;
+                    break;
+                case PropertyKeyStrings.VERTICAL_SCALE:
+                    mStickParms.verticalScale = tempGyroStickAction.mStickParms.verticalScale;
+                    break;
+                case PropertyKeyStrings.OUTPUT_AXES:
+                    mStickParms.outputAxes = tempGyroStickAction.mStickParms.outputAxes;
+                    break;
+                case PropertyKeyStrings.OUTPUT_STICK:
+                    mStickParms.outputStick = tempGyroStickAction.mStickParms.outputStick;
+                    actionData.StickCode = mStickParms.outputStick;
+                    break;
+                case PropertyKeyStrings.MAX_OUTPUT_ENABLED:
+                    mStickParms.maxOutputEnabled = tempGyroStickAction.mStickParms.maxOutputEnabled;
+                    break;
+                case PropertyKeyStrings.MAX_OUTPUT:
+                    mStickParms.maxOutput = tempGyroStickAction.mStickParms.maxOutput;
+                    break;
+                case PropertyKeyStrings.TRIGGER_BUTTONS:
+                    mStickParms.gyroTriggerButtons = tempGyroStickAction.mStickParms.gyroTriggerButtons;
+                    break;
+                case PropertyKeyStrings.TRIGGER_ACTIVATE:
+                    mStickParms.triggerActivates = tempGyroStickAction.mStickParms.triggerActivates;
+                    break;
+                case PropertyKeyStrings.TRIGGER_EVAL_COND:
+                    mStickParms.andCond = tempGyroStickAction.mStickParms.andCond;
+                    break;
+                case PropertyKeyStrings.X_AXIS:
+                    mStickParms.useForXAxis = tempGyroStickAction.mStickParms.useForXAxis;
+                    break;
+                case PropertyKeyStrings.TOGGLE_ACTION:
+                    mStickParms.toggleAction = tempGyroStickAction.mStickParms.toggleAction;
+                    ResetToggleActiveState();
+                    break;
+                case PropertyKeyStrings.SMOOTHING_ENABLED:
+                    mStickParms.smoothing = tempGyroStickAction.mStickParms.smoothing;
+                    updateSmoothing = true;
+                    break;
+                case PropertyKeyStrings.SMOOTHING_MINCUTOFF:
+                    mStickParms.oneEuroMinCutoff = tempGyroStickAction.mStickParms.oneEuroMinCutoff;
+                    updateSmoothing = true;
+                    break;
+                case PropertyKeyStrings.SMOOTHING_MINBETA:
+                    mStickParms.oneEuroMinBeta = tempGyroStickAction.mStickParms.oneEuroMinBeta;
+                    updateSmoothing = true;
+                    break;
+                default:
+                    break;
+            }
+
+            if (updateSmoothing)
+            {
+                UpdateSmoothingFilter();
             }
         }
 

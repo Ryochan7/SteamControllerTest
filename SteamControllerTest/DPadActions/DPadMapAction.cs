@@ -20,5 +20,13 @@ namespace SteamControllerTest.DPadActions
         public virtual void SoftCopyFromParent(DPadMapAction parentAction)
         {
         }
+
+        protected virtual void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+        }
+
+        public virtual void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
+        {
+        }
     }
 }

@@ -120,6 +120,8 @@ namespace SteamControllerTest.TouchpadActions
 
         private bool useParentTrackFriction;
 
+        private event EventHandler<NotifyPropertyChangeArgs> NotifyPropertyChanged;
+
         public TouchpadMouse()
         {
             actionTypeName = ACTION_TYPE_NAME;
@@ -457,6 +459,8 @@ namespace SteamControllerTest.TouchpadActions
 
                 this.touchpadDefinition = new TouchpadDefinition(tempMouseAction.touchpadDefinition);
 
+                tempMouseAction.NotifyPropertyChanged += TempMouseAction_NotifyPropertyChanged;
+
                 // Determine the set with properties that should inherit
                 // from the parent action
                 IEnumerable<string> useParentProList =
@@ -495,10 +499,75 @@ namespace SteamControllerTest.TouchpadActions
             }
         }
 
+        private void TempMouseAction_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
+        {
+            CascadePropertyChange(e.Mapper, e.PropertyName);
+        }
+
         private void CalcTrackAccel()
         {
             //trackData.trackballAccel = TRACKBALL_RADIUS * TRACKBALL_JOY_FRICTION / TRACKBALL_INERTIA;
             trackData.trackballAccel = TRACKBALL_RADIUS * trackballFriction / TRACKBALL_INERTIA;
+        }
+
+        public override void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
+        {
+            NotifyPropertyChanged?.Invoke(this,
+                new NotifyPropertyChangeArgs(mapper, propertyName));
+        }
+
+        protected override void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+            if (changedProperties.Contains(propertyName))
+            {
+                // Property already overrridden in action. Leave
+                return;
+            }
+            else if (parentAction == null)
+            {
+                // No parent action. Leave
+                return;
+            }
+
+            TouchpadMouse tempMouseAction = parentAction as TouchpadMouse;
+
+            switch (propertyName)
+            {
+                case PropertyKeyStrings.NAME:
+                    name = tempMouseAction.name;
+                    break;
+                case PropertyKeyStrings.DEAD_ZONE:
+                    deadZone = tempMouseAction.deadZone;
+                    break;
+                case PropertyKeyStrings.TRACKBALL_MODE:
+                    if (active)
+                    {
+                        Release(mapper, ignoreReleaseActions: true);
+                    }
+
+                    trackballEnabled = tempMouseAction.trackballEnabled;
+                    // Copy parent ref
+                    trackData = tempMouseAction.trackData;
+                    break;
+                case PropertyKeyStrings.TRACKBALL_FRICTION:
+                    if (active)
+                    {
+                        Release(mapper, ignoreReleaseActions: true);
+                    }
+
+                    trackballFriction = tempMouseAction.trackballFriction;
+                    useParentTrackFriction = true;
+                    CalcTrackAccel();
+                    break;
+                case PropertyKeyStrings.SENSITIVITY:
+                    sensitivity = tempMouseAction.sensitivity;
+                    break;
+                case PropertyKeyStrings.VERTICAL_SCALE:
+                    verticalScale = tempMouseAction.verticalScale;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

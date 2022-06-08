@@ -85,6 +85,8 @@ namespace SteamControllerTest.GyroActions
         private bool toggleActiveState;
         private OneEuroFilter smoothFilter = new OneEuroFilter(1.0, 1.0);
 
+        private event EventHandler<NotifyPropertyChangeArgs> NotifyPropertyChanged;
+
         public GyroMouse()
         {
             actionTypeName = ACTION_TYPE_NAME;
@@ -322,6 +324,10 @@ namespace SteamControllerTest.GyroActions
                 tempMouseAction.hasLayeredAction = true;
                 mappingId = tempMouseAction.mappingId;
 
+                gyroSensDefinition = new GyroSensDefinition(tempMouseAction.gyroSensDefinition);
+
+                tempMouseAction.NotifyPropertyChanged += TempMouseAction_NotifyPropertyChanged;
+
                 // Determine the set with properties that should inherit
                 // from the parent action
                 IEnumerable<string> useParentProList =
@@ -390,6 +396,94 @@ namespace SteamControllerTest.GyroActions
                 {
                     UpdateSmoothingFilter();
                 }
+            }
+        }
+
+        private void TempMouseAction_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
+        {
+            CascadePropertyChange(e.Mapper, e.PropertyName);
+        }
+
+        public override void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
+        {
+            NotifyPropertyChanged?.Invoke(this,
+                new NotifyPropertyChangeArgs(mapper, propertyName));
+        }
+
+        protected override void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+            if (changedProperties.Contains(propertyName))
+            {
+                // Property already overrridden in action. Leave
+                return;
+            }
+            else if (parentAction == null)
+            {
+                // No parent action. Leave
+                return;
+            }
+
+            GyroMouse tempMouseAction = parentAction as GyroMouse;
+
+            bool updateSmoothing = false;
+            switch (propertyName)
+            {
+                case PropertyKeyStrings.NAME:
+                    name = tempMouseAction.name;
+                    break;
+                case PropertyKeyStrings.DEAD_ZONE:
+                    mouseParams.deadzone = tempMouseAction.mouseParams.deadzone;
+                    break;
+                case PropertyKeyStrings.TRIGGER_BUTTONS:
+                    mouseParams.gyroTriggerButtons = tempMouseAction.mouseParams.gyroTriggerButtons;
+                    break;
+                case PropertyKeyStrings.TRIGGER_ACTIVATE:
+                    mouseParams.triggerActivates = tempMouseAction.mouseParams.triggerActivates;
+                    break;
+                case PropertyKeyStrings.TRIGGER_EVAL_COND:
+                    mouseParams.andCond = tempMouseAction.mouseParams.andCond;
+                    break;
+                case PropertyKeyStrings.SENSITIVITY:
+                    mouseParams.sensitivity = tempMouseAction.mouseParams.sensitivity;
+                    break;
+                case PropertyKeyStrings.VERTICAL_SCALE:
+                    mouseParams.verticalScale = tempMouseAction.mouseParams.verticalScale;
+                    break;
+                case PropertyKeyStrings.INVERT_X:
+                    mouseParams.invertX = tempMouseAction.mouseParams.invertX;
+                    break;
+                case PropertyKeyStrings.INVERT_Y:
+                    mouseParams.invertY = tempMouseAction.mouseParams.invertY;
+                    break;
+                case PropertyKeyStrings.X_AXIS:
+                    mouseParams.useForXAxis = tempMouseAction.mouseParams.useForXAxis;
+                    break;
+                case PropertyKeyStrings.MIN_THRESHOLD:
+                    mouseParams.minThreshold = tempMouseAction.mouseParams.minThreshold;
+                    break;
+                case PropertyKeyStrings.TOGGLE_ACTION:
+                    mouseParams.toggleAction = tempMouseAction.mouseParams.toggleAction;
+                    ResetToggleActiveState();
+                    break;
+                case PropertyKeyStrings.SMOOTHING_ENABLED:
+                    mouseParams.smoothing = tempMouseAction.mouseParams.smoothing;
+                    updateSmoothing = true;
+                    break;
+                case PropertyKeyStrings.SMOOTHING_MINCUTOFF:
+                    mouseParams.oneEuroMinCutoff = tempMouseAction.mouseParams.oneEuroMinCutoff;
+                    updateSmoothing = true;
+                    break;
+                case PropertyKeyStrings.SMOOTHING_MINBETA:
+                    mouseParams.oneEuroMinBeta = tempMouseAction.mouseParams.oneEuroMinBeta;
+                    updateSmoothing = true;
+                    break;
+                default:
+                    break;
+            }
+
+            if (updateSmoothing)
+            {
+                UpdateSmoothingFilter();
             }
         }
 

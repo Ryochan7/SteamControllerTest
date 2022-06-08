@@ -70,5 +70,19 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
                 ActionChanged?.Invoke(this, baseAction);
             }
         }
+
+        protected void ExecuteInMapperThread(Action tempAction)
+        {
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+
+            mapper.QueueEvent(() =>
+            {
+                tempAction?.Invoke();
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
+        }
     }
 }

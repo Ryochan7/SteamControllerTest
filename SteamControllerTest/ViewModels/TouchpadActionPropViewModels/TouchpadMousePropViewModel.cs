@@ -10,26 +10,10 @@ using SteamControllerTest.TouchpadActions;
 
 namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 {
-    public class TouchpadMousePropViewModel
+    public class TouchpadMousePropViewModel : TouchpadActionPropVMBase
     {
-        private Mapper mapper;
-        public Mapper Mapper => mapper;
-
         private TouchpadMouse action;
         public TouchpadMouse Action => action;
-
-        public string Name
-        {
-            get => action.Name;
-            set
-            {
-                if (action.Name == value) return;
-                action.Name = value;
-                NameChanged?.Invoke(this, EventArgs.Empty);
-                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
-            }
-        }
-        public event EventHandler NameChanged;
 
         public string DeadZone
         {
@@ -139,14 +123,13 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler HighlightVerticalScaleChanged;
 
-        public event EventHandler ActionPropertyChanged;
-
-        private bool replacedAction = false;
+        public override event EventHandler ActionPropertyChanged;
 
         public TouchpadMousePropViewModel(Mapper mapper, TouchpadMapAction action)
         {
             this.mapper = mapper;
             this.action = action as TouchpadMouse;
+            this.baseAction = action;
 
             // Check if base ActionLayer action from composite layer
             if (action.ParentAction == null &&
@@ -184,6 +167,11 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 this.action.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.VERTICAL_SCALE);
             }
 
+            ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, TouchpadMouse.PropertyKeyStrings.VERTICAL_SCALE);
+            });
+
             HighlightVerticalScaleChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -194,6 +182,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 this.action.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.SENSITIVITY);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TouchpadMouse.PropertyKeyStrings.SENSITIVITY);
             HighlightSensitivityChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -204,6 +193,11 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 this.action.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.TRACKBALL_FRICTION);
             }
 
+            ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, TouchpadMouse.PropertyKeyStrings.TRACKBALL_FRICTION);
+            });
+
             HighlightTrackballFrictionChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -213,6 +207,11 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
             {
                 this.action.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.TRACKBALL_MODE);
             }
+
+            ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, TouchpadMouse.PropertyKeyStrings.TRACKBALL_MODE);
+            });
 
             HighlightTrackballEnabledChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -229,6 +228,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 this.action.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.NAME);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TouchpadMouse.PropertyKeyStrings.DEAD_ZONE);
             HighlightDeadZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -239,35 +239,8 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 this.action.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.NAME);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TouchpadMouse.PropertyKeyStrings.NAME);
             HighlightNameChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void ReplaceExistingLayerAction(object sender, EventArgs e)
-        {
-            if (!replacedAction)
-            {
-                ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-                mapper.QueueEvent(() =>
-                {
-                    this.action.ParentAction.Release(mapper, ignoreReleaseActions: true);
-
-                    mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddTouchpadAction(this.action);
-                    if (mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer)
-                    {
-                        mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
-                    }
-                    else
-                    {
-                        mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.SyncActions();
-                    }
-
-                    resetEvent.Set();
-                });
-
-                resetEvent.Wait();
-
-                replacedAction = true;
-            }
         }
     }
 }

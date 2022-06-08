@@ -40,5 +40,13 @@ namespace SteamControllerTest.TriggerActions
             this.parentAction = parentAction;
             this.triggerDefinition = new TriggerDefinition(parentAction.triggerDefinition);
         }
+
+        protected virtual void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+        }
+
+        public virtual void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
+        {
+        }
     }
 }

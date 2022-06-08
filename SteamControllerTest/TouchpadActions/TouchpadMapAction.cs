@@ -60,5 +60,13 @@ namespace SteamControllerTest.TouchpadActions
         public virtual void PrepareActions()
         {
         }
+
+        protected virtual void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+        }
+
+        public virtual void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
+        {
+        }
     }
 }

@@ -246,6 +246,12 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
                 action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.INVERT_Y);
             }
 
+            ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.INVERT_X);
+                action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.INVERT_Y);
+            });
+
             HighlightInvertChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -256,6 +262,11 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
                 action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.VERTICAL_SCALE);
             }
 
+            ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.VERTICAL_SCALE);
+            });
+            
             HighlightVerticalScaleChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -266,6 +277,11 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
                 action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.SENSITIVITY);
             }
 
+            ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.SENSITIVITY);
+            });
+            
             HighlightSensitivityChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -275,6 +291,11 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             {
                 action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.TRIGGER_ACTIVATE);
             }
+
+            ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.TRIGGER_ACTIVATE);
+            });
 
             HighlightTriggerActivatesChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -286,6 +307,11 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
                 action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.DEAD_ZONE);
             }
 
+            ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.DEAD_ZONE);
+            });
+
             HighlightDeadZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -295,6 +321,11 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             {
                 action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.NAME);
             }
+
+            ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.NAME);
+            });
 
             HighlightNameChanged?.Invoke(this, EventArgs.Empty);
         }

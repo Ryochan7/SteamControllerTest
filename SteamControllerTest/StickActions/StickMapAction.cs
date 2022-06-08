@@ -26,5 +26,13 @@ namespace SteamControllerTest.StickActions
         public virtual void SoftCopyFromParent(StickMapAction parentAction)
         {
         }
+
+        protected virtual void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+        }
+
+        public virtual void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
+        {
+        }
     }
 }
