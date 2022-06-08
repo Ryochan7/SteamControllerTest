@@ -197,9 +197,16 @@ namespace SteamControllerTest.Views
 
         private void AddFuncButton_Click(object sender, RoutedEventArgs e)
         {
-            FuncBindItem item = funcBindVM.AddTempBindItem();
+            FuncBindItem item = funcBindVM.CurrentItem;
+            if (item != null)
+            {
+                item.ItemActive = false;
+            }
+
+            item = funcBindVM.AddTempBindItem();
             funcBindVM.CurrentItem = item;
             funcBindVM.CurrentBindItemIndex = funcBindVM.FuncList.Count-1;
+            item.ItemActive = true;
 
             //DataContext = null;
 

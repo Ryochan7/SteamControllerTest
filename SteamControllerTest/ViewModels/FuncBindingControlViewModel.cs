@@ -137,6 +137,10 @@ namespace SteamControllerTest.ViewModels
             int selectInd = ind < thing.Count ? ind : thing.Count - 1;
             currentItem = thing[selectInd];
             currentBindItemIndex = selectInd;
+            if (currentItem != null)
+            {
+                currentItem.ItemActive = true;
+            }
         }
 
         public void ChangeFunc(int ind, int selectFunc)
