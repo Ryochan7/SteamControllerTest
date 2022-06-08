@@ -40,7 +40,7 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             get => action;
         }
 
-        private int DeadZone
+        public int DeadZone
         {
             get => action.mouseParams.deadzone;
             set
