@@ -236,16 +236,28 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
         private void GyroMouseActionPropViewModel_InvertChoicesChanged(object sender, EventArgs e)
         {
-            if (action.mouseParams.invertX &&
-                !action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.INVERT_X))
+            if (action.mouseParams.invertX)
             {
-                action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.INVERT_X);
+                if (!action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.INVERT_X))
+                {
+                    action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.INVERT_X);
+                }
+            }
+            else
+            {
+                action.ChangedProperties.Remove(GyroMouse.PropertyKeyStrings.INVERT_X);
             }
 
-            if (action.mouseParams.invertY &&
-                !action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.INVERT_Y))
+            if (action.mouseParams.invertY)
             {
-                action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.INVERT_Y);
+                if (!action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.INVERT_Y))
+                {
+                    action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.INVERT_Y);
+                }
+            }
+            else
+            {
+                action.ChangedProperties.Remove(GyroMouse.PropertyKeyStrings.INVERT_Y);
             }
 
             HighlightInvertChanged?.Invoke(this, EventArgs.Empty);
