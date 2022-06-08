@@ -7070,6 +7070,23 @@ namespace SteamControllerTest
                     }
 
                     break;
+                case ActionType.ApplyActionLayer:
+                case ActionType.RemoveActionLayer:
+                case ActionType.SwitchActionLayer:
+                    {
+                        JObject settingsLayerJ = new JObject();
+                        if (actionData.LayerChangeCondition != ActionLayerChangeCondition.None)
+                        {
+                            settingsLayerJ.Add("ChangeCondition", actionData.LayerChangeCondition.ToString());
+                        }
+
+                        if (settingsLayerJ.Count > 0)
+                        {
+                            jsonObject.Add("Settings", settingsLayerJ);
+                        }
+                    }
+
+                    break;
                 default:
                     break;
             }

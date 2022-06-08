@@ -517,7 +517,7 @@ namespace SteamControllerTest.MapperUtil
                     break;
                 case ActionType.RemoveActionLayer:
                     {
-                        string tempLayerName = $"{changeToLayer}";
+                        /*string tempLayerName = $"{changeToLayer}";
                         if (changeToLayer >= 0 && changeToLayer < mapper.ActionProfile.CurrentActionSet.ActionLayers.Count)
                         {
                             ActionLayer tempLayer = mapper.ActionProfile.CurrentActionSet.ActionLayers[changeToLayer];
@@ -528,6 +528,8 @@ namespace SteamControllerTest.MapperUtil
                         }
 
                         result = $"Remove Layer ({tempLayerName})";
+                        */
+                        result = $"Remove Layer";
                     }
 
                     break;
