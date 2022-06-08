@@ -125,6 +125,7 @@ namespace SteamControllerTest.GyroActions
                 outputAxes = GyroMouseJoystickOuputAxes.All,
                 maxOutput = 1.0,
                 andCond = true,
+                gyroTriggerButtons = new JoypadActionCodes[0],
             };
             mStickParms.OutputStickChanged += MStickParms_OutputStickChanged;
         }

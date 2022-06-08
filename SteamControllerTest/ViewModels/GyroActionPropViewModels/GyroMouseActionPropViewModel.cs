@@ -11,6 +11,29 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 {
     public class GyroMouseActionPropViewModel : GyroActionPropVMBase
     {
+        public enum InvertChocies
+        {
+            None,
+            InvertX,
+            InvertY,
+            InvertXY,
+        }
+
+        public class InvertChoiceItem
+        {
+            private string displayName;
+            public string DisplayName => displayName;
+
+            private InvertChocies choice;
+            public InvertChocies Choice => choice;
+
+            public InvertChoiceItem(string displayName, InvertChocies choice)
+            {
+                this.displayName = displayName;
+                this.choice = choice;
+            }
+        }
+
         protected GyroMouse action;
         public GyroMouse Action
         {
@@ -45,6 +68,89 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler TriggerActivatesChanged;
 
+        public double Sensitivity
+        {
+            get => action.mouseParams.sensitivity;
+            set
+            {
+                action.mouseParams.sensitivity = Math.Clamp(value, 0.0, 10.0);
+                SensitivityChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SensitivityChanged;
+
+        public double VerticalScale
+        {
+            get => action.mouseParams.verticalScale;
+            set
+            {
+                action.mouseParams.verticalScale = Math.Clamp(value, 0.0, 10.0);
+                VerticalScaleChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler VerticalScaleChanged;
+
+        private List<InvertChoiceItem> invertChoiceItems = new List<InvertChoiceItem>()
+        {
+            new InvertChoiceItem("None", InvertChocies.None),
+            new InvertChoiceItem("X", InvertChocies.InvertX),
+            new InvertChoiceItem("Y", InvertChocies.InvertY),
+            new InvertChoiceItem("X+Y", InvertChocies.InvertXY),
+        };
+        public List<InvertChoiceItem> InvertChoiceItems => invertChoiceItems;
+
+        public InvertChocies InvertChoice
+        {
+            get
+            {
+                InvertChocies result = InvertChocies.None;
+                if (action.mouseParams.invertX && action.mouseParams.invertY)
+                {
+                    result = InvertChocies.InvertXY;
+                }
+                else if (action.mouseParams.invertX || action.mouseParams.invertY)
+                {
+                    if (action.mouseParams.invertX)
+                    {
+                        result = InvertChocies.InvertX;
+                    }
+                    else
+                    {
+                        result = InvertChocies.InvertY;
+                    }
+                }
+
+                return result;
+            }
+            set
+            {
+                action.mouseParams.invertX = action.mouseParams.invertY = false;
+
+                switch (value)
+                {
+                    case InvertChocies.None:
+                        break;
+                    case InvertChocies.InvertX:
+                        action.mouseParams.invertX = true;
+                        break;
+                    case InvertChocies.InvertY:
+                        action.mouseParams.invertY = true;
+                        break;
+                    case InvertChocies.InvertXY:
+                        action.mouseParams.invertX = action.mouseParams.invertY = true;
+                        break;
+                    default:
+                        break;
+                }
+
+                InvertChoicesChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler InvertChoicesChanged;
+
         public bool HighlightName
         {
             get => baseAction.ParentAction == null ||
@@ -66,6 +172,20 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler HighlightTriggerActivatesChanged;
 
+        public bool HighlightSensitivity
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.SENSITIVITY);
+        }
+        public event EventHandler HighlightSensitivityChanged;
+
+        public bool HighlightVerticalScale
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.VERTICAL_SCALE);
+        }
+        public event EventHandler HighlightVerticalScaleChanged;
+
         public override event EventHandler ActionPropertyChanged;
 
         public GyroMouseActionPropViewModel(Mapper mapper, GyroMapAction action)
@@ -73,6 +193,7 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             this.mapper = mapper;
             this.action = action as GyroMouse;
             this.baseAction = action;
+            triggerButtonItems = new List<GyroTriggerButtonItem>();
 
             // Check if base ActionLayer action from composite layer
             if (action.ParentAction == null &&
@@ -100,6 +221,28 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             NameChanged += GyroMouseActionPropViewModel_NameChanged;
             DeadZoneChanged += GyroMouseActionPropViewModel_DeadZoneChanged;
             TriggerActivatesChanged += GyroMouseActionPropViewModel_TriggerActivatesChanged;
+            SensitivityChanged += GyroMouseActionPropViewModel_SensitivityChanged;
+            VerticalScaleChanged += GyroMouseActionPropViewModel_VerticalScaleChanged;
+        }
+
+        private void GyroMouseActionPropViewModel_VerticalScaleChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.VERTICAL_SCALE))
+            {
+                action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.VERTICAL_SCALE);
+            }
+
+            HighlightVerticalScaleChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void GyroMouseActionPropViewModel_SensitivityChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.SENSITIVITY))
+            {
+                action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.SENSITIVITY);
+            }
+
+            HighlightSensitivityChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void GyroMouseActionPropViewModel_TriggerActivatesChanged(object sender, EventArgs e)

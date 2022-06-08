@@ -548,8 +548,8 @@ namespace SteamControllerTest
             //mappedActions.Add(action);
             gyroActionDict[action.MappingId] = action;
 
-            normalActionDict.Add(action.MappingId, action);
-            reverseActionDict.Add(action, action.MappingId);
+            normalActionDict[action.MappingId] = action;
+            reverseActionDict[action] = action.MappingId;
         }
 
         public void ReplaceTouchpadAction(TouchpadMapAction oldAction, TouchpadMapAction action)
