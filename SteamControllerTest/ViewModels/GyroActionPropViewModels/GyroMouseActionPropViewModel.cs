@@ -186,6 +186,14 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler HighlightVerticalScaleChanged;
 
+        public bool HighlightInvert
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.INVERT_X) ||
+                action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.INVERT_Y);
+        }
+        public event EventHandler HighlightInvertChanged;
+
         public override event EventHandler ActionPropertyChanged;
 
         public GyroMouseActionPropViewModel(Mapper mapper, GyroMapAction action)
@@ -223,6 +231,24 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             TriggerActivatesChanged += GyroMouseActionPropViewModel_TriggerActivatesChanged;
             SensitivityChanged += GyroMouseActionPropViewModel_SensitivityChanged;
             VerticalScaleChanged += GyroMouseActionPropViewModel_VerticalScaleChanged;
+            InvertChoicesChanged += GyroMouseActionPropViewModel_InvertChoicesChanged;
+        }
+
+        private void GyroMouseActionPropViewModel_InvertChoicesChanged(object sender, EventArgs e)
+        {
+            if (action.mouseParams.invertX &&
+                !action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.INVERT_X))
+            {
+                action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.INVERT_X);
+            }
+
+            if (action.mouseParams.invertY &&
+                !action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.INVERT_Y))
+            {
+                action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.INVERT_Y);
+            }
+
+            HighlightInvertChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void GyroMouseActionPropViewModel_VerticalScaleChanged(object sender, EventArgs e)
