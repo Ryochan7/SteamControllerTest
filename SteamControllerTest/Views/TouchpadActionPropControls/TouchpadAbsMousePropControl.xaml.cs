@@ -64,7 +64,7 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
         {
             RequestFuncEditor?.Invoke(this,
                 new ButtonBindingArgs(touchAbsMousePropVM.Action.RingButton,
-                touchAbsMousePropVM.Action.ChangedProperties.Contains(TouchpadAbsAction.PropertyKeyStrings.OUTER_RING_BUTTON),
+                !touchAbsMousePropVM.Action.UseParentRingButton,
                 touchAbsMousePropVM.UpdateRingButton));
         }
     }

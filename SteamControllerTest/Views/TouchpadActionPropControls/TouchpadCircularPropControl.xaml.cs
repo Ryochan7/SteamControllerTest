@@ -51,7 +51,7 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
         {
             RequestFuncEditor?.Invoke(this,
                 new DirButtonBindingArgs(touchCircVM.Action.ClockWiseBtn,
-                touchCircVM.Action.ChangedProperties.Contains(TouchpadCircular.PropertyKeyStrings.SCROLL_BUTTON_1),
+                !touchCircVM.Action.UseParentCircButtons[0],
                 touchCircVM.UpdateClockWiseBtn));
         }
 
@@ -59,7 +59,7 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
         {
             RequestFuncEditor?.Invoke(this,
                 new DirButtonBindingArgs(touchCircVM.Action.CounterClockwiseBtn,
-                touchCircVM.Action.ChangedProperties.Contains(TouchpadCircular.PropertyKeyStrings.SCROLL_BUTTON_2),
+                !touchCircVM.Action.UseParentCircButtons[1],
                 touchCircVM.UpdateCounterClockWiseBtn));
         }
     }

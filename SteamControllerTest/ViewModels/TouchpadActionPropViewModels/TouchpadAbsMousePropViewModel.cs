@@ -310,6 +310,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
                 action.RingButton = newAction as AxisDirButton;
                 action.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.OUTER_RING_BUTTON);
+                action.UseParentRingButton = false;
 
                 resetEvent.Set();
             });

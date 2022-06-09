@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SteamControllerTest.ButtonActions;
 using SteamControllerTest.TriggerActions;
 
 namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
@@ -165,7 +166,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
 
         public event EventHandler<TriggerMapAction> ActionChanged;
 
-        private bool replacedAction = false;
+        private bool usingRealAction = false;
 
         public TriggerDualStagePropViewModel(Mapper mapper, TriggerMapAction action)
         {
@@ -214,7 +215,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
 
         private void ReplaceExistingLayerAction(object sender, EventArgs e)
         {
-            if (!replacedAction)
+            if (!usingRealAction)
             {
                 ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
@@ -230,6 +231,8 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
                     else
                     {
                         mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.SyncActions();
+                        mapper.ActionProfile.CurrentActionSet.ClearCompositeLayerActions();
+                        mapper.ActionProfile.CurrentActionSet.PrepareCompositeLayer();
                     }
 
                     resetEvent.Set();
@@ -237,7 +240,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
 
                 resetEvent.Wait();
 
-                replacedAction = true;
+                usingRealAction = true;
 
                 ActionChanged?.Invoke(this, action);
             }
@@ -315,6 +318,52 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
                 default:
                     break;
             }
+        }
+
+        public void UpdateFullPullAction(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            //ExecuteInMapperThread(() =>
+            mapper.QueueEvent(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.FullPullActButton = newAction as AxisDirButton;
+                action.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.FULLPULL_BUTTON);
+                action.UseParentFullPullBtn = false;
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
+        }
+
+        public void UpdateSoftPullAction(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            //ExecuteInMapperThread(() =>
+            mapper.QueueEvent(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.SoftPullActButton = newAction as AxisDirButton;
+                action.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.SOFTPULL_BUTTON);
+                action.UseParentSoftPullBtn = false;
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
         }
     }
 }

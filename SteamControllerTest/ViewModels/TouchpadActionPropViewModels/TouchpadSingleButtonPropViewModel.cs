@@ -124,6 +124,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
                 action.EventButton = newAction;
                 action.ChangedProperties.Add(TouchpadSingleButton.PropertyKeyStrings.FUNCTIONS);
+                action.UseParentActions = false;
             });
         }
     }

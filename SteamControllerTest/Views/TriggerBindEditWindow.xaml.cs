@@ -97,6 +97,12 @@ namespace SteamControllerTest.Views
             FuncBindingControl tempControl = new FuncBindingControl();
             tempControl.PostInit(trigBindEditVM.Mapper, e.ActionBtn);
             tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+            tempControl.FuncBindVM.IsRealAction = e.RealAction;
+            tempControl.PreActionSwitch += (oldAction, newAction) =>
+            {
+                e.UpdateActHandler?.Invoke(oldAction, newAction);
+            };
+
             UserControl oldControl = trigBindEditVM.DisplayControl;
             tempControl.RequestClose += (sender, args) =>
             {
@@ -123,6 +129,12 @@ namespace SteamControllerTest.Views
             FuncBindingControl tempControl = new FuncBindingControl();
             tempControl.PostInit(trigBindEditVM.Mapper, e.PullBtn);
             tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+            tempControl.FuncBindVM.IsRealAction = e.RealAction;
+            tempControl.PreActionSwitch += (oldAction, newAction) =>
+            {
+                e.UpdateActHandler?.Invoke(oldAction, newAction);
+            };
+
             UserControl oldControl = trigBindEditVM.DisplayControl;
             tempControl.RequestClose += (sender, args) =>
             {

@@ -81,6 +81,12 @@ namespace SteamControllerTest.Views
             FuncBindingControl tempControl = new FuncBindingControl();
             tempControl.PostInit(stickBindEditVM.Mapper, e.DirBtn);
             tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+            tempControl.FuncBindVM.IsRealAction = e.RealAction;
+            tempControl.PreActionSwitch += (oldAction, newAction) =>
+            {
+                e.UpdateActHandler?.Invoke(oldAction, newAction);
+            };
+
             UserControl oldControl = stickBindEditVM.DisplayControl;
             tempControl.RequestClose += (sender, args) =>
             {

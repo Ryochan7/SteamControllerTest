@@ -29,9 +29,18 @@ namespace SteamControllerTest.Views.TriggerActionPropControls
             private AxisDirButton pullBtn;
             public AxisDirButton PullBtn => pullBtn;
 
-            public DualStageBindingArgs(AxisDirButton pullBtn)
+            private bool realAction;
+            public bool RealAction => realAction;
+
+            public delegate void UpdateActionHandler(ButtonAction oldAction, ButtonAction newAction);
+            private UpdateActionHandler updateActHandler;
+            public UpdateActionHandler UpdateActHandler => updateActHandler;
+
+            public DualStageBindingArgs(AxisDirButton pullBtn, bool realAction, UpdateActionHandler updateActDel)
             {
                 this.pullBtn = pullBtn;
+                this.realAction = realAction;
+                this.updateActHandler = updateActDel;
             }
         }
 
@@ -70,13 +79,17 @@ namespace SteamControllerTest.Views.TriggerActionPropControls
         private void btnEditOpenTest_Click(object sender, RoutedEventArgs e)
         {
             RequestFuncEditor?.Invoke(this,
-                new DualStageBindingArgs(trigDualStagePropVM.Action.FullPullActButton));
+                new DualStageBindingArgs(trigDualStagePropVM.Action.FullPullActButton,
+                !trigDualStagePropVM.Action.UseParentFullPullBtn,
+                trigDualStagePropVM.UpdateFullPullAction));
         }
 
         private void btnEditOpenSoftTest_Click(object sender, RoutedEventArgs e)
         {
             RequestFuncEditor?.Invoke(this,
-                new DualStageBindingArgs(trigDualStagePropVM.Action.SoftPullActButton));
+                new DualStageBindingArgs(trigDualStagePropVM.Action.SoftPullActButton,
+                !trigDualStagePropVM.Action.UseParentSoftPullBtn,
+                trigDualStagePropVM.UpdateSoftPullAction));
         }
     }
 }

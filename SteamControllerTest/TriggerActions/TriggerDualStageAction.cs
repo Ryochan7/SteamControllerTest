@@ -83,7 +83,18 @@ namespace SteamControllerTest.TriggerActions
         private AxisDirButton softPullActButton = new AxisDirButton();
         private AxisDirButton fullPullActButton = new AxisDirButton();
         private bool useParentSoftPullBtn;
+        public bool UseParentSoftPullBtn
+        {
+            get => useParentSoftPullBtn;
+            set => useParentSoftPullBtn = value;
+        }
+
         private bool useParentFullPullBtn;
+        public bool UseParentFullPullBtn
+        {
+            get => useParentFullPullBtn;
+            set => useParentFullPullBtn = value;
+        }
 
         public AxisDirButton SoftPullActButton
         {

@@ -58,7 +58,9 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                     }
                     else
                     {
-                        mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.SyncActions();
+                        mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.SyncActions();
+                        mapper.ActionProfile.CurrentActionSet.ClearCompositeLayerActions();
+                        mapper.ActionProfile.CurrentActionSet.PrepareCompositeLayer();
                     }
 
                     resetEvent.Set();

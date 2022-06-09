@@ -172,6 +172,7 @@ namespace SteamControllerTest.StickActions
         protected StickPadAction parentPadAction;
         protected bool useParentActions;
         protected bool[] useParentDataDraft2 = new bool[13];
+        public bool[] UsingParentActionButton => useParentDataDraft2;
         private bool useParentRingButton;
 
         public StickPadAction()

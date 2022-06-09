@@ -69,7 +69,10 @@ namespace SteamControllerTest.TouchpadActions
             new Dictionary<ButtonAction, SwipeAxisYDir>();
 
         private bool[] useParentDataX = new bool[3];
+        public bool[] UseParentDataX => useParentDataX;
+
         private bool[] useParentDataY = new bool[3];
+        public bool[] UseParentDataY => useParentDataY;
 
         private SwipeAxisXDir previousXDir;
         private SwipeAxisYDir previousYDir;

@@ -959,7 +959,13 @@ namespace SteamControllerTest
             this.settings = new TriggerButtonActionSettings(trigBtnAction);
 
             NameChanged += TriggerButtonActionSerializer_NameChanged;
+            ActionFuncSerializersChanged += TriggerButtonActionSerializer_ActionFuncSerializersChanged;
             settings.DeadZoneChanged += Settings_DeadZoneChanged;
+        }
+
+        private void TriggerButtonActionSerializer_ActionFuncSerializersChanged(object sender, EventArgs e)
+        {
+            trigBtnAction.ChangedProperties.Add(TriggerButtonAction.PropertyKeyStrings.OUTPUT_BINDING);
         }
 
         private void Settings_DeadZoneChanged(object sender, EventArgs e)

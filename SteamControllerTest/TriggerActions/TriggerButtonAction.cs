@@ -14,6 +14,7 @@ namespace SteamControllerTest.TriggerActions
         {
             public const string NAME = "Name";
             public const string DEAD_ZONE = "DeadZone";
+            public const string OUTPUT_BINDING = "OutputBinding";
             //public const string MAX_ZONE = "MaxZone";
             //public const string ANTIDEAD_ZONE = "AntiDeadZone";
         }
@@ -22,6 +23,7 @@ namespace SteamControllerTest.TriggerActions
         {
             PropertyKeyStrings.NAME,
             PropertyKeyStrings.DEAD_ZONE,
+            PropertyKeyStrings.OUTPUT_BINDING,
             //PropertyKeyStrings.MAX_ZONE,
             //PropertyKeyStrings.ANTIDEAD_ZONE,
         };
@@ -33,6 +35,14 @@ namespace SteamControllerTest.TriggerActions
         public AxisDirButton EventButton
         {
             get => eventButton;
+            set => eventButton = value;
+        }
+
+        private bool useParentEventButton;
+        public bool UseParentEventButton
+        {
+            get => useParentEventButton;
+            set => useParentEventButton = value;
         }
 
         private double axisNorm = 0.0;
@@ -90,6 +100,19 @@ namespace SteamControllerTest.TriggerActions
             active = activeEvent = false;
         }
 
+        public override void SoftRelease(Mapper mapper, MapAction checkAction, bool resetState = true)
+        {
+            if (!useParentEventButton)
+            {
+                eventButton.PrepareAnalog(mapper, 0.0, 0.0);
+                eventButton.Event(mapper);
+            }
+
+            axisNorm = 0.0;
+            inputStatus = false;
+            active = activeEvent = false;
+        }
+
         public override void SoftCopyFromParent(TriggerMapAction parentAction)
         {
             if (parentAction is TriggerButtonAction tempBtnAction)
@@ -113,6 +136,10 @@ namespace SteamControllerTest.TriggerActions
                             break;
                         case PropertyKeyStrings.DEAD_ZONE:
                             deadZone.DeadZone = tempBtnAction.deadZone.DeadZone;
+                            break;
+                        case PropertyKeyStrings.OUTPUT_BINDING:
+                            useParentEventButton = true;
+                            eventButton = tempBtnAction.EventButton;
                             break;
                         default:
                             break;

@@ -34,6 +34,7 @@ namespace SteamControllerTest.TouchpadActions
         public bool UseParentActions
         {
             get => useParentActions;
+            set => useParentActions = value;
         }
 
         public ButtonAction EventButton

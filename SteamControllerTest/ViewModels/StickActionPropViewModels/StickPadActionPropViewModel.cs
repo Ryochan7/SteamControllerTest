@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SteamControllerTest.ButtonActions;
 using SteamControllerTest.StickActions;
 
 namespace SteamControllerTest.ViewModels.StickActionPropViewModels
@@ -166,7 +167,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
         public event EventHandler ActionPropertyChanged;
         public event EventHandler<StickMapAction> ActionChanged;
 
-        private bool replacedAction = false;
+        private bool usingRealAction = false;
 
         public StickPadActionPropViewModel(Mapper mapper, StickMapAction action)
         {
@@ -231,7 +232,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
 
         private void ReplaceExistingLayerAction(object sender, EventArgs e)
         {
-            if (!replacedAction)
+            if (!usingRealAction)
             {
                 ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
@@ -247,6 +248,8 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                     else
                     {
                         mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.SyncActions();
+                        mapper.ActionProfile.CurrentActionSet.ClearCompositeLayerActions();
+                        mapper.ActionProfile.CurrentActionSet.PrepareCompositeLayer();
                     }
 
                     resetEvent.Set();
@@ -254,7 +257,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
 
                 resetEvent.Wait();
 
-                replacedAction = true;
+                usingRealAction = true;
 
                 ActionChanged?.Invoke(this, action);
             }
@@ -275,6 +278,156 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
             {
                 selectedPadModeIndex = index;
             }
+        }
+
+        public void UpdateUpDirAction(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.EventCodes4[(int)StickPadAction.DpadDirections.Up] = newAction as AxisDirButton;
+                action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_UP);
+                this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Up] = false;
+            });
+        }
+
+        public void UpdateDownDirAction(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.EventCodes4[(int)StickPadAction.DpadDirections.Down] = newAction as AxisDirButton;
+                action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_DOWN);
+                this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Down] = false;
+            });
+        }
+
+        public void UpdateLeftDirAction(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.EventCodes4[(int)StickPadAction.DpadDirections.Left] = newAction as AxisDirButton;
+                action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_LEFT);
+                this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Left] = false;
+            });
+        }
+
+        public void UpdateRightDirAction(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.EventCodes4[(int)StickPadAction.DpadDirections.Right] = newAction as AxisDirButton;
+                action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_RIGHT);
+                this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Right] = false;
+            });
+        }
+
+        public void UpdateUpLeftDirAction(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.EventCodes4[(int)StickPadAction.DpadDirections.UpLeft] = newAction as AxisDirButton;
+                action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_UPLEFT);
+                this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.UpLeft] = false;
+            });
+        }
+
+        public void UpdateUpRightDirAction(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.EventCodes4[(int)StickPadAction.DpadDirections.UpRight] = newAction as AxisDirButton;
+                action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_UPRIGHT);
+                this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.UpRight] = false;
+            });
+        }
+
+        public void UpdateDownLeftDirAction(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.EventCodes4[(int)StickPadAction.DpadDirections.DownLeft] = newAction as AxisDirButton;
+                action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_DOWNLEFT);
+                this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.DownLeft] = false;
+            });
+        }
+
+        public void UpdateDownRightDirAction(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.EventCodes4[(int)StickPadAction.DpadDirections.DownRight] = newAction as AxisDirButton;
+                action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_DOWNRIGHT);
+                this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.DownRight] = false;
+            });
+        }
+
+        protected void ExecuteInMapperThread(Action tempAction)
+        {
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+
+            mapper.QueueEvent(() =>
+            {
+                tempAction?.Invoke();
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
         }
     }
 

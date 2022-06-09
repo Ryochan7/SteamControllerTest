@@ -77,6 +77,11 @@ namespace SteamControllerTest.TouchpadActions
         private AxisDirButton ringButton = new AxisDirButton();
         private AxisDirButton usedRingButton = null;
         private bool useParentRingButton;
+        public bool UseParentRingButton
+        {
+            get => useParentRingButton;
+            set => useParentRingButton = value;
+        }
 
         /// <summary>
         /// Used to determine outer ring mode or inner ring mode. Will change to using an Enum later

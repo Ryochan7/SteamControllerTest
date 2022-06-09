@@ -176,6 +176,7 @@ namespace SteamControllerTest.TouchpadActions
         }
 
         private bool[] useParentDataDraft2 = new bool[13];
+        public bool[] UseParentActionButton => useParentDataDraft2;
         private bool useParentRingButton;
 
         private bool useParentDelay;

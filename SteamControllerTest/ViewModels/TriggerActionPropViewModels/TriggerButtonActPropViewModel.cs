@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SteamControllerTest.MapperUtil;
+using SteamControllerTest.ButtonActions;
 using SteamControllerTest.TriggerActions;
 
 namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
@@ -73,7 +74,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
         public event EventHandler ActionPropertyChanged;
         public event EventHandler<TriggerMapAction> ActionChanged;
 
-        private bool replacedAction = false;
+        private bool usingRealAction = false;
 
         public TriggerButtonActPropViewModel(Mapper mapper, TriggerMapAction action)
         {
@@ -128,7 +129,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
 
         private void ReplaceExistingLayerAction(object sender, EventArgs e)
         {
-            if (!replacedAction)
+            if (!usingRealAction)
             {
                 ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
@@ -143,7 +144,9 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
                     }
                     else
                     {
-                        mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.SyncActions();
+                        mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.SyncActions();
+                        mapper.ActionProfile.CurrentActionSet.ClearCompositeLayerActions();
+                        mapper.ActionProfile.CurrentActionSet.PrepareCompositeLayer();
                     }
 
                     resetEvent.Set();
@@ -151,7 +154,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
 
                 resetEvent.Wait();
 
-                replacedAction = true;
+                usingRealAction = true;
 
                 ActionChanged?.Invoke(this, action);
             }
@@ -160,6 +163,29 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
         private void PrepareModel()
         {
 
+        }
+
+        public void UpdateEventButton(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            //ExecuteInMapperThread(() =>
+            mapper.QueueEvent(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.EventButton = newAction as AxisDirButton;
+                action.ChangedProperties.Add(TriggerButtonAction.PropertyKeyStrings.OUTPUT_BINDING);
+                action.UseParentEventButton = false;
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
         }
     }
 }

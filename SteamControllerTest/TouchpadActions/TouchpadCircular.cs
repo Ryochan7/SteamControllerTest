@@ -63,6 +63,7 @@ namespace SteamControllerTest.TouchpadActions
         }
 
         private bool[] useParentCircButtons = new bool[2];
+        public bool[] UseParentCircButtons => useParentCircButtons;
 
         private StickDeadZone deadMod;
         public StickDeadZone DeadMod => deadMod;

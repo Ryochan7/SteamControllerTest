@@ -72,7 +72,7 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
         {
             RequestFuncEditor?.Invoke(this,
                 new DirButtonBindingArgs(touchActionPropVM.Action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Up],
-                touchActionPropVM.Action.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_UP),
+                !touchActionPropVM.Action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.Up],
                 touchActionPropVM.UpdateUpDirAction));
         }
 
@@ -80,7 +80,7 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
         {
             RequestFuncEditor?.Invoke(this,
                 new DirButtonBindingArgs(touchActionPropVM.Action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Down],
-                touchActionPropVM.Action.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_DOWN),
+                !touchActionPropVM.Action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.Down],
                 touchActionPropVM.UpdateDownDirAction));
         }
 
@@ -88,7 +88,7 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
         {
             RequestFuncEditor?.Invoke(this,
                 new DirButtonBindingArgs(touchActionPropVM.Action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Left],
-                touchActionPropVM.Action.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_LEFT),
+                !touchActionPropVM.Action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.Left],
                 touchActionPropVM.UpdateLeftDirAction));
         }
 
@@ -96,7 +96,7 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
         {
             RequestFuncEditor?.Invoke(this,
                 new DirButtonBindingArgs(touchActionPropVM.Action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Right],
-                touchActionPropVM.Action.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_RIGHT),
+                !touchActionPropVM.Action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.Right],
                 touchActionPropVM.UpdateRightAction));
         }
 
@@ -104,7 +104,7 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
         {
             RequestFuncEditor?.Invoke(this,
                 new DirButtonBindingArgs(touchActionPropVM.Action.EventCodes4[(int)TouchpadActionPad.DpadDirections.UpLeft],
-                touchActionPropVM.Action.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_UPLEFT),
+                !touchActionPropVM.Action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.UpLeft],
                 touchActionPropVM.UpdateUpLeftAction));
         }
 
@@ -112,7 +112,7 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
         {
             RequestFuncEditor?.Invoke(this,
                 new DirButtonBindingArgs(touchActionPropVM.Action.EventCodes4[(int)TouchpadActionPad.DpadDirections.UpRight],
-                touchActionPropVM.Action.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_UPRIGHT),
+                !touchActionPropVM.Action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.UpRight],
                 touchActionPropVM.UpdateUpRightAction));
         }
 
@@ -120,7 +120,7 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
         {
             RequestFuncEditor?.Invoke(this,
                 new DirButtonBindingArgs(touchActionPropVM.Action.EventCodes4[(int)TouchpadActionPad.DpadDirections.DownLeft],
-                touchActionPropVM.Action.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_DOWNLEFT),
+                !touchActionPropVM.Action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.DownLeft],
                 touchActionPropVM.UpdateDownLeftAction));
         }
 
@@ -128,7 +128,7 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
         {
             RequestFuncEditor?.Invoke(this,
                 new DirButtonBindingArgs(touchActionPropVM.Action.EventCodes4[(int)TouchpadActionPad.DpadDirections.DownRight],
-                touchActionPropVM.Action.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_DOWNRIGHT),
+                !touchActionPropVM.Action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.DownRight],
                 touchActionPropVM.UpdateDownRightAction));
         }
     }

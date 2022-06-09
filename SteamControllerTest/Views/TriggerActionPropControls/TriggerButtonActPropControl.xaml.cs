@@ -28,9 +28,18 @@ namespace SteamControllerTest.Views.TriggerActionPropControls
             private AxisDirButton actionBtn;
             public AxisDirButton ActionBtn => actionBtn;
 
-            public TriggerButtonBindingArgs(AxisDirButton actionBtn)
+            private bool realAction;
+            public bool RealAction => realAction;
+
+            public delegate void UpdateActionHandler(ButtonAction oldAction, ButtonAction newAction);
+            private UpdateActionHandler updateActHandler;
+            public UpdateActionHandler UpdateActHandler => updateActHandler;
+
+            public TriggerButtonBindingArgs(AxisDirButton actionBtn, bool realAction, UpdateActionHandler updateActDel)
             {
                 this.actionBtn = actionBtn;
+                this.realAction = realAction;
+                this.updateActHandler = updateActDel;
             }
         }
 
@@ -71,7 +80,9 @@ namespace SteamControllerTest.Views.TriggerActionPropControls
         private void btnEditOpenTest_Click(object sender, RoutedEventArgs e)
         {
             RequestFuncEditor?.Invoke(this,
-                new TriggerButtonBindingArgs(trigBtnActVM.Action.EventButton));
+                new TriggerButtonBindingArgs(trigBtnActVM.Action.EventButton,
+                !trigBtnActVM.Action.UseParentEventButton,
+                trigBtnActVM.UpdateEventButton));
         }
     }
 }

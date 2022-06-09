@@ -201,6 +201,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
                 action.UsedEventsButtonsY[(int)TouchpadDirectionalSwipe.SwipeAxisYDir.Up] = newAction;
                 action.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_UP);
+                action.UseParentDataY[(int)TouchpadDirectionalSwipe.SwipeAxisYDir.Up] = false;
             });
         }
 
@@ -217,6 +218,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
                 action.UsedEventsButtonsY[(int)TouchpadDirectionalSwipe.SwipeAxisYDir.Down] = newAction;
                 action.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_DOWN);
+                action.UseParentDataY[(int)TouchpadDirectionalSwipe.SwipeAxisYDir.Down] = false;
             });
         }
 
@@ -233,6 +235,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
                 action.UsedEventsButtonsX[(int)TouchpadDirectionalSwipe.SwipeAxisXDir.Left] = newAction;
                 action.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_LEFT);
+                action.UseParentDataX[(int)TouchpadDirectionalSwipe.SwipeAxisXDir.Left] = false;
             });
         }
 
@@ -249,6 +252,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
                 action.UsedEventsButtonsX[(int)TouchpadDirectionalSwipe.SwipeAxisXDir.Right] = newAction;
                 action.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_RIGHT);
+                action.UseParentDataX[(int)TouchpadDirectionalSwipe.SwipeAxisXDir.Right] = false;
             });
         }
     }

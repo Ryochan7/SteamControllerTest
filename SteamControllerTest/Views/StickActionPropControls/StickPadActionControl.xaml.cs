@@ -29,9 +29,18 @@ namespace SteamControllerTest.Views.StickActionPropControls
             private AxisDirButton dirBtn;
             public AxisDirButton DirBtn => dirBtn;
 
-            public DirButtonBindingArgs(AxisDirButton dirBtn)
+            private bool realAction;
+            public bool RealAction => realAction;
+
+            public delegate void UpdateActionHandler(ButtonAction oldAction, ButtonAction newAction);
+            private UpdateActionHandler updateActHandler;
+            public UpdateActionHandler UpdateActHandler => updateActHandler;
+
+            public DirButtonBindingArgs(AxisDirButton dirBtn, bool realAction, UpdateActionHandler updateActDel)
             {
                 this.dirBtn = dirBtn;
+                this.realAction = realAction;
+                this.updateActHandler = updateActDel;
             }
         }
 
@@ -70,50 +79,68 @@ namespace SteamControllerTest.Views.StickActionPropControls
 
         private void btnUpEdit_Click(object sender, RoutedEventArgs e)
         {
+            bool fuckery = stickPadActVM.Action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Up];
+
             RequestFuncEditor?.Invoke(this,
-                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.Up]));
+                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.Up],
+                !stickPadActVM.Action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Up],
+                stickPadActVM.UpdateUpDirAction));
         }
 
         private void btnDownEdit_Click(object sender, RoutedEventArgs e)
         {
             RequestFuncEditor?.Invoke(this,
-                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.Down]));
+                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.Down],
+                !stickPadActVM.Action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Down],
+                stickPadActVM.UpdateDownDirAction));
         }
 
         private void btnLeftEdit_Click(object sender, RoutedEventArgs e)
         {
             RequestFuncEditor?.Invoke(this,
-                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.Left]));
+                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.Left],
+                !stickPadActVM.Action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Left],
+                stickPadActVM.UpdateLeftDirAction));
         }
 
         private void btnRightEdit_Click(object sender, RoutedEventArgs e)
         {
             RequestFuncEditor?.Invoke(this,
-                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.Right]));
+                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.Right],
+                !stickPadActVM.Action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Right],
+                stickPadActVM.UpdateRightDirAction));
         }
 
         private void btnUpLeftEdit_Click(object sender, RoutedEventArgs e)
         {
             RequestFuncEditor?.Invoke(this,
-                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.UpLeft]));
+                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.UpLeft],
+                !stickPadActVM.Action.UsingParentActionButton[(int)StickPadAction.DpadDirections.UpLeft],
+                stickPadActVM.UpdateUpLeftDirAction));
         }
 
         private void btnUpRightEdit_Click(object sender, RoutedEventArgs e)
         {
             RequestFuncEditor?.Invoke(this,
-                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.UpRight]));
+                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.UpRight],
+                !stickPadActVM.Action.UsingParentActionButton[(int)StickPadAction.DpadDirections.UpRight],
+                stickPadActVM.UpdateUpRightDirAction));
         }
 
         private void btnDownLeftEdit_Click(object sender, RoutedEventArgs e)
         {
             RequestFuncEditor?.Invoke(this,
-                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.DownLeft]));
+                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.DownLeft],
+                !stickPadActVM.Action.UsingParentActionButton[(int)StickPadAction.DpadDirections.DownLeft],
+                stickPadActVM.UpdateDownLeftDirAction));
         }
 
         private void btnDownRightEdit_Click(object sender, RoutedEventArgs e)
         {
             RequestFuncEditor?.Invoke(this,
-                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.DownRight]));
+                new DirButtonBindingArgs(stickPadActVM.Action.EventCodes4[(int)StickPadAction.DpadDirections.DownRight],
+                !stickPadActVM.Action.UsingParentActionButton[(int)StickPadAction.DpadDirections.DownRight],
+                stickPadActVM.UpdateDownRightDirAction));
         }
     }
 }

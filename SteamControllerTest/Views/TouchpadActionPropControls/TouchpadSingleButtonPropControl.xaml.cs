@@ -50,7 +50,7 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
         {
             RequestFuncEditor?.Invoke(this,
                 new DirButtonBindingArgs(touchSingleBtnVM.Action.EventButton,
-                touchSingleBtnVM.Action.ChangedProperties.Contains(TouchpadSingleButton.PropertyKeyStrings.FUNCTIONS),
+                !touchSingleBtnVM.Action.UseParentActions,
                 touchSingleBtnVM.UpdateEventButton));
         }
     }
