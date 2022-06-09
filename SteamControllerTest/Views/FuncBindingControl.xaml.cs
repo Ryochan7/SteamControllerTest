@@ -240,6 +240,7 @@ namespace SteamControllerTest.Views
             ButtonAction oldAction = funcBindVM.Action as ButtonAction;
             ButtonAction newAction = FuncBindingControlViewModel.CopyAction(oldAction);
 
+            PreActionSwitch?.Invoke(oldAction, newAction);
             funcBindVM.SwitchAction(oldAction, newAction);
             ActionChanged?.Invoke(this, newAction);
 

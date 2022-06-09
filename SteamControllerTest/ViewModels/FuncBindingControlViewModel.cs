@@ -201,7 +201,7 @@ namespace SteamControllerTest.ViewModels
 
         public void SwitchAction(ButtonAction oldAction, ButtonAction newAction)
         {
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            /*ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
             mapper.QueueEvent(() =>
             {
@@ -231,6 +231,7 @@ namespace SteamControllerTest.ViewModels
             });
 
             resetEvent.Wait();
+            */
 
             this.action = newAction;
         }

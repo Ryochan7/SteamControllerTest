@@ -215,9 +215,16 @@ namespace SteamControllerTest.Views
 
         private void PropActionPadControl_RequestFuncEditor(object sender, TouchpadActionPadPropControl.DirButtonBindingArgs e)
         {
+            TouchpadActionPadPropControl senderControl = sender as TouchpadActionPadPropControl;
             FuncBindingControl tempControl = new FuncBindingControl();
             tempControl.PostInit(touchBindEditVM.Mapper, e.DirBtn);
             tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+            tempControl.FuncBindVM.IsRealAction = e.RealAction;
+            tempControl.PreActionSwitch += (oldAction, newAction) =>
+            {
+                e.UpdateActHandler?.Invoke(oldAction, newAction);
+            };
+
             UserControl oldControl = touchBindEditVM.DisplayControl;
             touchpadSelectControl.Visibility = Visibility.Collapsed;
             tempControl.RequestClose += (sender, args) =>

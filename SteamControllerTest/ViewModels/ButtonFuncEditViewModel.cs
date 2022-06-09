@@ -132,10 +132,9 @@ namespace SteamControllerTest.ViewModels
 
             action.MappingId = this.action.MappingId;
             this.action = action;
-
         }
 
-        public void SwitchLayerAction(ButtonMapAction oldAction, ButtonMapAction newAction)
+        public void SwitchLayerAction(ButtonMapAction oldAction, ButtonMapAction newAction, bool copyProps = true)
         {
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
@@ -152,7 +151,9 @@ namespace SteamControllerTest.ViewModels
 
                     //mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddTouchpadAction(this.action);
                     //newAction.MappingId = oldAction.MappingId;
-                    if (oldAction.Id != MapAction.DEFAULT_UNBOUND_ID)
+                    //if (oldAction.Id != MapAction.DEFAULT_UNBOUND_ID)
+                    bool exists = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.LayerActions.Contains(oldAction);
+                    if (exists)
                     {
                         mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.ReplaceButtonAction(oldAction, newAction);
                     }
@@ -163,10 +164,13 @@ namespace SteamControllerTest.ViewModels
 
                     if (mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer)
                     {
-                        MapAction baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[oldAction.MappingId];
-                        if (MapAction.IsSameType(baseLayerAction, newAction))
+                        if (copyProps)
                         {
-                            newAction.SoftCopyFromParent(baseLayerAction as ButtonMapAction);
+                            MapAction baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[oldAction.MappingId];
+                            if (MapAction.IsSameType(baseLayerAction, newAction))
+                            {
+                                newAction.SoftCopyFromParent(baseLayerAction as ButtonMapAction);
+                            }
                         }
 
                         mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SteamControllerTest.ActionUtil;
+using SteamControllerTest.ButtonActions;
 using SteamControllerTest.MapperUtil;
 using SteamControllerTest.TouchpadActions;
 
@@ -285,6 +286,136 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
             {
                 selectedPadModeIndex = index;
             }
+        }
+
+        public void UpdateUpDirAction(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Up] = newAction;
+                action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_UP);
+            });
+
+
+        }
+
+        public void UpdateDownDirAction(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Down] = newAction;
+                action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_DOWN);
+            });
+        }
+
+        public void UpdateLeftDirAction(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Left] = newAction;
+                action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_LEFT);
+            });
+        }
+
+        public void UpdateRightAction(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Right] = newAction;
+                action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_RIGHT);
+            });
+        }
+
+        public void UpdateDownLeftAction(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.EventCodes4[(int)TouchpadActionPad.DpadDirections.DownLeft] = newAction;
+                action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_DOWNLEFT);
+            });
+        }
+
+        public void UpdateDownRightAction(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.EventCodes4[(int)TouchpadActionPad.DpadDirections.DownRight] = newAction;
+                action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_DOWNRIGHT);
+            });
+        }
+
+        public void UpdateUpLeftAction(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.EventCodes4[(int)TouchpadActionPad.DpadDirections.UpLeft] = newAction;
+                action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_UPLEFT);
+            });
+        }
+
+        public void UpdateUpRightAction(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.EventCodes4[(int)TouchpadActionPad.DpadDirections.UpRight] = newAction;
+                action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_UPRIGHT);
+            });
         }
     }
 

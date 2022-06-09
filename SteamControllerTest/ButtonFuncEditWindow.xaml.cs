@@ -76,6 +76,7 @@ namespace SteamControllerTest
                     bindControl = new FuncBindingControl();
                     bindControl.PostInit(btnFuncEditVM.Mapper, btnFuncEditVM.Action);
                     bindControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+                    bindControl.PreActionSwitch += BindControl_PreActionSwitch;
                     bindControl.ActionChanged += BindControl_ActionChanged;
                     bindControl.RequestClose += BindControl_RequestClose;
                     bindControl.FuncBindVM.IsRealAction = btnFuncEditVM.Action.ParentAction == null;
@@ -93,6 +94,12 @@ namespace SteamControllerTest
                 default:
                     break;
             }
+        }
+
+        private void BindControl_PreActionSwitch(ButtonAction oldAction, ButtonAction newAction)
+        {
+            btnFuncEditVM.SwitchLayerAction(oldAction, newAction, false);
+            btnFuncEditVM.UpdateAction(newAction);
         }
 
         private void BindControl_RequestClose(object sender, EventArgs e)
