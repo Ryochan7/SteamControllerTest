@@ -78,6 +78,7 @@ namespace SteamControllerTest
                     bindControl.RequestBindingEditor += TempControl_RequestBindingEditor;
                     bindControl.ActionChanged += BindControl_ActionChanged;
                     bindControl.RequestClose += BindControl_RequestClose;
+                    bindControl.FuncBindVM.IsRealAction = btnFuncEditVM.Action.ParentAction == null;
                     btnActionEditVM.DisplayControl = bindControl;
 
                     innerViewControl.DataContext = btnActionEditVM;

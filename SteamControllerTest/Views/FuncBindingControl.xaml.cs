@@ -244,6 +244,7 @@ namespace SteamControllerTest.Views
             ActionChanged?.Invoke(this, newAction);
 
             funcBindVM = new FuncBindingControlViewModel(mapper, newAction, defaultPropControl);
+            funcBindVM.IsRealAction = true;
 
             if (funcBindVM.FuncList.Count > 0)
             {

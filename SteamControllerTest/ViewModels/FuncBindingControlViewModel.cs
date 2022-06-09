@@ -87,7 +87,7 @@ namespace SteamControllerTest.ViewModels
                 currentBindItemIndex = 0;
             }
 
-            realAction = action.ParentAction == null;
+            //realAction = action.ParentAction == null;
 
             //thing.Add(new FuncBindItem(action, null, tempInd++));
         }
