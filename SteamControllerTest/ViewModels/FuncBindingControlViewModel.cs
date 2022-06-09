@@ -189,6 +189,7 @@ namespace SteamControllerTest.ViewModels
         public static ButtonAction CopyAction(ButtonAction sourceAction)
         {
             ButtonAction result = new ButtonAction();
+            result.CopyBaseProps(sourceAction);
             result.CopyAction(sourceAction);
             return result;
         }

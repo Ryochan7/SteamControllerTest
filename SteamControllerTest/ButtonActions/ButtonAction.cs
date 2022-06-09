@@ -1350,13 +1350,13 @@ namespace SteamControllerTest.ButtonActions
             CascadePropertyChange(e.Mapper, e.PropertyName);
         }
 
-        public override void CopyAction(ButtonMapAction sourceAction)
+        public override void CopyAction(ButtonMapAction sourceAction, bool addProps = true)
         {
             if (sourceAction is ButtonAction tempSrcBtnAction)
             {
                 // Determine the set with properties that should inherit
                 // from the parent action
-                IEnumerable<string> useParentProList = tempSrcBtnAction.changedProperties;
+                /*IEnumerable<string> useParentProList = tempSrcBtnAction.changedProperties;
 
                 foreach (string parentPropType in useParentProList)
                 {
@@ -1374,6 +1374,18 @@ namespace SteamControllerTest.ButtonActions
                         default:
                             break;
                     }
+                }
+                */
+                name = tempSrcBtnAction.name;
+                foreach (ActionFunc func in tempSrcBtnAction.actionFuncs)
+                {
+                    actionFuncs.Add(ActionFuncCopyFactory.CopyFunc(func));
+                }
+
+                if (addProps)
+                {
+                    changedProperties.Add(PropertyKeyStrings.NAME);
+                    changedProperties.Add(PropertyKeyStrings.FUNCTIONS);
                 }
             }
         }

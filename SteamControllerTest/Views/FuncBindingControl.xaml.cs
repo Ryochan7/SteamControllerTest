@@ -31,6 +31,9 @@ namespace SteamControllerTest.Views
         public event EventHandler<ButtonAction> ActionChanged;
         public event EventHandler RequestClose;
 
+        public delegate void PreActionSwitchHandler(ButtonAction oldAction, ButtonAction newAction);
+        public event PreActionSwitchHandler PreActionSwitch;
+
         public FuncBindingControl()
         {
             InitializeComponent();
@@ -233,8 +236,12 @@ namespace SteamControllerTest.Views
             DataContext = null;
 
             Mapper mapper = funcBindVM.Mapper;
-            ButtonAction oldAction = funcBindVM.Action.ParentAction as ButtonAction;
+            //ButtonAction oldAction = funcBindVM.Action.ParentAction as ButtonAction;
+            ButtonAction oldAction = funcBindVM.Action as ButtonAction;
             ButtonAction newAction = FuncBindingControlViewModel.CopyAction(oldAction);
+
+            funcBindVM.SwitchAction(oldAction, newAction);
+            ActionChanged?.Invoke(this, newAction);
 
             funcBindVM = new FuncBindingControlViewModel(mapper, newAction, defaultPropControl);
 
@@ -244,13 +251,11 @@ namespace SteamControllerTest.Views
                 FuncBindItem item = funcBindVM.FuncList[ind];
                 funcBindVM.CurrentItem = item;
                 funcBindVM.CurrentBindItemIndex = ind;
+                item.ItemActive = true;
 
                 //CheckSelectionActionType(item);
                 SwitchPropView(item);
             }
-
-            funcBindVM.SwitchAction(oldAction, newAction);
-            ActionChanged?.Invoke(this, newAction);
 
             ConnectPartialEvents();
             DataContext = funcBindVM;
