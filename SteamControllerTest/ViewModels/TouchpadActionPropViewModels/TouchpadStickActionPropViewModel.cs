@@ -101,7 +101,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
         public event EventHandler ActionPropertyChanged;
 
-        private bool replacedAction = false;
+        private bool usingRealAction = false;
 
         public bool HighlightName
         {
@@ -160,6 +160,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 //tempAction.MappingId = this.action.MappingId;
 
                 this.action = tempAction;
+                usingRealAction = false;
 
                 ActionPropertyChanged += ReplaceExistingLayerAction;
             }
@@ -236,7 +237,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
         private void ReplaceExistingLayerAction(object sender, EventArgs e)
         {
-            if (!replacedAction)
+            if (!usingRealAction)
             {
                 ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
@@ -259,7 +260,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
                 resetEvent.Wait();
 
-                replacedAction = true;
+                usingRealAction = true;
             }
         }
 

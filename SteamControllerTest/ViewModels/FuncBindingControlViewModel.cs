@@ -55,6 +55,11 @@ namespace SteamControllerTest.ViewModels
         public bool IsRealAction
         {
             get => realAction;
+            set
+            {
+                realAction = value;
+                IsRealActionChanged?.Invoke(this, EventArgs.Empty);
+            }
         }
         public event EventHandler IsRealActionChanged;
 

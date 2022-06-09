@@ -38,17 +38,18 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
         public virtual event EventHandler ActionPropertyChanged;
         public event EventHandler<TouchpadMapAction> ActionChanged;
 
-        protected bool replacedAction = false;
+        protected bool usingRealAction = true;
 
         protected void ReplaceExistingLayerAction(object sender, EventArgs e)
         {
-            if (!replacedAction)
+            if (!usingRealAction)
             {
                 ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
                 mapper.QueueEvent(() =>
                 {
                     this.baseAction.ParentAction.Release(mapper, ignoreReleaseActions: true);
+                    //this.baseAction.Release(mapper, ignoreReleaseActions: true);
 
                     mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddTouchpadAction(this.baseAction);
                     if (mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer)
@@ -65,7 +66,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
                 resetEvent.Wait();
 
-                replacedAction = true;
+                usingRealAction = true;
 
                 ActionChanged?.Invoke(this, baseAction);
             }

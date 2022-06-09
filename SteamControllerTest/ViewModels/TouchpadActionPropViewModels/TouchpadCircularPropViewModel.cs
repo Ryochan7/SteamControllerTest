@@ -54,7 +54,8 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 //tempAction.MappingId = this.action.MappingId;
 
                 this.action = tempAction;
-                this.baseAction = action;
+                this.baseAction = this.action;
+                usingRealAction = false;
 
                 ActionPropertyChanged += ReplaceExistingLayerAction;
             }
