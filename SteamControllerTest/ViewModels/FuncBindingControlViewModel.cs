@@ -193,9 +193,28 @@ namespace SteamControllerTest.ViewModels
 
         public static ButtonAction CopyAction(ButtonAction sourceAction)
         {
-            ButtonAction result = new ButtonAction();
-            result.CopyBaseProps(sourceAction);
-            result.CopyAction(sourceAction);
+            ButtonAction result = null;
+            switch(sourceAction)
+            {
+                case AxisDirButton:
+                    result = new AxisDirButton();
+                    break;
+                case TouchpadCircularButton:
+                    result = new TouchpadCircularButton();
+                    break;
+                case ButtonAction:
+                    result = new ButtonAction();
+                    break;
+                default:
+                    break;
+            }
+
+            if (result != null)
+            {
+                result.CopyBaseProps(sourceAction);
+                result.CopyAction(sourceAction);
+            }
+
             return result;
         }
 

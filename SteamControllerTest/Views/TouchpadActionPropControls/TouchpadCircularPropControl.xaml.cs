@@ -50,13 +50,17 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
         private void BtnEditForward_Click(object sender, RoutedEventArgs e)
         {
             RequestFuncEditor?.Invoke(this,
-                new DirButtonBindingArgs(touchCircVM.Action.ClockWiseBtn));
+                new DirButtonBindingArgs(touchCircVM.Action.ClockWiseBtn,
+                touchCircVM.Action.ChangedProperties.Contains(TouchpadCircular.PropertyKeyStrings.SCROLL_BUTTON_1),
+                touchCircVM.UpdateClockWiseBtn));
         }
 
         private void BtnEditBackward_Click(object sender, RoutedEventArgs e)
         {
             RequestFuncEditor?.Invoke(this,
-                new DirButtonBindingArgs(touchCircVM.Action.CounterClockwiseBtn));
+                new DirButtonBindingArgs(touchCircVM.Action.CounterClockwiseBtn,
+                touchCircVM.Action.ChangedProperties.Contains(TouchpadCircular.PropertyKeyStrings.SCROLL_BUTTON_2),
+                touchCircVM.UpdateCounterClockWiseBtn));
         }
     }
 }

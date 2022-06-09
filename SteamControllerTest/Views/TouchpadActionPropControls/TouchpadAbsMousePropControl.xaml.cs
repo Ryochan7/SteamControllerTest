@@ -28,9 +28,18 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
             private AxisDirButton actionBtn;
             public AxisDirButton ActionBtn => actionBtn;
 
-            public ButtonBindingArgs(AxisDirButton pullBtn)
+            private bool realAction;
+            public bool RealAction => realAction;
+
+            public delegate void UpdateActionHandler(ButtonAction oldAction, ButtonAction newAction);
+            private UpdateActionHandler updateActHandler;
+            public UpdateActionHandler UpdateActHandler => updateActHandler;
+
+            public ButtonBindingArgs(AxisDirButton pullBtn, bool realAction, UpdateActionHandler updateActDel)
             {
                 this.actionBtn = pullBtn;
+                this.realAction = realAction;
+                this.updateActHandler = updateActDel;
             }
         }
 
@@ -54,7 +63,9 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
         private void btnEditTest_Click(object sender, RoutedEventArgs e)
         {
             RequestFuncEditor?.Invoke(this,
-                new ButtonBindingArgs(touchAbsMousePropVM.Action.RingButton));
+                new ButtonBindingArgs(touchAbsMousePropVM.Action.RingButton,
+                touchAbsMousePropVM.Action.ChangedProperties.Contains(TouchpadAbsAction.PropertyKeyStrings.OUTER_RING_BUTTON),
+                touchAbsMousePropVM.UpdateRingButton));
         }
     }
 }

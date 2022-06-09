@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SteamControllerTest.ButtonActions;
 using SteamControllerTest.TouchpadActions;
 
 namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
@@ -185,6 +186,70 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
             }
 
             HighlightNameChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void UpdateUpDirButton(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.UsedEventsButtonsY[(int)TouchpadDirectionalSwipe.SwipeAxisYDir.Up] = newAction;
+                action.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_UP);
+            });
+        }
+
+        public void UpdateDownDirButton(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.UsedEventsButtonsY[(int)TouchpadDirectionalSwipe.SwipeAxisYDir.Down] = newAction;
+                action.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_DOWN);
+            });
+        }
+
+        public void UpdateLeftDirButton(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.UsedEventsButtonsX[(int)TouchpadDirectionalSwipe.SwipeAxisXDir.Left] = newAction;
+                action.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_LEFT);
+            });
+        }
+
+        public void UpdateRightDirButton(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.UsedEventsButtonsX[(int)TouchpadDirectionalSwipe.SwipeAxisXDir.Right] = newAction;
+                action.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_RIGHT);
+            });
         }
     }
 }

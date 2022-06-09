@@ -91,6 +91,8 @@ namespace SteamControllerTest.TouchpadActions
             public int rotation;
         }
 
+        private const string ACTION_TYPE_NAME = "TouchMouseJoystickAction";
+
         private const int DEFAULT_DEADZONE = 70;
         private const int DEFAULT_MAXZONE = 430;
         private const double DEFAULT_ANTI_DEADZONE_X = 0.30;
@@ -162,6 +164,7 @@ namespace SteamControllerTest.TouchpadActions
 
         public TouchpadMouseJoystick()
         {
+            actionTypeName = ACTION_TYPE_NAME;
             this.outputAction = new OutputActionData(OutputActionData.ActionType.GamepadControl,
                 DEFAULT_OUTPUT_STICK);
 

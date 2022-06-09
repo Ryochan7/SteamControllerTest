@@ -53,11 +53,13 @@ namespace SteamControllerTest.TouchpadActions
         public TouchpadCircularButton ClockWiseBtn
         {
             get => clockwiseBtn;
+            set => clockwiseBtn = value;
         }
 
         public TouchpadCircularButton CounterClockwiseBtn
         {
             get => counterClockwiseBtn;
+            set => counterClockwiseBtn = value;
         }
 
         private bool[] useParentCircButtons = new bool[2];
@@ -76,6 +78,9 @@ namespace SteamControllerTest.TouchpadActions
             OutputActionData counterClockwiseOutputAction =
                 new OutputActionData(OutputActionData.ActionType.MouseWheel, (int)MouseWheelCodes.WheelUp);
             counterClockwiseOutputAction.OutputCodeStr = MouseWheelCodes.WheelUp.ToString();
+
+            changedProperties.Add(PropertyKeyStrings.SCROLL_BUTTON_1);
+            changedProperties.Add(PropertyKeyStrings.SCROLL_BUTTON_2);
 
             clockwiseBtn = new TouchpadCircularButton();
             clockwiseBtn.ActionFuncs.AddRange(new ActionFunc[]

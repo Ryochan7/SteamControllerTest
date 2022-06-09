@@ -49,25 +49,33 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
         private void BtnUpEdit_Click(object sender, RoutedEventArgs e)
         {
             RequestFuncEditor?.Invoke(this,
-                new DirButtonBindingArgs(touchDirSwipeVM.Action.UsedEventsButtonsY[(int)TouchpadDirectionalSwipe.SwipeAxisYDir.Up]));
+                new DirButtonBindingArgs(touchDirSwipeVM.Action.UsedEventsButtonsY[(int)TouchpadDirectionalSwipe.SwipeAxisYDir.Up],
+                touchDirSwipeVM.Action.ChangedProperties.Contains(TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_UP),
+                touchDirSwipeVM.UpdateUpDirButton));
         }
 
         private void BtnDownEdit_Click(object sender, RoutedEventArgs e)
         {
             RequestFuncEditor?.Invoke(this,
-                new DirButtonBindingArgs(touchDirSwipeVM.Action.UsedEventsButtonsY[(int)TouchpadDirectionalSwipe.SwipeAxisYDir.Down]));
+                new DirButtonBindingArgs(touchDirSwipeVM.Action.UsedEventsButtonsY[(int)TouchpadDirectionalSwipe.SwipeAxisYDir.Down],
+                touchDirSwipeVM.Action.ChangedProperties.Contains(TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_DOWN),
+                touchDirSwipeVM.UpdateDownDirButton));
         }
 
         private void BtnLeftEdit_Click(object sender, RoutedEventArgs e)
         {
             RequestFuncEditor?.Invoke(this,
-                new DirButtonBindingArgs(touchDirSwipeVM.Action.UsedEventsButtonsX[(int)TouchpadDirectionalSwipe.SwipeAxisXDir.Left]));
+                new DirButtonBindingArgs(touchDirSwipeVM.Action.UsedEventsButtonsX[(int)TouchpadDirectionalSwipe.SwipeAxisXDir.Left],
+                touchDirSwipeVM.Action.ChangedProperties.Contains(TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_LEFT),
+                touchDirSwipeVM.UpdateLeftDirButton));
         }
 
         private void BtnRightEdit_Click(object sender, RoutedEventArgs e)
         {
             RequestFuncEditor?.Invoke(this,
-                new DirButtonBindingArgs(touchDirSwipeVM.Action.UsedEventsButtonsX[(int)TouchpadDirectionalSwipe.SwipeAxisXDir.Right]));
+                new DirButtonBindingArgs(touchDirSwipeVM.Action.UsedEventsButtonsX[(int)TouchpadDirectionalSwipe.SwipeAxisXDir.Right],
+                touchDirSwipeVM.Action.ChangedProperties.Contains(TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_RIGHT),
+                touchDirSwipeVM.UpdateRightDirButton));
         }
     }
 }

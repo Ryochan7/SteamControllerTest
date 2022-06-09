@@ -151,6 +151,12 @@ namespace SteamControllerTest.Views
             FuncBindingControl tempControl = new FuncBindingControl();
             tempControl.PostInit(touchBindEditVM.Mapper, e.DirBtn);
             tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+            tempControl.FuncBindVM.IsRealAction = e.RealAction;
+            tempControl.PreActionSwitch += (oldAction, newAction) =>
+            {
+                e.UpdateActHandler?.Invoke(oldAction, newAction);
+            };
+
             UserControl oldControl = touchBindEditVM.DisplayControl;
             touchpadSelectControl.Visibility = Visibility.Collapsed;
             tempControl.RequestClose += (sender, args) =>
@@ -168,6 +174,12 @@ namespace SteamControllerTest.Views
             FuncBindingControl tempControl = new FuncBindingControl();
             tempControl.PostInit(touchBindEditVM.Mapper, e.DirBtn);
             tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+            tempControl.FuncBindVM.IsRealAction = e.RealAction;
+            tempControl.PreActionSwitch += (oldAction, newAction) =>
+            {
+                e.UpdateActHandler?.Invoke(oldAction, newAction);
+            };
+
             UserControl oldControl = touchBindEditVM.DisplayControl;
             touchpadSelectControl.Visibility = Visibility.Collapsed;
             tempControl.RequestClose += (sender, args) =>
@@ -185,6 +197,12 @@ namespace SteamControllerTest.Views
             FuncBindingControl tempControl = new FuncBindingControl();
             tempControl.PostInit(touchBindEditVM.Mapper, e.DirBtn);
             tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+            tempControl.FuncBindVM.IsRealAction = e.RealAction;
+            tempControl.PreActionSwitch += (oldAction, newAction) =>
+            {
+                e.UpdateActHandler?.Invoke(oldAction, newAction);
+            };
+
             UserControl oldControl = touchBindEditVM.DisplayControl;
             touchpadSelectControl.Visibility = Visibility.Collapsed;
             tempControl.RequestClose += (sender, args) =>
@@ -202,6 +220,12 @@ namespace SteamControllerTest.Views
             FuncBindingControl tempControl = new FuncBindingControl();
             tempControl.PostInit(touchBindEditVM.Mapper, e.ActionBtn);
             tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+            tempControl.FuncBindVM.IsRealAction = e.RealAction;
+            tempControl.PreActionSwitch += (oldAction, newAction) =>
+            {
+                e.UpdateActHandler?.Invoke(oldAction, newAction);
+            };
+
             UserControl oldControl = touchBindEditVM.DisplayControl;
             touchpadSelectControl.Visibility = Visibility.Collapsed;
             tempControl.RequestClose += (sender, args) =>

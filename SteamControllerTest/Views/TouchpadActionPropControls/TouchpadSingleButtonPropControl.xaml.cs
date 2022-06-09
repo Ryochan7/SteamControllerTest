@@ -49,7 +49,9 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
         private void BtnEditBinding_Click(object sender, RoutedEventArgs e)
         {
             RequestFuncEditor?.Invoke(this,
-                new DirButtonBindingArgs(touchSingleBtnVM.Action.EventButton));
+                new DirButtonBindingArgs(touchSingleBtnVM.Action.EventButton,
+                touchSingleBtnVM.Action.ChangedProperties.Contains(TouchpadSingleButton.PropertyKeyStrings.FUNCTIONS),
+                touchSingleBtnVM.UpdateEventButton));
         }
     }
 }

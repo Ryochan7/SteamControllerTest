@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SteamControllerTest.MapperUtil;
+using SteamControllerTest.ButtonActions;
 using SteamControllerTest.TouchpadActions;
 
 namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
@@ -292,6 +293,28 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
         private void PrepareModel()
         {
 
+        }
+
+        public void UpdateRingButton(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            //ExecuteInMapperThread(() =>
+            mapper.QueueEvent(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.RingButton = newAction as AxisDirButton;
+                action.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.OUTER_RING_BUTTON);
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
         }
     }
 }

@@ -1,9 +1,10 @@
-﻿using SteamControllerTest.TouchpadActions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SteamControllerTest.ButtonActions;
+using SteamControllerTest.TouchpadActions;
 
 namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 {
@@ -108,6 +109,22 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
         private void PrepareModel()
         {
 
+        }
+
+        public void UpdateEventButton(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.EventButton = newAction;
+                action.ChangedProperties.Add(TouchpadSingleButton.PropertyKeyStrings.FUNCTIONS);
+            });
         }
     }
 }

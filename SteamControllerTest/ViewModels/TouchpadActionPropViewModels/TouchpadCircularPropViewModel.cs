@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SteamControllerTest.ButtonActions;
 using SteamControllerTest.TouchpadActions;
 
 namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
@@ -79,6 +80,38 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
         private void PrepareModel()
         {
 
+        }
+
+        public void UpdateClockWiseBtn(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.ClockWiseBtn = newAction as TouchpadCircularButton;
+                action.ChangedProperties.Add(TouchpadCircular.PropertyKeyStrings.SCROLL_BUTTON_1);
+            });
+        }
+
+        public void UpdateCounterClockWiseBtn(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                oldAction.Release(mapper, ignoreReleaseActions: true);
+
+                action.CounterClockwiseBtn = newAction as TouchpadCircularButton;
+                action.ChangedProperties.Add(TouchpadCircular.PropertyKeyStrings.SCROLL_BUTTON_2);
+            });
         }
     }
 }
