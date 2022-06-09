@@ -236,23 +236,24 @@ namespace SteamControllerTest.MapperUtil
             processOutput = UseProcessForAction();
         }
 
-        public OutputActionData(OutputActionData secondData)
+        public OutputActionData(OutputActionData sourceData)
         {
-            secondData.outputType = outputType;
-            secondData.outputCode = outputCode;
-            secondData.outputCodeAlias = outputCodeAlias;
-            secondData.dpadCode = dpadCode;
-            secondData.stickCode = stickCode;
-            secondData.joypadCode = joypadCode;
-            secondData.negative = negative;
-            secondData.repeat = repeat;
-            secondData.changeToSet = changeToSet;
-            secondData.changeCondition = ChangeCondition;
-            secondData.durationMs = durationMs;
-            secondData.effectiveDurationMs = effectiveDurationMs;
-            secondData.outputPadMap = new JoypadActionCodeMapping(outputPadMap);
-            secondData.useNotches = useNotches;
-            secondData.processOutput = processOutput;
+            outputType = sourceData.outputType;
+            outputCode = sourceData.outputCode;
+            outputCodeAlias = sourceData.outputCodeAlias;
+            outputCodeProfileStr = sourceData.outputCodeProfileStr;
+            dpadCode = sourceData.dpadCode;
+            stickCode = sourceData.stickCode;
+            joypadCode = sourceData.joypadCode;
+            negative = sourceData.negative;
+            repeat = sourceData.repeat;
+            changeToSet = sourceData.changeToSet;
+            ChangeCondition = sourceData.changeCondition;
+            durationMs = sourceData.durationMs;
+            effectiveDurationMs = sourceData.effectiveDurationMs;
+            outputPadMap = new JoypadActionCodeMapping(sourceData.outputPadMap);
+            useNotches = sourceData.useNotches;
+            processOutput = sourceData.processOutput;
         }
 
         public void Prepare(ActionType type, int code)
