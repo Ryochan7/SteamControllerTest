@@ -214,7 +214,6 @@ namespace SteamControllerTest.ViewModels
             //throw new NotImplementedException();
         }
 
-        // Put List(s) in Mapper class to allow a more dynamic view later?
         public void Test()
         {
             foreach(ActionSet set in tempProfile.ActionSets)
@@ -223,13 +222,15 @@ namespace SteamControllerTest.ViewModels
                 actionSetItems.Add(tempItem);
             }
 
-            selectedActionLayerIndex = 0;
-            selectedActionSetIndex = 0;
+            //selectedActionLayerIndex = 0;
+            //selectedActionSetIndex = 0;
+            selectedActionLayerIndex = mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.Index;
+            selectedActionSetIndex = mapper.ActionProfile.CurrentActionSetIndex;
             PopulateLayerItems();
             PopulateCurrentLayerBindings();
 
-            layerItems[0].ItemActive = true;
-            actionSetItems[0].ItemActive = true;
+            layerItems[selectedActionLayerIndex].ItemActive = true;
+            actionSetItems[selectedActionSetIndex].ItemActive = true;
         }
 
         public void RefreshSetBindings()
