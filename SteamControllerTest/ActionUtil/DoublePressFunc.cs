@@ -203,6 +203,10 @@ namespace SteamControllerTest.ActionUtil
             {
                 result = $"{string.Join(", ", tempList)}";
             }
+            else
+            {
+                result = "Unbound";
+            }
 
             return result;
         }

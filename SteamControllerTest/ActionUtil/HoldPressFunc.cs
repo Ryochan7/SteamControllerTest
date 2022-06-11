@@ -167,7 +167,6 @@ namespace SteamControllerTest.ActionUtil
 
             if (tempList.Count > 0)
             {
-
                 result = $"H({string.Join(", ", tempList)})";
             }
 
@@ -186,6 +185,10 @@ namespace SteamControllerTest.ActionUtil
             if (tempList.Count > 0)
             {
                 result = $"{string.Join(", ", tempList)}";
+            }
+            else
+            {
+                result = "Unbound";
             }
 
             return result;
