@@ -97,7 +97,7 @@ namespace SteamControllerTest
                         result = "Z";
                         break;
                     case KeyboardKey.Tilde:
-                        result = "Tilde";
+                        result = "Grave";
                         break;
                     case KeyboardKey.Tab:
                         result = "Tab";
@@ -125,6 +125,63 @@ namespace SteamControllerTest
                         break;
                     case KeyboardKey.CapsLock:
                         result = "CapsLock";
+                        break;
+                    case KeyboardKey.Subtract:
+                        result = "Minus";
+                        break;
+                    case KeyboardKey.Equals:
+                        result = "Equal";
+                        break;
+                    case KeyboardKey.OpenBrace:
+                        result = "LeftBracket";
+                        break;
+                    case KeyboardKey.CloseBrace:
+                        result = "RightBracket";
+                        break;
+                    case KeyboardKey.Backslash:
+                        result = "Backslash";
+                        break;
+                    case KeyboardKey.Semicolon:
+                        result = "Semicolon";
+                        break;
+                    case KeyboardKey.Quote:
+                        result = "Quote";
+                        break;
+                    case KeyboardKey.Comma:
+                        result = "Comma";
+                        break;
+                    case KeyboardKey.Dot:
+                        result = "Period";
+                        break;
+                    case KeyboardKey.ForwardSlash:
+                        result = "Slash";
+                        break;
+                    case KeyboardKey.Insert:
+                        result = "Insert";
+                        break;
+                    case KeyboardKey.Delete:
+                        result = "Delete";
+                        break;
+                    case KeyboardKey.Home:
+                        result = "Home";
+                        break;
+                    case KeyboardKey.End:
+                        result = "End";
+                        break;
+                    case KeyboardKey.PageUp:
+                        result = "PageUp";
+                        break;
+                    case KeyboardKey.PageDown:
+                        result = "PageDown";
+                        break;
+                    case KeyboardKey.PrintScreen:
+                        result = "PrintScreen";
+                        break;
+                    case KeyboardKey.ScrollLock:
+                        result = "ScrollLock";
+                        break;
+                    case KeyboardKey.Pause:
+                        result = "Pause";
                         break;
                     case KeyboardKey.Number1:
                         result = "1";
