@@ -47,6 +47,18 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler DeadZoneChanged;
 
+        public int MaxZone
+        {
+            get => action.mStickParms.maxZone;
+            set
+            {
+                action.mStickParms.maxZone = value;
+                MaxZoneChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler MaxZoneChanged;
+
         private List<GyroTriggerButtonItem> triggerButtonItems;
         public List<GyroTriggerButtonItem> TriggerButtonItems => triggerButtonItems;
 
@@ -123,6 +135,13 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
                 action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.DEAD_ZONE);
         }
         public event EventHandler HighlightDeadZoneChanged;
+
+        public bool HighlightMaxZone
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.MAX_ZONE);
+        }
+        public event EventHandler HighlightMaxZoneChanged;
 
         public bool HighlightOutputStick
         {
@@ -203,9 +222,26 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             NameChanged += GyroMouseJoystickPropViewModel_NameChanged;
             OutputStickIndexChanged += GyroMouseJoystickPropViewModel_OutputStickIndexChanged;
             DeadZoneChanged += GyroMouseJoystickPropViewModel_DeadZoneChanged;
+            MaxZoneChanged += GyroMouseJoystickPropViewModel_MaxZoneChanged;
             TriggerActivatesChanged += GyroMouseJoystickPropViewModel_TriggerActivatesChanged;
             AntiDeadZoneXChanged += GyroMouseJoystickPropViewModel_AntiDeadZoneXChanged;
             AntiDeadZoneYChanged += GyroMouseJoystickPropViewModel_AntiDeadZoneYChanged;
+        }
+
+        private void GyroMouseJoystickPropViewModel_MaxZoneChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.MAX_ZONE))
+            {
+                action.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.MAX_ZONE);
+            }
+
+            Action tempAction = () =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, GyroMouseJoystick.PropertyKeyStrings.MAX_ZONE);
+            };
+            ExecuteInMapperThread(tempAction);
+
+            HighlightMaxZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void GyroMouseJoystickPropViewModel_OutputStickIndexChanged(object sender, EventArgs e)
