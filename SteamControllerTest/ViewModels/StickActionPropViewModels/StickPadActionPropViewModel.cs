@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SteamControllerTest.ViewModels.Common;
 using SteamControllerTest.ButtonActions;
 using SteamControllerTest.StickActions;
+using SteamControllerTest.StickModifiers;
 
 namespace SteamControllerTest.ViewModels.StickActionPropViewModels
 {
@@ -67,6 +69,27 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 action.CurrentMode == StickPadAction.DPadMode.FourWayCardinal;
         }
         public event EventHandler ShowCardinalPadChanged;
+
+        private List<EnumChoiceSelection<StickDeadZone.DeadZoneTypes>> deadZoneModesChoices =
+            new List<EnumChoiceSelection<StickDeadZone.DeadZoneTypes>>()
+            {
+                new EnumChoiceSelection<StickDeadZone.DeadZoneTypes>("Radial", StickDeadZone.DeadZoneTypes.Radial),
+                new EnumChoiceSelection<StickDeadZone.DeadZoneTypes>("Bowtie", StickDeadZone.DeadZoneTypes.Bowtie),
+            };
+
+        public List<EnumChoiceSelection<StickDeadZone.DeadZoneTypes>> DeadZoneModesChoices => deadZoneModesChoices;
+
+        public StickDeadZone.DeadZoneTypes DeadZoneType
+        {
+            get => action.DeadMod.DeadZoneType;
+            set
+            {
+                action.DeadMod.DeadZoneType = value;
+                DeadZoneTypeChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler DeadZoneTypeChanged;
 
         public string DeadZone
         {
@@ -157,6 +180,13 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
         }
         public event EventHandler HighlightDiagonalRangeChanged;
 
+        public bool HighlightDeadZoneType
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(StickPadAction.PropertyKeyStrings.DEAD_ZONE_TYPE);
+        }
+        public event EventHandler HighlightDeadZoneTypeChanged;
+
         public bool HighlightDeadZone
         {
             get => action.ParentAction == null ||
@@ -198,8 +228,30 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
             PrepareModel();
 
             NameChanged += StickPadActionPropViewModel_NameChanged;
+            DeadZoneChanged += StickPadActionPropViewModel_DeadZoneChanged;
+            DeadZoneTypeChanged += StickPadActionPropViewModel_DeadZoneTypeChanged;
             SelectedPadModeIndexChanged += ChangeStickPadMode;
             SelectedPadModeIndexChanged += StickPadActionPropViewModel_SelectedPadModeIndexChanged;
+        }
+
+        private void StickPadActionPropViewModel_DeadZoneTypeChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickPadAction.PropertyKeyStrings.DEAD_ZONE_TYPE))
+            {
+                action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.DEAD_ZONE_TYPE);
+            }
+
+            HighlightDeadZoneTypeChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void StickPadActionPropViewModel_DeadZoneChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickPadAction.PropertyKeyStrings.DEAD_ZONE))
+            {
+                action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.DEAD_ZONE);
+            }
+
+            HighlightDeadZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void ChangeStickPadMode(object sender, EventArgs e)
