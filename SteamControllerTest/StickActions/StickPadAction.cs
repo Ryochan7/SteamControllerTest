@@ -181,7 +181,7 @@ namespace SteamControllerTest.StickActions
             stickDefinition = new StickDefinition(new StickDefinition.StickAxisData(), new StickDefinition.StickAxisData(), StickActionCodes.Empty);
             deadMod = new StickDeadZone(0.30, 1.0, 0.0);
             //deadMod.CircleDead = true;
-            deadMod.DeadZoneType = StickDeadZone.DeadZoneTypes.Bowtie;
+            deadMod.DeadZoneType = StickDeadZone.DeadZoneTypes.Radial;
             FillDirectionButtons();
         }
 
@@ -191,7 +191,7 @@ namespace SteamControllerTest.StickActions
             this.stickDefinition = stickDefinition;
             deadMod = new StickDeadZone(0.30, 1.0, 0.0);
             //deadMod.CircleDead = true;
-            deadMod.DeadZoneType = StickDeadZone.DeadZoneTypes.Bowtie;
+            deadMod.DeadZoneType = StickDeadZone.DeadZoneTypes.Radial;
             FillDirectionButtons();
         }
 
