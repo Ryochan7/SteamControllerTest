@@ -12,7 +12,7 @@ namespace SteamControllerTest.ActionUtil
     {
         private bool status;
 
-        private int delayDurationMs = 30;
+        private int delayDurationMs = 100;
         public int DelayDurationMs { get => delayDurationMs; set => delayDurationMs = value; }
 
         private int durationMs;
