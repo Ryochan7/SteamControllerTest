@@ -159,7 +159,20 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler ShowAvailableLayersChanged;
 
-        private int selectedLayerChangeConditionIndex = -1;
+        private bool showLayerChangeConditions;
+        public bool ShowLayerChangeConditions
+        {
+            get => showLayerChangeConditions;
+            set
+            {
+                if (showLayerChangeConditions == value) return;
+                showLayerChangeConditions = value;
+                ShowLayerChangeConditionsChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler ShowLayerChangeConditionsChanged;
+
+        private int selectedLayerChangeConditionIndex = 0;
         public int SelectedLayerChangeConditionIndex
         {
             get => selectedLayerChangeConditionIndex;
@@ -517,19 +530,53 @@ namespace SteamControllerTest.ViewModels
             switch(tempItem.LayerOp)
             {
                 case OutputActionData.ActionType.HoldActionLayer:
-                    SelectedLayerChangeConditionIndex = -1;
+                    ShowAvailableLayers = true;
+                    SelectedLayerChangeConditionIndex = 0;
+                    ShowLayerChangeConditions = false;
                     break;
                 case OutputActionData.ActionType.ApplyActionLayer:
                 case OutputActionData.ActionType.SwitchActionLayer:
+                    ShowAvailableLayers = true;
                     SelectedLayerChangeConditionIndex = 1;
+                    ShowLayerChangeConditions = true;
                     break;
                 case OutputActionData.ActionType.RemoveActionLayer:
+                    ShowAvailableLayers = false;
                     SelectedLayerChangeConditionIndex = 2;
+                    ShowLayerChangeConditions = true;
+                    SelectedLayerChoiceIndex = -1;
                     break;
                 default:
                     break;
             }
 
+            AvailableLayerChoiceItem tempLayerChoiceItem = selectedLayerChoiceIndex != -1 ? availableLayerComboItems[selectedLayerChoiceIndex] : null;
+            LayerOpChoiceItem opItem = layerOperationsComboItems[selectedLayerOpsIndex];
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            mapper.QueueEvent(() =>
+            {
+                currentAction.Release(mapper, ignoreReleaseActions: true);
+                OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
+                OutputActionData tempData = slotItem.Data;
+
+                tempData.Reset();
+                tempData.Prepare(opItem.LayerOp, 0);
+
+                if (tempLayerChoiceItem != null)
+                {
+                    tempData.ChangeToLayer = tempLayerChoiceItem.Layer.Index;
+                }
+
+                if (opItem.LayerOp != OutputActionData.ActionType.HoldActionLayer &&
+                    selectedLayerChangeConditionIndex >= 0)
+                {
+                    tempData.LayerChangeCondition = (OutputActionData.ActionLayerChangeCondition)selectedLayerChangeConditionIndex;
+                }
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
             PostSlotChangeChecks();
         }
 
@@ -647,11 +694,25 @@ namespace SteamControllerTest.ViewModels
                         {
                             SelectedLayerOpsIndex = ind;
                             SelectedLayerChoiceIndex = item.Data.ChangeToLayer;
-                            ShowAvailableLayers = true;
+                            if (item.Data.OutputType != OutputActionData.ActionType.RemoveActionLayer)
+                            {
+                                ShowAvailableLayers = true;
+                            }
+                            else
+                            {
+                                ShowAvailableLayers = false;
+                            }
 
                             if (item.Data.OutputType != OutputActionData.ActionType.HoldActionLayer)
                             {
                                 SelectedLayerChangeConditionIndex = (int)item.Data.LayerChangeCondition;
+                                ShowLayerChangeConditions = true;
+                            }
+                            else
+                            {
+                                SelectedLayerChangeConditionIndex = 0;
+                                ShowLayerChangeConditions = false;
+                                //SelectedLayerChoiceIndex = -1;
                             }
                         }
                     }
