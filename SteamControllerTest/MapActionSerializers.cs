@@ -6775,10 +6775,10 @@ namespace SteamControllerTest
                     break;
                 case ActionType.RemoveActionLayer:
                     tempInstance.OutputType = checkType;
-                    if (int.TryParse(j["Layer"]?.ToString(), out int removeLayerNumTemp))
-                    {
-                        tempInstance.ChangeToLayer = removeLayerNumTemp;
-                    }
+                    //if (int.TryParse(j["Layer"]?.ToString(), out int removeLayerNumTemp))
+                    //{
+                    //    tempInstance.ChangeToLayer = removeLayerNumTemp;
+                    //}
 
                     DeserializeExtraJSONProperties(tempInstance, j);
                     resultInstance = new OutputActionDataSerializer(tempInstance);
