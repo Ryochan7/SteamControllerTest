@@ -13,6 +13,7 @@
                 <ComboBoxItem>Unbound</ComboBoxItem>
                 <ComboBoxItem>Stick</ComboBoxItem>
                 <ComboBoxItem>DPad</ComboBoxItem>
+                <ComboBoxItem>Mouse</ComboBoxItem>
             </ComboBox>
         </StackPanel>
     </DockPanel>

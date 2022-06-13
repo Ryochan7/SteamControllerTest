@@ -47,7 +47,7 @@ namespace SteamControllerTest.Views
                     {
                         StickNoActPropControl propControl = new StickNoActPropControl();
                         propControl.PostInit(stickBindEditVM.Mapper, stickBindEditVM.Action);
-                        propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged; ;
+                        propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged;
                         stickBindEditVM.DisplayControl = propControl;
                     }
 
@@ -56,7 +56,7 @@ namespace SteamControllerTest.Views
                     {
                         StickTranslatePropControl propControl = new StickTranslatePropControl();
                         propControl.PostInit(stickBindEditVM.Mapper, stickBindEditVM.Action);
-                        propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged; ;
+                        propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged;
                         stickBindEditVM.DisplayControl = propControl;
                     }
 
@@ -65,8 +65,17 @@ namespace SteamControllerTest.Views
                     {
                         StickPadActionControl propControl = new StickPadActionControl();
                         propControl.PostInit(stickBindEditVM.Mapper, stickBindEditVM.Action);
-                        propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged; ;
+                        propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged;
                         propControl.RequestFuncEditor += StickPadAct_PropControl_RequestFuncEditor;
+                        stickBindEditVM.DisplayControl = propControl;
+                    }
+
+                    break;
+                case StickMouse:
+                    {
+                        StickMousePropControl propControl = new StickMousePropControl();
+                        propControl.PostInit(stickBindEditVM.Mapper, stickBindEditVM.Action);
+                        propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged;
                         stickBindEditVM.DisplayControl = propControl;
                     }
 

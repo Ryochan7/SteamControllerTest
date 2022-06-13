@@ -44,6 +44,9 @@ namespace SteamControllerTest.ViewModels
                 case StickPadAction:
                     selectedIndex = 2;
                     break;
+                case StickMouse:
+                    selectedIndex = 3;
+                    break;
                 default:
                     selectedIndex = -1;
                     break;

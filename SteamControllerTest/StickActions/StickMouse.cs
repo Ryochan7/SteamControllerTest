@@ -128,6 +128,8 @@ namespace SteamControllerTest.StickActions
             set => mouseDeltaSettings = value;
         }
 
+        private event EventHandler<NotifyPropertyChangeArgs> NotifyPropertyChanged;
+
         public StickMouse()
         {
             actionTypeName = ACTION_TYPE_NAME;
@@ -440,6 +442,8 @@ namespace SteamControllerTest.StickActions
                 this.stickDefinition =
                     new StickDefinition(tempMouseAction.stickDefinition);
 
+                tempMouseAction.NotifyPropertyChanged += TempMouseAction_NotifyPropertyChanged;
+
                 // Determine the set with properties that should inherit
                 // from the parent action
                 IEnumerable<string> useParentProList =
@@ -471,31 +475,57 @@ namespace SteamControllerTest.StickActions
                             break;
                     }
                 }
+            }
+        }
 
-                //if (!changedProperties.Contains(PropertyKeyStrings.NAME))
-                //{
-                //    name = tempMouseAction.name;
-                //}
+        private void TempMouseAction_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
+        {
+            CascadePropertyChange(e.Mapper, e.PropertyName);
+        }
 
-                //if (!changedProperties.Contains(PropertyKeyStrings.DEAD_ZONE))
-                //{
-                //    deadMod.DeadZone = tempMouseAction.deadMod.DeadZone;
-                //}
+        public override void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
+        {
+            NotifyPropertyChanged?.Invoke(this,
+                new NotifyPropertyChangeArgs(mapper, propertyName));
+        }
 
-                //if (!changedProperties.Contains(PropertyKeyStrings.MAX_ZONE))
-                //{
-                //    deadMod.MaxZone = tempMouseAction.deadMod.MaxZone;
-                //}
+        protected override void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+            if (changedProperties.Contains(propertyName))
+            {
+                // Property already overrridden in action. Leave
+                return;
+            }
+            else if (parentAction == null)
+            {
+                // No parent action. Leave
+                return;
+            }
 
-                //if (!changedProperties.Contains(PropertyKeyStrings.OUTPUT_CURVE))
-                //{
-                //    outputCurve = tempMouseAction.outputCurve;
-                //}
+            StickMouse tempMouseAction = parentAction as StickMouse;
 
-                //if (!changedProperties.Contains(PropertyKeyStrings.MOUSE_SPEED))
-                //{
-                //    mouseSpeed = tempMouseAction.mouseSpeed;
-                //}
+            switch (propertyName)
+            {
+                case PropertyKeyStrings.NAME:
+                    name = tempMouseAction.name;
+                    break;
+                case PropertyKeyStrings.DEAD_ZONE:
+                    deadMod.DeadZone = tempMouseAction.deadMod.DeadZone;
+                    break;
+                case PropertyKeyStrings.MAX_ZONE:
+                    deadMod.MaxZone = tempMouseAction.deadMod.MaxZone;
+                    break;
+                case PropertyKeyStrings.OUTPUT_CURVE:
+                    outputCurve = tempMouseAction.outputCurve;
+                    break;
+                case PropertyKeyStrings.MOUSE_SPEED:
+                    mouseSpeed = tempMouseAction.mouseSpeed;
+                    break;
+                case PropertyKeyStrings.DELTA_SETTINGS:
+                    mouseDeltaSettings = new DeltaAccelSettings(tempMouseAction.mouseDeltaSettings);
+                    break;
+                default:
+                    break;
             }
         }
     }

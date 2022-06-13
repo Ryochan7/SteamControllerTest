@@ -82,6 +82,15 @@ namespace SteamControllerTest.ViewModels
                     }
 
                     break;
+                case 3:
+                    {
+                        StickMouse tempAction = new StickMouse();
+                        //var joyDefaults = mapper.DeviceActionDefaults.GrabTouchActionPadDefaults();
+                        //joyDefaults.Process(tempAction);
+                        result = tempAction;
+                    }
+
+                    break;
                 default:
                     break;
             }
