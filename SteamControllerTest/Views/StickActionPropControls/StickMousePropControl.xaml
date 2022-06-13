@@ -81,6 +81,98 @@
                 </ComboBox>
             </StackPanel>
 
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Expander ExpandDirection="Down" Header="Delta Mouse" IsExpanded="False">
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Label Content="Enabled" />
+                            <CheckBox IsChecked="{Binding DeltaEnabled}" VerticalAlignment="Center" Margin="8,0,0,0" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Label Content="Multiplier" />
+                            <hc:NumericUpDown Minimum="1.0" Maximum="20.0" Value="{Binding DeltaMultiplier}" DecimalPlaces="2"
+                                  Increment="1.0" Width="100" Margin="8,0,0,0">
+                                <hc:NumericUpDown.Style>
+                                    <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HighlightDeltaMultiplier}" Value="False">
+                                                <Setter Property="Opacity" Value="0.7" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </hc:NumericUpDown.Style>
+                            </hc:NumericUpDown>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Label Content="Min Travel" />
+                            <hc:NumericUpDown Minimum="0.01" Maximum="1.0" Value="{Binding DeltaMinTravel}" DecimalPlaces="2"
+                                  Increment="0.1" Width="100" Margin="8,0,0,0">
+                                <hc:NumericUpDown.Style>
+                                    <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HighlightDeltaMinTravel}" Value="False">
+                                                <Setter Property="Opacity" Value="0.7" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </hc:NumericUpDown.Style>
+                            </hc:NumericUpDown>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Label Content="Max Travel" />
+                            <hc:NumericUpDown Minimum="0.01" Maximum="1.0" Value="{Binding DeltaMaxTravel}" DecimalPlaces="2"
+                                  Increment="0.1" Width="100" Margin="8,0,0,0">
+                                <hc:NumericUpDown.Style>
+                                    <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HighlightDeltaMaxTravel}" Value="False">
+                                                <Setter Property="Opacity" Value="0.7" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </hc:NumericUpDown.Style>
+                            </hc:NumericUpDown>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Label Content="Easing Duration" />
+                            <hc:NumericUpDown Minimum="0.01" Maximum="10.0" Value="{Binding DeltaEasingDuration}" DecimalPlaces="2"
+                                  Increment="0.1" Width="100" Margin="8,0,0,0">
+                                <hc:NumericUpDown.Style>
+                                    <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HighlightDeltaEasingDuration}" Value="False">
+                                                <Setter Property="Opacity" Value="0.7" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </hc:NumericUpDown.Style>
+                            </hc:NumericUpDown>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Label Content="Min Factor" />
+                            <hc:NumericUpDown Minimum="0.01" Maximum="10.0" Value="{Binding DeltaMinFactor}" DecimalPlaces="2"
+                                  Increment="0.1" Width="100" Margin="8,0,0,0">
+                                <hc:NumericUpDown.Style>
+                                    <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HighlightDeltaMinFactor}" Value="False">
+                                                <Setter Property="Opacity" Value="0.7" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </hc:NumericUpDown.Style>
+                            </hc:NumericUpDown>
+                        </StackPanel>
+
+                    </StackPanel>
+
+                </Expander>
+            </StackPanel>
             
 
         </StackPanel>
