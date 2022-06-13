@@ -105,6 +105,27 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler AntiDeadZoneYChanged;
 
+        private List<EnumChoiceSelection<GyroMouseJoystickOuputAxes>> outputAxesItems =
+            new List<EnumChoiceSelection<GyroMouseJoystickOuputAxes>>()
+        {
+            new EnumChoiceSelection<GyroMouseJoystickOuputAxes>("Horizontal and Vertical", GyroMouseJoystickOuputAxes.All),
+            new EnumChoiceSelection<GyroMouseJoystickOuputAxes>("Horizontal Only", GyroMouseJoystickOuputAxes.XAxis),
+            new EnumChoiceSelection<GyroMouseJoystickOuputAxes>("Vertical Only", GyroMouseJoystickOuputAxes.YAxis),
+        };
+        public List<EnumChoiceSelection<GyroMouseJoystickOuputAxes>> OutputAxesItems => outputAxesItems;
+
+        public GyroMouseJoystickOuputAxes OutputAxesChoice
+        {
+            get => action.mStickParms.outputAxes;
+            set
+            {
+                action.mStickParms.outputAxes = value;
+                OutputAxesChoiceChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler OutputAxesChoiceChanged;
+
         //private List<GyroOutputCurveItem> outputCurveItems = new List<GyroOutputCurveItem>();
         //public List<GyroOutputCurveItem> OutputCurveItems => outputCurveItems;
 
@@ -178,6 +199,13 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler HighlightAntiDeadZoneYChanged;
 
+        public bool HighlightOutputAxesChoice
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.OUTPUT_AXES);
+        }
+        public event EventHandler HighlightOutputAxesChoiceChanged;
+
         //public bool HighlightOutputCurve
         //{
         //    get => action.ParentAction == null ||
@@ -226,6 +254,19 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             TriggerActivatesChanged += GyroMouseJoystickPropViewModel_TriggerActivatesChanged;
             AntiDeadZoneXChanged += GyroMouseJoystickPropViewModel_AntiDeadZoneXChanged;
             AntiDeadZoneYChanged += GyroMouseJoystickPropViewModel_AntiDeadZoneYChanged;
+            OutputAxesChoiceChanged += GyroMouseJoystickPropViewModel_OutputAxesChoiceChanged;
+        }
+
+        private void GyroMouseJoystickPropViewModel_OutputAxesChoiceChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.OUTPUT_AXES))
+            {
+                action.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.OUTPUT_AXES);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, GyroMouseJoystick.PropertyKeyStrings.OUTPUT_AXES);
+
+            HighlightOutputAxesChoiceChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void GyroMouseJoystickPropViewModel_MaxZoneChanged(object sender, EventArgs e)
