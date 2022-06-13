@@ -178,6 +178,11 @@ namespace SteamControllerTest.TouchpadActions
         private bool[] useParentDataDraft2 = new bool[13];
         public bool[] UseParentActionButton => useParentDataDraft2;
         private bool useParentRingButton;
+        public bool UseParentRingButton
+        {
+            get => useParentRingButton;
+            set => useParentRingButton = value;
+        }
 
         private bool useParentDelay;
 
@@ -195,6 +200,8 @@ namespace SteamControllerTest.TouchpadActions
         }
 
         private Stopwatch delayStopWatch = new Stopwatch();
+
+        private event EventHandler<NotifyPropertyChangeArgs> NotifyPropertyChanged;
 
         public TouchpadActionPad()
         {
@@ -1090,6 +1097,8 @@ namespace SteamControllerTest.TouchpadActions
                 this.touchpadDefinition = new TouchpadDefinition(tempPadAction.touchpadDefinition);
                 mappingId = tempPadAction.mappingId;
 
+                tempPadAction.NotifyPropertyChanged += TempPadAction_NotifyPropertyChanged;
+
                 // Determine the set with properties that should inherit
                 // from the parent action
                 IEnumerable<string> useParentProList =
@@ -1219,6 +1228,155 @@ namespace SteamControllerTest.TouchpadActions
                             break;
                     }
                 }
+            }
+        }
+
+        private void TempPadAction_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
+        {
+            CascadePropertyChange(e.Mapper, e.PropertyName);
+        }
+
+        public override void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
+        {
+            NotifyPropertyChanged?.Invoke(this,
+                new NotifyPropertyChangeArgs(mapper, propertyName));
+        }
+
+        protected override void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+            if (changedProperties.Contains(propertyName))
+            {
+                // Property already overrridden in action. Leave
+                return;
+            }
+            else if (parentAction == null)
+            {
+                // No parent action. Leave
+                return;
+            }
+
+            TouchpadActionPad tempPadAction = parentAction as TouchpadActionPad;
+
+            switch (propertyName)
+            {
+                case PropertyKeyStrings.NAME:
+                    name = tempPadAction.name;
+                    break;
+                case PropertyKeyStrings.DEAD_ZONE:
+                    deadMod.DeadZone = tempPadAction.deadMod.DeadZone;
+                    break;
+                case PropertyKeyStrings.MAX_ZONE:
+                    deadMod.MaxZone = tempPadAction.deadMod.MaxZone;
+                    break;
+                case PropertyKeyStrings.PAD_MODE:
+                    currentMode = tempPadAction.currentMode;
+                    break;
+                case PropertyKeyStrings.DIAGONAL_RANGE:
+                    diagonalRange = tempPadAction.diagonalRange;
+                    break;
+                case PropertyKeyStrings.REQUIRES_CLICK:
+                    requiresClick = tempPadAction.requiresClick;
+                    break;
+                case PropertyKeyStrings.ROTATION:
+                    rotation = tempPadAction.rotation;
+                    break;
+                case PropertyKeyStrings.PAD_DIR_UP:
+                    {
+                        int tempDir = (int)DpadDirections.Up;
+                        usedEventButtonsList[tempDir] = tempPadAction.usedEventButtonsList[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_DOWN:
+                    {
+                        int tempDir = (int)DpadDirections.Down;
+                        usedEventButtonsList[tempDir] = tempPadAction.usedEventButtonsList[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_LEFT:
+                    {
+                        int tempDir = (int)DpadDirections.Left;
+                        usedEventButtonsList[tempDir] = tempPadAction.usedEventButtonsList[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_RIGHT:
+                    {
+                        int tempDir = (int)DpadDirections.Right;
+                        usedEventButtonsList[tempDir] = tempPadAction.usedEventButtonsList[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_UPLEFT:
+                    {
+                        int tempDir = (int)DpadDirections.UpLeft;
+                        usedEventButtonsList[tempDir] = tempPadAction.usedEventButtonsList[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_UPRIGHT:
+                    {
+                        int tempDir = (int)DpadDirections.UpRight;
+                        usedEventButtonsList[tempDir] = tempPadAction.usedEventButtonsList[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_DOWNLEFT:
+                    {
+                        int tempDir = (int)DpadDirections.DownLeft;
+                        usedEventButtonsList[tempDir] = tempPadAction.usedEventButtonsList[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_DOWNRIGHT:
+                    {
+                        int tempDir = (int)DpadDirections.DownRight;
+                        usedEventButtonsList[tempDir] = tempPadAction.usedEventButtonsList[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.OUTER_RING_BUTTON:
+                    ringButton = tempPadAction.ringButton;
+                    useParentRingButton = true;
+                    break;
+                case PropertyKeyStrings.USE_OUTER_RING:
+                    useRingButton = tempPadAction.useRingButton;
+                    break;
+                case PropertyKeyStrings.OUTER_RING_DEAD_ZONE:
+                    outerRingDeadZone = tempPadAction.outerRingDeadZone;
+                    break;
+                case PropertyKeyStrings.USE_AS_OUTER_RING:
+                    outerRing = tempPadAction.outerRing;
+                    break;
+                case PropertyKeyStrings.OUTER_RING_FULL_RANGE:
+                    usedOuterRingRange = tempPadAction.usedOuterRingRange;
+                    break;
+                case PropertyKeyStrings.DEAD_ZONE_TYPE:
+                    deadMod.DeadZoneType = tempPadAction.deadMod.DeadZoneType;
+                    break;
+                case PropertyKeyStrings.DELAY_ENABLED:
+                    delayEnabled = tempPadAction.delayEnabled;
+                    useParentDelay = true;
+                    break;
+                case PropertyKeyStrings.DELAY_TIME:
+                    {
+                        delayTime = tempPadAction.delayTime;
+                        // Copy ref to parent action Stopwatch
+                        delayStopWatch = tempPadAction.delayStopWatch;
+                    }
+
+                    break;
+                default:
+                    break;
             }
         }
     }

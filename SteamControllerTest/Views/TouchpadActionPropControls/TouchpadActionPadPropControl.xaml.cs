@@ -131,5 +131,13 @@ namespace SteamControllerTest.Views.TouchpadActionPropControls
                 !touchActionPropVM.Action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.DownRight],
                 touchActionPropVM.UpdateDownRightAction));
         }
+
+        private void btnEditTest_Click(object sender, RoutedEventArgs e)
+        {
+            RequestFuncEditor?.Invoke(this,
+                new DirButtonBindingArgs(touchActionPropVM.Action.RingButton,
+                !touchActionPropVM.Action.UseParentRingButton,
+                touchActionPropVM.UpdateRingButton));
+        }
     }
 }
