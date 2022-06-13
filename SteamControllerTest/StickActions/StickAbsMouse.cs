@@ -134,6 +134,8 @@ namespace SteamControllerTest.StickActions
         public bool UseRingButton { get => useRingButton; set => useRingButton = value; }
         public double OuterRingDeadZone { get => outerRingDeadZone; set => outerRingDeadZone = value; }
 
+        private event EventHandler<NotifyPropertyChangeArgs> NotifyPropertyChanged;
+
         public StickAbsMouse()
         {
             actionTypeName = ACTION_TYPE_NAME;
@@ -390,6 +392,8 @@ namespace SteamControllerTest.StickActions
                 this.stickDefinition =
                     new StickDefinition(tempAbsAction.stickDefinition);
 
+                tempAbsAction.NotifyPropertyChanged += TempAbsAction_NotifyPropertyChanged;
+
                 // Determine the set with properties that should inherit
                 // from the parent action
                 IEnumerable<string> useParentProList =
@@ -433,6 +437,69 @@ namespace SteamControllerTest.StickActions
                             break;
                     }
                 }
+            }
+        }
+
+        private void TempAbsAction_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
+        {
+            CascadePropertyChange(e.Mapper, e.PropertyName);
+        }
+
+        public override void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
+        {
+            NotifyPropertyChanged?.Invoke(this,
+                new NotifyPropertyChangeArgs(mapper, propertyName));
+        }
+
+        protected override void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+            if (changedProperties.Contains(propertyName))
+            {
+                // Property already overrridden in action. Leave
+                return;
+            }
+            else if (parentAction == null)
+            {
+                // No parent action. Leave
+                return;
+            }
+
+            StickAbsMouse tempAbsAction = parentAction as StickAbsMouse;
+
+            switch (propertyName)
+            {
+                case PropertyKeyStrings.NAME:
+                    name = tempAbsAction.name;
+                    break;
+                case PropertyKeyStrings.DEAD_ZONE:
+                    deadMod.DeadZone = tempAbsAction.deadMod.DeadZone;
+                    break;
+                case PropertyKeyStrings.OUTER_RING_BUTTON:
+                    ringButton = tempAbsAction.ringButton;
+                    break;
+                case PropertyKeyStrings.USE_OUTER_RING:
+                    useRingButton = tempAbsAction.useRingButton;
+                    break;
+                case PropertyKeyStrings.OUTER_RING_DEAD_ZONE:
+                    outerRingDeadZone = tempAbsAction.outerRingDeadZone;
+                    break;
+                case PropertyKeyStrings.USE_AS_OUTER_RING:
+                    outerRing = tempAbsAction.outerRing;
+                    break;
+                case PropertyKeyStrings.BOX_WIDTH:
+                    absRange.width = tempAbsAction.absRange.width;
+                    break;
+                case PropertyKeyStrings.BOX_HEIGHT:
+                    absRange.height = tempAbsAction.absRange.height;
+                    break;
+                case PropertyKeyStrings.BOX_XCENTER:
+                    absRange.xcenter = tempAbsAction.absRange.xcenter;
+                    break;
+                case PropertyKeyStrings.BOX_YCENTER:
+                    absRange.ycenter = tempAbsAction.absRange.ycenter;
+                    break;
+                default:
+                    break;
             }
         }
     }

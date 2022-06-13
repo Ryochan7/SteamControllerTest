@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SteamControllerTest.ViewModels.Common;
 using SteamControllerTest.MapperUtil;
 using SteamControllerTest.ButtonActions;
 using SteamControllerTest.TouchpadActions;
@@ -92,6 +93,26 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler OuterRingDeadZoneChanged;
 
+        private List<EnumChoiceSelection<OuterRingUseRange>> outerRingRangeChoiceItems =
+            new List<EnumChoiceSelection<OuterRingUseRange>>()
+            {
+                new EnumChoiceSelection<OuterRingUseRange>("Only Active", OuterRingUseRange.OnlyActive),
+                new EnumChoiceSelection<OuterRingUseRange>("Full Range", OuterRingUseRange.FullRange),
+            };
+        public List<EnumChoiceSelection<OuterRingUseRange>> OuterRingRangeChoiceItems => outerRingRangeChoiceItems;
+
+        public OuterRingUseRange OuterRingRangeChoice
+        {
+            get => action.UsedOuterRingRange;
+            set
+            {
+                action.UsedOuterRingRange = value;
+                OuterRingRangeChoiceChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler OuterRingRangeChoiceChanged;
+
         public bool SnapToCenterRelease
         {
             get => action.SnapToCenterRelease;
@@ -154,6 +175,13 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler HighlightOuterRingDeadZoneChanged;
 
+        public bool HighlightOuterRingRangeChoice
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadAbsAction.PropertyKeyStrings.OUTER_RING_FULL_RANGE);
+        }
+        public event EventHandler HighlightOuterRingRangeChoiceChanged;
+
         public bool HighlightSnapToCenterRelease
         {
             get => action.ParentAction == null ||
@@ -199,7 +227,20 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
             UseOuterRingChanged += TouchpadAbsMousePropViewModel_UseOuterRingChanged;
             OuterRingInvertChanged += TouchpadAbsMousePropViewModel_OuterRingInvertChanged;
             OuterRingDeadZoneChanged += TouchpadAbsMousePropViewModel_OuterRingDeadZoneChanged;
+            OuterRingRangeChoiceChanged += TouchpadAbsMousePropViewModel_OuterRingRangeChoiceChanged;
             SnapToCenterReleaseChanged += TouchpadAbsMousePropViewModel_SnapToCenterReleaseChanged;
+        }
+
+        private void TouchpadAbsMousePropViewModel_OuterRingRangeChoiceChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(TouchpadAbsAction.PropertyKeyStrings.OUTER_RING_FULL_RANGE))
+            {
+                action.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.OUTER_RING_FULL_RANGE);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, TouchpadAbsAction.PropertyKeyStrings.OUTER_RING_FULL_RANGE);
+
+            HighlightOuterRingDeadZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void TouchpadAbsMousePropViewModel_SnapToCenterReleaseChanged(object sender, EventArgs e)
@@ -208,6 +249,8 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
             {
                 action.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.SNAP_TO_CENTER_RELEASE);
             }
+
+            action.RaiseNotifyPropertyChange(mapper, TouchpadAbsAction.PropertyKeyStrings.SNAP_TO_CENTER_RELEASE);
 
             HighlightSnapToCenterReleaseChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -219,6 +262,8 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 action.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.OUTER_RING_DEAD_ZONE);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TouchpadAbsAction.PropertyKeyStrings.OUTER_RING_DEAD_ZONE);
+
             HighlightOuterRingDeadZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -228,6 +273,8 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
             {
                 action.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.USE_AS_OUTER_RING);
             }
+
+            action.RaiseNotifyPropertyChange(mapper, TouchpadAbsAction.PropertyKeyStrings.USE_AS_OUTER_RING);
 
             HighlightOuterRingInvertChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -239,6 +286,8 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 action.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.USE_OUTER_RING);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TouchpadAbsAction.PropertyKeyStrings.USE_OUTER_RING);
+
             HighlightUseOuterRingChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -249,6 +298,8 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 action.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.DEAD_ZONE);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TouchpadAbsAction.PropertyKeyStrings.DEAD_ZONE);
+
             HighlightDeadZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -258,6 +309,8 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
             {
                 action.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.NAME);
             }
+
+            action.RaiseNotifyPropertyChange(mapper, TouchpadAbsAction.PropertyKeyStrings.NAME);
 
             HighlightNameChanged?.Invoke(this, EventArgs.Empty);
         }

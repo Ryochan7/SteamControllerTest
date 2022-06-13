@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:SteamControllerTest.Views.TouchpadActionPropControls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <DockPanel>
+    <DockPanel Margin="0,8,0,0">
         <StackPanel DockPanel.Dock="Top">
             <StackPanel Orientation="Horizontal">
                 <Label Content="Name" />
@@ -30,7 +30,7 @@
 
             <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Use Outer Ring" />
-                <CheckBox IsChecked="{Binding UseOuterRing}" Width="20" VerticalAlignment="Center">
+                <CheckBox IsChecked="{Binding UseOuterRing}" Width="20" VerticalAlignment="Center" Margin="8,0,0,0">
                     <CheckBox.Style>
                         <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBaseStyle}">
                             <Style.Triggers>
@@ -50,7 +50,7 @@
 
             <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Outer Ring Invert" />
-                <CheckBox IsChecked="{Binding OuterRingInvert}" Width="20" VerticalAlignment="Center">
+                <CheckBox IsChecked="{Binding OuterRingInvert}" Width="20" VerticalAlignment="Center" Margin="8,0,0,0">
                     <CheckBox.Style>
                         <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBaseStyle}">
                             <Style.Triggers>
@@ -79,8 +79,24 @@
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="Outer Ring Active Range" />
+                <ComboBox ItemsSource="{Binding OuterRingRangeChoiceItems}" SelectedValue="{Binding OuterRingRangeChoice}"
+                          DisplayMemberPath="DisplayName" SelectedValuePath="ChoiceValue" MinWidth="150" Margin="8,0,0,0">
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightOuterRingRangeChoice}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
+                </ComboBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Snap To Center On Release" />
-                <CheckBox IsChecked="{Binding SnapToCenterRelease}" Width="20" VerticalAlignment="Center">
+                <CheckBox IsChecked="{Binding SnapToCenterRelease}" Width="20" VerticalAlignment="Center" Margin="8,0,0,0">
                     <CheckBox.Style>
                         <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBaseStyle}">
                             <Style.Triggers>
