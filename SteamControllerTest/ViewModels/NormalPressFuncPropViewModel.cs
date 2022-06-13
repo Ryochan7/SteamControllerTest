@@ -34,6 +34,15 @@ namespace SteamControllerTest.ViewModels
             }
         }
 
+        public bool ToggleEnabled
+        {
+            get => func.toggleEnabled;
+            set
+            {
+                func.toggleEnabled = value;
+            }
+        }
+
         public NormalPressFuncPropViewModel(Mapper mapper, ButtonAction action,
             NormalPressFunc func)
         {
