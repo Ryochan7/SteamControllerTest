@@ -241,6 +241,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.DEAD_ZONE_TYPE);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.DEAD_ZONE_TYPE);
             HighlightDeadZoneTypeChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -251,6 +252,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.DEAD_ZONE);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.DEAD_ZONE);
             HighlightDeadZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -269,6 +271,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_MODE);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.PAD_MODE);
             HighlightPadModeChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -279,6 +282,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.NAME);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.NAME);
             HighlightNameChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -346,6 +350,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 action.EventCodes4[(int)StickPadAction.DpadDirections.Up] = newAction as AxisDirButton;
                 action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_UP);
                 this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Up] = false;
+                action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.PAD_DIR_UP);
             });
         }
 
@@ -363,6 +368,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 action.EventCodes4[(int)StickPadAction.DpadDirections.Down] = newAction as AxisDirButton;
                 action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_DOWN);
                 this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Down] = false;
+                action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.PAD_DIR_DOWN);
             });
         }
 
@@ -380,6 +386,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 action.EventCodes4[(int)StickPadAction.DpadDirections.Left] = newAction as AxisDirButton;
                 action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_LEFT);
                 this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Left] = false;
+                action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.PAD_DIR_LEFT);
             });
         }
 
@@ -397,6 +404,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 action.EventCodes4[(int)StickPadAction.DpadDirections.Right] = newAction as AxisDirButton;
                 action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_RIGHT);
                 this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Right] = false;
+                action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.PAD_DIR_RIGHT);
             });
         }
 
@@ -414,6 +422,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 action.EventCodes4[(int)StickPadAction.DpadDirections.UpLeft] = newAction as AxisDirButton;
                 action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_UPLEFT);
                 this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.UpLeft] = false;
+                action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.PAD_DIR_UPLEFT);
             });
         }
 
@@ -431,6 +440,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 action.EventCodes4[(int)StickPadAction.DpadDirections.UpRight] = newAction as AxisDirButton;
                 action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_UPRIGHT);
                 this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.UpRight] = false;
+                action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.PAD_DIR_UPRIGHT);
             });
         }
 
@@ -448,6 +458,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 action.EventCodes4[(int)StickPadAction.DpadDirections.DownLeft] = newAction as AxisDirButton;
                 action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_DOWNLEFT);
                 this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.DownLeft] = false;
+                action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.PAD_DIR_DOWNLEFT);
             });
         }
 
@@ -465,6 +476,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 action.EventCodes4[(int)StickPadAction.DpadDirections.DownRight] = newAction as AxisDirButton;
                 action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_DOWNRIGHT);
                 this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.DownRight] = false;
+                action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.PAD_DIR_DOWNRIGHT);
             });
         }
 

@@ -210,6 +210,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
                 action.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.DUALSTAGE_MODE);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TriggerDualStageAction.PropertyKeyStrings.DUALSTAGE_MODE);
             HighlightDSModeChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -253,6 +254,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
                 action.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.HIPFIRE_DELAY);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TriggerDualStageAction.PropertyKeyStrings.HIPFIRE_DELAY);
             HighlightHipFireDelayChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -263,6 +265,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
                 action.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.MAX_ZONE);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TriggerDualStageAction.PropertyKeyStrings.MAX_ZONE);
             HighlightMaxZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -273,6 +276,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
                 action.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.ANTIDEAD_ZONE);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TriggerDualStageAction.PropertyKeyStrings.ANTIDEAD_ZONE);
             HighlightAntiDeadZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -283,6 +287,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
                 action.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.DEAD_ZONE);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TriggerDualStageAction.PropertyKeyStrings.DEAD_ZONE);
             HighlightDeadZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -293,6 +298,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
                 action.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.NAME);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TriggerDualStageAction.PropertyKeyStrings.NAME);
             HighlightNameChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -336,6 +342,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
                 action.FullPullActButton = newAction as AxisDirButton;
                 action.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.FULLPULL_BUTTON);
                 action.UseParentFullPullBtn = false;
+                action.RaiseNotifyPropertyChange(mapper, TriggerDualStageAction.PropertyKeyStrings.FULLPULL_BUTTON);
 
                 resetEvent.Set();
             });
@@ -359,6 +366,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
                 action.SoftPullActButton = newAction as AxisDirButton;
                 action.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.SOFTPULL_BUTTON);
                 action.UseParentSoftPullBtn = false;
+                action.RaiseNotifyPropertyChange(mapper, TriggerDualStageAction.PropertyKeyStrings.SOFTPULL_BUTTON);
 
                 resetEvent.Set();
             });

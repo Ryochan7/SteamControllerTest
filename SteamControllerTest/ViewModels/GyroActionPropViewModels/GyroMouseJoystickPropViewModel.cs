@@ -404,7 +404,6 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
                 action.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.TRIGGER_BUTTONS);
             }
 
-            
             ExecuteInMapperThread(() =>
             {
                 action.RaiseNotifyPropertyChange(mapper, GyroMouseJoystick.PropertyKeyStrings.TRIGGER_BUTTONS);

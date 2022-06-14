@@ -74,6 +74,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 action.ChangedProperties.Add(TouchpadCircular.PropertyKeyStrings.NAME);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TouchpadCircular.PropertyKeyStrings.NAME);
             HighlightNameChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -95,6 +96,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
                 action.ClockWiseBtn = newAction as TouchpadCircularButton;
                 action.ChangedProperties.Add(TouchpadCircular.PropertyKeyStrings.SCROLL_BUTTON_1);
+                action.RaiseNotifyPropertyChange(mapper, TouchpadCircular.PropertyKeyStrings.SCROLL_BUTTON_1);
             });
         }
 
@@ -111,6 +113,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
                 action.CounterClockwiseBtn = newAction as TouchpadCircularButton;
                 action.ChangedProperties.Add(TouchpadCircular.PropertyKeyStrings.SCROLL_BUTTON_2);
+                action.RaiseNotifyPropertyChange(mapper, TouchpadCircular.PropertyKeyStrings.SCROLL_BUTTON_2);
             });
         }
     }

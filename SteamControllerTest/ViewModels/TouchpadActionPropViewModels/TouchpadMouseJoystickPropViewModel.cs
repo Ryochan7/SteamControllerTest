@@ -70,6 +70,8 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
             mapper.QueueEvent(() =>
             {
                 action.MStickParams.OutputStick = item.Code;
+                action.ChangedProperties.Add(TouchpadMouseJoystick.PropertyKeyStrings.OUTPUT_STICK);
+                action.RaiseNotifyPropertyChange(mapper, TouchpadMouseJoystick.PropertyKeyStrings.OUTPUT_STICK);
             });
         }
 

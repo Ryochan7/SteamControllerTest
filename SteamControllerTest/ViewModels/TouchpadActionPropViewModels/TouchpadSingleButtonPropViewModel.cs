@@ -93,6 +93,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 action.ChangedProperties.Add(TouchpadSingleButton.PropertyKeyStrings.DEAD_ZONE);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TouchpadSingleButton.PropertyKeyStrings.DEAD_ZONE);
             HighlightDeadZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 

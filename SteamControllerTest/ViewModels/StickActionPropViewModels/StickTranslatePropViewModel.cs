@@ -200,6 +200,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.MAX_ZONE);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, StickTranslate.PropertyKeyStrings.MAX_ZONE);
             HighlightMaxZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -210,6 +211,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.ANTIDEAD_ZONE);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, StickTranslate.PropertyKeyStrings.ANTIDEAD_ZONE);
             HighlightAntiDeadZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -220,6 +222,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.DEAD_ZONE);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, StickTranslate.PropertyKeyStrings.DEAD_ZONE);
             HighlightDeadZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -230,6 +233,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.OUTPUT_STICK);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, StickTranslate.PropertyKeyStrings.OUTPUT_STICK);
             HighlightOutputStickChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -240,6 +244,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.NAME);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, StickTranslate.PropertyKeyStrings.NAME);
             HighlightNameChanged?.Invoke(this, EventArgs.Empty);
         }
 

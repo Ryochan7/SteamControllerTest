@@ -114,6 +114,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
                 action.ChangedProperties.Add(TriggerButtonAction.PropertyKeyStrings.DEAD_ZONE);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TriggerButtonAction.PropertyKeyStrings.DEAD_ZONE);
             HighlightDeadZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -124,6 +125,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
                 action.ChangedProperties.Add(TriggerButtonAction.PropertyKeyStrings.NAME);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TriggerButtonAction.PropertyKeyStrings.NAME);
             HighlightNameChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -181,6 +183,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
                 action.EventButton = newAction as AxisDirButton;
                 action.ChangedProperties.Add(TriggerButtonAction.PropertyKeyStrings.OUTPUT_BINDING);
                 action.UseParentEventButton = false;
+                action.RaiseNotifyPropertyChange(mapper, TriggerButtonAction.PropertyKeyStrings.OUTPUT_BINDING);
 
                 resetEvent.Set();
             });

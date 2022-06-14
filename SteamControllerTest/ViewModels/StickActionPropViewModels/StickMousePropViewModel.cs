@@ -365,7 +365,6 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
             }
 
             action.RaiseNotifyPropertyChange(mapper, StickMouse.PropertyKeyStrings.MOUSE_SPEED);
-
             HighlightMouseSpeedChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -377,7 +376,6 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
             }
 
             action.RaiseNotifyPropertyChange(mapper, StickMouse.PropertyKeyStrings.DEAD_ZONE);
-
             HighlightDeadZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -389,7 +387,6 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
             }
 
             action.RaiseNotifyPropertyChange(mapper, StickMouse.PropertyKeyStrings.OUTPUT_CURVE);
-
             HighlightOutputCurveChoiceChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -401,7 +398,6 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
             }
 
             action.RaiseNotifyPropertyChange(mapper, StickMouse.PropertyKeyStrings.NAME);
-
             HighlightNameChanged?.Invoke(this, EventArgs.Empty);
         }
 

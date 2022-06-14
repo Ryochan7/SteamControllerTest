@@ -192,6 +192,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.NAME);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.NAME);
             HighlightNameChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -202,6 +203,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.OUTPUT_STICK);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.OUTPUT_STICK);
             HighlightOutputStickIndexChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -212,6 +214,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.MAX_ZONE);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.MAX_ZONE);
             HighlightMaxZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -222,6 +225,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.ANTIDEAD_ZONE);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.ANTIDEAD_ZONE);
             HighlightAntiDeadZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -232,6 +236,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
                 this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.DEAD_ZONE);
             }
 
+            action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.DEAD_ZONE);
             HighlightDeadZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -270,6 +275,8 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
             mapper.QueueEvent(() =>
             {
                 action.OutputAction.StickCode = item.Code;
+                action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.OUTPUT_STICK);
+                action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.OUTPUT_STICK);
             });
         }
 
