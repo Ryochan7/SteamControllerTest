@@ -191,47 +191,54 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
         }
         public event EventHandler HighlightOutputCurveChoiceChanged;
 
-        public bool HighlightDeltaEnabled
+        public bool HighlightDelta
         {
             get => action.ParentAction == null ||
                 action.ChangedProperties.Contains(StickMouse.PropertyKeyStrings.DELTA_SETTINGS);
         }
-        public event EventHandler HighlightDeltaEnabledChanged;
+        public event EventHandler HighlightDeltaChanged;
 
-        public bool HighlightHighlightDeltaMultiplier
-        {
-            get => action.ParentAction == null ||
-                action.ChangedProperties.Contains(StickMouse.PropertyKeyStrings.DELTA_SETTINGS);
-        }
-        public event EventHandler HighlightDeltaMultiplierChanged;
+        //public bool HighlightDeltaEnabled
+        //{
+        //    get => action.ParentAction == null ||
+        //        action.ChangedProperties.Contains(StickMouse.PropertyKeyStrings.DELTA_SETTINGS);
+        //}
+        //public event EventHandler HighlightDeltaEnabledChanged;
 
-        public bool HighlightDeltaMinTravel
-        {
-            get => action.ParentAction == null ||
-                action.ChangedProperties.Contains(StickMouse.PropertyKeyStrings.DELTA_SETTINGS);
-        }
-        public event EventHandler HighlightDeltaMinTravelChanged;
+        //public bool HighlightHighlightDeltaMultiplier
+        //{
+        //    get => action.ParentAction == null ||
+        //        action.ChangedProperties.Contains(StickMouse.PropertyKeyStrings.DELTA_SETTINGS);
+        //}
+        //public event EventHandler HighlightDeltaMultiplierChanged;
 
-        public bool HighlightDeltaMaxTravel
-        {
-            get => action.ParentAction == null ||
-                action.ChangedProperties.Contains(StickMouse.PropertyKeyStrings.DELTA_SETTINGS);
-        }
-        public event EventHandler HighlightDeltaMaxTravelChanged;
+        //public bool HighlightDeltaMinTravel
+        //{
+        //    get => action.ParentAction == null ||
+        //        action.ChangedProperties.Contains(StickMouse.PropertyKeyStrings.DELTA_SETTINGS);
+        //}
+        //public event EventHandler HighlightDeltaMinTravelChanged;
 
-        public bool HighlightDeltaEasingDuration
-        {
-            get => action.ParentAction == null ||
-                action.ChangedProperties.Contains(StickMouse.PropertyKeyStrings.DELTA_SETTINGS);
-        }
-        public event EventHandler HighlightDeltaEasingDurationChanged;
+        //public bool HighlightDeltaMaxTravel
+        //{
+        //    get => action.ParentAction == null ||
+        //        action.ChangedProperties.Contains(StickMouse.PropertyKeyStrings.DELTA_SETTINGS);
+        //}
+        //public event EventHandler HighlightDeltaMaxTravelChanged;
 
-        public bool HighlightDeltaMinFactor
-        {
-            get => action.ParentAction == null ||
-                action.ChangedProperties.Contains(StickMouse.PropertyKeyStrings.DELTA_SETTINGS);
-        }
-        public event EventHandler HighlightDeltaMinFactorChanged;
+        //public bool HighlightDeltaEasingDuration
+        //{
+        //    get => action.ParentAction == null ||
+        //        action.ChangedProperties.Contains(StickMouse.PropertyKeyStrings.DELTA_SETTINGS);
+        //}
+        //public event EventHandler HighlightDeltaEasingDurationChanged;
+
+        //public bool HighlightDeltaMinFactor
+        //{
+        //    get => action.ParentAction == null ||
+        //        action.ChangedProperties.Contains(StickMouse.PropertyKeyStrings.DELTA_SETTINGS);
+        //}
+        //public event EventHandler HighlightDeltaMinFactorChanged;
 
 
         public event EventHandler ActionPropertyChanged;
@@ -287,8 +294,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
             }
 
             action.RaiseNotifyPropertyChange(mapper, StickMouse.PropertyKeyStrings.DELTA_SETTINGS);
-
-            HighlightDeltaMinFactorChanged?.Invoke(this, EventArgs.Empty);
+            HighlightDeltaChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void StickMousePropViewModel_DeltaEasingDurationChanged(object sender, EventArgs e)
@@ -299,8 +305,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
             }
 
             action.RaiseNotifyPropertyChange(mapper, StickMouse.PropertyKeyStrings.DELTA_SETTINGS);
-
-            HighlightDeltaEasingDurationChanged?.Invoke(this, EventArgs.Empty);
+            HighlightDeltaChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void StickMousePropViewModel_DeltaMaxTravelChanged(object sender, EventArgs e)
@@ -311,8 +316,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
             }
 
             action.RaiseNotifyPropertyChange(mapper, StickMouse.PropertyKeyStrings.DELTA_SETTINGS);
-
-            HighlightDeltaMaxTravelChanged?.Invoke(this, EventArgs.Empty);
+            HighlightDeltaChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void StickMousePropViewModel_DeltaMinTravelChanged(object sender, EventArgs e)
@@ -323,8 +327,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
             }
 
             action.RaiseNotifyPropertyChange(mapper, StickMouse.PropertyKeyStrings.DELTA_SETTINGS);
-
-            HighlightDeltaMinTravelChanged?.Invoke(this, EventArgs.Empty);
+            HighlightDeltaChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void StickMousePropViewModel_DeltaMultiplierChanged(object sender, EventArgs e)
@@ -335,8 +338,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
             }
 
             action.RaiseNotifyPropertyChange(mapper, StickMouse.PropertyKeyStrings.DELTA_SETTINGS);
-
-            HighlightDeltaMultiplierChanged?.Invoke(this, EventArgs.Empty);
+            HighlightDeltaChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void StickMousePropViewModel_DeltaEnabledChanged(object sender, EventArgs e)
@@ -347,8 +349,7 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
             }
 
             action.RaiseNotifyPropertyChange(mapper, StickMouse.PropertyKeyStrings.DELTA_SETTINGS);
-
-            HighlightDeltaEnabledChanged?.Invoke(this, EventArgs.Empty);
+            HighlightDeltaChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void RenderUpdatedOutputMouseSpeed(object sender, EventArgs e)
