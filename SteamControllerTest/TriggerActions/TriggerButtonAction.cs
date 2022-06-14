@@ -122,6 +122,8 @@ namespace SteamControllerTest.TriggerActions
                 this.parentAction = parentAction;
                 mappingId = tempBtnAction.mappingId;
 
+                tempBtnAction.NotifyPropertyChanged += TempBtnAction_NotifyPropertyChanged;
+
                 // Determine the set with properties that should inherit
                 // from the parent action
                 IEnumerable<string> useParentProList =
@@ -145,6 +147,43 @@ namespace SteamControllerTest.TriggerActions
                             break;
                     }
                 }
+            }
+        }
+
+        private void TempBtnAction_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
+        {
+            CascadePropertyChange(e.Mapper, e.PropertyName);
+        }
+
+        protected override void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+            if (changedProperties.Contains(propertyName))
+            {
+                // Property already overrridden in action. Leave
+                return;
+            }
+            else if (parentAction == null)
+            {
+                // No parent action. Leave
+                return;
+            }
+
+            TriggerButtonAction tempBtnAction = parentAction as TriggerButtonAction;
+
+            switch (propertyName)
+            {
+                case PropertyKeyStrings.NAME:
+                    name = tempBtnAction.name;
+                    break;
+                case PropertyKeyStrings.DEAD_ZONE:
+                    deadZone.DeadZone = tempBtnAction.deadZone.DeadZone;
+                    break;
+                case PropertyKeyStrings.OUTPUT_BINDING:
+                    useParentEventButton = true;
+                    eventButton = tempBtnAction.EventButton;
+                    break;
+                default:
+                    break;
             }
         }
     }

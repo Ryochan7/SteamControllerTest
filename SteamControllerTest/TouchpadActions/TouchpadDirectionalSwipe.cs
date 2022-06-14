@@ -459,6 +459,8 @@ namespace SteamControllerTest.TouchpadActions
             {
                 base.SoftCopyFromParent(parentAction);
 
+                tempSwipeAction.NotifyPropertyChanged += TempSwipeAction_NotifyPropertyChanged;
+
                 // Determine the set with properties that should inherit
                 // from the parent action
                 IEnumerable<string> useParentProList =
@@ -516,6 +518,77 @@ namespace SteamControllerTest.TouchpadActions
                             break;
                     }
                 }
+            }
+        }
+
+        private void TempSwipeAction_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
+        {
+            CascadePropertyChange(e.Mapper, e.PropertyName);
+        }
+
+        protected override void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+            if (changedProperties.Contains(propertyName))
+            {
+                // Property already overrridden in action. Leave
+                return;
+            }
+            else if (parentAction == null)
+            {
+                // No parent action. Leave
+                return;
+            }
+
+            TouchpadDirectionalSwipe tempSwipeAction = parentAction as TouchpadDirectionalSwipe;
+
+            switch (propertyName)
+            {
+                case PropertyKeyStrings.NAME:
+                    name = tempSwipeAction.name;
+                    break;
+                case PropertyKeyStrings.DEAD_ZONE_X:
+                    swipeParams.deadzoneX = tempSwipeAction.swipeParams.deadzoneX;
+                    break;
+                case PropertyKeyStrings.DEAD_ZONE_Y:
+                    swipeParams.deadzoneY = tempSwipeAction.swipeParams.deadzoneY;
+                    break;
+                case PropertyKeyStrings.DELAY_TIME:
+                    swipeParams.delayTime = tempSwipeAction.swipeParams.delayTime;
+                    break;
+                case PropertyKeyStrings.PAD_DIR_UP:
+                    {
+                        usedEventsButtonsY[(int)SwipeAxisYDir.Up] =
+                            tempSwipeAction.usedEventsButtonsY[(int)SwipeAxisYDir.Up];
+                        useParentDataY[(int)SwipeAxisYDir.Up] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_DOWN:
+                    {
+                        usedEventsButtonsY[(int)SwipeAxisYDir.Down] =
+                            tempSwipeAction.usedEventsButtonsY[(int)SwipeAxisYDir.Down];
+                        useParentDataY[(int)SwipeAxisYDir.Down] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_LEFT:
+                    {
+                        usedEventsButtonsX[(int)SwipeAxisXDir.Left] =
+                            tempSwipeAction.usedEventsButtonsY[(int)SwipeAxisXDir.Left];
+                        useParentDataX[(int)SwipeAxisXDir.Left] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_RIGHT:
+                    {
+                        usedEventsButtonsX[(int)SwipeAxisXDir.Right] =
+                            tempSwipeAction.usedEventsButtonsY[(int)SwipeAxisXDir.Right];
+                        useParentDataX[(int)SwipeAxisXDir.Right] = true;
+                    }
+
+                    break;
+                default:
+                    break;
             }
         }
     }

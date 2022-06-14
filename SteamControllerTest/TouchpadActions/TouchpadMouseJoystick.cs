@@ -720,6 +720,8 @@ namespace SteamControllerTest.TouchpadActions
 
                 this.touchpadDefinition = new TouchpadDefinition(tempMouseJoyAction.touchpadDefinition);
 
+                tempMouseJoyAction.NotifyPropertyChanged += TempMouseJoyAction_NotifyPropertyChanged;
+
                 // Determine the set with properties that should inherit
                 // from the parent action
                 IEnumerable<string> useParentProList =
@@ -779,11 +781,81 @@ namespace SteamControllerTest.TouchpadActions
             }
         }
 
+        private void TempMouseJoyAction_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
+        {
+            CascadePropertyChange(e.Mapper, e.PropertyName);
+        }
+
         private void CalcTrackAccel()
         {
             //trackData.trackballAccel = TRACKBALL_RADIUS * TRACKBALL_JOY_FRICTION / TRACKBALL_INERTIA;
             //trackData.trackballAccel = TRACKBALL_RADIUS * trackballFriction / TRACKBALL_INERTIA;
             trackData.trackballAccel = TRACKBALL_RADIUS * mStickParams.trackballFriction / TRACKBALL_INERTIA;
+        }
+
+        protected override void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+            if (changedProperties.Contains(propertyName))
+            {
+                // Property already overrridden in action. Leave
+                return;
+            }
+            else if (parentAction == null)
+            {
+                // No parent action. Leave
+                return;
+            }
+
+            TouchpadMouseJoystick tempMouseJoyAction = parentAction as TouchpadMouseJoystick;
+
+            switch (propertyName)
+            {
+                case PropertyKeyStrings.NAME:
+                    name = tempMouseJoyAction.name;
+                    break;
+                case PropertyKeyStrings.DEAD_ZONE:
+                    mStickParams.deadZone = tempMouseJoyAction.mStickParams.deadZone;
+                    break;
+                case PropertyKeyStrings.MAX_ZONE:
+                    mStickParams.maxZone = tempMouseJoyAction.mStickParams.maxZone;
+                    break;
+                case PropertyKeyStrings.ANTIDEAD_ZONE_X:
+                    mStickParams.antiDeadzoneX = tempMouseJoyAction.mStickParams.antiDeadzoneX;
+                    break;
+                case PropertyKeyStrings.ANTIDEAD_ZONE_Y:
+                    mStickParams.antiDeadzoneY = tempMouseJoyAction.mStickParams.antiDeadzoneY;
+                    break;
+                case PropertyKeyStrings.OUTPUT_STICK:
+                    outputAction.StickCode = tempMouseJoyAction.outputAction.StickCode;
+                    break;
+                case PropertyKeyStrings.OUTPUT_CURVE:
+                    mStickParams.outputCurve = tempMouseJoyAction.mStickParams.outputCurve;
+                    break;
+                case PropertyKeyStrings.TRACKBALL_MODE:
+                    mStickParams.trackballEnabled = tempMouseJoyAction.mStickParams.trackballEnabled;
+                    // Copy parent ref
+                    trackData = tempMouseJoyAction.trackData;
+                    break;
+                case PropertyKeyStrings.TRACKBALL_FRICTION:
+                    mStickParams.trackballFriction = tempMouseJoyAction.mStickParams.trackballFriction;
+                    useParentTrackFriction = true;
+                    CalcTrackAccel();
+                    break;
+                case PropertyKeyStrings.INVERT_X:
+                    mStickParams.invertX = tempMouseJoyAction.mStickParams.invertX;
+                    break;
+                case PropertyKeyStrings.INVERT_Y:
+                    mStickParams.invertY = tempMouseJoyAction.mStickParams.invertY;
+                    break;
+                case PropertyKeyStrings.VERTICAL_SCALE:
+                    mStickParams.verticalScale = tempMouseJoyAction.mStickParams.verticalScale;
+                    break;
+                case PropertyKeyStrings.ROTATION:
+                    mStickParams.rotation = tempMouseJoyAction.mStickParams.rotation;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

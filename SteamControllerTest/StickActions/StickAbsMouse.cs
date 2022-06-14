@@ -134,8 +134,6 @@ namespace SteamControllerTest.StickActions
         public bool UseRingButton { get => useRingButton; set => useRingButton = value; }
         public double OuterRingDeadZone { get => outerRingDeadZone; set => outerRingDeadZone = value; }
 
-        private event EventHandler<NotifyPropertyChangeArgs> NotifyPropertyChanged;
-
         public StickAbsMouse()
         {
             actionTypeName = ACTION_TYPE_NAME;
@@ -443,12 +441,6 @@ namespace SteamControllerTest.StickActions
         private void TempAbsAction_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
         {
             CascadePropertyChange(e.Mapper, e.PropertyName);
-        }
-
-        public override void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
-        {
-            NotifyPropertyChanged?.Invoke(this,
-                new NotifyPropertyChangeArgs(mapper, propertyName));
         }
 
         protected override void CascadePropertyChange(Mapper mapper, string propertyName)

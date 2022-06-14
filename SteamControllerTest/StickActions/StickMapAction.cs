@@ -14,6 +14,8 @@ namespace SteamControllerTest.StickActions
         protected StickDefinition stickDefinition;
         public StickDefinition StickDefinition { get => stickDefinition; set => stickDefinition = value; }
 
+        protected event EventHandler<NotifyPropertyChangeArgs> NotifyPropertyChanged;
+
         public abstract void Prepare(Mapper mapper, int axisXVal, int axisYVal, bool alterState = true);
 
         public abstract StickMapAction DuplicateAction();
@@ -33,6 +35,8 @@ namespace SteamControllerTest.StickActions
 
         public virtual void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
         {
+            NotifyPropertyChanged?.Invoke(this,
+                new NotifyPropertyChangeArgs(mapper, propertyName));
         }
     }
 }

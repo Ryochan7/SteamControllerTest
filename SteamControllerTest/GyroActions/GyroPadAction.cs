@@ -801,6 +801,8 @@ namespace SteamControllerTest.GyroActions
                 tempGyroPadAction.hasLayeredAction = true;
                 mappingId = tempGyroPadAction.mappingId;
 
+                tempGyroPadAction.NotifyPropertyChanged += TempGyroPadAction_NotifyPropertyChanged;
+
                 // Determine the set with properties that should inherit
                 // from the parent action
                 IEnumerable<string> useParentProList =
@@ -893,6 +895,112 @@ namespace SteamControllerTest.GyroActions
                             break;
                     }
                 }
+            }
+        }
+
+        private void TempGyroPadAction_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
+        {
+            CascadePropertyChange(e.Mapper, e.PropertyName);
+        }
+
+        protected override void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+            if (changedProperties.Contains(propertyName))
+            {
+                // Property already overrridden in action. Leave
+                return;
+            }
+            else if (parentAction == null)
+            {
+                // No parent action. Leave
+                return;
+            }
+
+            GyroPadAction tempGyroPadAction = parentAction as GyroPadAction;
+
+            switch (propertyName)
+            {
+                case PropertyKeyStrings.NAME:
+                    name = tempGyroPadAction.name;
+                    break;
+                case PropertyKeyStrings.PAD_MODE:
+                    currentMode = tempGyroPadAction.CurrentMode;
+                    break;
+                case PropertyKeyStrings.PAD_DIR_UP:
+                    {
+                        int tempDir = (int)DpadDirections.Up;
+                        eventCodes4[tempDir] = tempGyroPadAction.eventCodes4[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_DOWN:
+                    {
+                        int tempDir = (int)DpadDirections.Down;
+                        eventCodes4[tempDir] = tempGyroPadAction.eventCodes4[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_LEFT:
+                    {
+                        int tempDir = (int)DpadDirections.Left;
+                        eventCodes4[tempDir] = tempGyroPadAction.eventCodes4[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_RIGHT:
+                    {
+                        int tempDir = (int)DpadDirections.Right;
+                        eventCodes4[tempDir] = tempGyroPadAction.eventCodes4[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_UPLEFT:
+                    {
+                        int tempDir = (int)DpadDirections.UpLeft;
+                        eventCodes4[tempDir] = tempGyroPadAction.eventCodes4[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_UPRIGHT:
+                    {
+                        int tempDir = (int)DpadDirections.UpRight;
+                        eventCodes4[tempDir] = tempGyroPadAction.eventCodes4[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_DOWNLEFT:
+                    {
+                        int tempDir = (int)DpadDirections.DownLeft;
+                        eventCodes4[tempDir] = tempGyroPadAction.eventCodes4[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_DOWNRIGHT:
+                    {
+                        int tempDir = (int)DpadDirections.DownRight;
+                        eventCodes4[tempDir] = tempGyroPadAction.eventCodes4[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.TRIGGER_BUTTONS:
+                    padParams.gyroTriggerButtons = tempGyroPadAction.padParams.gyroTriggerButtons;
+                    break;
+                case PropertyKeyStrings.TRIGGER_ACTIVATE:
+                    padParams.triggerActivates = tempGyroPadAction.padParams.triggerActivates;
+                    break;
+                case PropertyKeyStrings.TRIGGER_EVAL_COND:
+                    padParams.andCond = tempGyroPadAction.padParams.andCond;
+                    break;
+                default:
+                    break;
             }
         }
     }

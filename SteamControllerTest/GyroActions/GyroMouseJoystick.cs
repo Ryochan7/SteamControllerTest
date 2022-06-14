@@ -399,6 +399,8 @@ namespace SteamControllerTest.GyroActions
                 tempGyroStickAction.hasLayeredAction = true;
                 mappingId = tempGyroStickAction.mappingId;
 
+                tempGyroStickAction.NotifyPropertyChanged += TempGyroStickAction_NotifyPropertyChanged;
+
                 // Determine the set with properties that should inherit
                 // from the parent action
                 IEnumerable<string> useParentProList =
@@ -486,10 +488,9 @@ namespace SteamControllerTest.GyroActions
             }
         }
 
-        public override void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
+        private void TempGyroStickAction_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
         {
-            NotifyPropertyChanged?.Invoke(this,
-                new NotifyPropertyChangeArgs(mapper, propertyName));
+            CascadePropertyChange(e.Mapper, e.PropertyName);
         }
 
         protected override void CascadePropertyChange(Mapper mapper, string propertyName)

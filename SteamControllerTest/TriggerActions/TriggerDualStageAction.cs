@@ -257,6 +257,8 @@ namespace SteamControllerTest.TriggerActions
                 this.parentAction = parentAction;
                 mappingId = tempDualTrigAction.mappingId;
 
+                tempDualTrigAction.NotifyPropertyChanged += TempDualTrigAction_NotifyPropertyChanged;
+
                 // Determine the set with properties that should inherit
                 // from the parent action
                 IEnumerable<string> useParentProList =
@@ -297,6 +299,11 @@ namespace SteamControllerTest.TriggerActions
                     }
                 }
             }
+        }
+
+        private void TempDualTrigAction_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
+        {
+            CascadePropertyChange(e.Mapper, e.PropertyName);
         }
 
         private void StartStageProcessing(bool useTime=true)
@@ -533,6 +540,54 @@ namespace SteamControllerTest.TriggerActions
             }
 
             return result;
+        }
+
+        protected override void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+            if (changedProperties.Contains(propertyName))
+            {
+                // Property already overrridden in action. Leave
+                return;
+            }
+            else if (parentAction == null)
+            {
+                // No parent action. Leave
+                return;
+            }
+
+            TriggerDualStageAction tempDualTrigAction = parentAction as TriggerDualStageAction;
+
+            switch (propertyName)
+            {
+                case PropertyKeyStrings.NAME:
+                    name = tempDualTrigAction.name;
+                    break;
+                case PropertyKeyStrings.DEAD_ZONE:
+                    deadMod.DeadZone = tempDualTrigAction.deadMod.DeadZone;
+                    break;
+                case PropertyKeyStrings.MAX_ZONE:
+                    deadMod.MaxZone = tempDualTrigAction.deadMod.MaxZone;
+                    break;
+                case PropertyKeyStrings.ANTIDEAD_ZONE:
+                    deadMod.AntiDeadZone = tempDualTrigAction.deadMod.AntiDeadZone;
+                    break;
+                case PropertyKeyStrings.SOFTPULL_BUTTON:
+                    softPullActButton = tempDualTrigAction.softPullActButton;
+                    useParentSoftPullBtn = true;
+                    break;
+                case PropertyKeyStrings.FULLPULL_BUTTON:
+                    fullPullActButton = tempDualTrigAction.fullPullActButton;
+                    useParentFullPullBtn = true;
+                    break;
+                case PropertyKeyStrings.DUALSTAGE_MODE:
+                    triggerStageMode = tempDualTrigAction.triggerStageMode;
+                    break;
+                case PropertyKeyStrings.HIPFIRE_DELAY:
+                    hipFireMs = tempDualTrigAction.hipFireMs;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

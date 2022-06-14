@@ -112,6 +112,8 @@ namespace SteamControllerTest.TriggerActions
 
                 parentTrigAction = tempTrigTranslateAction;
 
+                tempTrigTranslateAction.NotifyPropertyChanged += TempTrigTranslateAction_NotifyPropertyChanged;
+
                 // Determine the set with properties that should inherit
                 // from the parent action
                 IEnumerable<string> useParentProList =
@@ -140,6 +142,48 @@ namespace SteamControllerTest.TriggerActions
                             break;
                     }
                 }
+            }
+        }
+
+        private void TempTrigTranslateAction_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
+        {
+            CascadePropertyChange(e.Mapper, e.PropertyName);
+        }
+
+        protected override void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+            if (changedProperties.Contains(propertyName))
+            {
+                // Property already overrridden in action. Leave
+                return;
+            }
+            else if (parentAction == null)
+            {
+                // No parent action. Leave
+                return;
+            }
+
+            TriggerTranslate tempTrigTranslateAction = parentAction as TriggerTranslate;
+
+            switch (propertyName)
+            {
+                case PropertyKeyStrings.NAME:
+                    name = tempTrigTranslateAction.name;
+                    break;
+                case PropertyKeyStrings.DEAD_ZONE:
+                    deadMod.DeadZone = tempTrigTranslateAction.deadMod.DeadZone;
+                    break;
+                case PropertyKeyStrings.MAX_ZONE:
+                    deadMod.MaxZone = tempTrigTranslateAction.deadMod.MaxZone;
+                    break;
+                case PropertyKeyStrings.ANTIDEAD_ZONE:
+                    deadMod.AntiDeadZone = tempTrigTranslateAction.deadMod.AntiDeadZone;
+                    break;
+                case PropertyKeyStrings.OUTPUT_TRIGGER:
+                    outputData.JoypadCode = tempTrigTranslateAction.OutputData.JoypadCode;
+                    break;
+                default:
+                    break;
             }
         }
     }

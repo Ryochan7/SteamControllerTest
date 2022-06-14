@@ -272,6 +272,8 @@ namespace SteamControllerTest.TouchpadActions
 
                 this.touchpadDefinition = new TouchpadDefinition(tempStickAction.touchpadDefinition);
 
+                tempStickAction.NotifyPropertyChanged += TempStickAction_NotifyPropertyChanged;
+
                 // Determine the set with properties that should inherit
                 // from the parent action
                 IEnumerable<string> useParentProList =
@@ -327,6 +329,75 @@ namespace SteamControllerTest.TouchpadActions
                             break;
                     }
                 }
+            }
+        }
+
+        private void TempStickAction_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
+        {
+            CascadePropertyChange(e.Mapper, e.PropertyName);
+        }
+
+        protected override void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+            if (changedProperties.Contains(propertyName))
+            {
+                // Property already overrridden in action. Leave
+                return;
+            }
+            else if (parentAction == null)
+            {
+                // No parent action. Leave
+                return;
+            }
+
+            TouchpadStickAction tempStickAction = parentAction as TouchpadStickAction;
+
+            switch (propertyName)
+            {
+                case PropertyKeyStrings.NAME:
+                    name = tempStickAction.name;
+                    break;
+                case PropertyKeyStrings.DEAD_ZONE:
+                    deadMod.DeadZone = tempStickAction.deadMod.DeadZone;
+                    break;
+                case PropertyKeyStrings.MAX_ZONE:
+                    deadMod.MaxZone = tempStickAction.deadMod.MaxZone;
+                    break;
+                case PropertyKeyStrings.ANTIDEAD_ZONE:
+                    deadMod.AntiDeadZone = tempStickAction.deadMod.AntiDeadZone;
+                    break;
+                case PropertyKeyStrings.OUTPUT_CURVE:
+                    outputCurve = tempStickAction.outputCurve;
+                    break;
+                case PropertyKeyStrings.OUTPUT_STICK:
+                    outputAction.StickCode = tempStickAction.outputAction.StickCode;
+                    break;
+                case PropertyKeyStrings.INVERT_X:
+                    invertX = tempStickAction.invertX;
+                    break;
+                case PropertyKeyStrings.INVERT_Y:
+                    invertY = tempStickAction.invertY;
+                    break;
+                case PropertyKeyStrings.ROTATION:
+                    rotation = tempStickAction.rotation;
+                    break;
+                case PropertyKeyStrings.VERTICAL_SCALE:
+                    verticalScale = tempStickAction.verticalScale;
+                    break;
+                case PropertyKeyStrings.MAX_OUTPUT_ENABLED:
+                    maxOutputEnabled = tempStickAction.maxOutputEnabled;
+                    break;
+                case PropertyKeyStrings.MAX_OUTPUT:
+                    maxOutput = tempStickAction.maxOutput;
+                    break;
+                case PropertyKeyStrings.SQUARE_STICK_ENABLED:
+                    squareStickEnabled = tempStickAction.squareStickEnabled;
+                    break;
+                case PropertyKeyStrings.SQUARE_STICK_ROUNDNESS:
+                    squareStickRoundness = tempStickAction.squareStickRoundness;
+                    break;
+                default:
+                    break;
             }
         }
     }

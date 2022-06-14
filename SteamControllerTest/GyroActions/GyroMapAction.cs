@@ -35,6 +35,8 @@ namespace SteamControllerTest.GyroActions
             set => gyroSensDefinition = value;
         }
 
+        protected event EventHandler<NotifyPropertyChangeArgs> NotifyPropertyChanged;
+
         public abstract void Prepare(Mapper mapper, ref GyroEventFrame gyroFrame, bool alterState = true);
 
         public abstract void BlankEvent(Mapper mapper);
@@ -57,6 +59,8 @@ namespace SteamControllerTest.GyroActions
 
         public virtual void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
         {
+            NotifyPropertyChanged?.Invoke(this,
+                new NotifyPropertyChangeArgs(mapper, propertyName));
         }
     }
 }

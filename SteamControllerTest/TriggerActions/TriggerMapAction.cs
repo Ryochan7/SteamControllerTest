@@ -24,6 +24,8 @@ namespace SteamControllerTest.TriggerActions
             set => triggerDefinition = value;
         }
 
+        protected event EventHandler<NotifyPropertyChangeArgs> NotifyPropertyChanged;
+
         public abstract void Prepare(Mapper mapper, ref TriggerEventFrame eventFrame, bool alterState = true);
 
         public void CopyBaseMapProps(TriggerMapAction sourceAction)
@@ -47,6 +49,8 @@ namespace SteamControllerTest.TriggerActions
 
         public virtual void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
         {
+            NotifyPropertyChanged?.Invoke(this,
+                new NotifyPropertyChangeArgs(mapper, propertyName));
         }
     }
 }

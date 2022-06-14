@@ -85,8 +85,6 @@ namespace SteamControllerTest.GyroActions
         private bool toggleActiveState;
         private OneEuroFilter smoothFilter = new OneEuroFilter(1.0, 1.0);
 
-        private event EventHandler<NotifyPropertyChangeArgs> NotifyPropertyChanged;
-
         public GyroMouse()
         {
             actionTypeName = ACTION_TYPE_NAME;
@@ -402,12 +400,6 @@ namespace SteamControllerTest.GyroActions
         private void TempMouseAction_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
         {
             CascadePropertyChange(e.Mapper, e.PropertyName);
-        }
-
-        public override void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
-        {
-            NotifyPropertyChanged?.Invoke(this,
-                new NotifyPropertyChangeArgs(mapper, propertyName));
         }
 
         protected override void CascadePropertyChange(Mapper mapper, string propertyName)

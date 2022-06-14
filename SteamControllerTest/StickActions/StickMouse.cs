@@ -128,8 +128,6 @@ namespace SteamControllerTest.StickActions
             set => mouseDeltaSettings = value;
         }
 
-        private event EventHandler<NotifyPropertyChangeArgs> NotifyPropertyChanged;
-
         public StickMouse()
         {
             actionTypeName = ACTION_TYPE_NAME;
@@ -481,12 +479,6 @@ namespace SteamControllerTest.StickActions
         private void TempMouseAction_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
         {
             CascadePropertyChange(e.Mapper, e.PropertyName);
-        }
-
-        public override void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
-        {
-            NotifyPropertyChanged?.Invoke(this,
-                new NotifyPropertyChangeArgs(mapper, propertyName));
         }
 
         protected override void CascadePropertyChange(Mapper mapper, string propertyName)

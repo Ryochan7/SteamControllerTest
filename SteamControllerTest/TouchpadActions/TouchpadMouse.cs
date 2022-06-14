@@ -120,8 +120,6 @@ namespace SteamControllerTest.TouchpadActions
 
         private bool useParentTrackFriction;
 
-        private event EventHandler<NotifyPropertyChangeArgs> NotifyPropertyChanged;
-
         public TouchpadMouse()
         {
             actionTypeName = ACTION_TYPE_NAME;
@@ -508,12 +506,6 @@ namespace SteamControllerTest.TouchpadActions
         {
             //trackData.trackballAccel = TRACKBALL_RADIUS * TRACKBALL_JOY_FRICTION / TRACKBALL_INERTIA;
             trackData.trackballAccel = TRACKBALL_RADIUS * trackballFriction / TRACKBALL_INERTIA;
-        }
-
-        public override void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
-        {
-            NotifyPropertyChanged?.Invoke(this,
-                new NotifyPropertyChangeArgs(mapper, propertyName));
         }
 
         protected override void CascadePropertyChange(Mapper mapper, string propertyName)

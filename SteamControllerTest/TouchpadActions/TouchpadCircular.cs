@@ -262,6 +262,8 @@ namespace SteamControllerTest.TouchpadActions
             {
                 base.SoftCopyFromParent(parentAction);
 
+                tempCirleAction.NotifyPropertyChanged += TempCirleAction_NotifyPropertyChanged;
+
                 // Determine the set with properties that should inherit
                 // from the parent action
                 IEnumerable<string> useParentProList =
@@ -287,10 +289,46 @@ namespace SteamControllerTest.TouchpadActions
             }
         }
 
+        private void TempCirleAction_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
+        {
+            CascadePropertyChange(e.Mapper, e.PropertyName);
+        }
+
         public override void PrepareActions()
         {
             counterClockwiseBtn.PrepareActions();
             counterClockwiseBtn.PrepareActions();
+        }
+
+        protected override void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+            if (changedProperties.Contains(propertyName))
+            {
+                // Property already overrridden in action. Leave
+                return;
+            }
+            else if (parentAction == null)
+            {
+                // No parent action. Leave
+                return;
+            }
+
+            TouchpadCircular tempCirleAction = parentAction as TouchpadCircular;
+
+            switch (propertyName)
+            {
+                case PropertyKeyStrings.NAME:
+                    name = tempCirleAction.name;
+                    break;
+                case PropertyKeyStrings.SCROLL_BUTTON_1:
+                    useParentCircButtons[0] = true;
+                    break;
+                case PropertyKeyStrings.SCROLL_BUTTON_2:
+                    useParentCircButtons[1] = true;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

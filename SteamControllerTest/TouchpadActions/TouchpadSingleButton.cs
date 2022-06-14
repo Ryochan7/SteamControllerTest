@@ -127,6 +127,8 @@ namespace SteamControllerTest.TouchpadActions
             {
                 base.SoftCopyFromParent(parentAction);
 
+                tempButtonAct.NotifyPropertyChanged += TempButtonAct_NotifyPropertyChanged;
+
                 // Determine the set with properties that should inherit
                 // from the parent action
                 IEnumerable<string> useParentProList =
@@ -150,6 +152,43 @@ namespace SteamControllerTest.TouchpadActions
                             break;
                     }
                 }
+            }
+        }
+
+        private void TempButtonAct_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
+        {
+            CascadePropertyChange(e.Mapper, e.PropertyName);
+        }
+
+        protected override void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+            if (changedProperties.Contains(propertyName))
+            {
+                // Property already overrridden in action. Leave
+                return;
+            }
+            else if (parentAction == null)
+            {
+                // No parent action. Leave
+                return;
+            }
+
+            TouchpadSingleButton tempButtonAct = parentAction as TouchpadSingleButton;
+
+            switch (propertyName)
+            {
+                case PropertyKeyStrings.NAME:
+                    name = tempButtonAct.name;
+                    break;
+                case PropertyKeyStrings.FUNCTIONS:
+                    useParentActions = true;
+                    usedEventButton = tempButtonAct.usedEventButton;
+                    break;
+                case PropertyKeyStrings.DEAD_ZONE:
+                    deadMod.DeadZone = tempButtonAct.deadMod.DeadZone;
+                    break;
+                default:
+                    break;
             }
         }
     }

@@ -42,6 +42,8 @@ namespace SteamControllerTest.TouchpadActions
             get => touchpadDefinition; set => touchpadDefinition = value;
         }
 
+        protected event EventHandler<NotifyPropertyChangeArgs> NotifyPropertyChanged;
+
         public abstract void Prepare(Mapper mapper, ref TouchEventFrame touchFrame, bool alterState = true);
         public virtual void SoftCopyFromParent(TouchpadMapAction parentAction)
         {
@@ -67,6 +69,8 @@ namespace SteamControllerTest.TouchpadActions
 
         public virtual void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
         {
+            NotifyPropertyChanged?.Invoke(this,
+                new NotifyPropertyChangeArgs(mapper, propertyName));
         }
     }
 }

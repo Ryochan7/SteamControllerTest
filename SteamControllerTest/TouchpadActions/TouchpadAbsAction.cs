@@ -132,8 +132,6 @@ namespace SteamControllerTest.TouchpadActions
         public double OuterRingDeadZone { get => outerRingDeadZone; set => outerRingDeadZone = value; }
         public OuterRingUseRange UsedOuterRingRange { get => usedOuterRingRange; set => usedOuterRingRange = value; }
 
-        private event EventHandler<NotifyPropertyChangeArgs> NotifyPropertyChanged;
-
         public TouchpadAbsAction()
         {
             actionTypeName = ACTION_TYPE_NAME;
@@ -413,10 +411,10 @@ namespace SteamControllerTest.TouchpadActions
 
         private void TempAbsAction_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
         {
-            RaiseNotifyPropertyChange(e.Mapper, e.PropertyName);
+            CascadePropertyChange(e.Mapper, e.PropertyName);
         }
 
-        public override void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
+        protected override void CascadePropertyChange(Mapper mapper, string propertyName)
         {
             if (changedProperties.Contains(propertyName))
             {
