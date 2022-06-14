@@ -20,7 +20,7 @@ https://github.com/Ryochan7/SteamControllerTest/releases/tag/v0.0.2
 
 ![example_mapper_screen_20220605](https://user-images.githubusercontent.com/581968/172064947-bc3358c7-7ec3-4a5d-86f5-3715bd4638e7.png)
 
-![example_mapper_profile_overview_20220605](https://user-images.githubusercontent.com/581968/172065778-1a083361-e343-4364-9eb6-adc38ed5c6d2.png)
+![example_mapper_profile_overview_20220614](https://raw.githubusercontent.com/Ryochan7/SteamControllerTest/master/example_mapper_profile_overview_20220614.png)
 
 ## License
 
