@@ -159,6 +159,7 @@ namespace SteamControllerTest.ViewModels
                 }
 
                 devItem.ProfileIndexChanged += DevItem_ProfileIndexChanged;
+                devItem.EditProfileRequested += DevItem_EditProfileRequested;
                 device.Removal += Device_Removal;
                 controllerList.Add(devItem);
             }
