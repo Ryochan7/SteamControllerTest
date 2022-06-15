@@ -471,9 +471,12 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.EventCodes4[(int)StickPadAction.DpadDirections.DownRight] = newAction as AxisDirButton;
+                }
 
-                action.EventCodes4[(int)StickPadAction.DpadDirections.DownRight] = newAction as AxisDirButton;
                 action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_DOWNRIGHT);
                 this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.DownRight] = false;
                 action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.PAD_DIR_DOWNRIGHT);

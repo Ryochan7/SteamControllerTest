@@ -414,9 +414,12 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Up] = newAction;
+                }
 
-                action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Up] = newAction;
                 action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_UP);
                 action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.Up] = false;
             });
@@ -433,9 +436,12 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Down] = newAction;
+                }
 
-                action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Down] = newAction;
                 action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_DOWN);
                 action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.Down] = false;
             });
@@ -450,9 +456,12 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Left] = newAction;
+                }
 
-                action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Left] = newAction;
                 action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_LEFT);
                 action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.Left] = false;
             });
@@ -467,9 +476,12 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
-
-                action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Right] = newAction;
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Right] = newAction;
+                }
+                
                 action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_RIGHT);
                 action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.Right] = false;
             });
@@ -484,9 +496,12 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.EventCodes4[(int)TouchpadActionPad.DpadDirections.DownLeft] = newAction;
+                }
 
-                action.EventCodes4[(int)TouchpadActionPad.DpadDirections.DownLeft] = newAction;
                 action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_DOWNLEFT);
                 action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.DownLeft] = false;
             });
@@ -501,9 +516,12 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.EventCodes4[(int)TouchpadActionPad.DpadDirections.DownRight] = newAction;
+                }
 
-                action.EventCodes4[(int)TouchpadActionPad.DpadDirections.DownRight] = newAction;
                 action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_DOWNRIGHT);
                 action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.DownRight] = false;
             });
@@ -518,9 +536,12 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.EventCodes4[(int)TouchpadActionPad.DpadDirections.UpLeft] = newAction;
+                }
 
-                action.EventCodes4[(int)TouchpadActionPad.DpadDirections.UpLeft] = newAction;
                 action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_UPLEFT);
                 action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.UpLeft] = false;
             });
@@ -535,9 +556,12 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.EventCodes4[(int)TouchpadActionPad.DpadDirections.UpRight] = newAction;
+                }
 
-                action.EventCodes4[(int)TouchpadActionPad.DpadDirections.UpRight] = newAction;
                 action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_UPRIGHT);
                 action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.UpRight] = false;
             });
@@ -554,9 +578,12 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
             //ExecuteInMapperThread(() =>
             mapper.QueueEvent(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.RingButton = newAction as AxisDirButton;
+                }
 
-                action.RingButton = newAction as AxisDirButton;
                 action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.OUTER_RING_BUTTON);
                 action.UseParentRingButton = false;
 

@@ -201,9 +201,12 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.UsedEventsButtonsY[(int)TouchpadDirectionalSwipe.SwipeAxisYDir.Up] = newAction;
+                }
 
-                action.UsedEventsButtonsY[(int)TouchpadDirectionalSwipe.SwipeAxisYDir.Up] = newAction;
                 action.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_UP);
                 action.UseParentDataY[(int)TouchpadDirectionalSwipe.SwipeAxisYDir.Up] = false;
                 action.RaiseNotifyPropertyChange(mapper, TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_UP);
@@ -219,9 +222,12 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.UsedEventsButtonsY[(int)TouchpadDirectionalSwipe.SwipeAxisYDir.Down] = newAction;
+                }
 
-                action.UsedEventsButtonsY[(int)TouchpadDirectionalSwipe.SwipeAxisYDir.Down] = newAction;
                 action.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_DOWN);
                 action.UseParentDataY[(int)TouchpadDirectionalSwipe.SwipeAxisYDir.Down] = false;
                 action.RaiseNotifyPropertyChange(mapper, TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_DOWN);
@@ -237,9 +243,12 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.UsedEventsButtonsX[(int)TouchpadDirectionalSwipe.SwipeAxisXDir.Left] = newAction;
+                }
 
-                action.UsedEventsButtonsX[(int)TouchpadDirectionalSwipe.SwipeAxisXDir.Left] = newAction;
                 action.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_LEFT);
                 action.UseParentDataX[(int)TouchpadDirectionalSwipe.SwipeAxisXDir.Left] = false;
                 action.RaiseNotifyPropertyChange(mapper, TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_LEFT);
@@ -255,9 +264,12 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.UsedEventsButtonsX[(int)TouchpadDirectionalSwipe.SwipeAxisXDir.Right] = newAction;
+                }
 
-                action.UsedEventsButtonsX[(int)TouchpadDirectionalSwipe.SwipeAxisXDir.Right] = newAction;
                 action.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_RIGHT);
                 action.UseParentDataX[(int)TouchpadDirectionalSwipe.SwipeAxisXDir.Right] = false;
                 action.RaiseNotifyPropertyChange(mapper, TouchpadDirectionalSwipe.PropertyKeyStrings.PAD_DIR_RIGHT);

@@ -337,9 +337,12 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
             //ExecuteInMapperThread(() =>
             mapper.QueueEvent(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.FullPullActButton = newAction as AxisDirButton;
+                }
 
-                action.FullPullActButton = newAction as AxisDirButton;
                 action.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.FULLPULL_BUTTON);
                 action.UseParentFullPullBtn = false;
                 action.RaiseNotifyPropertyChange(mapper, TriggerDualStageAction.PropertyKeyStrings.FULLPULL_BUTTON);
@@ -361,9 +364,12 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
             //ExecuteInMapperThread(() =>
             mapper.QueueEvent(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.SoftPullActButton = newAction as AxisDirButton;
+                }
 
-                action.SoftPullActButton = newAction as AxisDirButton;
                 action.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.SOFTPULL_BUTTON);
                 action.UseParentSoftPullBtn = false;
                 action.RaiseNotifyPropertyChange(mapper, TriggerDualStageAction.PropertyKeyStrings.SOFTPULL_BUTTON);

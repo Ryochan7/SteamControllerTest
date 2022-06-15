@@ -359,9 +359,12 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
             //ExecuteInMapperThread(() =>
             mapper.QueueEvent(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.RingButton = newAction as AxisDirButton;
+                }
 
-                action.RingButton = newAction as AxisDirButton;
                 action.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.OUTER_RING_BUTTON);
                 action.UseParentRingButton = false;
 

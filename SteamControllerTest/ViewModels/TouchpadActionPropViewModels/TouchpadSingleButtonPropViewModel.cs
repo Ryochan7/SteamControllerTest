@@ -121,9 +121,12 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.EventButton = newAction;
+                }
 
-                action.EventButton = newAction;
                 action.ChangedProperties.Add(TouchpadSingleButton.PropertyKeyStrings.FUNCTIONS);
                 action.UseParentActions = false;
             });

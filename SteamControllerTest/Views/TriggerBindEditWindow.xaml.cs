@@ -102,6 +102,10 @@ namespace SteamControllerTest.Views
             {
                 e.UpdateActHandler?.Invoke(oldAction, newAction);
             };
+            tempControl.ActionChanged += (sender, action) =>
+            {
+                e.UpdateActHandler?.Invoke(null, action);
+            };
 
             UserControl oldControl = trigBindEditVM.DisplayControl;
             tempControl.RequestClose += (sender, args) =>
@@ -133,6 +137,10 @@ namespace SteamControllerTest.Views
             tempControl.PreActionSwitch += (oldAction, newAction) =>
             {
                 e.UpdateActHandler?.Invoke(oldAction, newAction);
+            };
+            tempControl.ActionChanged += (sender, action) =>
+            {
+                e.UpdateActHandler?.Invoke(null, action);
             };
 
             UserControl oldControl = trigBindEditVM.DisplayControl;

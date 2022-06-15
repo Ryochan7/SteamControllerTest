@@ -178,9 +178,12 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
             //ExecuteInMapperThread(() =>
             mapper.QueueEvent(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.EventButton = newAction as AxisDirButton;
+                }
 
-                action.EventButton = newAction as AxisDirButton;
                 action.ChangedProperties.Add(TriggerButtonAction.PropertyKeyStrings.OUTPUT_BINDING);
                 action.UseParentEventButton = false;
                 action.RaiseNotifyPropertyChange(mapper, TriggerButtonAction.PropertyKeyStrings.OUTPUT_BINDING);

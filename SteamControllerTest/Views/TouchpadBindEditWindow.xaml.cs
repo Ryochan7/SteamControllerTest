@@ -156,6 +156,10 @@ namespace SteamControllerTest.Views
             {
                 e.UpdateActHandler?.Invoke(oldAction, newAction);
             };
+            tempControl.ActionChanged += (sender, action) =>
+            {
+                e.UpdateActHandler?.Invoke(null, action);
+            };
 
             UserControl oldControl = touchBindEditVM.DisplayControl;
             touchpadSelectControl.Visibility = Visibility.Collapsed;
@@ -178,6 +182,10 @@ namespace SteamControllerTest.Views
             tempControl.PreActionSwitch += (oldAction, newAction) =>
             {
                 e.UpdateActHandler?.Invoke(oldAction, newAction);
+            };
+            tempControl.ActionChanged += (sender, action) =>
+            {
+                e.UpdateActHandler?.Invoke(null, action);
             };
 
             UserControl oldControl = touchBindEditVM.DisplayControl;
@@ -202,6 +210,10 @@ namespace SteamControllerTest.Views
             {
                 e.UpdateActHandler?.Invoke(oldAction, newAction);
             };
+            tempControl.ActionChanged += (sender, action) =>
+            {
+                e.UpdateActHandler?.Invoke(null, action);
+            };
 
             UserControl oldControl = touchBindEditVM.DisplayControl;
             touchpadSelectControl.Visibility = Visibility.Collapsed;
@@ -225,6 +237,10 @@ namespace SteamControllerTest.Views
             {
                 e.UpdateActHandler?.Invoke(oldAction, newAction);
             };
+            tempControl.ActionChanged += (sender, action) =>
+            {
+                e.UpdateActHandler?.Invoke(null, action);
+            };
 
             UserControl oldControl = touchBindEditVM.DisplayControl;
             touchpadSelectControl.Visibility = Visibility.Collapsed;
@@ -247,6 +263,10 @@ namespace SteamControllerTest.Views
             tempControl.PreActionSwitch += (oldAction, newAction) =>
             {
                 e.UpdateActHandler?.Invoke(oldAction, newAction);
+            };
+            tempControl.ActionChanged += (sender, action) =>
+            {
+                e.UpdateActHandler?.Invoke(null, action);
             };
 
             UserControl oldControl = touchBindEditVM.DisplayControl;
