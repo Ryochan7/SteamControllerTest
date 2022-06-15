@@ -153,21 +153,21 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
         public bool HighlightName
         {
-            get => baseAction.ParentAction == null ||
+            get => action.ParentAction == null ||
                 baseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.NAME);
         }
         public event EventHandler HighlightNameChanged;
 
         public bool HighlightDeadZone
         {
-            get => baseAction.ParentAction == null ||
+            get => action.ParentAction == null ||
                 baseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.DEAD_ZONE);
         }
         public event EventHandler HighlightDeadZoneChanged;
 
         public bool HighlightTriggerActivates
         {
-            get => baseAction.ParentAction == null ||
+            get => action.ParentAction == null ||
                 baseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.TRIGGER_ACTIVATE);
         }
         public event EventHandler HighlightTriggerActivatesChanged;
@@ -220,6 +220,7 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
                 this.action = tempAction;
                 this.baseAction = tempAction;
+                usingRealAction = false;
 
                 ActionPropertyChanged += ReplaceExistingLayerAction;
             }

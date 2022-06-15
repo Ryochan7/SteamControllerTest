@@ -38,11 +38,11 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         public virtual event EventHandler ActionPropertyChanged;
         public event EventHandler<GyroMapAction> ActionChanged;
 
-        protected bool replacedAction = false;
+        protected bool usingRealAction = true;
 
         protected void ReplaceExistingLayerAction(object sender, EventArgs e)
         {
-            if (!replacedAction)
+            if (!usingRealAction)
             {
                 ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
@@ -65,7 +65,7 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
                 resetEvent.Wait();
 
-                replacedAction = true;
+                usingRealAction = true;
 
                 ActionChanged?.Invoke(this, baseAction);
             }

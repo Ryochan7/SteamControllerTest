@@ -70,10 +70,60 @@ namespace SteamControllerTest.Views
                     }
 
                     break;
+                case GyroDirectionalSwipe:
+                    {
+                        GyroDirSwipePropControl propControl = new GyroDirSwipePropControl();
+                        propControl.PostInit(gyroBindEditVM.Mapper, gyroBindEditVM.Action);
+                        propControl.RequestFuncEditor += PropControl_RequestFuncEditor;
+                        propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged;
+                        gyroBindEditVM.DisplayControl = propControl;
+                    }
+
+                    break;
                 default:
                     gyroBindEditVM.DisplayControl = null;
                     break;
             }
+        }
+
+        private void PropControl_RequestFuncEditor(object sender, TouchpadActionPropControls.TouchpadActionPadPropControl.DirButtonBindingArgs e)
+        {
+            FuncBindingControl tempControl = new FuncBindingControl();
+            tempControl.PostInit(gyroBindEditVM.Mapper, e.DirBtn);
+            tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+            tempControl.FuncBindVM.IsRealAction = e.RealAction;
+            tempControl.PreActionSwitch += (oldAction, newAction) =>
+            {
+                e.UpdateActHandler?.Invoke(oldAction, newAction);
+            };
+            tempControl.ActionChanged += (sender, action) =>
+            {
+                e.UpdateActHandler?.Invoke(null, action);
+            };
+
+            UserControl oldControl = gyroBindEditVM.DisplayControl;
+            tempControl.RequestClose += (sender, args) =>
+            {
+                (oldControl as GyroDirSwipePropControl).RefreshView();
+                gyroBindEditVM.DisplayControl = oldControl;
+            };
+
+            gyroBindEditVM.DisplayControl = tempControl;
+        }
+
+        private void TempControl_RequestBindingEditor(object sender, ActionUtil.ActionFunc e)
+        {
+            OutputBindingEditorControl tempControl = new OutputBindingEditorControl();
+            FuncBindingControl bindControl = sender as FuncBindingControl;
+            tempControl.PostInit(gyroBindEditVM.Mapper, bindControl.FuncBindVM.Action, e);
+            UserControl oldControl = bindControl;
+            tempControl.Finished += (sender, args) =>
+            {
+                bindControl.RefreshView();
+                gyroBindEditVM.DisplayControl = oldControl;
+            };
+
+            gyroBindEditVM.DisplayControl = tempControl;
         }
 
         private void PropControl_ActionTypeIndexChanged(object sender, int ind)

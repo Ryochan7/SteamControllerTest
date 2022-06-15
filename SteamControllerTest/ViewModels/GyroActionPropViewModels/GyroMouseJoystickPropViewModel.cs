@@ -241,6 +241,7 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
                 this.action = tempAction;
                 this.baseAction = this.action;
+                usingRealAction = false;
 
                 ActionPropertyChanged += ReplaceExistingLayerAction;
             }

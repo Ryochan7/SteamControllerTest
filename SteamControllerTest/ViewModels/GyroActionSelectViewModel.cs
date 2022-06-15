@@ -44,6 +44,9 @@ namespace SteamControllerTest.ViewModels
                 case GyroMouseJoystick:
                     selectedIndex = 2;
                     break;
+                case GyroDirectionalSwipe:
+                    selectedIndex = 3;
+                    break;
                 default:
                     selectedIndex = -1;
                     break;

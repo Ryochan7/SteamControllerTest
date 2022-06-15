@@ -83,7 +83,10 @@ namespace SteamControllerTest.GyroActions
             new Dictionary<ButtonAction, SwipeAxisYDir>();
 
         private bool[] useParentDataX = new bool[3];
+        public bool[] UseParentDataX => useParentDataX;
+
         private bool[] useParentDataY = new bool[3];
+        public bool[] UseParentDataY => useParentDataY;
 
         private SwipeAxisXDir previousXDir;
         private SwipeAxisYDir previousYDir;
@@ -124,8 +127,9 @@ namespace SteamControllerTest.GyroActions
             {
                 deadzoneX = 80,
                 deadzoneY = 80,
-                delayTime = 0,
+                delayTime = 20,
                 andCond = true,
+                gyroTriggerButtons = new JoypadActionCodes[0],
             };
 
             FillDirectionalButtons();

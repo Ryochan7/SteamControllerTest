@@ -178,6 +178,7 @@ namespace SteamControllerTest.Views
 
                 int currentInd = funcBindVM.CurrentBindItemIndex;
                 funcBindVM.RemoveBindItem(currentInd);
+                ActionChanged?.Invoke(this, funcBindVM.Action);
 
                 SwitchPropView(funcBindVM.CurrentItem);
             }
@@ -210,6 +211,7 @@ namespace SteamControllerTest.Views
             funcBindVM.CurrentItem = item;
             funcBindVM.CurrentBindItemIndex = funcBindVM.FuncList.Count-1;
             item.ItemActive = true;
+            ActionChanged?.Invoke(this, funcBindVM.Action);
 
             //DataContext = null;
 

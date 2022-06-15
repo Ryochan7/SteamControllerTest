@@ -13,6 +13,7 @@
                 <ComboBoxItem>Unbound</ComboBoxItem>
                 <ComboBoxItem>Mouse</ComboBoxItem>
                 <ComboBoxItem>Mouse-like Joystick</ComboBoxItem>
+                <ComboBoxItem>Directional Swipe</ComboBoxItem>
             </ComboBox>
         </StackPanel>
     </DockPanel>

@@ -70,6 +70,9 @@ namespace SteamControllerTest.ViewModels
                 case 2:
                     result = new GyroMouseJoystick();
                     break;
+                case 3:
+                    result = new GyroDirectionalSwipe();
+                    break;
                 default:
                     break;
             }
