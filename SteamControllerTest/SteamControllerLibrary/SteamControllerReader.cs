@@ -320,7 +320,7 @@ namespace SteamControllerTest.SteamControllerLibrary
                         current.Motion.GyroYaw = (short)(-1 * ((inputReportBuffer[40] << 8) | inputReportBuffer[39]));
                         current.Motion.GyroYaw = (short)(current.Motion.GyroYaw - device.gyroCalibOffsets[SteamControllerDevice.IMU_YAW_IDX]);
 
-                        current.Motion.AngGyroPitch = current.Motion.GyroPitch * SteamControllerState.SteamControllerMotion.GYRO_RES_IN_DEG_SEC_RATIO;
+                        current.Motion.AngGyroPitch = -1 * current.Motion.GyroPitch * SteamControllerState.SteamControllerMotion.GYRO_RES_IN_DEG_SEC_RATIO;
                         current.Motion.AngGyroRoll = current.Motion.GyroRoll * SteamControllerState.SteamControllerMotion.GYRO_RES_IN_DEG_SEC_RATIO;
                         current.Motion.AngGyroYaw = current.Motion.GyroYaw * SteamControllerState.SteamControllerMotion.GYRO_RES_IN_DEG_SEC_RATIO;
 
