@@ -14,7 +14,7 @@ HidHide - [https://vigem.org/projects/HidHide/](https://vigem.org/projects/HidHi
 
 ## Current Beta
 
-https://github.com/Ryochan7/SteamControllerTest/releases/tag/v0.0.2
+https://github.com/Ryochan7/SteamControllerTest/releases/tag/v0.0.3
 
 ## Screenshots
 
