@@ -96,6 +96,18 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
         }
         public event EventHandler HipFireDelayChanged;
 
+        public bool ForceHipFireDelay
+        {
+            get => action.ForceHipTime;
+            set
+            {
+                action.ForceHipTime = value;
+                ForceHipFireDelayChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler ForceHipFireDelayChanged;
+
         private int selectedDSModeIndex = 0;
         public int SelectedDSModeIndex
         {
@@ -155,6 +167,13 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
         }
         public event EventHandler HighlightHipFireDelayChanged;
 
+        public bool HighlightForceHipFireDelay
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TriggerDualStageAction.PropertyKeyStrings.FORCE_HIP_FIRE_TIME);
+        }
+        public event EventHandler HighlightForceHipFireDelayChanged;
+
         public bool HighlightDSMode
         {
             get => action.ParentAction == null ||
@@ -200,7 +219,19 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
             AntiDeadZoneChanged += TriggerDualStagePropViewModel_AntiDeadZoneChanged;
             MaxZoneChanged += TriggerDualStagePropViewModel_MaxZoneChanged;
             HipFireDelayChanged += TriggerDualStagePropViewModel_HipFireDelayChanged;
+            ForceHipFireDelayChanged += TriggerDualStagePropViewModel_ForceHipFireDelayChanged;
             SelectedDSModeIndexChanged += TriggerDualStagePropViewModel_SelectedDSModeIndexChanged;
+        }
+
+        private void TriggerDualStagePropViewModel_ForceHipFireDelayChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(TriggerDualStageAction.PropertyKeyStrings.FORCE_HIP_FIRE_TIME))
+            {
+                action.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.FORCE_HIP_FIRE_TIME);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, TriggerDualStageAction.PropertyKeyStrings.FORCE_HIP_FIRE_TIME);
+            HighlightForceHipFireDelayChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void TriggerDualStagePropViewModel_SelectedDSModeIndexChanged(object sender, EventArgs e)

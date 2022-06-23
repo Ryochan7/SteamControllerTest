@@ -712,6 +712,17 @@ namespace SteamControllerTest
             }
             public event EventHandler HipFireDelayChanged;
 
+            public bool ForceHipFireDelay
+            {
+                get => triggerDualAction.ForceHipTime;
+                set
+                {
+                    triggerDualAction.ForceHipTime = value;
+                    ForceHipFireDelayChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler ForceHipFireDelayChanged;
+
             public TriggerDualStageSettings(TriggerDualStageAction action)
             {
                 triggerDualAction = action;
@@ -804,6 +815,12 @@ namespace SteamControllerTest
             settings.AntiDeadZoneChanged += Settings_AntiDeadZoneChanged;
             settings.DualStageModeChanged += Settings_DualStageModeChanged;
             settings.HipFireDelayChanged += Settings_HipFireDelayChanged;
+            settings.ForceHipFireDelayChanged += Settings_ForceHipFireDelayChanged;
+        }
+
+        private void Settings_ForceHipFireDelayChanged(object sender, EventArgs e)
+        {
+            triggerDualAction.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.FORCE_HIP_FIRE_TIME);
         }
 
         private void Settings_AntiDeadZoneChanged(object sender, EventArgs e)

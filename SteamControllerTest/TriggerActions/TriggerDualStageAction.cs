@@ -21,6 +21,7 @@ namespace SteamControllerTest.TriggerActions
             public const string DUALSTAGE_MODE = "DualStageMode";
             public const string HIPFIRE_DELAY = "HipFireDelay";
             public const string ANTIDEAD_ZONE = "AntiDeadZone";
+            public const string FORCE_HIP_FIRE_TIME = "ForceHipFireTime";
             //public const string OUTPUT_TRIGGER = "OutputTrigger";
         }
 
@@ -34,6 +35,7 @@ namespace SteamControllerTest.TriggerActions
             PropertyKeyStrings.DUALSTAGE_MODE,
             PropertyKeyStrings.HIPFIRE_DELAY,
             PropertyKeyStrings.ANTIDEAD_ZONE,
+            PropertyKeyStrings.FORCE_HIP_FIRE_TIME,
             //PropertyKeyStrings.OUTPUT_TRIGGER,
         };
 
@@ -79,6 +81,12 @@ namespace SteamControllerTest.TriggerActions
         private DualStageMode triggerStageMode;
         private int hipFireMs;
         private bool fullPullClick;
+        private bool forceHipTime;
+        public bool ForceHipTime
+        {
+            get => forceHipTime;
+            set => forceHipTime = value;
+        }
 
         private AxisDirButton softPullActButton = new AxisDirButton();
         private AxisDirButton fullPullActButton = new AxisDirButton();
@@ -294,6 +302,9 @@ namespace SteamControllerTest.TriggerActions
                         case PropertyKeyStrings.HIPFIRE_DELAY:
                             hipFireMs = tempDualTrigAction.hipFireMs;
                             break;
+                        case PropertyKeyStrings.FORCE_HIP_FIRE_TIME:
+                            forceHipTime = tempDualTrigAction.forceHipTime;
+                            break;
                         default:
                             break;
                     }
@@ -412,7 +423,7 @@ namespace SteamControllerTest.TriggerActions
                         {
                             // Consider action active depending on timer
                             // or whether full pull is achieved
-                            bool nowActive = fullPullClick ||
+                            bool nowActive = (!forceHipTime && fullPullClick) ||
                                 checkTimeWatch.ElapsedMilliseconds > hipFireMs;
 
                             if (nowActive)
@@ -474,7 +485,7 @@ namespace SteamControllerTest.TriggerActions
                         {
                             actionStateMode = EngageButtonsMode.None;
 
-                            if (fullPullClick)
+                            if (!forceHipTime && fullPullClick)
                             {
                                 StartStageProcessing(false);
                             }
@@ -490,7 +501,7 @@ namespace SteamControllerTest.TriggerActions
                             {
                                 // Consider action active depending on timer
                                 // or whether full pull is achieved
-                                bool nowActive = fullPullClick ||
+                                bool nowActive = (!forceHipTime && fullPullClick) ||
                                     checkTimeWatch.ElapsedMilliseconds > hipFireMs;
 
                                 if (nowActive)
@@ -584,6 +595,9 @@ namespace SteamControllerTest.TriggerActions
                     break;
                 case PropertyKeyStrings.HIPFIRE_DELAY:
                     hipFireMs = tempDualTrigAction.hipFireMs;
+                    break;
+                case PropertyKeyStrings.FORCE_HIP_FIRE_TIME:
+                    forceHipTime = tempDualTrigAction.forceHipTime;
                     break;
                 default:
                     break;
