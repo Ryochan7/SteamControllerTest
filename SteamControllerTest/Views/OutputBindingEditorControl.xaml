@@ -65,7 +65,7 @@
                             <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                 <Label Content="Tick Time" />
                                 <hc:NumericUpDown Minimum="0.0" Maximum="1000.0" DecimalPlaces="1" Increment="10"
-                                  Value="{Binding TickTime,FallbackValue='1.0'}" ValueFormat="0 ms" Margin="8,0,0,0">
+                                  Value="{Binding TickTime,FallbackValue='100.0'}" ValueFormat="0 ms" Margin="8,0,0,0">
                                 </hc:NumericUpDown>
                             </StackPanel>
 
