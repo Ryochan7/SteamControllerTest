@@ -184,6 +184,10 @@ namespace SteamControllerTest.ViewModels
                     result = new ReleaseFunc();
                     result.OutputActions.Add(tempData);
                     break;
+                case 5:
+                    result = new DistanceFunc();
+                    result.OutputActions.Add(tempData);
+                    break;
                 default:
                     break;
             }
@@ -297,6 +301,9 @@ namespace SteamControllerTest.ViewModels
                         break;
                     case ReleaseFunc:
                         result = "Release";
+                        break;
+                    case DistanceFunc:
+                        result = "Distance";
                         break;
                     default:
                         break;

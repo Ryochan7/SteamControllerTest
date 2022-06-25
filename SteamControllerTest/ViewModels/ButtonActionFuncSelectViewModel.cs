@@ -47,6 +47,9 @@ namespace SteamControllerTest.ViewModels
                 case ReleaseFunc:
                     selectedIndex = 4;
                     break;
+                case DistanceFunc:
+                    selectedIndex = 5;
+                    break;
                 default:
                     break;
             }

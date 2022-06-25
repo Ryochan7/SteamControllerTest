@@ -36,17 +36,6 @@
             <Button Name="copyFuncButton" Content="Copy" Click="CopyFuncButton_Click" IsEnabled="{Binding IsNotRealAction}" Margin="8,0,0,0" />
         </WrapPanel>
 
-        <!--<StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
-            <Label Content="Type" />
-            <ComboBox SelectedIndex="{Binding ActionTypeIndex}" Tag="{Binding CurrentBindItemIndex}">
-                <ComboBoxItem>None - Remove</ComboBoxItem>
-                <ComboBoxItem>Normal Press</ComboBoxItem>
-                <ComboBoxItem>Hold Press</ComboBoxItem>
-                <ComboBoxItem>Start Press</ComboBoxItem>
-                <ComboBoxItem>Release Press</ComboBoxItem>
-            </ComboBox>
-        </StackPanel>
-        -->
         <Button Content="Close" Click="Button_Click_1" DockPanel.Dock="Bottom" HorizontalAlignment="Right" MinWidth="60" />
         <ContentControl x:Name="funcEditPropControl" Content="{Binding DisplayPropControl}" DockPanel.Dock="Bottom" IsEnabled="{Binding IsRealAction}" />
         

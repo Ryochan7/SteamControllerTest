@@ -164,6 +164,16 @@ namespace SteamControllerTest.Views
                     }
 
                     break;
+                case DistanceFunc distFunc:
+                    {
+                        DistanceFuncPropControl propControl = new DistanceFuncPropControl();
+                        propControl.PostInit(funcBindVM.Mapper, funcBindVM.Action, distFunc);
+                        propControl.RequestBindingEditor += PropControl_RequestBindingEditor;
+                        propControl.RequestChangeFuncType += PropControl_RequestChangeFuncType;
+                        funcBindVM.DisplayPropControl = propControl;
+                    }
+
+                    break;
                 default:
                     break;
             }

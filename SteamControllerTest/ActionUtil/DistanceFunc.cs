@@ -11,11 +11,14 @@ namespace SteamControllerTest.ActionUtil
 
         public DistanceFunc()
         {
+            onDistance = true;
         }
 
         public DistanceFunc(OutputActionData outputAction,
             double distance=0.0)
         {
+            onDistance = true;
+
             outputActions.Add(outputAction);
             outputActionEnumerator = new OutputActionDataEnumerator(outputActions);
 
