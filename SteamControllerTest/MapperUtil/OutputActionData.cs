@@ -110,7 +110,8 @@ namespace SteamControllerTest.MapperUtil
 
         private Stopwatch elapsed = new Stopwatch();
         // Base line duration for an action
-        private int durationMs = 100;
+        public const int DEFAULT_TICK_DURATION_MS = 100; // express in ms
+        private int durationMs = DEFAULT_TICK_DURATION_MS;
         public int DurationMs
         {
             get => durationMs;

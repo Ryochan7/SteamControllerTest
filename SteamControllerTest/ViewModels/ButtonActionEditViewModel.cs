@@ -111,6 +111,53 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler SelectedMouseWheelButtonIndexChanged;
 
+        private bool _tickTimeEnabled;
+        public bool TickTimeEnabled
+        {
+            get
+            {
+                return _tickTimeEnabled;
+            }
+            set
+            {
+                if (_tickTimeEnabled == value) return;
+                _tickTimeEnabled = value;
+                TickTimeEnabledChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler TickTimeEnabledChanged;
+
+        private int _tickTime;
+        public int TickTime
+        {
+            get
+            {
+                return _tickTime;
+            }
+            set
+            {
+                if (_tickTime == value) return;
+                _tickTime = Math.Clamp(value, 0, 10000);
+                TickTimeChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        //public event EventHandler<double> TickTimeValueChanged;
+        public event EventHandler TickTimeChanged;
+
+        private bool showWheelTickOptions;
+        public bool ShowWheelTickOptions
+        {
+            get => showWheelTickOptions;
+            set
+            {
+                if (showWheelTickOptions == value) return;
+                showWheelTickOptions = value;
+                ShowWheelTickOptionsChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler ShowWheelTickOptionsChanged;
+
+
         private int selectedMouseDirIndex = -1;
         public int SelectedMouseDirIndex
         {
@@ -331,12 +378,98 @@ namespace SteamControllerTest.ViewModels
             SelectedKeyboardIndexChanged += ButtonActionEditViewModel_SelectedKeyboardIndexChanged;
             SelectedMouseButtonIndexChanged += ButtonActionEditViewModel_SelectedMouseButtonIndexChanged;
             SelectedMouseWheelButtonIndexChanged += ButtonActionEditViewModel_SelectedMouseWheelButtonIndexChanged;
+            TickTimeEnabledChanged += ButtonActionEditViewModel_TickTimeEnabledChanged;
+            TickTimeChanged += ButtonActionEditViewModel_TickTimeChanged;
             SelectedMouseDirIndexChanged += ButtonActionEditViewModel_SelectedMouseDirIndexChanged;
             SelectedLayerOpsIndexChanged += ButtonActionEditViewModel_SelectedLayerOpsIndexChanged;
             SelectedLayerChoiceIndexChanged += ButtonActionEditViewModel_SelectedLayerChoiceIndexChanged;
             SelectedLayerChangeConditionIndexChanged += ButtonActionEditViewModel_SelectedLayerChangeConditionIndexChanged;
             SelectedSetChoiceIndexChanged += ButtonActionEditViewModel_SelectedSetChoiceIndexChanged;
             SelectedSetChangeConditionIndexChanged += ButtonActionEditViewModel_SelectedSetChangeConditionIndexChanged;
+        }
+
+        private void ButtonActionEditViewModel_TickTimeEnabledChanged(object sender, EventArgs e)
+        {
+            int index = selectedMouseWheelButtonIndex;
+            if (index == -1) return;
+
+            MouseButtonCodeItem item = mouseWheelButtonComboItems[index];
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            // Tick time might get reset to 0. Keep reference to new value for later
+            // inspection
+            int tempDuration = 0;
+            mapper.QueueEvent(() =>
+            {
+                currentAction.Release(mapper, ignoreReleaseActions: true);
+                OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
+                OutputActionData tempData = slotItem.Data;
+
+                if (tempData.OutputType != OutputActionData.ActionType.MouseWheel)
+                {
+                    tempData.Reset();
+
+                    tempData.Prepare(OutputActionData.ActionType.MouseWheel, item.Code);
+                    tempData.OutputCodeStr = ((OutputActionDataSerializer.MouseWheelAliases)item.Code).ToString();
+                }
+
+                tempData.checkTick = _tickTimeEnabled;
+                if (!tempData.checkTick)
+                {
+                    tempData.DurationMs = 0;
+                }
+                else if (tempData.checkTick && tempData.DurationMs == 0)
+                {
+                    tempData.DurationMs = OutputActionData.DEFAULT_TICK_DURATION_MS;
+                }
+
+                tempDuration = tempData.DurationMs;
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
+
+            PostSlotChangeChecks();
+
+            if (tempDuration != TickTime)
+            {
+                TickTime = tempDuration;
+            }
+        }
+
+        private void ButtonActionEditViewModel_TickTimeChanged(object sender, EventArgs e)
+        {
+            int index = selectedMouseWheelButtonIndex;
+            if (index == -1) return;
+
+            MouseButtonCodeItem item = mouseWheelButtonComboItems[index];
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            mapper.QueueEvent(() =>
+            {
+                currentAction.Release(mapper, ignoreReleaseActions: true);
+                OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
+                OutputActionData tempData = slotItem.Data;
+
+                if (tempData.OutputType != OutputActionData.ActionType.MouseWheel)
+                {
+                    tempData.Reset();
+
+                    tempData.Prepare(OutputActionData.ActionType.MouseWheel, item.Code);
+                    tempData.OutputCodeStr = ((OutputActionDataSerializer.MouseWheelAliases)item.Code).ToString();
+                }
+
+                tempData.DurationMs = _tickTime;
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
+
+            PostSlotChangeChecks();
+
+            if (_tickTime == 0)
+            {
+                TickTimeEnabled = false;
+            }
         }
 
         private void ButtonActionEditViewModel_SelectedSetChangeConditionIndexChanged(object sender, EventArgs e)
@@ -467,6 +600,7 @@ namespace SteamControllerTest.ViewModels
 
             resetEvent.Wait();
 
+            ShowWheelTickOptions = true;
             PostSlotChangeChecks();
         }
 
@@ -658,6 +792,10 @@ namespace SteamControllerTest.ViewModels
                         {
                             SelectedMouseWheelButtonIndex = tempWheelItem.Index;
                         }
+
+                        _tickTimeEnabled = item.Data.CheckTick;
+                        _tickTime = item.Data.DurationMs;
+                        ShowWheelTickOptions = true;
                     }
 
                     break;
@@ -859,6 +997,9 @@ namespace SteamControllerTest.ViewModels
             if (ignoreCombo != ActionComboBoxTypes.MouseWheelButton)
             {
                 SelectedMouseWheelButtonIndex = -1;
+                TickTimeEnabled = false;
+                TickTime = 0;
+                ShowWheelTickOptions = false;
             }
 
             if (ignoreCombo != ActionComboBoxTypes.RelativeMouseDir)
