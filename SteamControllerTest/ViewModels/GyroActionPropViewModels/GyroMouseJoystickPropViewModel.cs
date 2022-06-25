@@ -105,6 +105,18 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler AntiDeadZoneYChanged;
 
+        public double VerticalScale
+        {
+            get => action.mStickParms.verticalScale;
+            set
+            {
+                action.mStickParms.verticalScale = Math.Clamp(value, 0.0, 10.0);
+                VerticalScaleChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler VerticalScaleChanged;
+
         private List<EnumChoiceSelection<GyroMouseJoystickOuputAxes>> outputAxesItems =
             new List<EnumChoiceSelection<GyroMouseJoystickOuputAxes>>()
         {
@@ -125,6 +137,65 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             }
         }
         public event EventHandler OutputAxesChoiceChanged;
+
+        private List<InvertChoiceItem> invertChoiceItems = new List<InvertChoiceItem>()
+        {
+            new InvertChoiceItem("None", InvertChocies.None),
+            new InvertChoiceItem("X", InvertChocies.InvertX),
+            new InvertChoiceItem("Y", InvertChocies.InvertY),
+            new InvertChoiceItem("X+Y", InvertChocies.InvertXY),
+        };
+        public List<InvertChoiceItem> InvertChoiceItems => invertChoiceItems;
+
+        public InvertChocies InvertChoice
+        {
+            get
+            {
+                InvertChocies result = InvertChocies.None;
+                if (action.mStickParms.invertX && action.mStickParms.invertY)
+                {
+                    result = InvertChocies.InvertXY;
+                }
+                else if (action.mStickParms.invertX || action.mStickParms.invertY)
+                {
+                    if (action.mStickParms.invertX)
+                    {
+                        result = InvertChocies.InvertX;
+                    }
+                    else
+                    {
+                        result = InvertChocies.InvertY;
+                    }
+                }
+
+                return result;
+            }
+            set
+            {
+                action.mStickParms.invertX = action.mStickParms.invertY = false;
+
+                switch (value)
+                {
+                    case InvertChocies.None:
+                        break;
+                    case InvertChocies.InvertX:
+                        action.mStickParms.invertX = true;
+                        break;
+                    case InvertChocies.InvertY:
+                        action.mStickParms.invertY = true;
+                        break;
+                    case InvertChocies.InvertXY:
+                        action.mStickParms.invertX = action.mStickParms.invertY = true;
+                        break;
+                    default:
+                        break;
+                }
+
+                InvertChoicesChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler InvertChoicesChanged;
 
         //private List<GyroOutputCurveItem> outputCurveItems = new List<GyroOutputCurveItem>();
         //public List<GyroOutputCurveItem> OutputCurveItems => outputCurveItems;
@@ -199,12 +270,27 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler HighlightAntiDeadZoneYChanged;
 
+        public bool HighlightVerticalScale
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.VERTICAL_SCALE);
+        }
+        public event EventHandler HighlightVerticalScaleChanged;
+
         public bool HighlightOutputAxesChoice
         {
             get => action.ParentAction == null ||
                 action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.OUTPUT_AXES);
         }
         public event EventHandler HighlightOutputAxesChoiceChanged;
+
+        public bool HighlightInvert
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.INVERT_X) ||
+                action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.INVERT_Y);
+        }
+        public event EventHandler HighlightInvertChanged;
 
         //public bool HighlightOutputCurve
         //{
@@ -255,7 +341,30 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             TriggerActivatesChanged += GyroMouseJoystickPropViewModel_TriggerActivatesChanged;
             AntiDeadZoneXChanged += GyroMouseJoystickPropViewModel_AntiDeadZoneXChanged;
             AntiDeadZoneYChanged += GyroMouseJoystickPropViewModel_AntiDeadZoneYChanged;
+            VerticalScaleChanged += GyroMouseJoystickPropViewModel_VerticalScaleChanged;
+            InvertChoicesChanged += GyroMouseJoystickPropViewModel_InvertChoicesChanged;
             OutputAxesChoiceChanged += GyroMouseJoystickPropViewModel_OutputAxesChoiceChanged;
+        }
+
+        private void GyroMouseJoystickPropViewModel_InvertChoicesChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.INVERT_X))
+            {
+                action.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.INVERT_X);
+            }
+
+            if (!action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.INVERT_Y))
+            {
+                action.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.INVERT_Y);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, GyroMouseJoystick.PropertyKeyStrings.INVERT_X);
+                action.RaiseNotifyPropertyChange(mapper, GyroMouseJoystick.PropertyKeyStrings.INVERT_Y);
+            });
+
+            HighlightInvertChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void GyroMouseJoystickPropViewModel_OutputAxesChoiceChanged(object sender, EventArgs e)
@@ -268,6 +377,17 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             action.RaiseNotifyPropertyChange(mapper, GyroMouseJoystick.PropertyKeyStrings.OUTPUT_AXES);
 
             HighlightOutputAxesChoiceChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void GyroMouseJoystickPropViewModel_VerticalScaleChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.VERTICAL_SCALE))
+            {
+                action.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.VERTICAL_SCALE);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, GyroMouseJoystick.PropertyKeyStrings.VERTICAL_SCALE);
+            HighlightVerticalScaleChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void GyroMouseJoystickPropViewModel_MaxZoneChanged(object sender, EventArgs e)

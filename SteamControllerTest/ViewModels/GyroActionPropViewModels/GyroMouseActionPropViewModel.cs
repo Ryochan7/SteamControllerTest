@@ -11,29 +11,6 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 {
     public class GyroMouseActionPropViewModel : GyroActionPropVMBase
     {
-        public enum InvertChocies
-        {
-            None,
-            InvertX,
-            InvertY,
-            InvertXY,
-        }
-
-        public class InvertChoiceItem
-        {
-            private string displayName;
-            public string DisplayName => displayName;
-
-            private InvertChocies choice;
-            public InvertChocies Choice => choice;
-
-            public InvertChoiceItem(string displayName, InvertChocies choice)
-            {
-                this.displayName = displayName;
-                this.choice = choice;
-            }
-        }
-
         protected GyroMouse action;
         public GyroMouse Action
         {

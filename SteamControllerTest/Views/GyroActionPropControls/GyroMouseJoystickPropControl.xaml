@@ -146,6 +146,22 @@
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Label Content="Vertical Scale" />
+                    <hc:NumericUpDown Minimum="0.0" Maximum="10.0" DecimalPlaces="1" Increment="0.1"
+                                  Value="{Binding VerticalScale,FallbackValue='1.0'}" Margin="8,0,0,0">
+                        <hc:NumericUpDown.Style>
+                            <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HighlightVerticalScale}" Value="False">
+                                        <Setter Property="Opacity" Value="0.7" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </hc:NumericUpDown.Style>
+                    </hc:NumericUpDown>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                     <Label Content="Output Axes" />
                     <ComboBox ItemsSource="{Binding OutputAxesItems}" SelectedValue="{Binding OutputAxesChoice}" DisplayMemberPath="DisplayName" SelectedValuePath="ChoiceValue" Width="200" Margin="8,0,0,0">
                         <ComboBox.Style>
@@ -160,6 +176,12 @@
                     </ComboBox>
                 </StackPanel>
 
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Label Content="Invert" />
+                    <ComboBox ItemsSource="{Binding InvertChoiceItems}" DisplayMemberPath="DisplayName"
+                          SelectedValuePath="Choice" SelectedValue="{Binding InvertChoice}" MinWidth="100" Margin="8,0,0,0">
+                    </ComboBox>
+                </StackPanel>
 
 
             </StackPanel>
