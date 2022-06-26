@@ -466,6 +466,9 @@ namespace SteamControllerTest.MapperUtil
                 case ActionType.MouseWheel:
                     result = OutputDataAliasUtil.GetStringForMouseWheelBtn(outputCode);
                     break;
+                case ActionType.RelativeMouse:
+                    result = mouseDir.ToString();
+                    break;
                 case ActionType.GamepadControl:
                     result = OutputDataAliasUtil.GetStringForX360GamepadCode(joypadCode);
                     break;

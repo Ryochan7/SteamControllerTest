@@ -170,6 +170,57 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler SelectedMouseDirIndexChanged;
 
+        private int mouseXSpeed = OutputActionDataBindSettings.MOUSE_X_SPEED;
+        public int MouseXSpeed
+        {
+            get => mouseXSpeed;
+            set
+            {
+                if (mouseXSpeed == value) return;
+                mouseXSpeed = value;
+                MouseXSpeedChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler MouseXSpeedChanged;
+
+        public int MouseXSpeedOutput
+        {
+            get => mouseXSpeed * OutputActionDataBindSettings.SPEED_UNIT_REFERENCE;
+        }
+        public event EventHandler MouseXSpeedOutputChanged;
+
+        private int mouseYSpeed = OutputActionDataBindSettings.MOUSE_Y_SPEED;
+        public int MouseYSpeed
+        {
+            get => mouseYSpeed;
+            set
+            {
+                if (mouseYSpeed == value) return;
+                mouseYSpeed = value;
+                MouseYSpeedChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler MouseYSpeedChanged;
+
+        public int MouseYSpeedOutput
+        {
+            get => mouseYSpeed * OutputActionDataBindSettings.SPEED_UNIT_REFERENCE;
+        }
+        public event EventHandler MouseYSpeedOutputChanged;
+
+        private bool showMouseDirOptions;
+        public bool ShowMouseDirOptions
+        {
+            get => showMouseDirOptions;
+            set
+            {
+                if (showMouseDirOptions == value) return;
+                showMouseDirOptions = value;
+                ShowMouseDirOptionsChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler ShowMouseDirOptionsChanged;
+
         private int selectedLayerOpsIndex = -1;
         public int SelectedLayerOpsIndex
         {
@@ -381,11 +432,85 @@ namespace SteamControllerTest.ViewModels
             TickTimeEnabledChanged += ButtonActionEditViewModel_TickTimeEnabledChanged;
             TickTimeChanged += ButtonActionEditViewModel_TickTimeChanged;
             SelectedMouseDirIndexChanged += ButtonActionEditViewModel_SelectedMouseDirIndexChanged;
+            MouseXSpeedChanged += ButtonActionEditViewModel_MouseXSpeedChanged;
+            MouseXSpeedChanged += UpdateMouseXSpeedOutput;
+            MouseYSpeedChanged += ButtonActionEditViewModel_MouseYSpeedChanged;
+            MouseYSpeedChanged += UpdateMouseYSpeedOutput;
             SelectedLayerOpsIndexChanged += ButtonActionEditViewModel_SelectedLayerOpsIndexChanged;
             SelectedLayerChoiceIndexChanged += ButtonActionEditViewModel_SelectedLayerChoiceIndexChanged;
             SelectedLayerChangeConditionIndexChanged += ButtonActionEditViewModel_SelectedLayerChangeConditionIndexChanged;
             SelectedSetChoiceIndexChanged += ButtonActionEditViewModel_SelectedSetChoiceIndexChanged;
             SelectedSetChangeConditionIndexChanged += ButtonActionEditViewModel_SelectedSetChangeConditionIndexChanged;
+        }
+
+        private void UpdateMouseYSpeedOutput(object sender, EventArgs e)
+        {
+            MouseYSpeedOutputChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void UpdateMouseXSpeedOutput(object sender, EventArgs e)
+        {
+            MouseXSpeedOutputChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ButtonActionEditViewModel_MouseYSpeedChanged(object sender, EventArgs e)
+        {
+            int index = selectedMouseDirIndex;
+            if (index == -1) return;
+
+            MouseDirItem item = mouseDirComboItems[index];
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            mapper.QueueEvent(() =>
+            {
+                currentAction.Release(mapper, ignoreReleaseActions: true);
+                OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
+                OutputActionData tempData = slotItem.Data;
+
+                if (tempData.OutputType != OutputActionData.ActionType.RelativeMouse)
+                {
+                    tempData.Reset();
+
+                    tempData.Prepare(OutputActionData.ActionType.RelativeMouse, item.Code);
+                    tempData.OutputCodeStr = ((OutputActionData.RelativeMouseDir)item.Code).ToString();
+                }
+
+                tempData.extraSettings.mouseYSpeed = mouseYSpeed;
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
+
+            PostSlotChangeChecks();
+        }
+
+        private void ButtonActionEditViewModel_MouseXSpeedChanged(object sender, EventArgs e)
+        {
+            int index = selectedMouseDirIndex;
+            if (index == -1) return;
+
+            MouseDirItem item = mouseDirComboItems[index];
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            mapper.QueueEvent(() =>
+            {
+                currentAction.Release(mapper, ignoreReleaseActions: true);
+                OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
+                OutputActionData tempData = slotItem.Data;
+
+                if (tempData.OutputType != OutputActionData.ActionType.RelativeMouse)
+                {
+                    tempData.Reset();
+
+                    tempData.Prepare(OutputActionData.ActionType.RelativeMouse, item.Code);
+                    tempData.OutputCodeStr = ((OutputActionData.RelativeMouseDir)item.Code).ToString();
+                }
+
+                tempData.extraSettings.mouseXSpeed = mouseXSpeed;
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait();
+
+            PostSlotChangeChecks();
         }
 
         private void ButtonActionEditViewModel_TickTimeEnabledChanged(object sender, EventArgs e)
@@ -571,6 +696,7 @@ namespace SteamControllerTest.ViewModels
             });
 
             resetEvent.Wait();
+            ShowMouseDirOptions = true;
             PostSlotChangeChecks();
         }
 
@@ -720,6 +846,12 @@ namespace SteamControllerTest.ViewModels
             SelectedKeyboardIndexChanged -= ButtonActionEditViewModel_SelectedKeyboardIndexChanged;
             SelectedMouseButtonIndexChanged -= ButtonActionEditViewModel_SelectedMouseButtonIndexChanged;
             SelectedMouseWheelButtonIndexChanged -= ButtonActionEditViewModel_SelectedMouseWheelButtonIndexChanged;
+            TickTimeEnabledChanged -= ButtonActionEditViewModel_TickTimeEnabledChanged;
+            TickTimeChanged -= ButtonActionEditViewModel_TickTimeChanged;
+            MouseXSpeedChanged -= ButtonActionEditViewModel_MouseXSpeedChanged;
+            MouseXSpeedChanged -= UpdateMouseXSpeedOutput;
+            MouseYSpeedChanged -= ButtonActionEditViewModel_MouseYSpeedChanged;
+            MouseYSpeedChanged -= UpdateMouseYSpeedOutput;
             SelectedMouseDirIndexChanged -= ButtonActionEditViewModel_SelectedMouseDirIndexChanged;
             SelectedLayerOpsIndexChanged -= ButtonActionEditViewModel_SelectedLayerOpsIndexChanged;
             SelectedLayerChoiceIndexChanged -= ButtonActionEditViewModel_SelectedLayerChoiceIndexChanged;
@@ -791,11 +923,10 @@ namespace SteamControllerTest.ViewModels
                         if (tempWheelItem != null)
                         {
                             SelectedMouseWheelButtonIndex = tempWheelItem.Index;
+                            TickTimeEnabled = item.Data.CheckTick;
+                            TickTime = item.Data.DurationMs;
+                            ShowWheelTickOptions = true;
                         }
-
-                        _tickTimeEnabled = item.Data.CheckTick;
-                        _tickTime = item.Data.DurationMs;
-                        ShowWheelTickOptions = true;
                     }
 
                     break;
@@ -807,6 +938,9 @@ namespace SteamControllerTest.ViewModels
                         if (tempItem != null)
                         {
                             SelectedMouseDirIndex = tempItem.Index;
+                            MouseXSpeed = item.Data.extraSettings.mouseXSpeed;
+                            MouseYSpeed = item.Data.extraSettings.mouseYSpeed;
+                            ShowMouseDirOptions = true;
                         }
                     }
                     break;
@@ -1005,6 +1139,7 @@ namespace SteamControllerTest.ViewModels
             if (ignoreCombo != ActionComboBoxTypes.RelativeMouseDir)
             {
                 SelectedMouseDirIndex = -1;
+                ShowMouseDirOptions = false;
             }
 
             if (ignoreCombo != ActionComboBoxTypes.LayerOp)

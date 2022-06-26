@@ -7053,6 +7053,26 @@ namespace SteamControllerTest
                 case ActionType.Keyboard:
                     break;
                 case ActionType.RelativeMouse:
+                    {
+                        JObject settingsDirJ = new JObject();
+                        if (actionData.extraSettings.mouseXSpeed > 0)
+                        {
+                            settingsDirJ.Add("MouseXSpeed",
+                                actionData.extraSettings.mouseXSpeed);
+                        }
+
+                        if (actionData.extraSettings.mouseYSpeed > 0)
+                        {
+                            settingsDirJ.Add("MouseYSpeed",
+                                actionData.extraSettings.mouseYSpeed);
+                        }
+
+                        if (settingsDirJ.Count > 0)
+                        {
+                            jsonObject.Add("Settings", settingsDirJ);
+                        }
+                    }
+
                     break;
                 case ActionType.MouseWheel:
                     JObject settingsJ = new JObject();

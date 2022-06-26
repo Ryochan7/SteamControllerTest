@@ -72,10 +72,32 @@
                         </StackPanel>
                     </Expander>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Height="40" Margin="0,12,0,0">
+                <StackPanel Orientation="Horizontal" MinHeight="40" Margin="0,12,0,0">
                     <Label Content="Mouse Move Dir" VerticalAlignment="Top" />
                     <ComboBox ItemsSource="{Binding MouseDirComboItems}" SelectedIndex="{Binding SelectedMouseDirIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" MinWidth="100" VerticalAlignment="Top" Margin="8,0,0,0">
                     </ComboBox>
+
+                    <Expander ExpandDirection="Right" Margin="8,0,0,0" Visibility="{Binding ShowMouseDirOptions, Mode=OneWay, Converter={StaticResource boolVisConv}}">
+                        <StackPanel Orientation="Vertical" Margin="8,0,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Mouse X" />
+                                <hc:NumericUpDown Minimum="0.0" Maximum="1000.0" DecimalPlaces="0" Increment="10"
+                                  Value="{Binding MouseXSpeed,FallbackValue='50'}" Margin="8,0,0,0">
+                                </hc:NumericUpDown>
+
+                                <TextBlock Text="{Binding MouseXSpeedOutput, Mode=OneWay, StringFormat='{}{0} pps'}" Width="50" Margin="8,0,0,0" Foreground="{StaticResource DefaultBrush}" VerticalAlignment="Center" />
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <Label Content="Mouse Y" />
+                                <hc:NumericUpDown Minimum="0.0" Maximum="1000.0" DecimalPlaces="0" Increment="10"
+                                  Value="{Binding MouseYSpeed,FallbackValue='50'}" Margin="8,0,0,0">
+                                </hc:NumericUpDown>
+
+                                <TextBlock Text="{Binding MouseYSpeedOutput, Mode=OneWay, StringFormat='{}{0} pps'}" Width="50" Margin="8,0,0,0" Foreground="{StaticResource DefaultBrush}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Expander>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,12,0,0">
