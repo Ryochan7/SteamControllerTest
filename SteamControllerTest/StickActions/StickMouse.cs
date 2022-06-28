@@ -67,14 +67,14 @@ namespace SteamControllerTest.StickActions
             {
             }
 
-            public DeltaAccelSettings(DeltaAccelSettings other)
+            public DeltaAccelSettings(DeltaAccelSettings source)
             {
-                enabled = other.enabled;
-                multiplier = other.multiplier;
-                maxTravel = other.maxTravel;
-                minTravel = other.minTravel;
-                easingDuration = other.easingDuration;
-                minfactor = other.minfactor;
+                enabled = source.enabled;
+                multiplier = source.multiplier;
+                maxTravel = source.maxTravel;
+                minTravel = source.minTravel;
+                easingDuration = source.easingDuration;
+                minfactor = source.minfactor;
             }
         }
 

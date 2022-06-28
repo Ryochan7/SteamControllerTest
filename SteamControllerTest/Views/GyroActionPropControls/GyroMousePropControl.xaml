@@ -9,7 +9,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel>
-        <ScrollViewer>
+        <ScrollViewer DockPanel.Dock="Top">
             <StackPanel>
                 <local1:GyroActionSelectControl x:Name="gyroSelectControl" />
 
@@ -123,6 +123,53 @@
                           SelectedValuePath="Choice" SelectedValue="{Binding InvertChoice}" MinWidth="100" Margin="8,0,0,0">
                     </ComboBox>
                 </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <GroupBox MinWidth="200">
+                        <GroupBox.Header>
+                            <CheckBox IsChecked="{Binding SmoothingEnabled}"
+                                      HorizontalAlignment="Left" HorizontalContentAlignment="Left">
+                                Use Smoothing
+                            </CheckBox>
+                        </GroupBox.Header>
+
+                        <StackPanel IsEnabled="{Binding SmoothingEnabled}">
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="1 Euro MinCutoff" />
+                                <hc:NumericUpDown Minimum="0.0" Maximum="10.0" DecimalPlaces="1" Increment="0.1"
+                                  Value="{Binding SmoothingMinCutoff,FallbackValue='1.0'}" Margin="8,0,0,0">
+                                    <hc:NumericUpDown.Style>
+                                        <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding HighlightSmoothingFilter}" Value="False">
+                                                    <Setter Property="Opacity" Value="0.7" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </hc:NumericUpDown.Style>
+                                </hc:NumericUpDown>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="1 Euro Beta" />
+                                <hc:NumericUpDown Minimum="0.0" Maximum="1.0" DecimalPlaces="1" Increment="0.1"
+                                  Value="{Binding SmoothingBeta,FallbackValue='1.0'}" Margin="8,0,0,0">
+                                    <hc:NumericUpDown.Style>
+                                        <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding HighlightSmoothingFilter}" Value="False">
+                                                    <Setter Property="Opacity" Value="0.7" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </hc:NumericUpDown.Style>
+                                </hc:NumericUpDown>
+                            </StackPanel>
+
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+
 
             </StackPanel>
         </ScrollViewer>

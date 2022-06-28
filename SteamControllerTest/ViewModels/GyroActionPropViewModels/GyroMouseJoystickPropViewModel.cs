@@ -37,10 +37,10 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
         public int DeadZone
         {
-            get => action.mStickParms.deadZone;
+            get => action.mStickParams.deadZone;
             set
             {
-                action.mStickParms.deadZone = value;
+                action.mStickParams.deadZone = value;
                 DeadZoneChanged?.Invoke(this, EventArgs.Empty);
                 ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
             }
@@ -49,10 +49,10 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
         public int MaxZone
         {
-            get => action.mStickParms.maxZone;
+            get => action.mStickParams.maxZone;
             set
             {
-                action.mStickParms.maxZone = value;
+                action.mStickParams.maxZone = value;
                 MaxZoneChanged?.Invoke(this, EventArgs.Empty);
                 ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
             }
@@ -64,11 +64,11 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
         public bool TriggerActivates
         {
-            get => action.mStickParms.triggerActivates;
+            get => action.mStickParams.triggerActivates;
             set
             {
-                if (action.mStickParms.triggerActivates == value) return;
-                action.mStickParms.triggerActivates = value;
+                if (action.mStickParams.triggerActivates == value) return;
+                action.mStickParams.triggerActivates = value;
                 TriggerActivatesChanged?.Invoke(this, EventArgs.Empty);
                 ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
             }
@@ -77,12 +77,12 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
         public string AntiDeadZoneX
         {
-            get => action.mStickParms.antiDeadzoneX.ToString("N2");
+            get => action.mStickParams.antiDeadzoneX.ToString("N2");
             set
             {
                 if (double.TryParse(value, out double temp))
                 {
-                    action.mStickParms.antiDeadzoneX = Math.Clamp(temp, 0.0, 1.0);
+                    action.mStickParams.antiDeadzoneX = Math.Clamp(temp, 0.0, 1.0);
                     AntiDeadZoneXChanged?.Invoke(this, EventArgs.Empty);
                     ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
                 }
@@ -92,12 +92,12 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
         public string AntiDeadZoneY
         {
-            get => action.mStickParms.antiDeadzoneY.ToString("N2");
+            get => action.mStickParams.antiDeadzoneY.ToString("N2");
             set
             {
                 if (double.TryParse(value, out double temp))
                 {
-                    action.mStickParms.antiDeadzoneY = Math.Clamp(temp, 0.0, 1.0);
+                    action.mStickParams.antiDeadzoneY = Math.Clamp(temp, 0.0, 1.0);
                     AntiDeadZoneYChanged?.Invoke(this, EventArgs.Empty);
                     ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
                 }
@@ -107,10 +107,10 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
         public double VerticalScale
         {
-            get => action.mStickParms.verticalScale;
+            get => action.mStickParams.verticalScale;
             set
             {
-                action.mStickParms.verticalScale = Math.Clamp(value, 0.0, 10.0);
+                action.mStickParams.verticalScale = Math.Clamp(value, 0.0, 10.0);
                 VerticalScaleChanged?.Invoke(this, EventArgs.Empty);
                 ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
             }
@@ -128,10 +128,10 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
         public GyroMouseJoystickOuputAxes OutputAxesChoice
         {
-            get => action.mStickParms.outputAxes;
+            get => action.mStickParams.outputAxes;
             set
             {
-                action.mStickParms.outputAxes = value;
+                action.mStickParams.outputAxes = value;
                 OutputAxesChoiceChanged?.Invoke(this, EventArgs.Empty);
                 ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
             }
@@ -152,13 +152,13 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             get
             {
                 InvertChocies result = InvertChocies.None;
-                if (action.mStickParms.invertX && action.mStickParms.invertY)
+                if (action.mStickParams.invertX && action.mStickParams.invertY)
                 {
                     result = InvertChocies.InvertXY;
                 }
-                else if (action.mStickParms.invertX || action.mStickParms.invertY)
+                else if (action.mStickParams.invertX || action.mStickParams.invertY)
                 {
-                    if (action.mStickParms.invertX)
+                    if (action.mStickParams.invertX)
                     {
                         result = InvertChocies.InvertX;
                     }
@@ -172,20 +172,20 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             }
             set
             {
-                action.mStickParms.invertX = action.mStickParms.invertY = false;
+                action.mStickParams.invertX = action.mStickParams.invertY = false;
 
                 switch (value)
                 {
                     case InvertChocies.None:
                         break;
                     case InvertChocies.InvertX:
-                        action.mStickParms.invertX = true;
+                        action.mStickParams.invertX = true;
                         break;
                     case InvertChocies.InvertY:
-                        action.mStickParms.invertY = true;
+                        action.mStickParams.invertY = true;
                         break;
                     case InvertChocies.InvertXY:
-                        action.mStickParms.invertX = action.mStickParms.invertY = true;
+                        action.mStickParams.invertX = action.mStickParams.invertY = true;
                         break;
                     default:
                         break;
@@ -196,6 +196,45 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             }
         }
         public event EventHandler InvertChoicesChanged;
+
+        public bool SmoothingEnabled
+        {
+            get => action.mStickParams.smoothing;
+            set
+            {
+                if (action.mStickParams.smoothing == value) return;
+                action.mStickParams.smoothing = value;
+                SmoothingEnabledChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SmoothingEnabledChanged;
+
+        public double SmoothingMinCutoff
+        {
+            get => action.mStickParams.smoothingFilterSettings.minCutOff;
+            set
+            {
+                if (action.mStickParams.smoothingFilterSettings.minCutOff == value) return;
+                action.mStickParams.smoothingFilterSettings.minCutOff = Math.Clamp(value, 0.0, 10.0);
+                SmoothingMinCutoffChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SmoothingMinCutoffChanged;
+
+        public double SmoothingBeta
+        {
+            get => action.mStickParams.smoothingFilterSettings.beta;
+            set
+            {
+                if (action.mStickParams.smoothingFilterSettings.beta == value) return;
+                action.mStickParams.smoothingFilterSettings.beta = Math.Clamp(value, 0.0, 1.0);
+                SmoothingBetaChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SmoothingBetaChanged;
 
         //private List<GyroOutputCurveItem> outputCurveItems = new List<GyroOutputCurveItem>();
         //public List<GyroOutputCurveItem> OutputCurveItems => outputCurveItems;
@@ -292,6 +331,20 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler HighlightInvertChanged;
 
+        public bool HighlightSmoothingEnabled
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.SMOOTHING_ENABLED);
+        }
+        public event EventHandler HighlightSmoothingEnabledChanged;
+
+        public bool HighlightSmoothingFilter
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.SMOOTHING_FILTER);
+        }
+        public event EventHandler HighlightSmoothingFilterChanged;
+
         //public bool HighlightOutputCurve
         //{
         //    get => action.ParentAction == null ||
@@ -344,6 +397,52 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             VerticalScaleChanged += GyroMouseJoystickPropViewModel_VerticalScaleChanged;
             InvertChoicesChanged += GyroMouseJoystickPropViewModel_InvertChoicesChanged;
             OutputAxesChoiceChanged += GyroMouseJoystickPropViewModel_OutputAxesChoiceChanged;
+            SmoothingEnabledChanged += GyroMouseJoystickPropViewModel_SmoothingEnabledChanged;
+            SmoothingMinCutoffChanged += GyroMouseJoystickPropViewModel_SmoothingMinCutoffChanged;
+            SmoothingBetaChanged += GyroMouseJoystickPropViewModel_SmoothingBetaChanged;
+        }
+
+        private void GyroMouseJoystickPropViewModel_SmoothingBetaChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.SMOOTHING_FILTER))
+            {
+                this.action.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.SMOOTHING_FILTER);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, GyroMouseJoystick.PropertyKeyStrings.SMOOTHING_FILTER);
+                action.mStickParams.smoothingFilterSettings.UpdateSmoothingFilters();
+            });
+
+            HighlightSmoothingFilterChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void GyroMouseJoystickPropViewModel_SmoothingMinCutoffChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.SMOOTHING_FILTER))
+            {
+                this.action.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.SMOOTHING_FILTER);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, GyroMouseJoystick.PropertyKeyStrings.SMOOTHING_FILTER);
+                action.mStickParams.smoothingFilterSettings.UpdateSmoothingFilters();
+            });
+
+            HighlightSmoothingFilterChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void GyroMouseJoystickPropViewModel_SmoothingEnabledChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.SMOOTHING_ENABLED))
+            {
+                this.action.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.SMOOTHING_ENABLED);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, GyroMouseJoystick.PropertyKeyStrings.SMOOTHING_ENABLED);
+            HighlightSmoothingEnabledChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void GyroMouseJoystickPropViewModel_InvertChoicesChanged(object sender, EventArgs e)
@@ -490,7 +589,7 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
                 new GyroTriggerButtonItem("Steam", JoypadActionCodes.BtnMode),
             });
 
-            foreach (JoypadActionCodes code in action.mStickParms.gyroTriggerButtons)
+            foreach (JoypadActionCodes code in action.mStickParams.gyroTriggerButtons)
             {
                 GyroTriggerButtonItem tempItem = triggerButtonItems.Find((item) => item.Code == code);
                 if (tempItem != null)
@@ -505,7 +604,7 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             });
 
             outputStickIndex =
-                outputStickHolder.StickAliasIndex(action.mStickParms.outputStick);
+                outputStickHolder.StickAliasIndex(action.mStickParams.outputStick);
 
             //outputCurveItems.AddRange(new GyroOutputCurveItem[]
             //{

@@ -135,8 +135,8 @@ namespace SteamControllerTest
             get => mouseWheelSync; set => mouseWheelSync = value;
         }
 
-        private OneEuroFilter mStickFilterX = new OneEuroFilter(minCutoff: 0.6, beta: 0.7);
-        private OneEuroFilter mStickFilterY = new OneEuroFilter(minCutoff: 0.6, beta: 0.7);
+        //private OneEuroFilter mStickFilterX = new OneEuroFilter(minCutoff: 0.6, beta: 0.7);
+        //private OneEuroFilter mStickFilterY = new OneEuroFilter(minCutoff: 0.6, beta: 0.7);
         private OneEuroFilter filterX = new OneEuroFilter(minCutoff: 0.4, beta: 0.6);
         private OneEuroFilter filterY = new OneEuroFilter(minCutoff: 0.4, beta: 0.6);
         private double currentRate = 1.0; // Expressed in Hz
@@ -161,11 +161,11 @@ namespace SteamControllerTest
 
         private bool quit = false;
         public bool Quit { get => quit; set => quit = value; }
-        public OneEuroFilter FilterX { get => filterX; set => filterX = value; }
-        public OneEuroFilter FilterY { get => filterY; set => filterY = value; }
+        //public OneEuroFilter FilterX { get => filterX; set => filterX = value; }
+        //public OneEuroFilter FilterY { get => filterY; set => filterY = value; }
         public double CurrentRate { get => currentRate; set => currentRate = value; }
-        public OneEuroFilter MStickFilterX { get => mStickFilterX; set => mStickFilterX = value; }
-        public OneEuroFilter MStickFilterY { get => mStickFilterY; set => mStickFilterY = value; }
+        //public OneEuroFilter MStickFilterX { get => mStickFilterX; set => mStickFilterX = value; }
+        //public OneEuroFilter MStickFilterY { get => mStickFilterY; set => mStickFilterY = value; }
 
 
         private StickDefinition lsDefintion;
@@ -1701,11 +1701,16 @@ namespace SteamControllerTest
                         // Probably not needed here. Leave as a temporary precaution
                         mouseXRemainder = mouseYRemainder = 0.0;
 
-                        filterX.Filter(0.0, currentRate); // Smooth on output
-                        filterY.Filter(0.0, currentRate); // Smooth on output
+                        //filterX.Filter(0.0, currentRate); // Smooth on output
+                        //filterY.Filter(0.0, currentRate); // Smooth on output
                     }
 
                     mouseSync = false;
+                }
+                else
+                {
+                    // Probably not needed here. Leave as a temporary precaution
+                    mouseXRemainder = mouseYRemainder = 0.0;
                 }
 
                 if (absMouseSync)
@@ -3393,10 +3398,66 @@ namespace SteamControllerTest
 
                 //mouseX = filterX.Filter(mouseX, 1.0 / 0.016);
                 //mouseY = filterY.Filter(mouseY, 1.0 / 0.016);
+                //mouseX = filterX.Filter(mouseX, currentRate);
+                //mouseY = filterY.Filter(mouseY, currentRate);
+
+                //// Filter does not go back to absolute zero for reasons.Check
+                //// for low number and reset to zero
+                //if (Math.Abs(mouseX) < 0.0001) mouseX = 0.0;
+                //if (Math.Abs(mouseY) < 0.0001) mouseY = 0.0;
+
+                double mouseXTemp = mouseX - (remainderCutoff(mouseX * 100.0, 1.0) / 100.0);
+                int mouseXInt = (int)(mouseXTemp);
+                mouseXRemainder = mouseXTemp - mouseXInt;
+
+                double mouseYTemp = mouseY - (remainderCutoff(mouseY * 100.0, 1.0) / 100.0);
+                int mouseYInt = (int)(mouseYTemp);
+                mouseYRemainder = mouseYTemp - mouseYInt;
+                fakerInputHandler.MoveRelativeMouse(mouseXInt, mouseYInt);
+                //mouseReport.MouseX = (short)mouseXInt;
+                //mouseReport.MouseY = (short)mouseYInt;
+                //InputMethods.MoveCursorBy(mouseXInt, mouseYInt);
+            }
+            else
+            {
+                mouseXRemainder = mouseYRemainder = 0.0;
+                //mouseX = filterX.Filter(0.0, 1.0 / 0.016);
+                //mouseY = filterY.Filter(0.0, 1.0 / 0.016);
+                //filterX.Filter(mouseX, currentRate);
+                //filterY.Filter(mouseY, currentRate);
+            }
+
+            mouseX = mouseY = 0.0;
+        }
+
+        public void GenerateMouseEventFiltered(OneEuroFilter filterX, OneEuroFilter filterY)
+        {
+            if (mouseX != 0.0 || mouseY != 0.0)
+            {
+                if ((mouseX > 0.0 && mouseXRemainder > 0.0) || (mouseX < 0.0 && mouseXRemainder < 0.0))
+                {
+                    mouseX += mouseXRemainder;
+                }
+                else
+                {
+                    mouseXRemainder = 0.0;
+                }
+
+                if ((mouseY > 0.0 && mouseYRemainder > 0.0) || (mouseY < 0.0 && mouseYRemainder < 0.0))
+                {
+                    mouseY += mouseYRemainder;
+                }
+                else
+                {
+                    mouseYRemainder = 0.0;
+                }
+
+                //mouseX = filterX.Filter(mouseX, 1.0 / 0.016);
+                //mouseY = filterY.Filter(mouseY, 1.0 / 0.016);
                 mouseX = filterX.Filter(mouseX, currentRate);
                 mouseY = filterY.Filter(mouseY, currentRate);
 
-                // Filter does not go back to absolute zero for reasons. Check
+                // Filter does not go back to absolute zero for reasons.Check
                 // for low number and reset to zero
                 if (Math.Abs(mouseX) < 0.0001) mouseX = 0.0;
                 if (Math.Abs(mouseY) < 0.0001) mouseY = 0.0;

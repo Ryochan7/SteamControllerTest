@@ -128,6 +128,45 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler InvertChoicesChanged;
 
+        public bool SmoothingEnabled
+        {
+            get => action.mouseParams.smoothing;
+            set
+            {
+                if (action.mouseParams.smoothing == value) return;
+                action.mouseParams.smoothing = value;
+                SmoothingEnabledChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SmoothingEnabledChanged;
+
+        public double SmoothingMinCutoff
+        {
+            get => action.mouseParams.smoothingFilterSettings.minCutOff;
+            set
+            {
+                if (action.mouseParams.smoothingFilterSettings.minCutOff == value) return;
+                action.mouseParams.smoothingFilterSettings.minCutOff = Math.Clamp(value, 0.0, 10.0);
+                SmoothingMinCutoffChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SmoothingMinCutoffChanged;
+
+        public double SmoothingBeta
+        {
+            get => action.mouseParams.smoothingFilterSettings.beta;
+            set
+            {
+                if (action.mouseParams.smoothingFilterSettings.beta == value) return;
+                action.mouseParams.smoothingFilterSettings.beta = Math.Clamp(value, 0.0, 1.0);
+                SmoothingBetaChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SmoothingBetaChanged;
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||
@@ -162,6 +201,20 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
                 action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.VERTICAL_SCALE);
         }
         public event EventHandler HighlightVerticalScaleChanged;
+
+        public bool HighlightSmoothingEnabled
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.SMOOTHING_ENABLED);
+        }
+        public event EventHandler HighlightSmoothingEnabledChanged;
+
+        public bool HighlightSmoothingFilter
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.SMOOTHING_FILTER);
+        }
+        public event EventHandler HighlightSmoothingFilterChanged;
 
         public bool HighlightInvert
         {
@@ -210,6 +263,52 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             SensitivityChanged += GyroMouseActionPropViewModel_SensitivityChanged;
             VerticalScaleChanged += GyroMouseActionPropViewModel_VerticalScaleChanged;
             InvertChoicesChanged += GyroMouseActionPropViewModel_InvertChoicesChanged;
+            SmoothingEnabledChanged += GyroMouseActionPropViewModel_SmoothingEnabledChanged;
+            SmoothingMinCutoffChanged += GyroMouseActionPropViewModel_SmoothingMinCutoffChanged;
+            SmoothingBetaChanged += GyroMouseActionPropViewModel_SmoothingBetaChanged;
+        }
+
+        private void GyroMouseActionPropViewModel_SmoothingBetaChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.SMOOTHING_FILTER))
+            {
+                this.action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.SMOOTHING_FILTER);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.SMOOTHING_FILTER);
+                action.mouseParams.smoothingFilterSettings.UpdateSmoothingFilters();
+            });
+
+            HighlightSmoothingFilterChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void GyroMouseActionPropViewModel_SmoothingMinCutoffChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.SMOOTHING_FILTER))
+            {
+                this.action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.SMOOTHING_FILTER);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.SMOOTHING_FILTER);
+                action.mouseParams.smoothingFilterSettings.UpdateSmoothingFilters();
+            });
+
+            HighlightSmoothingFilterChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void GyroMouseActionPropViewModel_SmoothingEnabledChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.SMOOTHING_ENABLED))
+            {
+                this.action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.SMOOTHING_ENABLED);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.SMOOTHING_ENABLED);
+            HighlightSmoothingEnabledChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void GyroMouseActionPropViewModel_InvertChoicesChanged(object sender, EventArgs e)

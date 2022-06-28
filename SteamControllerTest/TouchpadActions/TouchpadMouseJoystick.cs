@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sensorit.Base;
 using SteamControllerTest.MapperUtil;
 using SteamControllerTest.StickModifiers;
 
@@ -26,6 +27,8 @@ namespace SteamControllerTest.TouchpadActions
             public const string INVERT_X = "InvertX";
             public const string INVERT_Y = "InvertY";
             public const string VERTICAL_SCALE = "VerticalScale";
+            public const string SMOOTHING_ENABLED = "SmoothingEnabled";
+            public const string SMOOTHING_FILTER = "SmoothingFilter";
             //public const string MAX_OUTPUT = "MaxOutput";
             //public const string MAX_OUTPUT_ENABLED = "MaxOutputEnabled";
             //public const string SQUARE_STICK_ENABLED = "SquareStickEnabled";
@@ -47,11 +50,53 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.INVERT_Y,
             PropertyKeyStrings.ROTATION,
             PropertyKeyStrings.VERTICAL_SCALE,
+            PropertyKeyStrings.SMOOTHING_ENABLED,
+            PropertyKeyStrings.SMOOTHING_FILTER,
             //PropertyKeyStrings.MAX_OUTPUT_ENABLED,
             //PropertyKeyStrings.MAX_OUTPUT,
             //PropertyKeyStrings.SQUARE_STICK_ENABLED,
             //PropertyKeyStrings.SQUARE_STICK_ROUNDNESS,
         };
+
+        public struct SmoothingFilterSettings
+        {
+            public const double DEFAULT_MIN_CUTOFF = 0.4;
+            public const double DEFAULT_BETA = 0.6;
+
+            public OneEuroFilter filterX;
+            public OneEuroFilter filterY;
+
+            public double minCutOff;
+            public double beta;
+
+            public void Init()
+            {
+                minCutOff = DEFAULT_MIN_CUTOFF;
+                beta = DEFAULT_BETA;
+
+                filterX = new OneEuroFilter(minCutoff: minCutOff,
+                    beta: beta);
+                filterY = new OneEuroFilter(minCutoff: minCutOff,
+                    beta: beta);
+            }
+
+            public void ResetFilters()
+            {
+                filterX.Reset();
+                filterY.Reset();
+            }
+
+            public void UpdateSmoothingFilters()
+            {
+                filterX.MinCutoff = minCutOff;
+                filterX.Beta = beta;
+                filterX.Reset();
+
+                filterY.MinCutoff = minCutOff;
+                filterY.Beta = beta;
+                filterY.Reset();
+            }
+        }
 
         public struct TouchpadMouseJoystickParams
         {
@@ -89,6 +134,9 @@ namespace SteamControllerTest.TouchpadActions
             public event EventHandler OutputStickChanged;
 
             public int rotation;
+
+            public bool smoothing;
+            public SmoothingFilterSettings smoothingFilterSettings;
         }
 
         private const string ACTION_TYPE_NAME = "TouchMouseJoystickAction";
@@ -101,6 +149,7 @@ namespace SteamControllerTest.TouchpadActions
         private const StickActionCodes DEFAULT_OUTPUT_STICK = StickActionCodes.RS;
         private const StickOutCurve.Curve DEFAULT_OUTPUT_CURVE = StickOutCurve.Curve.Linear;
         private const bool DEFAULT_TRACKBALL_ENABLED = true;
+        public const bool DEFAULT_SMOOTHING_ENABLED = true;
 
         private OutputActionData outputAction;
         public OutputActionData OutputAction
@@ -162,6 +211,8 @@ namespace SteamControllerTest.TouchpadActions
             get => ref mStickParams;
         }
 
+        private bool useParentSmoothingFilter;
+
         public TouchpadMouseJoystick()
         {
             actionTypeName = ACTION_TYPE_NAME;
@@ -169,7 +220,7 @@ namespace SteamControllerTest.TouchpadActions
                 DEFAULT_OUTPUT_STICK);
 
             trackData = new TrackballVelData();
-            trackData.trackballAccel = TRACKBALL_RADIUS * TRACKBALL_JOY_FRICTION / TRACKBALL_INERTIA;
+            trackData.trackballAccel = TRACKBALL_RADIUS * TRACKBALL_INIT_FRICTION / TRACKBALL_INERTIA;
 
             mStickParams = new TouchpadMouseJoystickParams()
             {
@@ -178,11 +229,13 @@ namespace SteamControllerTest.TouchpadActions
                 antiDeadzoneX = DEFAULT_ANTI_DEADZONE_X,
                 antiDeadzoneY = DEFAULT_ANTI_DEADZONE_Y,
                 trackballEnabled = DEFAULT_TRACKBALL_ENABLED,
-                trackballFriction = TRACKBALL_JOY_FRICTION,
+                trackballFriction = TRACKBALL_INIT_FRICTION,
                 verticalScale = DEFAULT_VERTICAL_SCALE,
                 outputCurve = DEFAULT_OUTPUT_CURVE,
+                smoothing = DEFAULT_SMOOTHING_ENABLED,
             };
 
+            mStickParams.smoothingFilterSettings.Init();
             mStickParams.TrackballFrictionChanged += MStickParams_TrackballFrictionChanged;
             mStickParams.OutputStickChanged += MStickParams_OutputStickChanged;
         }
@@ -234,22 +287,28 @@ namespace SteamControllerTest.TouchpadActions
             double outXNorm = xNorm;
             double outYNorm = yNorm;
 
-            // Adjust sensitivity to work around rounding in filter method
-            outXNorm *= 1.0005;
-            outYNorm *= 1.0005;
-            double tempXNorm = mapper.FilterX.Filter(outXNorm, mapper.CurrentRate);
-            double tempYNorm = mapper.FilterY.Filter(outYNorm, mapper.CurrentRate);
+            double tempXNorm = outXNorm;
+            double tempYNorm = outYNorm;
 
-            // Filter does not go back to absolute zero for reasons. Check
-            // for low number and reset to zero
-            if (Math.Abs(tempXNorm) < 0.0001) tempXNorm = 0.0;
-            if (Math.Abs(tempYNorm) < 0.0001) tempYNorm = 0.0;
+            if (mStickParams.smoothing)
+            {
+                // Adjust sensitivity to work around rounding in filter method
+                outXNorm *= 1.0005;
+                outYNorm *= 1.0005;
+                tempXNorm = mStickParams.smoothingFilterSettings.filterX.Filter(outXNorm, mapper.CurrentRate);
+                tempYNorm = mStickParams.smoothingFilterSettings.filterY.Filter(outYNorm, mapper.CurrentRate);
 
-            // Need to check bounds again
-            tempXNorm = Math.Clamp(tempXNorm, -1.0, 1.0);
-            tempYNorm = Math.Clamp(tempYNorm, -1.0, 1.0);
+                // Filter does not go back to absolute zero for reasons. Check
+                // for low number and reset to zero
+                if (Math.Abs(tempXNorm) < 0.0001) tempXNorm = 0.0;
+                if (Math.Abs(tempYNorm) < 0.0001) tempYNorm = 0.0;
 
-            //Trace.WriteLine($"OUTPUT: {tempXNorm} {tempYNorm} | BE {outXNorm}");
+                // Need to check bounds again
+                tempXNorm = Math.Clamp(tempXNorm, -1.0, 1.0);
+                tempYNorm = Math.Clamp(tempYNorm, -1.0, 1.0);
+
+                //Trace.WriteLine($"OUTPUT: {tempXNorm} {tempYNorm} | BE {outXNorm}");
+            }
 
             mapper.GamepadFromStickInput(outputAction, tempXNorm, tempYNorm);
 
@@ -273,7 +332,7 @@ namespace SteamControllerTest.TouchpadActions
             mapper.GamepadFromStickInput(outputAction, 0.0, 0.0);
 
             PurgeTrackballData();
-
+            mStickParams.smoothingFilterSettings.ResetFilters();
             active = activeEvent = false;
         }
 
@@ -293,6 +352,11 @@ namespace SteamControllerTest.TouchpadActions
                 {
                     trackData.PurgeData();
                 }
+            }
+
+            if (!useParentSmoothingFilter)
+            {
+                mStickParams.smoothingFilterSettings.ResetFilters();
             }
 
             active = activeEvent = false;
@@ -774,6 +838,13 @@ namespace SteamControllerTest.TouchpadActions
                         case PropertyKeyStrings.ROTATION:
                             mStickParams.rotation = tempMouseJoyAction.mStickParams.rotation;
                             break;
+                        case PropertyKeyStrings.SMOOTHING_ENABLED:
+                            mStickParams.smoothing = tempMouseJoyAction.mStickParams.smoothing;
+                            break;
+                        case PropertyKeyStrings.SMOOTHING_FILTER:
+                            mStickParams.smoothingFilterSettings = tempMouseJoyAction.mStickParams.smoothingFilterSettings;
+                            useParentSmoothingFilter = true;
+                            break;
                         default:
                             break;
                     }
@@ -852,6 +923,13 @@ namespace SteamControllerTest.TouchpadActions
                     break;
                 case PropertyKeyStrings.ROTATION:
                     mStickParams.rotation = tempMouseJoyAction.mStickParams.rotation;
+                    break;
+                case PropertyKeyStrings.SMOOTHING_ENABLED:
+                    mStickParams.smoothing = tempMouseJoyAction.mStickParams.smoothing;
+                    break;
+                case PropertyKeyStrings.SMOOTHING_FILTER:
+                    mStickParams.smoothingFilterSettings = tempMouseJoyAction.mStickParams.smoothingFilterSettings;
+                    useParentSmoothingFilter = true;
                     break;
                 default:
                     break;

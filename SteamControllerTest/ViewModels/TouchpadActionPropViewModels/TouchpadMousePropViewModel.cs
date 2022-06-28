@@ -81,6 +81,45 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler VerticalScaleChanged;
 
+        public bool SmoothingEnabled
+        {
+            get => action.SmoothingEnabled;
+            set
+            {
+                if (action.SmoothingEnabled == value) return;
+                action.SmoothingEnabled = value;
+                SmoothingEnabledChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SmoothingEnabledChanged;
+
+        public double SmoothingMinCutoff
+        {
+            get => action.ActionSmoothingSettings.minCutOff;
+            set
+            {
+                if (action.ActionSmoothingSettings.minCutOff == value) return;
+                action.ActionSmoothingSettings.minCutOff = Math.Clamp(value, 0.0, 10.0);
+                SmoothingMinCutoffChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SmoothingMinCutoffChanged;
+
+        public double SmoothingBeta
+        {
+            get => action.ActionSmoothingSettings.beta;
+            set
+            {
+                if (action.ActionSmoothingSettings.beta == value) return;
+                action.ActionSmoothingSettings.beta = Math.Clamp(value, 0.0, 1.0);
+                SmoothingBetaChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SmoothingBetaChanged;
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||
@@ -123,6 +162,20 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler HighlightVerticalScaleChanged;
 
+        public bool HighlightSmoothingEnabled
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.SMOOTHING_ENABLED);
+        }
+        public event EventHandler HighlightSmoothingEnabledChanged;
+
+        public bool HighlightSmoothingFilter
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.SMOOTHING_FILTER);
+        }
+        public event EventHandler HighlightSmoothingFilterChanged;
+
         public override event EventHandler ActionPropertyChanged;
 
         public TouchpadMousePropViewModel(Mapper mapper, TouchpadMapAction action)
@@ -159,7 +212,53 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
             TrackballFrictionChanged += TouchpadMousePropViewModel_TrackballFrictionChanged;
             SensitivityChanged += TouchpadMousePropViewModel_SensitivityChanged;
             VerticalScaleChanged += TouchpadMousePropViewModel_VerticalScaleChanged;
+            SmoothingEnabledChanged += TouchpadMousePropViewModel_SmoothingEnabledChanged;
+            SmoothingMinCutoffChanged += TouchpadMousePropViewModel_SmoothingMinCutoffChanged;
+            SmoothingBetaChanged += TouchpadMousePropViewModel_SmoothingBetaChanged;
             ActionPropertyChanged += SetProfileDirty;
+        }
+
+        private void TouchpadMousePropViewModel_SmoothingMinCutoffChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.SMOOTHING_FILTER))
+            {
+                this.action.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.SMOOTHING_FILTER);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, TouchpadMouse.PropertyKeyStrings.SMOOTHING_FILTER);
+                action.ActionSmoothingSettings.UpdateSmoothingFilters();
+            });
+
+            HighlightSmoothingFilterChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TouchpadMousePropViewModel_SmoothingBetaChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.SMOOTHING_FILTER))
+            {
+                this.action.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.SMOOTHING_FILTER);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, TouchpadMouse.PropertyKeyStrings.SMOOTHING_FILTER);
+                action.ActionSmoothingSettings.UpdateSmoothingFilters();
+            });
+
+            HighlightSmoothingFilterChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TouchpadMousePropViewModel_SmoothingEnabledChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.SMOOTHING_ENABLED))
+            {
+                this.action.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.SMOOTHING_ENABLED);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, TouchpadMouse.PropertyKeyStrings.SMOOTHING_ENABLED);
+            HighlightSmoothingEnabledChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void TouchpadMousePropViewModel_VerticalScaleChanged(object sender, EventArgs e)

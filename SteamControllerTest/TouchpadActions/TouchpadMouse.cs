@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sensorit.Base;
 //using System.Diagnostics;
 using SteamControllerTest.StickModifiers;
 
@@ -18,6 +20,8 @@ namespace SteamControllerTest.TouchpadActions
             public const string TRACKBALL_FRICTION = "TrackballFriction";
             public const string SENSITIVITY = "Sensitivity";
             public const string VERTICAL_SCALE = "VerticalScale";
+            public const string SMOOTHING_ENABLED = "SmoothingEnabled";
+            public const string SMOOTHING_FILTER = "SmoothingFilter";
         }
 
         private HashSet<string> fullPropertySet = new HashSet<string>()
@@ -27,7 +31,8 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.TRACKBALL_MODE,
             PropertyKeyStrings.TRACKBALL_FRICTION,
             PropertyKeyStrings.SENSITIVITY,
-            PropertyKeyStrings.VERTICAL_SCALE,
+            PropertyKeyStrings.SMOOTHING_ENABLED,
+            PropertyKeyStrings.SMOOTHING_FILTER,
         };
 
         public const string ACTION_TYPE_NAME = "TouchMouseAction";
@@ -89,6 +94,59 @@ namespace SteamControllerTest.TouchpadActions
 
         private TrackballVelData trackData;
 
+        private bool smoothingEnabled;
+        public bool SmoothingEnabled
+        {
+            get => smoothingEnabled;
+            set => smoothingEnabled = value;
+        }
+
+        public struct SmoothingFilterSettings
+        {
+            public const double DEFAULT_MIN_CUTOFF = 0.4;
+            public const double DEFAULT_BETA = 0.6;
+            
+            public OneEuroFilter filterX;
+            public OneEuroFilter filterY;
+
+            public double minCutOff;
+            public double beta;
+
+            public void Init()
+            {
+                minCutOff = DEFAULT_MIN_CUTOFF;
+                beta = DEFAULT_BETA;
+
+                filterX = new OneEuroFilter(minCutoff: minCutOff,
+                    beta: beta);
+                filterY = new OneEuroFilter(minCutoff: minCutOff,
+                    beta: beta);
+            }
+
+            public void ResetFilters()
+            {
+                filterX.Reset();
+                filterY.Reset();
+            }
+
+            public void UpdateSmoothingFilters()
+            {
+                filterX.MinCutoff = minCutOff;
+                filterX.Beta = beta;
+                filterX.Reset();
+
+                filterY.MinCutoff = minCutOff;
+                filterY.Beta = beta;
+                filterY.Reset();
+            }
+        }
+
+        private SmoothingFilterSettings smoothingFilterSettings;
+        public ref SmoothingFilterSettings ActionSmoothingSettings
+        {
+            get => ref smoothingFilterSettings;
+        }
+
         private bool trackballEnabled = true;
         public bool TrackballEnabled
         {
@@ -120,10 +178,13 @@ namespace SteamControllerTest.TouchpadActions
 
         private bool useParentTrackFriction;
 
+        private bool useParentSmoothingFilter;
+
         public TouchpadMouse()
         {
             actionTypeName = ACTION_TYPE_NAME;
             trackData = new TrackballVelData();
+            smoothingFilterSettings.Init();
             //trackData.trackballAccel = TRACKBALL_RADIUS * TRACKBALL_JOY_FRICTION / TRACKBALL_INERTIA;
             trackData.trackballAccel = TRACKBALL_RADIUS * trackballFriction / TRACKBALL_INERTIA;
             deadZone = DEFAULT_DEADZONE;
@@ -155,12 +216,37 @@ namespace SteamControllerTest.TouchpadActions
             if (xMotion != 0.0 || yMotion != 0.0)
             {
                 mapper.MouseX = xMotion; mapper.MouseY = yMotion;
-                mapper.MouseSync = true;
+
+                if (smoothingEnabled)
+                {
+                    mapper.GenerateMouseEventFiltered(smoothingFilterSettings.filterX,
+                        smoothingFilterSettings.filterY);
+                }
+                else
+                {
+                    mapper.MouseSync = true;
+                }
+
                 active = true;
             }
             else
             {
                 active = false;
+
+                mapper.MouseX = xMotion; mapper.MouseY = yMotion;
+
+                if (smoothingEnabled)
+                {
+                    mapper.GenerateMouseEventFiltered(smoothingFilterSettings.filterX,
+                        smoothingFilterSettings.filterY);
+                }
+                else
+                {
+                    mapper.MouseSync = true;
+                }
+
+                //mapper.MouseX = xMotion; mapper.MouseY = yMotion;
+                //mapper.MouseXRemainder = mapper.MouseYRemainder = 0.0;
             }
 
             activeEvent = false;
@@ -172,6 +258,8 @@ namespace SteamControllerTest.TouchpadActions
             xMotion = yMotion = 0.0;
 
             PurgeTrackballData();
+            smoothingFilterSettings.filterX.Reset();
+            smoothingFilterSettings.filterY.Reset();
 
             active = activeEvent = false;
         }
@@ -192,6 +280,12 @@ namespace SteamControllerTest.TouchpadActions
                 {
                     trackData.PurgeData();
                 }
+            }
+
+            if (!useParentSmoothingFilter)
+            {
+                smoothingFilterSettings.filterX.Reset();
+                smoothingFilterSettings.filterY.Reset();
             }
         }
 
@@ -490,6 +584,13 @@ namespace SteamControllerTest.TouchpadActions
                         case PropertyKeyStrings.VERTICAL_SCALE:
                             verticalScale = tempMouseAction.verticalScale;
                             break;
+                        case PropertyKeyStrings.SMOOTHING_ENABLED:
+                            smoothingEnabled = tempMouseAction.smoothingEnabled;
+                            break;
+                        case PropertyKeyStrings.SMOOTHING_FILTER:
+                            smoothingFilterSettings = tempMouseAction.smoothingFilterSettings;
+                            useParentSmoothingFilter = true;
+                            break;
                         default:
                             break;
                     }
@@ -556,6 +657,13 @@ namespace SteamControllerTest.TouchpadActions
                     break;
                 case PropertyKeyStrings.VERTICAL_SCALE:
                     verticalScale = tempMouseAction.verticalScale;
+                    break;
+                case PropertyKeyStrings.SMOOTHING_ENABLED:
+                    smoothingEnabled = tempMouseAction.smoothingEnabled;
+                    break;
+                case PropertyKeyStrings.SMOOTHING_FILTER:
+                    smoothingFilterSettings = tempMouseAction.smoothingFilterSettings;
+                    useParentSmoothingFilter = true;
                     break;
                 default:
                     break;

@@ -1675,6 +1675,53 @@ namespace SteamControllerTest
                 return touchMouseAct.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.VERTICAL_SCALE);
             }
 
+            public bool SmoothingEnabled
+            {
+                get => touchMouseAct.SmoothingEnabled;
+                set
+                {
+                    touchMouseAct.SmoothingEnabled = value;
+                    SmoothingEnabledChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler SmoothingEnabledChanged;
+            public bool ShouldSerializeSmoothingEnabled()
+            {
+                return touchMouseAct.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.SMOOTHING_ENABLED);
+            }
+
+            public double SmoothingMinCutoff
+            {
+                get => touchMouseAct.ActionSmoothingSettings.minCutOff;
+                set
+                {
+                    touchMouseAct.ActionSmoothingSettings.minCutOff = Math.Clamp(value, 0.0, 10.0);
+                    touchMouseAct.ActionSmoothingSettings.UpdateSmoothingFilters();
+                    SmoothingMinCutoffChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler SmoothingMinCutoffChanged;
+            public bool ShouldSerializeSmoothingMinCutoff()
+            {
+                return touchMouseAct.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.SMOOTHING_FILTER);
+            }
+
+            public double SmoothingBeta
+            {
+                get => touchMouseAct.ActionSmoothingSettings.beta;
+                set
+                {
+                    touchMouseAct.ActionSmoothingSettings.beta = Math.Clamp(value, 0.0, 1.0);
+                    touchMouseAct.ActionSmoothingSettings.UpdateSmoothingFilters();
+                    SmoothingBetaChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler SmoothingBetaChanged;
+            public bool ShouldSerializeSmoothingBeta()
+            {
+                return touchMouseAct.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.SMOOTHING_FILTER);
+            }
+
             public TouchpadMouseSettings(TouchpadMouse action)
             {
                 touchMouseAct = action;
@@ -1706,6 +1753,24 @@ namespace SteamControllerTest
             settings.TrackballFrictionChanged += Settings_TrackballFrictionChanged;
             settings.SensitivityChanged += Settings_SensitivityChanged;
             settings.VerticalScaleChanged += Settings_VerticalScaleChanged;
+            settings.SmoothingEnabledChanged += Settings_SmoothingEnabledChanged;
+            settings.SmoothingMinCutoffChanged += Settings_SmoothingMinCutoffChanged;
+            settings.SmoothingBetaChanged += Settings_SmoothingBetaChanged;
+        }
+
+        private void Settings_SmoothingBetaChanged(object sender, EventArgs e)
+        {
+            touchMouseAction.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.SMOOTHING_FILTER);
+        }
+
+        private void Settings_SmoothingMinCutoffChanged(object sender, EventArgs e)
+        {
+            touchMouseAction.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.SMOOTHING_FILTER);
+        }
+
+        private void Settings_SmoothingEnabledChanged(object sender, EventArgs e)
+        {
+            touchMouseAction.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.SMOOTHING_ENABLED);
         }
 
         private void Settings_VerticalScaleChanged(object sender, EventArgs e)
@@ -1807,7 +1872,7 @@ namespace SteamControllerTest
                 get => touchMouseJoyAction.MStickParams.antiDeadzoneY;
                 set
                 {
-                    touchMouseJoyAction.MStickParams.antiDeadzoneX = value;
+                    touchMouseJoyAction.MStickParams.antiDeadzoneY = value;
                     AntiDeadZoneYChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -1941,6 +2006,53 @@ namespace SteamControllerTest
                 return touchMouseJoyAction.ChangedProperties.Contains(TouchpadMouseJoystick.PropertyKeyStrings.VERTICAL_SCALE);
             }
 
+            public bool SmoothingEnabled
+            {
+                get => touchMouseJoyAction.MStickParams.smoothing;
+                set
+                {
+                    touchMouseJoyAction.MStickParams.smoothing = value;
+                    SmoothingEnabledChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler SmoothingEnabledChanged;
+            public bool ShouldSerializeSmoothingEnabled()
+            {
+                return touchMouseJoyAction.ChangedProperties.Contains(TouchpadMouseJoystick.PropertyKeyStrings.SMOOTHING_ENABLED);
+            }
+
+            public double SmoothingMinCutoff
+            {
+                get => touchMouseJoyAction.MStickParams.smoothingFilterSettings.minCutOff;
+                set
+                {
+                    touchMouseJoyAction.MStickParams.smoothingFilterSettings.minCutOff = Math.Clamp(value, 0.0, 10.0);
+                    touchMouseJoyAction.MStickParams.smoothingFilterSettings.UpdateSmoothingFilters();
+                    SmoothingMinCutoffChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler SmoothingMinCutoffChanged;
+            public bool ShouldSerializeSmoothingMinCutoff()
+            {
+                return touchMouseJoyAction.ChangedProperties.Contains(TouchpadMouseJoystick.PropertyKeyStrings.SMOOTHING_FILTER);
+            }
+
+            public double SmoothingBeta
+            {
+                get => touchMouseJoyAction.MStickParams.smoothingFilterSettings.beta;
+                set
+                {
+                    touchMouseJoyAction.MStickParams.smoothingFilterSettings.beta = Math.Clamp(value, 0.0, 1.0);
+                    touchMouseJoyAction.MStickParams.smoothingFilterSettings.UpdateSmoothingFilters();
+                    SmoothingBetaChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler SmoothingBetaChanged;
+            public bool ShouldSerializeSmoothingBeta()
+            {
+                return touchMouseJoyAction.ChangedProperties.Contains(TouchpadMouseJoystick.PropertyKeyStrings.SMOOTHING_FILTER);
+            }
+
             public TouchpadMouseJoystickSettings(TouchpadMouseJoystick action)
             {
                 touchMouseJoyAction = action;
@@ -1979,6 +2091,24 @@ namespace SteamControllerTest
             settings.InvertXChanged += Settings_InvertXChanged;
             settings.InvertYChanged += Settings_InvertYChanged;
             settings.VerticalScaleChanged += Settings_VerticalScaleChanged;
+            settings.SmoothingEnabledChanged += Settings_SmoothingEnabledChanged;
+            settings.SmoothingMinCutoffChanged += Settings_SmoothingMinCutoffChanged;
+            settings.SmoothingBetaChanged += Settings_SmoothingBetaChanged;
+        }
+
+        private void Settings_SmoothingBetaChanged(object sender, EventArgs e)
+        {
+            touchMouseJoyAction.ChangedProperties.Add(TouchpadMouseJoystick.PropertyKeyStrings.SMOOTHING_FILTER);
+        }
+
+        private void Settings_SmoothingMinCutoffChanged(object sender, EventArgs e)
+        {
+            touchMouseJoyAction.ChangedProperties.Add(TouchpadMouseJoystick.PropertyKeyStrings.SMOOTHING_FILTER);
+        }
+
+        private void Settings_SmoothingEnabledChanged(object sender, EventArgs e)
+        {
+            touchMouseJoyAction.ChangedProperties.Add(TouchpadMouseJoystick.PropertyKeyStrings.SMOOTHING_ENABLED);
         }
 
         private void Settings_RotationChanged(object sender, EventArgs e)
@@ -4807,28 +4937,42 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler SmoothingEnabledChanged;
+            public bool ShouldSerializeSmoothingEnabled()
+            {
+                return gyroMouseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.SMOOTHING_ENABLED);
+            }
 
             public double SmoothingMinCutoff
             {
-                get => gyroMouseAction.mouseParams.oneEuroMinCutoff;
+                get => gyroMouseAction.mouseParams.smoothingFilterSettings.minCutOff;
                 set
                 {
-                    gyroMouseAction.mouseParams.oneEuroMinCutoff = Math.Clamp(value, 0.0, 10.0);
+                    gyroMouseAction.mouseParams.smoothingFilterSettings.minCutOff = Math.Clamp(value, 0.0, 10.0);
+                    gyroMouseAction.mouseParams.smoothingFilterSettings.UpdateSmoothingFilters();
                     SmoothingMinCutoffChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
             public event EventHandler SmoothingMinCutoffChanged;
-
-            public double SmoothingMinBeta
+            public bool ShouldSerializeSmoothingMinCutoff()
             {
-                get => gyroMouseAction.mouseParams.oneEuroMinBeta;
+                return gyroMouseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.SMOOTHING_FILTER);
+            }
+
+            public double SmoothingBeta
+            {
+                get => gyroMouseAction.mouseParams.smoothingFilterSettings.beta;
                 set
                 {
-                    gyroMouseAction.mouseParams.oneEuroMinBeta = Math.Clamp(value, 0.0, 1.0);
-                    SmoothingMinBetaChanged?.Invoke(this, EventArgs.Empty);
+                    gyroMouseAction.mouseParams.smoothingFilterSettings.beta = Math.Clamp(value, 0.0, 1.0);
+                    gyroMouseAction.mouseParams.smoothingFilterSettings.UpdateSmoothingFilters();
+                    SmoothingBetaChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
-            public event EventHandler SmoothingMinBetaChanged;
+            public event EventHandler SmoothingBetaChanged;
+            public bool ShouldSerializeSmoothingBeta()
+            {
+                return gyroMouseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.SMOOTHING_FILTER);
+            }
 
             public GyroMouseSettings(GyroMouse mouseAction)
             {
@@ -4864,7 +5008,7 @@ namespace SteamControllerTest
             settings.ToggleChanged += Settings_ToggleChanged;
             settings.SmoothingEnabledChanged += Settings_SmoothingEnabledChanged;
             settings.SmoothingMinCutoffChanged += Settings_SmoothingMinCutoffChanged;
-            settings.SmoothingMinBetaChanged += Settings_SmoothingMinBetaChanged;
+            settings.SmoothingBetaChanged += Settings_SmoothingMinBetaChanged;
         }
 
         private void Settings_EvalCondChanged(object sender, EventArgs e)
@@ -4874,12 +5018,12 @@ namespace SteamControllerTest
 
         private void Settings_SmoothingMinBetaChanged(object sender, EventArgs e)
         {
-            gyroMouseAction.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.SMOOTHING_MINBETA);
+            gyroMouseAction.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.SMOOTHING_FILTER);
         }
 
         private void Settings_SmoothingMinCutoffChanged(object sender, EventArgs e)
         {
-            gyroMouseAction.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.SMOOTHING_MINCUTOFF);
+            gyroMouseAction.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.SMOOTHING_FILTER);
         }
 
         private void Settings_SmoothingEnabledChanged(object sender, EventArgs e)
@@ -5353,10 +5497,10 @@ namespace SteamControllerTest
 
             public int DeadZone
             {
-                get => gyroMouseStickAction.mStickParms.deadZone;
+                get => gyroMouseStickAction.mStickParams.deadZone;
                 set
                 {
-                    gyroMouseStickAction.mStickParms.deadZone = value;
+                    gyroMouseStickAction.mStickParams.deadZone = value;
                     DeadZoneChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -5364,10 +5508,10 @@ namespace SteamControllerTest
 
             public int MaxZone
             {
-                get => gyroMouseStickAction.mStickParms.maxZone;
+                get => gyroMouseStickAction.mStickParams.maxZone;
                 set
                 {
-                    gyroMouseStickAction.mStickParms.maxZone = value;
+                    gyroMouseStickAction.mStickParams.maxZone = value;
                     MaxZoneChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -5376,10 +5520,10 @@ namespace SteamControllerTest
             [JsonConverter(typeof(TriggerButtonsConverter))]
             public JoypadActionCodes[] TriggerButtons
             {
-                get => gyroMouseStickAction.mStickParms.gyroTriggerButtons;
+                get => gyroMouseStickAction.mStickParams.gyroTriggerButtons;
                 set
                 {
-                    gyroMouseStickAction.mStickParms.gyroTriggerButtons = value;
+                    gyroMouseStickAction.mStickParams.gyroTriggerButtons = value;
                     TriggerButtonsChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -5387,10 +5531,10 @@ namespace SteamControllerTest
 
             public bool TriggerActivates
             {
-                get => gyroMouseStickAction.mStickParms.triggerActivates;
+                get => gyroMouseStickAction.mStickParams.triggerActivates;
                 set
                 {
-                    gyroMouseStickAction.mStickParms.triggerActivates = value;
+                    gyroMouseStickAction.mStickParams.triggerActivates = value;
                     TriggerActivatesChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -5399,11 +5543,11 @@ namespace SteamControllerTest
             [JsonConverter(typeof(StringEnumConverter))]
             public GyroActionsUtils.GyroTriggerEvalCond EvalCond
             {
-                get => gyroMouseStickAction.mStickParms.andCond ?
+                get => gyroMouseStickAction.mStickParams.andCond ?
                     GyroActionsUtils.GyroTriggerEvalCond.And : GyroActionsUtils.GyroTriggerEvalCond.Or;
                 set
                 {
-                    gyroMouseStickAction.mStickParms.andCond =
+                    gyroMouseStickAction.mStickParams.andCond =
                         value == GyroActionsUtils.GyroTriggerEvalCond.And ? true : false;
 
                     EvalCondChanged?.Invoke(this, EventArgs.Empty);
@@ -5413,10 +5557,10 @@ namespace SteamControllerTest
 
             public GyroMouseXAxisChoice UseForXAxis
             {
-                get => gyroMouseStickAction.mStickParms.useForXAxis;
+                get => gyroMouseStickAction.mStickParams.useForXAxis;
                 set
                 {
-                    gyroMouseStickAction.mStickParms.useForXAxis = value;
+                    gyroMouseStickAction.mStickParams.useForXAxis = value;
                     UseForXAxisChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -5424,10 +5568,10 @@ namespace SteamControllerTest
 
             public double AntiDeadZoneX
             {
-                get => gyroMouseStickAction.mStickParms.antiDeadzoneX;
+                get => gyroMouseStickAction.mStickParams.antiDeadzoneX;
                 set
                 {
-                    gyroMouseStickAction.mStickParms.antiDeadzoneX = value;
+                    gyroMouseStickAction.mStickParams.antiDeadzoneX = value;
                     AntiDeadZoneXChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -5435,10 +5579,10 @@ namespace SteamControllerTest
 
             public double AntiDeadZoneY
             {
-                get => gyroMouseStickAction.mStickParms.antiDeadzoneY;
+                get => gyroMouseStickAction.mStickParams.antiDeadzoneY;
                 set
                 {
-                    gyroMouseStickAction.mStickParms.antiDeadzoneY = value;
+                    gyroMouseStickAction.mStickParams.antiDeadzoneY = value;
                     AntiDeadZoneYChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -5446,10 +5590,10 @@ namespace SteamControllerTest
 
             public bool InvertX
             {
-                get => gyroMouseStickAction.mStickParms.invertX;
+                get => gyroMouseStickAction.mStickParams.invertX;
                 set
                 {
-                    gyroMouseStickAction.mStickParms.invertX = value;
+                    gyroMouseStickAction.mStickParams.invertX = value;
                     InvertXChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -5457,10 +5601,10 @@ namespace SteamControllerTest
 
             public bool InvertY
             {
-                get => gyroMouseStickAction.mStickParms.invertY;
+                get => gyroMouseStickAction.mStickParams.invertY;
                 set
                 {
-                    gyroMouseStickAction.mStickParms.invertY = value;
+                    gyroMouseStickAction.mStickParams.invertY = value;
                     InvertYChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -5468,10 +5612,10 @@ namespace SteamControllerTest
 
             public double VerticalScale
             {
-                get => gyroMouseStickAction.mStickParms.verticalScale;
+                get => gyroMouseStickAction.mStickParams.verticalScale;
                 set
                 {
-                    gyroMouseStickAction.mStickParms.verticalScale = Math.Clamp(value, 0.0, 10.0);
+                    gyroMouseStickAction.mStickParams.verticalScale = Math.Clamp(value, 0.0, 10.0);
                     VerticalScaleChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -5479,10 +5623,10 @@ namespace SteamControllerTest
 
             public GyroMouseJoystickOuputAxes OutputAxes
             {
-                get => gyroMouseStickAction.mStickParms.outputAxes;
+                get => gyroMouseStickAction.mStickParams.outputAxes;
                 set
                 {
-                    gyroMouseStickAction.mStickParms.outputAxes = value;
+                    gyroMouseStickAction.mStickParams.outputAxes = value;
                     OutputAxesChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -5491,10 +5635,10 @@ namespace SteamControllerTest
             [JsonConverter(typeof(StringEnumConverter))]
             public StickActionCodes OutputStick
             {
-                get => gyroMouseStickAction.mStickParms.outputStick;
+                get => gyroMouseStickAction.mStickParams.outputStick;
                 set
                 {
-                    gyroMouseStickAction.mStickParms.OutputStick = value;
+                    gyroMouseStickAction.mStickParams.OutputStick = value;
                     OutputStickChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -5502,10 +5646,10 @@ namespace SteamControllerTest
 
             public bool MaxOutputEnabled
             {
-                get => gyroMouseStickAction.mStickParms.maxOutputEnabled;
+                get => gyroMouseStickAction.mStickParams.maxOutputEnabled;
                 set
                 {
-                    gyroMouseStickAction.mStickParms.maxOutputEnabled = value;
+                    gyroMouseStickAction.mStickParams.maxOutputEnabled = value;
                     MaxOutputEnabledChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -5513,10 +5657,10 @@ namespace SteamControllerTest
 
             public double MaxOutput
             {
-                get => gyroMouseStickAction.mStickParms.maxOutput;
+                get => gyroMouseStickAction.mStickParams.maxOutput;
                 set
                 {
-                    gyroMouseStickAction.mStickParms.maxOutput = value;
+                    gyroMouseStickAction.mStickParams.maxOutput = value;
                     MaxOutputChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -5524,10 +5668,10 @@ namespace SteamControllerTest
 
             public bool Toggle
             {
-                get => gyroMouseStickAction.mStickParms.toggleAction;
+                get => gyroMouseStickAction.mStickParams.toggleAction;
                 set
                 {
-                    gyroMouseStickAction.mStickParms.toggleAction = value;
+                    gyroMouseStickAction.mStickParams.toggleAction = value;
                     ToggleChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -5535,10 +5679,10 @@ namespace SteamControllerTest
 
             public bool SmoothingEnabled
             {
-                get => gyroMouseStickAction.mStickParms.smoothing;
+                get => gyroMouseStickAction.mStickParams.smoothing;
                 set
                 {
-                    gyroMouseStickAction.mStickParms.smoothing = value;
+                    gyroMouseStickAction.mStickParams.smoothing = value;
                     SmoothingEnabledChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -5546,25 +5690,27 @@ namespace SteamControllerTest
 
             public double SmoothingMinCutoff
             {
-                get => gyroMouseStickAction.mStickParms.oneEuroMinCutoff;
+                get => gyroMouseStickAction.mStickParams.smoothingFilterSettings.minCutOff;
                 set
                 {
-                    gyroMouseStickAction.mStickParms.oneEuroMinCutoff = Math.Clamp(value, 0.0, 10.0);
+                    gyroMouseStickAction.mStickParams.smoothingFilterSettings.minCutOff = Math.Clamp(value, 0.0, 10.0);
+                    gyroMouseStickAction.mStickParams.smoothingFilterSettings.UpdateSmoothingFilters();
                     SmoothingMinCutoffChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
             public event EventHandler SmoothingMinCutoffChanged;
 
-            public double SmoothingMinBeta
+            public double SmoothingBeta
             {
-                get => gyroMouseStickAction.mStickParms.oneEuroMinBeta;
+                get => gyroMouseStickAction.mStickParams.smoothingFilterSettings.beta;
                 set
                 {
-                    gyroMouseStickAction.mStickParms.oneEuroMinBeta = Math.Clamp(value, 0.0, 1.0);
-                    SmoothingMinBetaChanged?.Invoke(this, EventArgs.Empty);
+                    gyroMouseStickAction.mStickParams.smoothingFilterSettings.beta = Math.Clamp(value, 0.0, 1.0);
+                    gyroMouseStickAction.mStickParams.smoothingFilterSettings.UpdateSmoothingFilters();
+                    SmoothingBetaChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
-            public event EventHandler SmoothingMinBetaChanged;
+            public event EventHandler SmoothingBetaChanged;
 
             public GyroMouseJoystickSettings(GyroMouseJoystick mouseStickAction)
             {
@@ -5605,7 +5751,7 @@ namespace SteamControllerTest
             settings.ToggleChanged += Settings_ToggleChanged;
             settings.SmoothingEnabledChanged += Settings_SmoothingEnabledChanged;
             settings.SmoothingMinCutoffChanged += Settings_SmoothingMinCutoffChanged;
-            settings.SmoothingMinBetaChanged += Settings_SmoothingMinBetaChanged;
+            settings.SmoothingBetaChanged += Settings_SmoothingBetaChanged;
         }
 
         private void Settings_EvalCondChanged(object sender, EventArgs e)
@@ -5613,14 +5759,14 @@ namespace SteamControllerTest
             gyroMouseJoystickAction.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.TRIGGER_EVAL_COND);
         }
 
-        private void Settings_SmoothingMinBetaChanged(object sender, EventArgs e)
+        private void Settings_SmoothingBetaChanged(object sender, EventArgs e)
         {
-            gyroMouseJoystickAction.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.SMOOTHING_MINBETA);
+            gyroMouseJoystickAction.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.SMOOTHING_FILTER);
         }
 
         private void Settings_SmoothingMinCutoffChanged(object sender, EventArgs e)
         {
-            gyroMouseJoystickAction.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.SMOOTHING_MINCUTOFF);
+            gyroMouseJoystickAction.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.SMOOTHING_FILTER);
         }
 
         private void Settings_SmoothingEnabledChanged(object sender, EventArgs e)

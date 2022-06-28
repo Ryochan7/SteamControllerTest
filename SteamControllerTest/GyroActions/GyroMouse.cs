@@ -16,6 +16,46 @@ namespace SteamControllerTest.GyroActions
         Roll,
     }
 
+    public struct SmoothingFilterSettings
+    {
+        public const double DEFAULT_MIN_CUTOFF = 0.4;
+        public const double DEFAULT_BETA = 0.6;
+
+        public OneEuroFilter filterX;
+        public OneEuroFilter filterY;
+
+        public double minCutOff;
+        public double beta;
+
+        public void Init()
+        {
+            minCutOff = DEFAULT_MIN_CUTOFF;
+            beta = DEFAULT_BETA;
+
+            filterX = new OneEuroFilter(minCutoff: minCutOff,
+                beta: beta);
+            filterY = new OneEuroFilter(minCutoff: minCutOff,
+                beta: beta);
+        }
+
+        public void ResetFilters()
+        {
+            filterX.Reset();
+            filterY.Reset();
+        }
+
+        public void UpdateSmoothingFilters()
+        {
+            filterX.MinCutoff = minCutOff;
+            filterX.Beta = beta;
+            filterX.Reset();
+
+            filterY.MinCutoff = minCutOff;
+            filterY.Beta = beta;
+            filterY.Reset();
+        }
+    }
+
     public struct GyroMouseParams
     {
         public int deadzone;
@@ -30,8 +70,9 @@ namespace SteamControllerTest.GyroActions
         public double minThreshold;
         public bool toggleAction;
         public bool smoothing;
-        public double oneEuroMinCutoff;
-        public double oneEuroMinBeta;
+        public SmoothingFilterSettings smoothingFilterSettings;
+        //public double oneEuroMinCutoff;
+        //public double oneEuroMinBeta;
     }
 
     public class GyroMouse : GyroMapAction
@@ -53,8 +94,9 @@ namespace SteamControllerTest.GyroActions
             public const string TRIGGER_EVAL_COND = "TriggersEvalCond";
             public const string TOGGLE_ACTION = "ToggleAction";
             public const string SMOOTHING_ENABLED = "SmoothingEnabled";
-            public const string SMOOTHING_MINCUTOFF = "SmoothingMinCutoff";
-            public const string SMOOTHING_MINBETA = "SmoothingMinBeta";
+            public const string SMOOTHING_FILTER = "SmoothingFilter";
+            //public const string SMOOTHING_MINCUTOFF = "SmoothingMinCutoff";
+            //public const string SMOOTHING_MINBETA = "SmoothingMinBeta";
         }
 
         private HashSet<string> fullPropertySet = new HashSet<string>()
@@ -72,8 +114,9 @@ namespace SteamControllerTest.GyroActions
             PropertyKeyStrings.TRIGGER_EVAL_COND,
             PropertyKeyStrings.TOGGLE_ACTION,
             PropertyKeyStrings.SMOOTHING_ENABLED,
-            PropertyKeyStrings.SMOOTHING_MINCUTOFF,
-            PropertyKeyStrings.SMOOTHING_MINBETA,
+            PropertyKeyStrings.SMOOTHING_FILTER,
+            //PropertyKeyStrings.SMOOTHING_MINCUTOFF,
+            //PropertyKeyStrings.SMOOTHING_MINBETA,
         };
 
         public const string ACTION_TYPE_NAME = "GyroMouseAction";
@@ -83,7 +126,9 @@ namespace SteamControllerTest.GyroActions
         public GyroMouseParams mouseParams;
         private bool previousTriggerActivated;
         private bool toggleActiveState;
-        private OneEuroFilter smoothFilter = new OneEuroFilter(1.0, 1.0);
+        private bool useParentSmoothingFilter;
+
+        //private OneEuroFilter smoothFilter = new OneEuroFilter(1.0, 1.0);
 
         public GyroMouse()
         {
@@ -97,6 +142,8 @@ namespace SteamControllerTest.GyroActions
                 andCond = true,
                 gyroTriggerButtons = new JoypadActionCodes[0],
             };
+
+            mouseParams.smoothingFilterSettings.Init();
         }
 
         public GyroMouse(GyroMouseParams mouseParams)
@@ -157,6 +204,9 @@ namespace SteamControllerTest.GyroActions
             if (!triggerActivated)
             {
                 mapper.MouseXRemainder = mapper.MouseYRemainder = 0.0;
+                mouseParams.smoothingFilterSettings.filterX.Filter(0.0, mapper.CurrentRate);
+                mouseParams.smoothingFilterSettings.filterY.Filter(0.0, mapper.CurrentRate);
+
                 active = false;
                 activeEvent = false;
                 return;
@@ -231,6 +281,9 @@ namespace SteamControllerTest.GyroActions
             else
             {
                 active = false;
+
+                mouseParams.smoothingFilterSettings.filterX.Filter(0.0, mapper.CurrentRate);
+                mouseParams.smoothingFilterSettings.filterY.Filter(0.0, mapper.CurrentRate);
             }
 
             activeEvent = true;
@@ -257,13 +310,31 @@ namespace SteamControllerTest.GyroActions
                 {
                     outXMotion = 0.0; outYMotion = 0.0;
                     mapper.MouseXRemainder = outXMotion;
-                    mapper.MouseXRemainder = outYMotion;
+                    mapper.MouseYRemainder = outYMotion;
                     mouseSync = false;
                 }
             }
 
-            mapper.MouseX = outXMotion; mapper.MouseY = outYMotion;
-            mapper.MouseSync = mouseSync;
+            //mapper.MouseX = outXMotion; mapper.MouseY = outYMotion;
+            //mapper.MouseSync = mouseSync;
+
+            if (mouseParams.smoothing)
+            {
+                mapper.MouseX = outXMotion; mapper.MouseY = outYMotion;
+                mapper.GenerateMouseEventFiltered(mouseParams.smoothingFilterSettings.filterX,
+                    mouseParams.smoothingFilterSettings.filterY);
+
+                //tempX = mouseParams.smoothingFilterSettings.filterX.Filter(tempX,
+                //    mapper.CurrentRate);
+
+                //tempY = mouseParams.smoothingFilterSettings.filterY.Filter(tempY,
+                //    mapper.CurrentRate);
+            }
+            else
+            {
+                mapper.MouseX = outXMotion; mapper.MouseY = outYMotion;
+                mapper.MouseSync = mouseSync;
+            }
 
             if (xMotion != 0.0 || yMotion != 0.0)
             {
@@ -284,7 +355,9 @@ namespace SteamControllerTest.GyroActions
             activeEvent = false;
             toggleActiveState = false;
             previousTriggerActivated = false;
-            smoothFilter.Reset();
+            //smoothFilter.Reset();
+            mouseParams.smoothingFilterSettings.filterX.Reset();
+            mouseParams.smoothingFilterSettings.filterY.Reset();
         }
 
         public override void SoftRelease(Mapper mapper, MapAction checkAction, bool resetState = true)
@@ -294,7 +367,13 @@ namespace SteamControllerTest.GyroActions
             activeEvent = false;
             toggleActiveState = false;
             previousTriggerActivated = false;
-            smoothFilter.Reset();
+
+            if (!useParentSmoothingFilter)
+            {
+                //smoothFilter.Reset();
+                mouseParams.smoothingFilterSettings.filterX.Reset();
+                mouseParams.smoothingFilterSettings.filterY.Reset();
+            }
         }
 
         public override void BlankEvent(Mapper mapper)
@@ -304,7 +383,13 @@ namespace SteamControllerTest.GyroActions
             activeEvent = false;
             toggleActiveState = false;
             previousTriggerActivated = false;
-            smoothFilter.Reset();
+
+            if (!useParentSmoothingFilter)
+            {
+                //smoothFilter.Reset();
+                mouseParams.smoothingFilterSettings.filterX.Reset();
+                mouseParams.smoothingFilterSettings.filterY.Reset();
+            }
         }
 
         public override GyroMapAction DuplicateAction()
@@ -331,7 +416,7 @@ namespace SteamControllerTest.GyroActions
                 IEnumerable<string> useParentProList =
                     fullPropertySet.Except(changedProperties);
 
-                bool updateSmoothing = false;
+                //bool updateSmoothing = false;
                 foreach (string parentPropType in useParentProList)
                 {
                     switch(parentPropType)
@@ -375,25 +460,28 @@ namespace SteamControllerTest.GyroActions
                             break;
                         case PropertyKeyStrings.SMOOTHING_ENABLED:
                             mouseParams.smoothing = tempMouseAction.mouseParams.smoothing;
-                            updateSmoothing = true;
                             break;
-                        case PropertyKeyStrings.SMOOTHING_MINCUTOFF:
-                            mouseParams.oneEuroMinCutoff = tempMouseAction.mouseParams.oneEuroMinCutoff;
-                            updateSmoothing = true;
+                        case PropertyKeyStrings.SMOOTHING_FILTER:
+                            mouseParams.smoothingFilterSettings = tempMouseAction.mouseParams.smoothingFilterSettings;
+                            useParentSmoothingFilter = true;
                             break;
-                        case PropertyKeyStrings.SMOOTHING_MINBETA:
-                            mouseParams.oneEuroMinBeta = tempMouseAction.mouseParams.oneEuroMinBeta;
-                            updateSmoothing = true;
-                            break;
+                        //case PropertyKeyStrings.SMOOTHING_MINCUTOFF:
+                        //    mouseParams.oneEuroMinCutoff = tempMouseAction.mouseParams.oneEuroMinCutoff;
+                        //    updateSmoothing = true;
+                        //    break;
+                        //case PropertyKeyStrings.SMOOTHING_MINBETA:
+                        //    mouseParams.oneEuroMinBeta = tempMouseAction.mouseParams.oneEuroMinBeta;
+                        //    updateSmoothing = true;
+                        //    break;
                         default:
                             break;
                     }
                 }
 
-                if (updateSmoothing)
-                {
-                    UpdateSmoothingFilter();
-                }
+                //if (updateSmoothing)
+                //{
+                //    UpdateSmoothingFilter();
+                //}
             }
         }
 
@@ -417,7 +505,7 @@ namespace SteamControllerTest.GyroActions
 
             GyroMouse tempMouseAction = parentAction as GyroMouse;
 
-            bool updateSmoothing = false;
+            //bool updateSmoothing = false;
             switch (propertyName)
             {
                 case PropertyKeyStrings.NAME:
@@ -459,24 +547,28 @@ namespace SteamControllerTest.GyroActions
                     break;
                 case PropertyKeyStrings.SMOOTHING_ENABLED:
                     mouseParams.smoothing = tempMouseAction.mouseParams.smoothing;
-                    updateSmoothing = true;
+                    //updateSmoothing = true;
                     break;
-                case PropertyKeyStrings.SMOOTHING_MINCUTOFF:
-                    mouseParams.oneEuroMinCutoff = tempMouseAction.mouseParams.oneEuroMinCutoff;
-                    updateSmoothing = true;
+                case PropertyKeyStrings.SMOOTHING_FILTER:
+                    mouseParams.smoothingFilterSettings = tempMouseAction.mouseParams.smoothingFilterSettings;
+                    useParentSmoothingFilter = true;
                     break;
-                case PropertyKeyStrings.SMOOTHING_MINBETA:
-                    mouseParams.oneEuroMinBeta = tempMouseAction.mouseParams.oneEuroMinBeta;
-                    updateSmoothing = true;
-                    break;
+                //case PropertyKeyStrings.SMOOTHING_MINCUTOFF:
+                //    mouseParams.oneEuroMinCutoff = tempMouseAction.mouseParams.oneEuroMinCutoff;
+                //    updateSmoothing = true;
+                //    break;
+                //case PropertyKeyStrings.SMOOTHING_MINBETA:
+                //    mouseParams.oneEuroMinBeta = tempMouseAction.mouseParams.oneEuroMinBeta;
+                //    updateSmoothing = true;
+                //    break;
                 default:
                     break;
             }
 
-            if (updateSmoothing)
-            {
-                UpdateSmoothingFilter();
-            }
+            //if (updateSmoothing)
+            //{
+            //    UpdateSmoothingFilter();
+            //}
         }
 
         private void ResetToggleActiveState()
@@ -485,10 +577,10 @@ namespace SteamControllerTest.GyroActions
             previousTriggerActivated = false;
         }
 
-        public void UpdateSmoothingFilter()
-        {
-            smoothFilter = new OneEuroFilter(mouseParams.oneEuroMinCutoff,
-                mouseParams.oneEuroMinBeta);
-        }
+        //public void UpdateSmoothingFilter()
+        //{
+        //    smoothFilter = new OneEuroFilter(mouseParams.oneEuroMinCutoff,
+        //        mouseParams.oneEuroMinBeta);
+        //}
     }
 }
