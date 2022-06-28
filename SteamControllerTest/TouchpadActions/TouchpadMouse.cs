@@ -221,9 +221,11 @@ namespace SteamControllerTest.TouchpadActions
                 {
                     mapper.GenerateMouseEventFiltered(smoothingFilterSettings.filterX,
                         smoothingFilterSettings.filterY);
+                    mapper.MouseEventFired = true;
                 }
                 else
                 {
+                    // Allow mapper to handle event
                     mapper.MouseSync = true;
                 }
 
@@ -239,9 +241,11 @@ namespace SteamControllerTest.TouchpadActions
                 {
                     mapper.GenerateMouseEventFiltered(smoothingFilterSettings.filterX,
                         smoothingFilterSettings.filterY);
+                    mapper.MouseEventFired = true;
                 }
                 else
                 {
+                    // Allow mapper to handle event
                     mapper.MouseSync = true;
                 }
 

@@ -110,6 +110,13 @@ namespace SteamControllerTest
         private bool mouseSync;
         public bool MouseSync { get => mouseSync; set => mouseSync = value; }
 
+        /// <summary>
+        /// Used to tell the Mapper that a MapAction fired a mouse event. Mainly so
+        /// Mapper skips resetting mouse remainders
+        /// </summary>
+        private bool mouseEventFired;
+        public bool MouseEventFired { get => mouseEventFired; set => mouseEventFired = value; }
+
         public double MouseX { get => mouseX; set => mouseX = value; }
         public double MouseY { get => mouseY; set => mouseY = value; }
         private double mouseXRemainder = 0.0;
@@ -1707,11 +1714,13 @@ namespace SteamControllerTest
 
                     mouseSync = false;
                 }
-                else
+                else if (!mouseEventFired)
                 {
                     // Probably not needed here. Leave as a temporary precaution
                     mouseXRemainder = mouseYRemainder = 0.0;
                 }
+
+                mouseEventFired = false;
 
                 if (absMouseSync)
                 {

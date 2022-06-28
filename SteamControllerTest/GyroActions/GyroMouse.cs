@@ -323,6 +323,7 @@ namespace SteamControllerTest.GyroActions
                 mapper.MouseX = outXMotion; mapper.MouseY = outYMotion;
                 mapper.GenerateMouseEventFiltered(mouseParams.smoothingFilterSettings.filterX,
                     mouseParams.smoothingFilterSettings.filterY);
+                mapper.MouseEventFired = true;
 
                 //tempX = mouseParams.smoothingFilterSettings.filterX.Filter(tempX,
                 //    mapper.CurrentRate);
@@ -332,6 +333,7 @@ namespace SteamControllerTest.GyroActions
             }
             else
             {
+                // Allow mapper to handle event
                 mapper.MouseX = outXMotion; mapper.MouseY = outYMotion;
                 mapper.MouseSync = mouseSync;
             }
