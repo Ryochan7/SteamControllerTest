@@ -64,6 +64,7 @@ namespace SteamControllerTest.TouchpadActions
         private const int DEFAULT_DEADZONE = 8;
         private const double DEFAULT_SENSITIVITY = 1.0;
         private const double DEFAULT_VERTICAL_SCALE = 1.0;
+        private const bool DEFAULT_SMOOTHING_ENABLED = true;
 
         private class TrackballVelData
         {
@@ -185,6 +186,7 @@ namespace SteamControllerTest.TouchpadActions
             actionTypeName = ACTION_TYPE_NAME;
             trackData = new TrackballVelData();
             smoothingFilterSettings.Init();
+            smoothingEnabled = DEFAULT_SMOOTHING_ENABLED;
             //trackData.trackballAccel = TRACKBALL_RADIUS * TRACKBALL_JOY_FRICTION / TRACKBALL_INERTIA;
             trackData.trackballAccel = TRACKBALL_RADIUS * trackballFriction / TRACKBALL_INERTIA;
             deadZone = DEFAULT_DEADZONE;
