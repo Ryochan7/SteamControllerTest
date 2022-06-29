@@ -134,7 +134,10 @@ namespace SteamControllerTest.GyroActions
                 outputAxes = GyroMouseJoystickOuputAxes.All,
                 maxOutput = 1.0,
                 andCond = true,
-                gyroTriggerButtons = new JoypadActionCodes[0],
+                gyroTriggerButtons = new JoypadActionCodes[1]
+                {
+                    JoypadActionCodes.AlwaysOn,
+                },
                 smoothing = DEFAULT_SMOOTHING_ENABLED,
             };
 

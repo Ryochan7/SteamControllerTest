@@ -294,6 +294,7 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         {
             triggerButtonItems.AddRange(new GyroTriggerButtonItem[]
             {
+                new GyroTriggerButtonItem("Always On", JoypadActionCodes.AlwaysOn),
                 new GyroTriggerButtonItem("A", JoypadActionCodes.BtnSouth),
                 new GyroTriggerButtonItem("B", JoypadActionCodes.BtnEast),
                 new GyroTriggerButtonItem("X", JoypadActionCodes.BtnWest),

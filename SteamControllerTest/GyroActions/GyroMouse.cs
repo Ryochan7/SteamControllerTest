@@ -141,7 +141,10 @@ namespace SteamControllerTest.GyroActions
                 verticalScale = 1.0,
                 triggerActivates = true,
                 andCond = true,
-                gyroTriggerButtons = new JoypadActionCodes[0],
+                gyroTriggerButtons = new JoypadActionCodes[1]
+                {
+                    JoypadActionCodes.AlwaysOn,
+                },
                 smoothing = DEFAULT_SMOOTHING_ENABLED,
             };
 

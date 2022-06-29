@@ -129,7 +129,10 @@ namespace SteamControllerTest.GyroActions
                 deadzoneY = 80,
                 delayTime = 20,
                 andCond = true,
-                gyroTriggerButtons = new JoypadActionCodes[0],
+                gyroTriggerButtons = new JoypadActionCodes[1]
+                {
+                    JoypadActionCodes.AlwaysOn,
+                },
             };
 
             FillDirectionalButtons();
