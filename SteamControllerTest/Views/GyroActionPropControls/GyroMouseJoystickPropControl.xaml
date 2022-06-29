@@ -107,7 +107,7 @@
 
                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                     <Label Content="Trigger Activates (Ratchet)" />
-                    <CheckBox IsChecked="{Binding TriggerActivates}" Width="20" VerticalAlignment="Center" Margin="8,0,0,0">
+                    <CheckBox IsChecked="{Binding GyroTriggerActivates}" Width="20" VerticalAlignment="Center" Margin="8,0,0,0">
                         <CheckBox.Style>
                             <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBaseStyle}">
                                 <Style.Triggers>

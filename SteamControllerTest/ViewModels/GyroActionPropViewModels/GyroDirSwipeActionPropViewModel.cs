@@ -20,18 +20,45 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         private List<GyroTriggerButtonItem> triggerButtonItems;
         public List<GyroTriggerButtonItem> TriggerButtonItems => triggerButtonItems;
 
-        public bool TriggerActivates
+        public string GyroTriggerString
+        {
+            get
+            {
+                List<string> tempList = new List<string>();
+                foreach (JoypadActionCodes code in action.swipeParams.gyroTriggerButtons)
+                {
+                    GyroTriggerButtonItem tempItem =
+                        triggerButtonItems.Find((item) => item.Code == code);
+
+                    if (tempItem != null)
+                    {
+                        tempList.Add(tempItem.DisplayString);
+                    }
+                }
+
+                if (tempList.Count == 0)
+                {
+                    tempList.Add(DEFAULT_EMPTY_TRIGGER_STR);
+                }
+
+                string result = string.Join(", ", tempList);
+                return result;
+            }
+        }
+        public event EventHandler GyroTriggerStringChanged;
+
+        public bool GyroTriggerActivates
         {
             get => action.swipeParams.triggerActivates;
             set
             {
                 if (action.swipeParams.triggerActivates == value) return;
                 action.swipeParams.triggerActivates = value;
-                TriggerActivatesChanged?.Invoke(this, EventArgs.Empty);
+                GyroTriggerActivatesChanged?.Invoke(this, EventArgs.Empty);
                 ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler TriggerActivatesChanged;
+        public event EventHandler GyroTriggerActivatesChanged;
 
         public int DeadZoneX
         {
@@ -121,12 +148,12 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler HighlightDelayTimeChanged;
 
-        public bool HighlightTriggerActivates
+        public bool HighlightGyroTriggerActivates
         {
             get => action.ParentAction == null ||
                 baseAction.ChangedProperties.Contains(GyroDirectionalSwipe.PropertyKeyStrings.TRIGGER_ACTIVATE);
         }
-        public event EventHandler HighlightTriggerActivatesChanged;
+        public event EventHandler HighlightGyroTriggerActivatesChanged;
 
         public bool HighlightGyroTriggers
         {
@@ -172,7 +199,7 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             DeadZoneXChanged += GyroDirSwipeActionPropViewModel_DeadZoneXChanged;
             DeadZoneYChanged += GyroDirSwipeActionPropViewModel_DeadZoneYChanged;
             DelayTimeChanged += GyroDirSwipeActionPropViewModel_DelayTimeChanged;
-            TriggerActivatesChanged += GyroDirSwipeActionPropViewModel_TriggerActivatesChanged;
+            GyroTriggerActivatesChanged += GyroDirSwipeActionPropViewModel_TriggerActivatesChanged;
         }
 
         private void GyroDirSwipeActionPropViewModel_TriggerActivatesChanged(object sender, EventArgs e)
@@ -183,7 +210,7 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             }
 
             action.RaiseNotifyPropertyChange(mapper, GyroDirectionalSwipe.PropertyKeyStrings.TRIGGER_ACTIVATE);
-            HighlightTriggerActivatesChanged?.Invoke(this, EventArgs.Empty);
+            HighlightGyroTriggerActivatesChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void GyroDirSwipeActionPropViewModel_DelayTimeChanged(object sender, EventArgs e)
@@ -271,6 +298,21 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
         private void GyroTriggerItem_EnabledChanged(object sender, EventArgs e)
         {
+            GyroTriggerButtonItem tempItem = sender as GyroTriggerButtonItem;
+
+            // Convert current array to temp List for convenience
+            List<JoypadActionCodes> tempList = action.swipeParams.gyroTriggerButtons.ToList();
+
+            // Add or remove code based on current enabled status
+            if (tempItem.Enabled)
+            {
+                tempList.Add(tempItem.Code);
+            }
+            else
+            {
+                tempList.Remove(tempItem.Code);
+            }
+
             if (!action.ChangedProperties.Contains(GyroDirectionalSwipe.PropertyKeyStrings.TRIGGER_BUTTONS))
             {
                 action.ChangedProperties.Add(GyroDirectionalSwipe.PropertyKeyStrings.TRIGGER_BUTTONS);
@@ -278,10 +320,13 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
+                // Convert to array and save to action
+                action.swipeParams.gyroTriggerButtons = tempList.ToArray();
                 action.RaiseNotifyPropertyChange(mapper, GyroDirectionalSwipe.PropertyKeyStrings.TRIGGER_BUTTONS);
             });
 
             HighlightGyroTriggersChanged?.Invoke(this, EventArgs.Empty);
+            GyroTriggerStringChanged?.Invoke(this, EventArgs.Empty);
             ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
         }
 

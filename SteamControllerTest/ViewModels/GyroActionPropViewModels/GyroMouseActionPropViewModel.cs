@@ -59,18 +59,18 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler GyroTriggerStringChanged;
 
-        public bool TriggerActivates
+        public bool GyroTriggerActivates
         {
             get => action.mouseParams.triggerActivates;
             set
             {
                 if (action.mouseParams.triggerActivates == value) return;
                 action.mouseParams.triggerActivates = value;
-                TriggerActivatesChanged?.Invoke(this, EventArgs.Empty);
+                GyroTriggerActivatesChanged?.Invoke(this, EventArgs.Empty);
                 ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler TriggerActivatesChanged;
+        public event EventHandler GyroTriggerActivatesChanged;
 
         public double Sensitivity
         {
@@ -293,7 +293,7 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
             NameChanged += GyroMouseActionPropViewModel_NameChanged;
             DeadZoneChanged += GyroMouseActionPropViewModel_DeadZoneChanged;
-            TriggerActivatesChanged += GyroMouseActionPropViewModel_TriggerActivatesChanged;
+            GyroTriggerActivatesChanged += GyroMouseActionPropViewModel_TriggerActivatesChanged;
             SensitivityChanged += GyroMouseActionPropViewModel_SensitivityChanged;
             VerticalScaleChanged += GyroMouseActionPropViewModel_VerticalScaleChanged;
             InvertChoicesChanged += GyroMouseActionPropViewModel_InvertChoicesChanged;

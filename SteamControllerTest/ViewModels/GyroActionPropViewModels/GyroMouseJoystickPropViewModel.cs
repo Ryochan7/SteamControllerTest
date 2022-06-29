@@ -89,18 +89,18 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler GyroTriggerStringChanged;
 
-        public bool TriggerActivates
+        public bool GyroTriggerActivates
         {
             get => action.mStickParams.triggerActivates;
             set
             {
                 if (action.mStickParams.triggerActivates == value) return;
                 action.mStickParams.triggerActivates = value;
-                TriggerActivatesChanged?.Invoke(this, EventArgs.Empty);
+                GyroTriggerActivatesChanged?.Invoke(this, EventArgs.Empty);
                 ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler TriggerActivatesChanged;
+        public event EventHandler GyroTriggerActivatesChanged;
 
         public string AntiDeadZoneX
         {
@@ -286,7 +286,6 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler HighlightNameChanged;
 
-
         public bool HighlightDeadZone
         {
             get => action.ParentAction == null ||
@@ -418,7 +417,7 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             OutputStickIndexChanged += GyroMouseJoystickPropViewModel_OutputStickIndexChanged;
             DeadZoneChanged += GyroMouseJoystickPropViewModel_DeadZoneChanged;
             MaxZoneChanged += GyroMouseJoystickPropViewModel_MaxZoneChanged;
-            TriggerActivatesChanged += GyroMouseJoystickPropViewModel_TriggerActivatesChanged;
+            GyroTriggerActivatesChanged += GyroMouseJoystickPropViewModel_TriggerActivatesChanged;
             AntiDeadZoneXChanged += GyroMouseJoystickPropViewModel_AntiDeadZoneXChanged;
             AntiDeadZoneYChanged += GyroMouseJoystickPropViewModel_AntiDeadZoneYChanged;
             VerticalScaleChanged += GyroMouseJoystickPropViewModel_VerticalScaleChanged;
