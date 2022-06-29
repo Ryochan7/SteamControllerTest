@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SteamControllerTest.ViewModels.Common;
 using SteamControllerTest.ButtonActions;
 using SteamControllerTest.GyroActions;
 using SteamControllerTest.MapperUtil;
@@ -46,6 +47,19 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             }
         }
         public event EventHandler GyroTriggerStringChanged;
+
+        public bool GyroTriggerCondChoice
+        {
+            get => action.swipeParams.andCond;
+            set
+            {
+                if (action.swipeParams.andCond == value) return;
+                action.swipeParams.andCond = value;
+                GyroTriggerCondChoiceChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler GyroTriggerCondChoiceChanged;
 
         public bool GyroTriggerActivates
         {
@@ -148,6 +162,13 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler HighlightDelayTimeChanged;
 
+        public bool HighlightGyroTriggerCond
+        {
+            get => action.ParentAction == null ||
+                baseAction.ChangedProperties.Contains(GyroDirectionalSwipe.PropertyKeyStrings.TRIGGER_EVAL_COND);
+        }
+        public event EventHandler HighlightGyroTriggerCondChanged;
+
         public bool HighlightGyroTriggerActivates
         {
             get => action.ParentAction == null ||
@@ -199,7 +220,19 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             DeadZoneXChanged += GyroDirSwipeActionPropViewModel_DeadZoneXChanged;
             DeadZoneYChanged += GyroDirSwipeActionPropViewModel_DeadZoneYChanged;
             DelayTimeChanged += GyroDirSwipeActionPropViewModel_DelayTimeChanged;
+            GyroTriggerCondChoiceChanged += GyroDirSwipeActionPropViewModel_GyroTriggerCondChoiceChanged;
             GyroTriggerActivatesChanged += GyroDirSwipeActionPropViewModel_TriggerActivatesChanged;
+        }
+
+        private void GyroDirSwipeActionPropViewModel_GyroTriggerCondChoiceChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(GyroDirectionalSwipe.PropertyKeyStrings.TRIGGER_EVAL_COND))
+            {
+                this.action.ChangedProperties.Add(GyroDirectionalSwipe.PropertyKeyStrings.TRIGGER_EVAL_COND);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, GyroDirectionalSwipe.PropertyKeyStrings.TRIGGER_EVAL_COND);
+            HighlightGyroTriggerCondChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void GyroDirSwipeActionPropViewModel_TriggerActivatesChanged(object sender, EventArgs e)

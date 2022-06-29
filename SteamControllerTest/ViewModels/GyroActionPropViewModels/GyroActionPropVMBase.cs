@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SteamControllerTest.ViewModels.Common;
 using SteamControllerTest.GyroActions;
 
 namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
@@ -59,6 +60,15 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             }
         }
         public event EventHandler NameChanged;
+
+        protected List<EnumChoiceSelection<bool>> gyroTriggerCondItems =
+            new List<EnumChoiceSelection<bool>>()
+        {
+            new EnumChoiceSelection<bool>("And", true),
+            new EnumChoiceSelection<bool>("Or", false),
+        };
+
+        public List<EnumChoiceSelection<bool>> GyroTriggerCondItems => gyroTriggerCondItems;
 
         public virtual event EventHandler ActionPropertyChanged;
         public event EventHandler<GyroMapAction> ActionChanged;

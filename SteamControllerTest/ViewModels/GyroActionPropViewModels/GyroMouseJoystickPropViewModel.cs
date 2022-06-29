@@ -89,6 +89,19 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler GyroTriggerStringChanged;
 
+        public bool GyroTriggerCondChoice
+        {
+            get => action.mStickParams.andCond;
+            set
+            {
+                if (action.mStickParams.andCond == value) return;
+                action.mStickParams.andCond = value;
+                GyroTriggerCondChoiceChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler GyroTriggerCondChoiceChanged;
+
         public bool GyroTriggerActivates
         {
             get => action.mStickParams.triggerActivates;
@@ -314,6 +327,13 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler HighlightGyroTriggersChanged;
 
+        public bool HighlightGyroTriggerCond
+        {
+            get => action.ParentAction == null ||
+                baseAction.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.TRIGGER_EVAL_COND);
+        }
+        public event EventHandler HighlightGyroTriggerCondChanged;
+
         public bool HighlightGyroTriggerActivates
         {
             get => action.ParentAction == null ||
@@ -417,6 +437,7 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             OutputStickIndexChanged += GyroMouseJoystickPropViewModel_OutputStickIndexChanged;
             DeadZoneChanged += GyroMouseJoystickPropViewModel_DeadZoneChanged;
             MaxZoneChanged += GyroMouseJoystickPropViewModel_MaxZoneChanged;
+            GyroTriggerCondChoiceChanged += GyroMouseJoystickPropViewModel_GyroTriggerCondChoiceChanged;
             GyroTriggerActivatesChanged += GyroMouseJoystickPropViewModel_TriggerActivatesChanged;
             AntiDeadZoneXChanged += GyroMouseJoystickPropViewModel_AntiDeadZoneXChanged;
             AntiDeadZoneYChanged += GyroMouseJoystickPropViewModel_AntiDeadZoneYChanged;
@@ -426,6 +447,17 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
             SmoothingEnabledChanged += GyroMouseJoystickPropViewModel_SmoothingEnabledChanged;
             SmoothingMinCutoffChanged += GyroMouseJoystickPropViewModel_SmoothingMinCutoffChanged;
             SmoothingBetaChanged += GyroMouseJoystickPropViewModel_SmoothingBetaChanged;
+        }
+
+        private void GyroMouseJoystickPropViewModel_GyroTriggerCondChoiceChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.TRIGGER_EVAL_COND))
+            {
+                this.action.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.TRIGGER_EVAL_COND);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, GyroMouseJoystick.PropertyKeyStrings.TRIGGER_EVAL_COND);
+            HighlightGyroTriggerCondChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void GyroMouseJoystickPropViewModel_SmoothingBetaChanged(object sender, EventArgs e)
