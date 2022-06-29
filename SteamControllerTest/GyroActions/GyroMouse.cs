@@ -120,6 +120,7 @@ namespace SteamControllerTest.GyroActions
         };
 
         public const string ACTION_TYPE_NAME = "GyroMouseAction";
+        private const bool DEFAULT_SMOOTHING_ENABLED = true;
 
         private double xMotion;
         private double yMotion;
@@ -141,6 +142,7 @@ namespace SteamControllerTest.GyroActions
                 triggerActivates = true,
                 andCond = true,
                 gyroTriggerButtons = new JoypadActionCodes[0],
+                smoothing = DEFAULT_SMOOTHING_ENABLED,
             };
 
             mouseParams.smoothingFilterSettings.Init();
