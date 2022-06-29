@@ -497,16 +497,16 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
                 tempList.Remove(tempItem.Code);
             }
 
-            if (!action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.TRIGGER_BUTTONS))
+            if (!action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.TRIGGER_BUTTONS))
             {
-                action.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.TRIGGER_BUTTONS);
+                action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.TRIGGER_BUTTONS);
             }
 
             ExecuteInMapperThread(() =>
             {
                 // Convert to array and save to action
                 action.mouseParams.gyroTriggerButtons = tempList.ToArray();
-                action.RaiseNotifyPropertyChange(mapper, GyroMouseJoystick.PropertyKeyStrings.TRIGGER_BUTTONS);
+                action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.TRIGGER_BUTTONS);
             });
 
             HighlightGyroTriggersChanged?.Invoke(this, EventArgs.Empty);
