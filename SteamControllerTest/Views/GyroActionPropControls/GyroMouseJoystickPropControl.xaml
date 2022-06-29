@@ -98,6 +98,11 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
+
+                    <StackPanel Margin="8,0,0,0">
+                        <Label Content="Used Triggers" HorizontalAlignment="Left" />
+                        <TextBlock Text="{Binding GyroTriggerString}" Style="{StaticResource TextBlockDefault}" MinWidth="100" Margin="0,8,0,0" HorizontalAlignment="Left" />
+                    </StackPanel>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">

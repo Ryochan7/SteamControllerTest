@@ -32,6 +32,33 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         private List<GyroTriggerButtonItem> triggerButtonItems;
         public List<GyroTriggerButtonItem> TriggerButtonItems => triggerButtonItems;
 
+        public string GyroTriggerString
+        {
+            get
+            {
+                List<string> tempList = new List<string>();
+                foreach (JoypadActionCodes code in action.mouseParams.gyroTriggerButtons)
+                {
+                    GyroTriggerButtonItem tempItem =
+                        triggerButtonItems.Find((item) => item.Code == code);
+
+                    if (tempItem != null)
+                    {
+                        tempList.Add(tempItem.DisplayString);
+                    }
+                }
+
+                if (tempList.Count == 0)
+                {
+                    tempList.Add(DEFAULT_EMPTY_TRIGGER_STR);
+                }
+
+                string result = string.Join(", ", tempList);
+                return result;
+            }
+        }
+        public event EventHandler GyroTriggerStringChanged;
+
         public bool TriggerActivates
         {
             get => action.mouseParams.triggerActivates;
@@ -181,12 +208,19 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler HighlightDeadZoneChanged;
 
-        public bool HighlightTriggerActivates
+        public bool HighlightGyroTriggers
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.TRIGGER_BUTTONS);
+        }
+        public event EventHandler HighlightGyroTriggersChanged;
+
+        public bool HighlightGyroTriggerActivates
         {
             get => action.ParentAction == null ||
                 baseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.TRIGGER_ACTIVATE);
         }
-        public event EventHandler HighlightTriggerActivatesChanged;
+        public event EventHandler HighlightGyroTriggerActivatesChanged;
 
         public bool HighlightSensitivity
         {
@@ -374,7 +408,7 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
                 action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.TRIGGER_ACTIVATE);
             });
 
-            HighlightTriggerActivatesChanged?.Invoke(this, EventArgs.Empty);
+            HighlightGyroTriggerActivatesChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void GyroMouseActionPropViewModel_DeadZoneChanged(object sender, EventArgs e)
@@ -439,6 +473,45 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
                     tempItem.Enabled = true;
                 }
             }
+
+            triggerButtonItems.ForEach((item) =>
+            {
+                item.EnabledChanged += GyroTriggerItem_EnabledChanged;
+            });
+        }
+
+        private void GyroTriggerItem_EnabledChanged(object sender, EventArgs e)
+        {
+            GyroTriggerButtonItem tempItem = sender as GyroTriggerButtonItem;
+
+            // Convert current array to temp List for convenience
+            List<JoypadActionCodes> tempList = action.mouseParams.gyroTriggerButtons.ToList();
+
+            // Add or remove code based on current enabled status
+            if (tempItem.Enabled)
+            {
+                tempList.Add(tempItem.Code);
+            }
+            else
+            {
+                tempList.Remove(tempItem.Code);
+            }
+
+            if (!action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.TRIGGER_BUTTONS))
+            {
+                action.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.TRIGGER_BUTTONS);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                // Convert to array and save to action
+                action.mouseParams.gyroTriggerButtons = tempList.ToArray();
+                action.RaiseNotifyPropertyChange(mapper, GyroMouseJoystick.PropertyKeyStrings.TRIGGER_BUTTONS);
+            });
+
+            HighlightGyroTriggersChanged?.Invoke(this, EventArgs.Empty);
+            GyroTriggerStringChanged?.Invoke(this, EventArgs.Empty);
+            ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 

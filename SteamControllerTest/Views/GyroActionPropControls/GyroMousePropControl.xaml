@@ -68,15 +68,21 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
+
+                    <StackPanel Margin="8,0,0,0">
+                        <Label Content="Used Triggers" HorizontalAlignment="Left" />
+                        <TextBlock Text="{Binding GyroTriggerString}" Style="{StaticResource TextBlockDefault}" MinWidth="100" Margin="0,8,0,0" HorizontalAlignment="Left" />
+                    </StackPanel>
+
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                     <Label Content="Trigger Activates (Ratchet)" />
-                    <CheckBox IsChecked="{Binding TriggerActivates}" Width="20" VerticalAlignment="Center" Margin="8,0,0,0">
+                    <CheckBox IsChecked="{Binding GyroTriggerActivates}" Width="20" VerticalAlignment="Center" Margin="8,0,0,0">
                         <CheckBox.Style>
                             <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBaseStyle}">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding HighlightTriggerActivates}" Value="False">
+                                    <DataTrigger Binding="{Binding HighlightGyroTriggerActivates}" Value="False">
                                         <Setter Property="Opacity" Value="0.7" />
                                     </DataTrigger>
                                 </Style.Triggers>

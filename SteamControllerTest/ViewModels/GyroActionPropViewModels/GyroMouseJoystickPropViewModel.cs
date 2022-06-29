@@ -62,6 +62,33 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
         private List<GyroTriggerButtonItem> triggerButtonItems;
         public List<GyroTriggerButtonItem> TriggerButtonItems => triggerButtonItems;
 
+        public string GyroTriggerString
+        {
+            get
+            {
+                List<string> tempList = new List<string>();
+                foreach (JoypadActionCodes code in action.mStickParams.gyroTriggerButtons)
+                {
+                    GyroTriggerButtonItem tempItem =
+                        triggerButtonItems.Find((item) => item.Code == code);
+
+                    if (tempItem != null)
+                    {
+                        tempList.Add(tempItem.DisplayString);
+                    }
+                }
+
+                if (tempList.Count == 0)
+                {
+                    tempList.Add(DEFAULT_EMPTY_TRIGGER_STR);
+                }
+
+                string result = string.Join(", ", tempList);
+                return result;
+            }
+        }
+        public event EventHandler GyroTriggerStringChanged;
+
         public bool TriggerActivates
         {
             get => action.mStickParams.triggerActivates;
@@ -619,6 +646,21 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
         private void GyroTriggerItem_EnabledChanged(object sender, EventArgs e)
         {
+            GyroTriggerButtonItem tempItem = sender as GyroTriggerButtonItem;
+
+            // Convert current array to temp List for convenience
+            List<JoypadActionCodes> tempList = action.mStickParams.gyroTriggerButtons.ToList();
+
+            // Add or remove code based on current enabled status
+            if (tempItem.Enabled)
+            {
+                tempList.Add(tempItem.Code);
+            }
+            else
+            {
+                tempList.Remove(tempItem.Code);
+            }
+
             if (!action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.TRIGGER_BUTTONS))
             {
                 action.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.TRIGGER_BUTTONS);
@@ -626,10 +668,13 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
+                // Convert to array and save to action
+                action.mStickParams.gyroTriggerButtons = tempList.ToArray();
                 action.RaiseNotifyPropertyChange(mapper, GyroMouseJoystick.PropertyKeyStrings.TRIGGER_BUTTONS);
             });
 
             HighlightGyroTriggersChanged?.Invoke(this, EventArgs.Empty);
+            GyroTriggerStringChanged?.Invoke(this, EventArgs.Empty);
             ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
         }
 

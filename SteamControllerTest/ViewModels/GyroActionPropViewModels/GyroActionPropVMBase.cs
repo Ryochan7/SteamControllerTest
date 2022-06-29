@@ -33,6 +33,8 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
     public class GyroActionPropVMBase
     {
+        protected const string DEFAULT_EMPTY_TRIGGER_STR = "None";
+
         protected Mapper mapper;
         public Mapper Mapper
         {
