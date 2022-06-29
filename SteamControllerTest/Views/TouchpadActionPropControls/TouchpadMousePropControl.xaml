@@ -116,7 +116,7 @@
 
                         <StackPanel IsEnabled="{Binding SmoothingEnabled}">
                             <StackPanel Orientation="Horizontal">
-                                <Label Content="1 Euro MinCutoff" />
+                                <Label Content="1&#x20ac; MinCutoff" />
                                 <hc:NumericUpDown Minimum="0.0" Maximum="10.0" DecimalPlaces="1" Increment="0.1"
                                   Value="{Binding SmoothingMinCutoff,FallbackValue='1.0'}" Margin="8,0,0,0">
                                     <hc:NumericUpDown.Style>
@@ -132,7 +132,7 @@
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal">
-                                <Label Content="1 Euro Beta" />
+                                <Label Content="1&#x20ac; Beta" />
                                 <hc:NumericUpDown Minimum="0.0" Maximum="1.0" DecimalPlaces="1" Increment="0.1"
                                   Value="{Binding SmoothingBeta,FallbackValue='1.0'}" Margin="8,0,0,0">
                                     <hc:NumericUpDown.Style>
