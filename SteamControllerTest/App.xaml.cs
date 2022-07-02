@@ -20,6 +20,7 @@ namespace SteamControllerTest
     {
         private BackendManager manager;
         private AppGlobalData appGlobal;
+        private Timer collectTimer;
 
         private Thread testThread;
         //private Mapper mapper;
@@ -125,6 +126,13 @@ namespace SteamControllerTest
             window.Show();
 
             window.StartCheckProcess();
+
+            collectTimer = new Timer(GarbageTask, null, 30000, 30000);
+        }
+
+        private void GarbageTask(object state)
+        {
+            GC.Collect(0, GCCollectionMode.Forced, false);
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
