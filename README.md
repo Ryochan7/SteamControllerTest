@@ -4,7 +4,7 @@ Mainly used as a test ground for trying out different mapping ideas
 
 ## Runtime Dependencies
 
-.NET 5 Runtime x64 - [https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-5.0.17-windows-x64-installer](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-5.0.17-windows-x64-installer)  
+.NET 6 Runtime x64 - [https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-6.0.6-linux-x64-binaries](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-6.0.6-linux-x64-binaries)  
 ViGEmBus 1.17.333.0 - [https://github.com/ViGEm/ViGEmBus/releases/download/setup-v1.17.333/ViGEmBusSetup_x64.msi](https://github.com/ViGEm/ViGEmBus/releases/download/setup-v1.17.333/ViGEmBusSetup_x64.msi)  
 FakerInput - [https://github.com/Ryochan7/FakerInput/releases/download/v0.1.0/FakerInput_0.1.0_x64.msi](https://github.com/Ryochan7/FakerInput/releases/download/v0.1.0/FakerInput_0.1.0_x64.msi)
 
@@ -14,7 +14,7 @@ HidHide - [https://vigem.org/projects/HidHide/](https://vigem.org/projects/HidHi
 
 ## Current Beta
 
-https://github.com/Ryochan7/SteamControllerTest/releases/tag/v0.0.4
+https://github.com/Ryochan7/SteamControllerTest/releases/tag/v0.0.5
 
 ## Screenshots
 
