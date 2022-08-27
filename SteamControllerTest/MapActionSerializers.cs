@@ -77,6 +77,11 @@ namespace SteamControllerTest
         {
         }
 
+        public virtual void PostPopulateMap(ActionSet tempSet,
+            ActionLayer tempLayer)
+        {
+        }
+
         [OnDeserializing]
         internal void OnDeserializingMethod(StreamingContext context)
         {
@@ -178,6 +183,29 @@ namespace SteamControllerTest
             {
                 serializer.PopulateFunc();
                 buttonAction.ActionFuncs.Add(serializer.ActionFunc);
+            }
+        }
+
+        public override void PostPopulateMap(ActionSet tempSet,
+            ActionLayer tempLayer)
+        {
+            foreach (ActionFunc func in buttonAction.ActionFuncs)
+            {
+                foreach(OutputActionData data in func.OutputActions)
+                {
+                    switch (data.OutputType)
+                    {
+                        case ActionType.RemoveActionLayer:
+                            if (data.ChangeToLayer == -1)
+                            {
+                                data.ChangeToLayer = tempLayer.Index;
+                            }
+
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
         }
 
@@ -6938,10 +6966,10 @@ namespace SteamControllerTest
                     break;
                 case ActionType.RemoveActionLayer:
                     tempInstance.OutputType = checkType;
-                    //if (int.TryParse(j["Layer"]?.ToString(), out int removeLayerNumTemp))
-                    //{
-                    //    tempInstance.ChangeToLayer = removeLayerNumTemp;
-                    //}
+                    if (int.TryParse(j["Layer"]?.ToString(), out int removeLayerNumTemp))
+                    {
+                        tempInstance.ChangeToLayer = removeLayerNumTemp;
+                    }
 
                     DeserializeExtraJSONProperties(tempInstance, j);
                     resultInstance = new OutputActionDataSerializer(tempInstance);

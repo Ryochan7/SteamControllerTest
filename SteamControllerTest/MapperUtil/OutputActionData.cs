@@ -105,7 +105,8 @@ namespace SteamControllerTest.MapperUtil
         // Flag to have process stop processing output actions in an ActionFunc sequence
         public bool breakSequence;
         private bool tickTimerActive;
-        private int changeToLayer = -1;
+        private const int DEFAULT_CHANGE_LAYER_ID = -1;
+        private int changeToLayer = DEFAULT_CHANGE_LAYER_ID;
         private ActionLayerChangeCondition layerChangeCondition;
 
         private Stopwatch elapsed = new Stopwatch();

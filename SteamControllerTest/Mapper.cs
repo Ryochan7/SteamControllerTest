@@ -4540,7 +4540,8 @@ namespace SteamControllerTest
                         {
                             Trace.WriteLine("Removing Action Layer");
                             //queuedActionLayer = ActionSet.DEFAULT_ACTION_LAYER_INDEX;
-                            queuedActionLayer = actionProfile.CurrentActionSet.CurrentActionLayer.Index;
+                            //queuedActionLayer = actionProfile.CurrentActionSet.CurrentActionLayer.Index;
+                            queuedActionLayer = actionData.ChangeToLayer;
                             applyQueuedActionLayer = false;
                         }
                     }

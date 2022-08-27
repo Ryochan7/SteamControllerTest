@@ -431,6 +431,7 @@ namespace SteamControllerTest
                     throw new JsonException($"Duplicate action index [{serializer.MapAction.Id}] on layer [{actionLayer.Index}]");
                 }
 
+                serializer.PostPopulateMap(parentActionSet, actionLayer);
                 actionLayer.LayerActions.Add(serializer.MapAction);
             }
         }
