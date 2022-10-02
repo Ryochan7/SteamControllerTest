@@ -107,6 +107,7 @@ namespace SteamControllerTest.MapperUtil
         private bool tickTimerActive;
         private const int DEFAULT_CHANGE_LAYER_ID = -1;
         private int changeToLayer = DEFAULT_CHANGE_LAYER_ID;
+        private int fromProfileChangeLayer = DEFAULT_CHANGE_LAYER_ID;
         private ActionLayerChangeCondition layerChangeCondition;
 
         private Stopwatch elapsed = new Stopwatch();
@@ -153,6 +154,16 @@ namespace SteamControllerTest.MapperUtil
         public bool CheckTick { get => checkTick; set => checkTick = value; }
         public Stopwatch Elapsed { get => elapsed; }
         public int ChangeToLayer { get => changeToLayer; set => changeToLayer = value; }
+        public int FromProfileChangeLayer
+        {
+            get => fromProfileChangeLayer;
+            set
+            {
+                fromProfileChangeLayer = value;
+                changeToLayer = value;
+            }
+        }
+
         public ActionLayerChangeCondition LayerChangeCondition
         {
             get => layerChangeCondition;

@@ -196,7 +196,7 @@ namespace SteamControllerTest
                     switch (data.OutputType)
                     {
                         case ActionType.RemoveActionLayer:
-                            if (data.ChangeToLayer == -1)
+                            if (data.FromProfileChangeLayer == -1)
                             {
                                 data.ChangeToLayer = tempLayer.Index;
                             }
@@ -6968,6 +6968,7 @@ namespace SteamControllerTest
                     tempInstance.OutputType = checkType;
                     if (int.TryParse(j["Layer"]?.ToString(), out int removeLayerNumTemp))
                     {
+                        tempInstance.FromProfileChangeLayer = removeLayerNumTemp;
                         tempInstance.ChangeToLayer = removeLayerNumTemp;
                     }
 
@@ -7103,7 +7104,11 @@ namespace SteamControllerTest
                     SerializeExtraJSONProperties(current.OutputData, tempJ);
                     break;
                 case ActionType.RemoveActionLayer:
-                    //tempJ.Add("Layer", current.OutputData.ChangeToLayer);
+                    if (current.OutputData.FromProfileChangeLayer != -1)
+                    {
+                        tempJ.Add("Layer", current.OutputData.FromProfileChangeLayer);
+                    }
+
                     SerializeExtraJSONProperties(current.OutputData, tempJ);
                     break;
                 case ActionType.HoldActionLayer:

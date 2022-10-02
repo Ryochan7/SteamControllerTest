@@ -766,6 +766,7 @@ namespace SteamControllerTest.ViewModels
                 tempData.Reset();
                 tempData.Prepare(opItem.LayerOp, 0);
                 tempData.ChangeToLayer = tempItem.Layer.Index;
+                tempData.FromProfileChangeLayer = tempItem.Layer.Index;
                 if (opItem.LayerOp != OutputActionData.ActionType.HoldActionLayer &&
                     selectedLayerChangeConditionIndex >= 0)
                 {
@@ -801,7 +802,7 @@ namespace SteamControllerTest.ViewModels
                     ShowLayerChangeConditions = true;
                     break;
                 case OutputActionData.ActionType.RemoveActionLayer:
-                    ShowAvailableLayers = false;
+                    ShowAvailableLayers = true;
                     SelectedLayerChangeConditionIndex = 2;
                     ShowLayerChangeConditions = true;
                     SelectedLayerChoiceIndex = -1;
@@ -825,6 +826,7 @@ namespace SteamControllerTest.ViewModels
                 if (tempLayerChoiceItem != null)
                 {
                     tempData.ChangeToLayer = tempLayerChoiceItem.Layer.Index;
+                    tempData.FromProfileChangeLayer = tempLayerChoiceItem.Layer.Index;
                 }
 
                 if (opItem.LayerOp != OutputActionData.ActionType.HoldActionLayer &&
@@ -966,14 +968,7 @@ namespace SteamControllerTest.ViewModels
                         {
                             SelectedLayerOpsIndex = ind;
                             SelectedLayerChoiceIndex = item.Data.ChangeToLayer;
-                            if (item.Data.OutputType != OutputActionData.ActionType.RemoveActionLayer)
-                            {
-                                ShowAvailableLayers = true;
-                            }
-                            else
-                            {
-                                ShowAvailableLayers = false;
-                            }
+                            ShowAvailableLayers = true;
 
                             if (item.Data.OutputType != OutputActionData.ActionType.HoldActionLayer)
                             {
