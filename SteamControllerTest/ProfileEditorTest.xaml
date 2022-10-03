@@ -248,12 +248,19 @@
                             <CheckBox IsChecked="{Binding OutControllerEnabled,FallbackValue=False}" VerticalAlignment="Stretch" Margin="8,0,0,0" VerticalContentAlignment="Center" ToolTip="Expose a virtual X360 when loading this profile" />
                         </StackPanel>
 
+                        <StackPanel Orientation="Horizontal" IsEnabled="{Binding OutControllerEnabled}" Margin="0,8,0,0">
+                            <Label Content="Controller Type" />
+                            <ComboBox SelectedIndex="{Binding OutputControllerTypeIdx,FallbackValue='-1'}">
+                                <ComboBoxItem>Xbox 360</ComboBoxItem>
+                                <ComboBoxItem>DualShock 4</ComboBoxItem>
+                            </ComboBox>
+                        </StackPanel>
+
                         <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                             <Label Content="Force Feedback" />
                             <CheckBox IsChecked="{Binding ForceFeedbackEnabled,FallbackValue=False}" VerticalAlignment="Stretch" Margin="8,0,0,0" VerticalContentAlignment="Center"
                                       ToolTip="Enable vibration from output controller" />
                         </StackPanel>
-
                     </StackPanel>
                     
                 </ScrollViewer>

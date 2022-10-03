@@ -191,6 +191,40 @@ namespace SteamControllerTest.ViewModels
             }
         }
 
+        public int OutputControllerTypeIdx
+        {
+            get
+            {
+                int result = -1;
+                switch (tempProfile.OutputGamepadSettings.OutputGamepad)
+                {
+                    case Mapper.OutputContType.Xbox360:
+                        result = 0;
+                        break;
+                    case Mapper.OutputContType.DualShock4:
+                        result = 1;
+                        break;
+                    default:
+                        break;
+                }
+                return result;
+            }
+            set
+            {
+                switch(value)
+                {
+                    case 0:
+                        tempProfile.OutputGamepadSettings.OutputGamepad = Mapper.OutputContType.Xbox360;
+                        break;
+                    case 1:
+                        tempProfile.OutputGamepadSettings.OutputGamepad = Mapper.OutputContType.DualShock4;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
         public bool ForceFeedbackEnabled
         {
             get => tempProfile.OutputGamepadSettings.ForceFeedbackEnabled;
