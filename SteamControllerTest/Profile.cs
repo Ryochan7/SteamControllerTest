@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using SteamControllerTest.ButtonActions;
+using static SteamControllerTest.Mapper;
 
 namespace SteamControllerTest
 {
@@ -119,7 +120,7 @@ namespace SteamControllerTest
 
     public class EmulatedControllerSettings
     {
-        public enum OutputControllerType : ushort
+        public enum OutputControllerTypeTest : ushort
         {
             Xbox360,
             //DS4,
@@ -129,7 +130,7 @@ namespace SteamControllerTest
         [JsonIgnore]
         public bool enabled = true;
         [JsonIgnore]
-        public OutputControllerType outputGamepad = OutputControllerType.Xbox360;
+        public OutputContType outputGamepad = OutputContType.Xbox360;
         [JsonIgnore]
         public bool forceFeedbackEnabled = false;
 
@@ -140,7 +141,7 @@ namespace SteamControllerTest
         }
 
         [JsonConverter(typeof(StringEnumConverter))]
-        public OutputControllerType OutputGamepad
+        public OutputContType OutputGamepad
         {
             get => outputGamepad;
             set => outputGamepad = value;

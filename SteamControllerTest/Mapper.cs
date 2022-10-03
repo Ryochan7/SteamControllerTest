@@ -24,6 +24,7 @@ using SteamControllerTest.TouchpadActions;
 using System.IO;
 using Newtonsoft.Json;
 using SteamControllerTest.GyroActions;
+using Nefarius.ViGEm.Client.Targets.DualShock4;
 
 namespace SteamControllerTest
 {
@@ -41,6 +42,13 @@ namespace SteamControllerTest
         //    UpLeft = 9,
         //    DownLeft = 12,
         //}
+
+        public enum OutputContType : ushort
+        {
+            None,
+            Xbox360,
+            DualShock4,
+        }
 
         public struct ButtonKeyAssociation
         {
@@ -81,6 +89,11 @@ namespace SteamControllerTest
         private const int X360_STICK_MAX = 32767;
         private const int X360_STICK_MIN = -32768;
         private const int OUTPUT_X360_RESOLUTION = X360_STICK_MAX - X360_STICK_MIN;
+
+        private const int DS4_STICK_MAX = 255;
+        private const int DS4_STICK_MIN = 0;
+        private const int DS4_STICK_MID = 128;
+        private const int OUTPUT_DS4_RESOLUTION = DS4_STICK_MAX - DS4_STICK_MIN;
 
         private const int LT_DEADZONE = 80;
         private const int RT_DEADZONE = 80;
@@ -271,7 +284,9 @@ namespace SteamControllerTest
         public event ProfileChangeHandler ProfileChanged;
 
         private ViGEmClient vigemTestClient = null;
-        private IXbox360Controller outputX360 = null;
+        //private IXbox360Controller outputX360 = null;
+        private IVirtualGamepad outputController = null;
+        private OutputContType outputControlType = OutputContType.None;
         //private Thread contThr;
 
         private SteamControllerDevice device;
@@ -1239,11 +1254,11 @@ namespace SteamControllerTest
                     outputGamepad = actionProfile.OutputGamepadSettings.outputGamepad,
                 };
 
-                // Reset virtual Xbox 360 controller if currently connected
-                if (outputX360 != null)
+                // Reset virtual controller if currently connected
+                if (outputController != null)
                 {
-                    outputX360.ResetReport();
-                    outputX360.SubmitReport();
+                    outputController.ResetReport();
+                    outputController.SubmitReport();
                 }
 
                 // Change profile path
@@ -1261,14 +1276,39 @@ namespace SteamControllerTest
                     throw e;
                 }
 
+                // Check if requested output controller is different than the currently
+                // connected type
+                if (actionProfile.OutputGamepadSettings.Enabled && outputController != null &&
+                    actionProfile.OutputGamepadSettings.OutputGamepad != outputControlType)
+                {
+                    outputController.Disconnect();
+                    outputController = null;
+                    outputControlType = OutputContType.None;
+                    Thread.Sleep(100); // More of a pre-caution
+                }
+
                 // Create virtual controller if desired
-                if (actionProfile.OutputGamepadSettings.Enabled && outputX360 == null)
+                if (actionProfile.OutputGamepadSettings.Enabled && outputController == null &&
+                    actionProfile.OutputGamepadSettings.OutputGamepad != OutputContType.None)
                 {
                     Thread contThr = new Thread(() =>
                     {
-                        outputX360 = vigemTestClient.CreateXbox360Controller();
-                        outputX360.AutoSubmitReport = false;
-                        outputX360.Connect();
+                        if (actionProfile.OutputGamepadSettings.OutputGamepad == OutputContType.Xbox360)
+                        {
+                            IXbox360Controller tempOutputX360 = vigemTestClient.CreateXbox360Controller();
+                            tempOutputX360.AutoSubmitReport = false;
+                            tempOutputX360.Connect();
+                            outputController = tempOutputX360;
+                            outputControlType = OutputContType.Xbox360;
+                        }
+                        else if (actionProfile.OutputGamepadSettings.OutputGamepad == OutputContType.DualShock4)
+                        {
+                            IDualShock4Controller tempOutputDS4 = vigemTestClient.CreateDualShock4Controller();
+                            tempOutputDS4.AutoSubmitReport = false;
+                            tempOutputDS4.Connect();
+                            outputController = tempOutputDS4;
+                            outputControlType = OutputContType.DualShock4;
+                        }
                     });
                     contThr.Priority = ThreadPriority.Normal;
                     contThr.IsBackground = true;
@@ -1276,35 +1316,36 @@ namespace SteamControllerTest
                     contThr.Join(); // Wait for bus object start
                     contThr = null;
                 }
-                else if (!actionProfile.OutputGamepadSettings.enabled && outputX360 != null)
+                else if (!actionProfile.OutputGamepadSettings.enabled && outputController != null)
                 {
-                    outputX360.Disconnect();
-                    outputX360 = null;
+                    outputController.Disconnect();
+                    outputController = null;
+                    outputControlType = OutputContType.None;
                 }
 
                 // Check for current output controller and check for desired vibration
                 // status
-                if (outputX360 != null)
-                {
-                    if (actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
-                        outputForceFeedbackDel == null)
-                    {
-                        outputForceFeedbackDel = (sender, e) =>
-                        {
-                            device.currentLeftAmpRatio = e.LargeMotor / 255.0;
-                            device.currentRightAmpRatio = e.SmallMotor / 255.0;
-                            reader.WriteRumbleReport();
-                        };
+                //if (outputController != null)
+                //{
+                //    if (actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
+                //        outputForceFeedbackDel == null)
+                //    {
+                //        outputForceFeedbackDel = (sender, e) =>
+                //        {
+                //            device.currentLeftAmpRatio = e.LargeMotor / 255.0;
+                //            device.currentRightAmpRatio = e.SmallMotor / 255.0;
+                //            reader.WriteRumbleReport();
+                //        };
 
-                        outputX360.FeedbackReceived += outputForceFeedbackDel;
-                    }
-                    else if (!actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
-                        outputForceFeedbackDel != null)
-                    {
-                        outputX360.FeedbackReceived -= outputForceFeedbackDel;
-                        outputForceFeedbackDel = null;
-                    }
-                }
+                //        outputX360.FeedbackReceived += outputForceFeedbackDel;
+                //    }
+                //    else if (!actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
+                //        outputForceFeedbackDel != null)
+                //    {
+                //        outputX360.FeedbackReceived -= outputForceFeedbackDel;
+                //        outputForceFeedbackDel = null;
+                //    }
+                //}
 
                 if (calibrationFinished)
                 {
@@ -1426,7 +1467,7 @@ namespace SteamControllerTest
 
             unchecked
             {
-                outputX360?.ResetReport();
+                outputController?.ResetReport();
 
                 intermediateState = new IntermediateState();
                 currentLatency = currentMapperState.timeElapsed;
@@ -1744,10 +1785,18 @@ namespace SteamControllerTest
 
                 if (intermediateState.Dirty)
                 {
-                    if (outputX360 != null)
+                    if (outputController != null)
                     {
-                        PopulateXbox();
-                        outputX360.SubmitReport();
+                        if (outputControlType == OutputContType.Xbox360)
+                        {
+                            PopulateXbox();
+                            outputController?.SubmitReport();
+                        }
+                        else if (outputControlType == OutputContType.DualShock4)
+                        {
+                            PopulateDualShock4();
+                            outputController?.SubmitReport();
+                        }
                     }
 
                     intermediateState.Dirty = false;
@@ -3797,8 +3846,57 @@ namespace SteamControllerTest
             }
         }
 
+        private void PopulateDualShock4()
+        {
+            IDualShock4Controller tempDS4 = outputController as IDualShock4Controller;
+
+            unchecked
+            {
+                ushort tempButtons = 0;
+                DualShock4DPadDirection tempDPad = DualShock4DPadDirection.None;
+                ushort tempSpecial = 0;
+                if (intermediateState.BtnSouth) tempButtons |= DualShock4Button.Cross.Value;
+                if (intermediateState.BtnEast) tempButtons |= DualShock4Button.Circle.Value;
+                if (intermediateState.BtnWest) tempButtons |= DualShock4Button.Square.Value;
+                if (intermediateState.BtnNorth) tempButtons |= DualShock4Button.Triangle.Value;
+                if (intermediateState.BtnStart) tempButtons |= DualShock4Button.Options.Value;
+                if (intermediateState.BtnSelect) tempButtons |= DualShock4Button.Share.Value;
+
+                if (intermediateState.BtnLShoulder) tempButtons |= DualShock4Button.ShoulderLeft.Value;
+                if (intermediateState.BtnRShoulder) tempButtons |= DualShock4Button.ShoulderRight.Value;
+                if (intermediateState.BtnMode) tempSpecial |= DualShock4SpecialButton.Ps.Value;
+
+                if (intermediateState.BtnThumbL) tempButtons |= DualShock4Button.ThumbLeft.Value;
+                if (intermediateState.BtnThumbR) tempButtons |= DualShock4Button.ThumbRight.Value;
+
+                if (intermediateState.DpadUp && intermediateState.DpadRight) tempDPad = DualShock4DPadDirection.Northeast;
+                else if (intermediateState.DpadUp && intermediateState.DpadLeft) tempDPad = DualShock4DPadDirection.Northwest;
+                else if (intermediateState.DpadUp) tempDPad = DualShock4DPadDirection.North;
+                else if (intermediateState.DpadRight && intermediateState.DpadDown) tempDPad = DualShock4DPadDirection.Southeast;
+                else if (intermediateState.DpadRight) tempDPad = DualShock4DPadDirection.East;
+                else if (intermediateState.DpadDown && intermediateState.DpadLeft) tempDPad = DualShock4DPadDirection.Southwest;
+                else if (intermediateState.DpadDown) tempDPad = DualShock4DPadDirection.South;
+                else if (intermediateState.DpadLeft) tempDPad = DualShock4DPadDirection.West;
+
+                tempDS4.SetButtonsFull(tempButtons);
+                tempDS4.SetSpecialButtonsFull((byte)tempSpecial);
+                tempDS4.SetDPadDirection(tempDPad);
+            }
+
+            tempDS4.LeftThumbX = (byte)((intermediateState.LX >= 0 ? (DS4_STICK_MAX - DS4_STICK_MID) : -(DS4_STICK_MIN - DS4_STICK_MID)) * intermediateState.LX + DS4_STICK_MID);
+            tempDS4.LeftThumbY = (byte)((intermediateState.LY >= 0 ? -(DS4_STICK_MIN - DS4_STICK_MID) : (DS4_STICK_MAX - DS4_STICK_MID)) * -intermediateState.LY + DS4_STICK_MID);
+
+            tempDS4.RightThumbX = (byte)((intermediateState.RX >= 0 ? (DS4_STICK_MAX - DS4_STICK_MID) : -(DS4_STICK_MIN - DS4_STICK_MID)) * intermediateState.RX + DS4_STICK_MID);
+            tempDS4.RightThumbY = (byte)((intermediateState.RY >= 0 ? -(DS4_STICK_MIN - DS4_STICK_MID) : (DS4_STICK_MAX - DS4_STICK_MID)) * -intermediateState.RY + DS4_STICK_MID);
+
+            tempDS4.LeftTrigger = (byte)(intermediateState.LTrigger * 255);
+            tempDS4.RightTrigger = (byte)(intermediateState.RTrigger * 255);
+        }
+
         private void PopulateXbox()
         {
+            IXbox360Controller outputX360 = outputController as IXbox360Controller;
+
             unchecked
             {
                 ushort tempButtons = 0;
@@ -4811,8 +4909,9 @@ namespace SteamControllerTest
             SyncKeyboard();
             SyncMouseButtons();
 
-            outputX360?.Disconnect();
-            outputX360 = null;
+            outputController?.Disconnect();
+            outputController = null;
+            outputControlType = OutputContType.None;
 
             // Let BackendManager handle disconnecting from event generator
             //fakerInputHandler.Disconnect();
