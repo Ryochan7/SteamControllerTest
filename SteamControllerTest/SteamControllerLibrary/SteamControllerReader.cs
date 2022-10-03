@@ -36,7 +36,7 @@ namespace SteamControllerTest.SteamControllerLibrary
         public virtual void PrepareDevice()
         {
             NativeMethods.HidD_SetNumInputBuffers(device.HidDevice.safeReadHandle.DangerousGetHandle(),
-                2);
+                3);
 
             if (device.Synced)
             {
