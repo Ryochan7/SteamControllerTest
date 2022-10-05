@@ -270,15 +270,15 @@ namespace SteamControllerTest.StickActions
             {
                 //Trace.WriteLine($"IN SAFE ZONE {deadMod.DeadZone}");
                 //Console.WriteLine("SHEIT: {0} ({1}) {2} ({3}", axisXVal, xNorm, axisYVal, yNorm);
-                if (currentMode == DPadMode.Standard || currentMode == DPadMode.EightWay)
+                //if (currentMode == DPadMode.Standard || currentMode == DPadMode.EightWay)
                 {
                     DetermineDirection();
                     //Console.WriteLine(currentDir.ToString());
                 }
-                else
-                {
+                //else
+                //{
 
-                }
+                //}
 
                 if (useParentActions)
                 {
