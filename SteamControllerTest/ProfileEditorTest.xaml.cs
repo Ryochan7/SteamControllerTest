@@ -285,5 +285,17 @@ namespace SteamControllerTest
 
             IsEnabled = true;
         }
+
+        private async void SaveProfileAndCloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            editorTestVM.TestSave(editorTestVM.ProfileEnt, editorTestVM.DeviceMapper.ActionProfile);
+
+            await Task.Run(() =>
+            {
+                editorTestVM.ActionResetEvent.Wait();
+            });
+
+            Close();
+        }
     }
 }
