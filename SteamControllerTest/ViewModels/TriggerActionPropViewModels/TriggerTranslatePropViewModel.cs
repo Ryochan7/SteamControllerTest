@@ -199,7 +199,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
 
                 mapper.QueueEvent(() =>
                 {
-                    this.action.ParentAction.Release(mapper, ignoreReleaseActions: true);
+                    this.action.ParentAction?.Release(mapper, ignoreReleaseActions: true);
 
                     mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddTriggerAction(this.action);
                     if (mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer)
