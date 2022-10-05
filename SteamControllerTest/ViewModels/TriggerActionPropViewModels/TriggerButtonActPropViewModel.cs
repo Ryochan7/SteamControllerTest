@@ -74,7 +74,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
         public event EventHandler ActionPropertyChanged;
         public event EventHandler<TriggerMapAction> ActionChanged;
 
-        private bool usingRealAction = false;
+        private bool usingRealAction = true;
 
         public TriggerButtonActPropViewModel(Mapper mapper, TriggerMapAction action)
         {
@@ -97,6 +97,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
                 //tempAction.MappingId = this.action.MappingId;
 
                 this.action = tempAction;
+                usingRealAction = false;
 
                 ActionPropertyChanged += ReplaceExistingLayerAction;
             }
@@ -146,7 +147,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
                     }
                     else
                     {
-                        mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.SyncActions();
+                        mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.SyncActions();
                         mapper.ActionProfile.CurrentActionSet.ClearCompositeLayerActions();
                         mapper.ActionProfile.CurrentActionSet.PrepareCompositeLayer();
                     }

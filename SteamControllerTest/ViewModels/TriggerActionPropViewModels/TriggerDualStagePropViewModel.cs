@@ -185,7 +185,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
 
         public event EventHandler<TriggerMapAction> ActionChanged;
 
-        private bool usingRealAction = false;
+        private bool usingRealAction = true;
 
         public TriggerDualStagePropViewModel(Mapper mapper, TriggerMapAction action)
         {
@@ -208,6 +208,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
                 //tempAction.MappingId = this.action.MappingId;
 
                 this.action = tempAction;
+                usingRealAction = false;
 
                 ActionPropertyChanged += ReplaceExistingLayerAction;
             }

@@ -148,7 +148,8 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
         public event EventHandler ActionPropertyChanged;
         public event EventHandler<TriggerMapAction> ActionChanged;
 
-        private bool replacedAction = false;
+        //private bool replacedAction = false;
+        private bool usingRealAction = true;
 
         public TriggerTranslatePropViewModel(Mapper mapper, TriggerMapAction action)
         {
@@ -171,6 +172,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
                 //tempAction.MappingId = this.action.MappingId;
 
                 this.action = tempAction;
+                usingRealAction = false;
 
                 ActionPropertyChanged += ReplaceExistingLayerAction;
             }
@@ -193,7 +195,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
 
         private void ReplaceExistingLayerAction(object sender, EventArgs e)
         {
-            if (!replacedAction)
+            if (!usingRealAction)
             {
                 ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
@@ -218,7 +220,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
 
                 resetEvent.Wait();
 
-                replacedAction = true;
+                //replacedAction = true;
 
                 ActionChanged?.Invoke(this, action);
             }
