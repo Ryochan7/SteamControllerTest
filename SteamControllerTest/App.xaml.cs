@@ -76,6 +76,9 @@ namespace SteamControllerTest
             Util.NtSetInformationProcess(Process.GetCurrentProcess().Handle,
                 Util.PROCESS_INFORMATION_CLASS.ProcessPagePriority, ref pagePrio, 4);
 
+            // Allow sleep time durations less than 16 ms
+            Util.timeBeginPeriod(1);
+
             RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
 
             appGlobal = AppGlobalDataSingleton.Instance;
@@ -196,6 +199,9 @@ namespace SteamControllerTest
 
             osdTestWindow.Close();
             osdTestWindow = null;
+
+            // Reset timer
+            Util.timeEndPeriod(1);
         }
     }
 }
