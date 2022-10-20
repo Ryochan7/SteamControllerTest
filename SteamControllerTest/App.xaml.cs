@@ -83,9 +83,10 @@ namespace SteamControllerTest
 
             appGlobal = AppGlobalDataSingleton.Instance;
             appGlobal.FindConfigLocation();
+            bool createdSkel = false;
             if (!appGlobal.appSettingsDirFound)
             {
-                bool createdSkel = appGlobal.CreateBaseConfigSkeleton();
+                createdSkel = appGlobal.CreateBaseConfigSkeleton();
                 if (!createdSkel)
                 {
                     MessageBox.Show($"Cannot create config folder structure in {appGlobal.appdatapath}. Exiting",
@@ -93,9 +94,12 @@ namespace SteamControllerTest
                     Current.Shutdown(1);
                     return;
                 }
+
+                // Only copy template profiles if app settings directory
+                // was just created
+                appGlobal.CheckAndCopyExampleProfiles();
             }
 
-            appGlobal.CheckAndCopyExampleProfiles();
             appGlobal.RefreshBaseDriverInfo();
             appGlobal.StartupLoadAppSettings();
             if (!File.Exists(appGlobal.ControllerConfigsPath))
