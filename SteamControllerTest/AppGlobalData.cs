@@ -111,7 +111,8 @@ namespace SteamControllerTest
                 string destSCProfilePath = Path.Combine(appdatapath, PROFILES_FOLDER_NAME, "SteamController");
                 //if (!Directory.Exists(destSCProfilePath))
                 // Check if profiles dir is empty
-                if (!Directory.EnumerateFileSystemEntries(destSCProfilePath).Any())
+                if (Directory.Exists(exampleSCProfilesPath) && Directory.Exists(destSCProfilePath) &&
+                    !Directory.EnumerateFileSystemEntries(destSCProfilePath).Any())
                 {
                     foreach (string file in Directory.EnumerateFiles(exampleSCProfilesPath))
                     {
