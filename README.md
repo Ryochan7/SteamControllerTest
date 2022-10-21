@@ -5,7 +5,7 @@ Mainly used as a test ground for trying out different mapping ideas
 ## Runtime Dependencies
 
 .NET 6 Runtime x64 - [https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-6.0.6-windows-x64-installer](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-6.0.6-windows-x64-installer)  
-ViGEmBus 1.17.333.0 - [https://github.com/ViGEm/ViGEmBus/releases/download/setup-v1.17.333/ViGEmBusSetup_x64.msi](https://github.com/ViGEm/ViGEmBus/releases/download/setup-v1.17.333/ViGEmBusSetup_x64.msi)  
+ViGEmBus 1.21.442 - [https://github.com/ViGEm/ViGEmBus/releases/download/v1.21.442.0/ViGEmBus_1.21.442_x64_x86_arm64.exe](https://github.com/ViGEm/ViGEmBus/releases/download/v1.21.442.0/ViGEmBus_1.21.442_x64_x86_arm64.exe)  
 FakerInput - [https://github.com/Ryochan7/FakerInput/releases/download/v0.1.0/FakerInput_0.1.0_x64.msi](https://github.com/Ryochan7/FakerInput/releases/download/v0.1.0/FakerInput_0.1.0_x64.msi)
 
 ### Optional Tools
@@ -14,7 +14,7 @@ HidHide - [https://vigem.org/projects/HidHide/](https://vigem.org/projects/HidHi
 
 ## Current Beta
 
-https://github.com/Ryochan7/SteamControllerTest/releases/tag/v0.0.5
+https://github.com/Ryochan7/SteamControllerTest/releases/tag/v0.0.7
 
 ## Screenshots
 
