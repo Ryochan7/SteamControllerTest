@@ -2814,6 +2814,28 @@ namespace SteamControllerTest
             }
             public event EventHandler DeadZoneChanged;
 
+            public double MaxZone
+            {
+                get => touchAbsAct.DeadMod.MaxZone;
+                set
+                {
+                    touchAbsAct.DeadMod.MaxZone = Math.Clamp(value, 0.0, 1.0);
+                    MaxZoneChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler MaxZoneChanged;
+
+            public double AntiRelease
+            {
+                get => touchAbsAct.AntiRelease;
+                set
+                {
+                    touchAbsAct.AntiRelease = Math.Clamp(value, 0.0, 1.0);
+                    AntiReleaseChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler AntiReleaseChanged;
+
             [JsonProperty("UseOuterRing")]
             public bool UseOuterRing
             {
@@ -2958,6 +2980,8 @@ namespace SteamControllerTest
             NameChanged += TouchpadAbsActionSerializer_NameChanged;
             RingBindingChanged += TouchpadAbsActionSerializer_RingBindingChanged;
             settings.DeadZoneChanged += Settings_DeadZoneChanged;
+            settings.MaxZoneChanged += Settings_MaxZoneChanged;
+            settings.AntiReleaseChanged += Settings_AntiReleaseChanged;
             settings.UseAsOuterRingChanged += Settings_UseAsOuterRingChanged;
             settings.UseOuterRingChanged += Settings_UseOuterRingChanged;
             settings.OuterRingDeadZoneChanged += Settings_OuterRingDeadZoneChanged;
@@ -2968,6 +2992,16 @@ namespace SteamControllerTest
             settings.HeightChanged += Settings_HeightChanged;
             settings.XCenterChanged += Settings_XCenterChanged;
             settings.YCenterChanged += Settings_YCenterChanged;
+        }
+
+        private void Settings_AntiReleaseChanged(object sender, EventArgs e)
+        {
+            touchAbsAct.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.ANTI_RELEASE);
+        }
+
+        private void Settings_MaxZoneChanged(object sender, EventArgs e)
+        {
+            touchAbsAct.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.MAX_ZONE);
         }
 
         private void Settings_OuterRingRangeChanged(object sender, EventArgs e)

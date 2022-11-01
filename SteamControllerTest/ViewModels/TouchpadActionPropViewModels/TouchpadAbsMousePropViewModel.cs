@@ -39,7 +39,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
         public string DeadZone
         {
-            get => action.DeadMod.DeadZone.ToString();
+            get => action.DeadMod.DeadZone.ToString("N2");
             set
             {
                 if (double.TryParse(value, out double temp))
@@ -51,6 +51,36 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
             }
         }
         public event EventHandler DeadZoneChanged;
+
+        public string MaxZone
+        {
+            get => action.DeadMod.MaxZone.ToString("N2");
+            set
+            {
+                if (double.TryParse(value, out double temp))
+                {
+                    action.DeadMod.MaxZone = Math.Clamp(temp, 0.0, 1.0);
+                    MaxZoneChanged?.Invoke(this, EventArgs.Empty);
+                    ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+        public event EventHandler MaxZoneChanged;
+
+        public string AntiRelease
+        {
+            get => action.AntiRelease.ToString("N2");
+            set
+            {
+                if (double.TryParse(value, out double temp))
+                {
+                    action.AntiRelease = Math.Clamp(temp, 0.0, 1.0);
+                    AntiReleaseChanged?.Invoke(this, EventArgs.Empty);
+                    ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+        public event EventHandler AntiReleaseChanged;
 
         public bool UseOuterRing
         {
@@ -154,6 +184,20 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler HighlightDeadZoneChanged;
 
+        public bool HighlightMaxZone
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadAbsAction.PropertyKeyStrings.MAX_ZONE);
+        }
+        public event EventHandler HighlightMaxZoneChanged;
+
+        public bool HighlightAntiRelease
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadAbsAction.PropertyKeyStrings.ANTI_RELEASE);
+        }
+        public event EventHandler HighlightAntiReleaseChanged;
+
         public bool HighlightUseOuterRing
         {
             get => action.ParentAction == null ||
@@ -224,11 +268,37 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
             NameChanged += TouchpadAbsMousePropViewModel_NameChanged;
             DeadZoneChanged += TouchpadAbsMousePropViewModel_DeadZoneChanged;
+            MaxZoneChanged += TouchpadAbsMousePropViewModel_MaxZoneChanged;
+            AntiReleaseChanged += TouchpadAbsMousePropViewModel_AntiReleaseChanged;
             UseOuterRingChanged += TouchpadAbsMousePropViewModel_UseOuterRingChanged;
             OuterRingInvertChanged += TouchpadAbsMousePropViewModel_OuterRingInvertChanged;
             OuterRingDeadZoneChanged += TouchpadAbsMousePropViewModel_OuterRingDeadZoneChanged;
             OuterRingRangeChoiceChanged += TouchpadAbsMousePropViewModel_OuterRingRangeChoiceChanged;
             SnapToCenterReleaseChanged += TouchpadAbsMousePropViewModel_SnapToCenterReleaseChanged;
+        }
+
+        private void TouchpadAbsMousePropViewModel_AntiReleaseChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(TouchpadAbsAction.PropertyKeyStrings.ANTI_RELEASE))
+            {
+                action.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.ANTI_RELEASE);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, TouchpadAbsAction.PropertyKeyStrings.ANTI_RELEASE);
+
+            HighlightAntiReleaseChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TouchpadAbsMousePropViewModel_MaxZoneChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(TouchpadAbsAction.PropertyKeyStrings.MAX_ZONE))
+            {
+                action.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.MAX_ZONE);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, TouchpadAbsAction.PropertyKeyStrings.MAX_ZONE);
+
+            HighlightMaxZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void TouchpadAbsMousePropViewModel_OuterRingRangeChoiceChanged(object sender, EventArgs e)
