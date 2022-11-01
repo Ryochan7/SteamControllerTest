@@ -2825,16 +2825,16 @@ namespace SteamControllerTest
             }
             public event EventHandler MaxZoneChanged;
 
-            public double AntiRelease
+            public double AntiRadius
             {
-                get => touchAbsAct.AntiRelease;
+                get => touchAbsAct.AntiRadius;
                 set
                 {
-                    touchAbsAct.AntiRelease = Math.Clamp(value, 0.0, 1.0);
-                    AntiReleaseChanged?.Invoke(this, EventArgs.Empty);
+                    touchAbsAct.AntiRadius = Math.Clamp(value, 0.0, 1.0);
+                    AntiRadiusChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
-            public event EventHandler AntiReleaseChanged;
+            public event EventHandler AntiRadiusChanged;
 
             [JsonProperty("UseOuterRing")]
             public bool UseOuterRing
@@ -2981,7 +2981,7 @@ namespace SteamControllerTest
             RingBindingChanged += TouchpadAbsActionSerializer_RingBindingChanged;
             settings.DeadZoneChanged += Settings_DeadZoneChanged;
             settings.MaxZoneChanged += Settings_MaxZoneChanged;
-            settings.AntiReleaseChanged += Settings_AntiReleaseChanged;
+            settings.AntiRadiusChanged += Settings_AntiReleaseChanged;
             settings.UseAsOuterRingChanged += Settings_UseAsOuterRingChanged;
             settings.UseOuterRingChanged += Settings_UseOuterRingChanged;
             settings.OuterRingDeadZoneChanged += Settings_OuterRingDeadZoneChanged;
@@ -2996,7 +2996,7 @@ namespace SteamControllerTest
 
         private void Settings_AntiReleaseChanged(object sender, EventArgs e)
         {
-            touchAbsAct.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.ANTI_RELEASE);
+            touchAbsAct.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.ANTI_RADIUS);
         }
 
         private void Settings_MaxZoneChanged(object sender, EventArgs e)

@@ -16,7 +16,7 @@ namespace SteamControllerTest.TouchpadActions
             public const string NAME = "Name";
             public const string DEAD_ZONE = "DeadZone";
             public const string MAX_ZONE = "MaxZone";
-            public const string ANTI_RELEASE = "AntiRelease";
+            public const string ANTI_RADIUS = "AntiRadius";
             public const string SNAP_TO_CENTER_RELEASE = "SnapToCenterRelease";
 
             public const string OUTER_RING_BUTTON = "OuterRingButton";
@@ -37,7 +37,7 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.NAME,
             PropertyKeyStrings.DEAD_ZONE,
             PropertyKeyStrings.MAX_ZONE,
-            PropertyKeyStrings.ANTI_RELEASE,
+            PropertyKeyStrings.ANTI_RADIUS,
             PropertyKeyStrings.SNAP_TO_CENTER_RELEASE,
             PropertyKeyStrings.OUTER_RING_BUTTON,
             PropertyKeyStrings.USE_OUTER_RING,
@@ -112,12 +112,12 @@ namespace SteamControllerTest.TouchpadActions
         private double yMotion;
         private double fuzzXNorm;
         private double fuzzYNorm;
-        private double antiRelease = 0.0;
+        private double antiRadius = 0.0;
 
-        public double AntiRelease
+        public double AntiRadius
         {
-            get => antiRelease;
-            set => antiRelease = value;
+            get => antiRadius;
+            set => antiRadius = value;
         }
 
         private bool snapToCenterRelease = true;
@@ -158,7 +158,7 @@ namespace SteamControllerTest.TouchpadActions
                 ycenter = 0.5,
             };
             outerRing = true;
-            antiRelease = 0.0;
+            antiRadius = 0.0;
         }
 
         public override void Prepare(Mapper mapper, ref TouchEventFrame touchFrame, bool alterState = true)
@@ -229,7 +229,7 @@ namespace SteamControllerTest.TouchpadActions
 
                 double outXRatio = xNorm, outYRatio = yNorm;
                 //double antiDead = 0.2;
-                double antiDead = antiRelease;
+                double antiDead = antiRadius;
 
                 // Find Release zone
                 if (antiDead != 0.0)
@@ -388,8 +388,8 @@ namespace SteamControllerTest.TouchpadActions
                         case PropertyKeyStrings.MAX_ZONE:
                             deadMod.MaxZone = tempAbsAction.deadMod.MaxZone;
                             break;
-                        case PropertyKeyStrings.ANTI_RELEASE:
-                            antiRelease = tempAbsAction.antiRelease;
+                        case PropertyKeyStrings.ANTI_RADIUS:
+                            antiRadius = tempAbsAction.antiRadius;
                             break;
                         case PropertyKeyStrings.OUTER_RING_BUTTON:
                             ringButton = tempAbsAction.ringButton;
@@ -460,8 +460,8 @@ namespace SteamControllerTest.TouchpadActions
                 case PropertyKeyStrings.MAX_ZONE:
                     deadMod.MaxZone = tempAbsAction.deadMod.MaxZone;
                     break;
-                case PropertyKeyStrings.ANTI_RELEASE:
-                    antiRelease = tempAbsAction.antiRelease;
+                case PropertyKeyStrings.ANTI_RADIUS:
+                    antiRadius = tempAbsAction.antiRadius;
                     break;
                 case PropertyKeyStrings.OUTER_RING_BUTTON:
                     ringButton = tempAbsAction.ringButton;
