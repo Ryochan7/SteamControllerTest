@@ -109,6 +109,9 @@ namespace SteamControllerTest
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
+            // Use all display space
+            appGlobal.PrepareAbsMonitorBounds(string.Empty);
+
             testThread = new Thread(() =>
             {
                 manager = new BackendManager(tempProfilePath, appGlobal);

@@ -25,6 +25,7 @@ using System.IO;
 using Newtonsoft.Json;
 using SteamControllerTest.GyroActions;
 using Nefarius.ViGEm.Client.Targets.DualShock4;
+using System.Windows;
 
 namespace SteamControllerTest
 {
@@ -1765,7 +1766,15 @@ namespace SteamControllerTest
 
                 if (absMouseSync)
                 {
-                    fakerInputHandler.MoveAbsoluteMouse(absMouseX, absMouseY);
+                    double outX = absMouseX, outY = absMouseY;
+                    if (!appGlobal.absUseAllMonitors)
+                    {
+                        double tempX = outX, tempY = outY;
+                        TranslateCoorToAbsDisplay(tempX, tempY, ref appGlobal.absDisplayBounds,
+                            ref appGlobal.fullDesktopBounds, out outX, out outY);
+                    }
+
+                    fakerInputHandler.MoveAbsoluteMouse(outX, outY);
                     absMouseSync = false;
                 }
 
@@ -4064,6 +4073,28 @@ namespace SteamControllerTest
 
             releasedMouseButtons.Clear();
             activeMouseButtons.Clear();
+        }
+
+        public void TranslateCoorToAbsDisplay(double inX, double inY,
+            ref Rect absDisplayBounds, ref Rect fullDesktopBounds,
+            out double outX, out double outY)
+        {
+            //outX = outY = 0.0;
+            //int topLeftX = (int)absDisplayBounds.Left;
+            //double testLeft = 0.0;
+            //double testRight = 0.0;
+            //double testTop = 0.0;
+            //double testBottom = 0.0;
+
+            double widthRatio = (absDisplayBounds.Left + absDisplayBounds.Right) / fullDesktopBounds.Width;
+            double heightRatio = (absDisplayBounds.Top + absDisplayBounds.Bottom) / fullDesktopBounds.Height;
+            double bX = absDisplayBounds.Left / fullDesktopBounds.Width;
+            double bY = absDisplayBounds.Top / fullDesktopBounds.Height;
+
+            outX = widthRatio * inX + bX;
+            outY = heightRatio * inY + bY;
+            //outX = (absDisplayBounds.TopRight.X - absDisplayBounds.TopLeft.X) * inX + absDisplayBounds.TopLeft.X;
+            //outY = (absDisplayBounds.BottomRight.Y - absDisplayBounds.TopLeft.Y) * inY + absDisplayBounds.TopLeft.Y;
         }
 
         public void RunEventFromRelative(OutputActionData actionData, bool pressed, double outputValue,

@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SteamControllerTest.SteamControllerLibrary;
+using static SteamControllerTest.Util;
+using System.Runtime.InteropServices;
+using WpfScreenHelper;
+using System.Windows;
 
 namespace SteamControllerTest
 {
@@ -65,6 +69,12 @@ namespace SteamControllerTest
         public const string ASSEMBLY_RESOURCE_PREFIX = "pack://application:,,,/SteamControllerTest;";
         public const string RESOURCES_PREFIX = "/SteamControllertest;component/Resources";
         public AppSettingsStore appSettings;
+
+        public Rect absDisplayBounds = new Rect(0, 0, 2, 2);
+        public Rect fullDesktopBounds = new Rect(0, 0, 2, 2);
+        //public Rect absDisplayBounds = new Rect(800, 0, 1024, 768);
+        //public Rect fullDesktopBounds = new Rect(0, 0, 3840, 2160);
+        public bool absUseAllMonitors = true;
 
         public AppGlobalData()
         {
@@ -602,6 +612,101 @@ namespace SteamControllerTest
                     break;
                 default:
                     break;
+            }
+
+            return result;
+        }
+
+        public void PrepareAbsMonitorBounds(string edid)
+        {
+            bool foundMonitor = false;
+            DISPLAY_DEVICE display = new DISPLAY_DEVICE();
+            if (!string.IsNullOrEmpty(edid))
+            {
+                foundMonitor = FindMonitorByEDID(edid, out display);
+            }
+
+            if (foundMonitor)
+            {
+                // Grab resolution of monitor and full desktop range.
+                // Establish abs region bounds
+                absUseAllMonitors = false;
+                fullDesktopBounds = SystemInformation.VirtualScreen;
+                List<Screen> tempScreens = Screen.AllScreens.ToList();
+                foreach (Screen tempScreen in tempScreens)
+                {
+                    if (tempScreen.DeviceName == display.DeviceName)
+                    {
+                        absDisplayBounds = tempScreen.Bounds;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                // Grab resolution of full desktop range.
+                // Establish abs region bounds
+                absUseAllMonitors = true;
+                fullDesktopBounds = SystemInformation.VirtualScreen;
+                absDisplayBounds = fullDesktopBounds;
+            }
+        }
+
+        public bool FindMonitorByEDID(string edid, out DISPLAY_DEVICE display)
+        {
+            DISPLAY_DEVICE d = new DISPLAY_DEVICE();
+            d.cb = Marshal.SizeOf(d);
+            bool foundMonitor = false;
+            try
+            {
+                for (uint id = 0;
+                    EnumDisplayDevicesW(null, id, ref d, 0); id++)
+                {
+                    if (d.StateFlags.HasFlag(DisplayDeviceStateFlags.AttachedToDesktop))
+                    {
+                        EnumDisplayDevicesW(d.DeviceName, id, ref d,
+                            EDD_GET_DEVICE_INTERFACE_NAME);
+                        if (d.DeviceID == edid)
+                        {
+                            foundMonitor = true;
+                            break;
+                        }
+                    }
+
+                    d.cb = Marshal.SizeOf(d);
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            display = foundMonitor ? d : new DISPLAY_DEVICE();
+            return foundMonitor;
+        }
+
+        public IEnumerable<DISPLAY_DEVICE> GrabCurrentMonitors()
+        {
+            List<DISPLAY_DEVICE> result = new List<DISPLAY_DEVICE>();
+
+            DISPLAY_DEVICE d = new DISPLAY_DEVICE();
+            d.cb = Marshal.SizeOf(d);
+            try
+            {
+                for (uint id = 0;
+                    EnumDisplayDevicesW(null, id, ref d, 0); id++)
+                {
+                    if (d.StateFlags.HasFlag(DisplayDeviceStateFlags.AttachedToDesktop))
+                    {
+                        EnumDisplayDevicesW(d.DeviceName, id, ref d,
+                            EDD_GET_DEVICE_INTERFACE_NAME);
+                        result.Add(d);
+                    }
+
+                    d.cb = Marshal.SizeOf(d);
+                }
+            }
+            catch (Exception)
+            {
             }
 
             return result;
