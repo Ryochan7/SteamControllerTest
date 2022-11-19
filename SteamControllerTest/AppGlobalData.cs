@@ -24,6 +24,7 @@ namespace SteamControllerTest
         public const string PROFILES_FOLDER_NAME = "Profiles";
         public const string LOGS_FOLDER_NAME = "Logs";
         public const string STEAM_CONTROLLER_PROFILE_DIR = "SteamController";
+        public const string DS4_PROFILE_DIR = "DualShock4";
         public const string SWITCH_PRO_PROFILE_DIR = "SwitchPro";
         public const string TEMPLATE_PROFILES_DIRNAME = "template_profiles";
 
@@ -100,6 +101,7 @@ namespace SteamControllerTest
                 Directory.CreateDirectory(appdatapath);
                 Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME));
                 Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, "SteamController"));
+                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, AppGlobalData.DS4_PROFILE_DIR));
                 Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, "SwitchPro"));
                 Directory.CreateDirectory(Path.Combine(appdatapath, LOGS_FOLDER_NAME));
             }
@@ -610,6 +612,9 @@ namespace SteamControllerTest
                 case InputDeviceType.SteamController:
                     result = Path.Combine(baseProfilesPath, STEAM_CONTROLLER_PROFILE_DIR);
                     break;
+                case InputDeviceType.DS4:
+                    result = Path.Combine(baseProfilesPath, DS4_PROFILE_DIR);
+                    break;
                 default:
                     break;
             }
@@ -730,6 +735,7 @@ namespace SteamControllerTest
         None,
         SteamController,
         SwitchPro,
+        DS4,
     }
 
     public static class AppGlobalDataSingleton
