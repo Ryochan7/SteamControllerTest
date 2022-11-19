@@ -210,6 +210,37 @@
                     </ListView.View>
                 </ListView>
             </TabItem>
+            <TabItem Header="DPads" Visibility="Collapsed">
+                <ListView ItemsSource="{Binding DPadBindings}" SelectedIndex="{Binding SelectDPadBindIndex}">
+                    <ListView.View>
+                        <GridView>
+                            <GridView.Columns>
+                                <GridViewColumn Header="Name" Width="100">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding DisplayInputMapString}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Width="160">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding MappedActionType}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Width="300">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit" Click="DPadActionEdit_Button_Click" Tag="{Binding}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView.Columns>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
             <TabItem Header="Gyros">
                 <ListView ItemsSource="{Binding GyroBindings}" SelectedIndex="{Binding SelectGyroBindIndex}">
                     <ListView.View>

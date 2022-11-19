@@ -14,6 +14,7 @@ using SteamControllerTest.TriggerActions;
 using SteamControllerTest.TouchpadActions;
 using SteamControllerTest.StickActions;
 using SteamControllerTest.GyroActions;
+using SteamControllerTest.DPadActions;
 
 namespace SteamControllerTest.ViewModels
 {
@@ -129,6 +130,22 @@ namespace SteamControllerTest.ViewModels
             }
         }
         public event EventHandler SelectGyroBindIndexChanged;
+
+        private List<DPadBindingItemsTest> dpadBindings = new List<DPadBindingItemsTest>();
+        public List<DPadBindingItemsTest> DPadBindings => dpadBindings;
+
+        private int selectDPadBindIndex = -1;
+        public int SelectDPadBindIndex
+        {
+            get => selectDPadBindIndex;
+            set
+            {
+                if (selectDPadBindIndex == value) return;
+                selectDPadBindIndex = value;
+                SelectDPadBindIndexChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SelectDPadBindIndexChanged;
 
 
         private ObservableCollection<ActionSetItemsTest> actionSetItems = new ObservableCollection<ActionSetItemsTest>();
@@ -355,6 +372,17 @@ namespace SteamControllerTest.ViewModels
                 {
                     StickBindingItemsTest tempItem = new StickBindingItemsTest(meta.id, meta.displayName, tempTrigAct, mapper);
                     stickBindings.Add(tempItem);
+                }
+            }
+
+            foreach (InputBindingMeta meta in
+                mapper.BindingList.Where((item) => item.controlType == InputBindingMeta.InputControlType.DPad))
+            {
+                if (tempProfile.CurrentActionSet.CurrentActionLayer.dpadActionDict.
+                        TryGetValue(meta.id, out DPadMapAction tempDPadAct))
+                {
+                    DPadBindingItemsTest tempItem = new DPadBindingItemsTest(meta.id, meta.displayName, tempDPadAct, mapper);
+                    dpadBindings.Add(tempItem);
                 }
             }
 
@@ -901,6 +929,61 @@ namespace SteamControllerTest.ViewModels
         }
 
         public void UpdateAction(StickMapAction action)
+        {
+            this.mappedAction = action;
+            RaiseUIUpdate();
+        }
+
+        private void RaiseUIUpdate()
+        {
+            MappedActionTypeChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    public class DPadBindingItemsTest
+    {
+        private string displayInputMapString;
+        public string DisplayInputMapString
+        {
+            get => displayInputMapString;
+        }
+
+        public string bindingName;
+        public string BindingName
+        {
+            get => bindingName;
+            //set => bindingName = value;
+        }
+        //public event EventHandler BindingNameChanged;
+
+        private DPadMapAction mappedAction;
+        public DPadMapAction MappedAction
+        {
+            get => mappedAction;
+        }
+
+        public string MappedActionType
+        {
+            get => mappedAction.ActionTypeName;
+        }
+        public event EventHandler MappedActionTypeChanged;
+
+        private Mapper mapper;
+        public Mapper Mapper
+        {
+            get => mapper;
+        }
+
+        public DPadBindingItemsTest(string bindingName, string displayInputMap,
+            MapAction mappedAction, Mapper mapper)
+        {
+            this.bindingName = bindingName;
+            this.displayInputMapString = displayInputMap;
+            this.mappedAction = mappedAction as DPadMapAction;
+            this.mapper = mapper;
+        }
+
+        public void UpdateAction(DPadMapAction action)
         {
             this.mappedAction = action;
             RaiseUIUpdate();

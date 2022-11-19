@@ -19,6 +19,7 @@ using SteamControllerTest.TriggerActions;
 using SteamControllerTest.TouchpadActions;
 using SteamControllerTest.StickActions;
 using SteamControllerTest.GyroActions;
+using SteamControllerTest.DPadActions;
 
 namespace SteamControllerTest
 {
@@ -251,6 +252,25 @@ namespace SteamControllerTest
                 stickBindEditWin.ShowDialog();
 
                 editorTestVM.StickBindings[selectedInd].UpdateAction(stickBindEditWin.StickBindEditVM.Action);
+            }
+        }
+
+        private void DPadActionEdit_Button_Click(object sender, RoutedEventArgs e)
+        {
+            //int selectedInd = editorTestVM.SelectStickBindIndex;
+            Control tempControl = sender as Control;
+            DPadBindingItemsTest tempItem = tempControl.Tag as DPadBindingItemsTest;
+            int selectedInd = editorTestVM.DPadBindings.IndexOf(tempItem);
+            if (selectedInd >= 0)
+            {
+                editorTestVM.SelectStickBindIndex = selectedInd;
+                DPadMapAction tempAction = editorTestVM.DPadBindings[selectedInd].MappedAction;
+                // TODO: FIX
+                DPadBindEditWindow dpadBindEditWin = new DPadBindEditWindow();
+                dpadBindEditWin.PostInit(editorTestVM.DeviceMapper, tempAction);
+                dpadBindEditWin.ShowDialog();
+
+                editorTestVM.DPadBindings[selectedInd].UpdateAction(dpadBindEditWin.DPadBindEditVM.Action);
             }
         }
 

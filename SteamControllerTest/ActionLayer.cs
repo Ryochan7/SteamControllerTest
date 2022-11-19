@@ -505,6 +505,53 @@ namespace SteamControllerTest
             reverseActionDict[action] = action.MappingId;
         }
 
+        public void ReplaceDPadAction(DPadMapAction oldAction, DPadMapAction action)
+        {
+            string mapId = oldAction.MappingId;
+            int ind = layerActions.FindIndex((item) => item == oldAction);
+            int mappedInd = -1;
+            if (ind >= 0)
+            {
+                DPadMapAction tempAction = layerActions[ind] as DPadMapAction;
+                layerActions.RemoveAt(ind);
+                layerActions.Insert(ind, action);
+
+                normalActionDict.Remove(mapId);
+                reverseActionDict.Remove(tempAction);
+
+                mappedInd = mappedActions.FindIndex((item) => (item == tempAction));
+                if (mappedInd != -1)
+                {
+                    mappedActions.RemoveAt(mappedInd);
+                    mappedActions.Insert(mappedInd, action);
+                }
+                else
+                {
+                    mappedActions.Add(action);
+                }
+            }
+            else
+            {
+                layerActions.Add(action);
+                mappedActions.Add(action);
+            }
+
+            dpadActionDict[mapId] = action;
+
+            normalActionDict.Add(mapId, action);
+            reverseActionDict.Add(action, mapId);
+        }
+
+        public void AddDPadAction(DPadMapAction action)
+        {
+            layerActions.Add(action);
+            //mappedActions.Add(action);
+            dpadActionDict[action.MappingId] = action;
+
+            normalActionDict[action.MappingId] = action;
+            reverseActionDict[action] = action.MappingId;
+        }
+
         public void ReplaceGyroAction(GyroMapAction oldAction, GyroMapAction action)
         {
             string mapId = oldAction.MappingId;
