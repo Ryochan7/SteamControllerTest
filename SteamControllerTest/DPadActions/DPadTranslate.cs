@@ -16,6 +16,8 @@ namespace SteamControllerTest.DPadActions
             public const string OUTPUT_PAD = "OutputDPad";
         }
 
+        public const string ACTION_TYPE_NAME = "DPadTranslateAction";
+
         private OutputActionData outputAction;
         public OutputActionData OutputAction
         {
@@ -26,6 +28,8 @@ namespace SteamControllerTest.DPadActions
         {
             outputAction =
                 new OutputActionData(OutputActionData.ActionType.GamepadControl, DPadActionCodes.DPad1);
+
+            actionTypeName = ACTION_TYPE_NAME;
         }
 
         public DPadTranslate(DPadTranslate parentAction)
@@ -39,11 +43,15 @@ namespace SteamControllerTest.DPadActions
                 parentAction.hasLayeredAction = true;
                 mappingId = parentAction.mappingId;
             }
+
+            actionTypeName = ACTION_TYPE_NAME;
         }
 
         public DPadTranslate(OutputActionData outputAction)
         {
             this.outputAction = outputAction;
+
+            actionTypeName = ACTION_TYPE_NAME;
         }
 
         public override void Prepare(Mapper mapper, DpadDirections value, bool alterState = true)

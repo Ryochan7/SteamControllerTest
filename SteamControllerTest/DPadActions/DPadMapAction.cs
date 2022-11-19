@@ -17,6 +17,11 @@ namespace SteamControllerTest.DPadActions
         public abstract void Prepare(Mapper mapper, DpadDirections value, bool alterState = true);
 
         public abstract DPadMapAction DuplicateAction();
+
+        public void CopyBaseMapProps(DPadMapAction sourceAction)
+        {
+            mappingId = sourceAction.mappingId;
+        }
         public virtual void SoftCopyFromParent(DPadMapAction parentAction)
         {
         }

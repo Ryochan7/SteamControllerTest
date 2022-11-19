@@ -9,12 +9,17 @@ namespace SteamControllerTest.DPadActions
 {
     public class DPadNoAction : DPadMapAction
     {
+        public const string ACTION_TYPE_NAME = "DPadNoAction";
+
         public DPadNoAction()
         {
+            actionTypeName = ACTION_TYPE_NAME;
         }
 
         public DPadNoAction(DPadNoAction parentAction)
         {
+            actionTypeName = ACTION_TYPE_NAME;
+
             if (parentAction != null)
             {
                 this.parentAction = parentAction;

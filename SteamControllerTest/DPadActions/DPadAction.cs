@@ -52,6 +52,8 @@ namespace SteamControllerTest.DPadActions
             FourWayDiagonal,
         }
 
+        public const string ACTION_TYPE_NAME = "DPadAction";
+
         // Cardinal direction codes. Use 0 for Centered and intermediate diagonals
         private int[] eventCodes = new int[9]
         {
@@ -88,6 +90,7 @@ namespace SteamControllerTest.DPadActions
 
         private bool useParentData;
         private bool[] useParentDataDraft2 = new bool[13];
+        public bool[] UsingParentActionButton => useParentDataDraft2;
         private bool useParentDelay;
 
         private double delayTime;
@@ -101,6 +104,11 @@ namespace SteamControllerTest.DPadActions
 
         public DPadAction()
         {
+            usedEventList = eventCodes4;
+
+            actionTypeName = ACTION_TYPE_NAME;
+
+            FillDirectionButtons();
             usedEventList = eventCodes4;
         }
 
@@ -128,6 +136,20 @@ namespace SteamControllerTest.DPadActions
             else
             {
                 usedEventList = eventCodes4;
+            }
+
+            actionTypeName = ACTION_TYPE_NAME;
+        }
+
+        private void FillDirectionButtons()
+        {
+            for (int i = 0; i < eventCodes4.Length; i++)
+            {
+                //if (tempDir != AxisDirButton.AxisDirection.None)
+                {
+                    ButtonAction tempBtn = new ButtonAction();
+                    eventCodes4[i] = tempBtn;
+                }
             }
         }
 
