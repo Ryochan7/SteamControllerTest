@@ -271,6 +271,15 @@ namespace SteamControllerTest
             get => bindingDict;
         }
 
+        protected Dictionary<string, StickDefinition> knownStickDefinitions =
+            new Dictionary<string, StickDefinition>();
+        protected Dictionary<string, TriggerDefinition> knownTriggerDefinitions =
+            new Dictionary<string, TriggerDefinition>();
+        protected Dictionary<string, TouchpadDefinition> knownTouchpadDefinitions =
+            new Dictionary<string, TouchpadDefinition>();
+        protected Dictionary<string, GyroSensDefinition> knownGyroSensDefinitions =
+            new Dictionary<string, GyroSensDefinition>();
+
         private string profileFile;
         public string ProfileFile
         {
@@ -471,6 +480,13 @@ namespace SteamControllerTest
                 accelMaxLeanZ = 16384,
             };
 
+            knownStickDefinitions.Add("Stick", lsDefintion);
+            knownTriggerDefinitions.Add("LT", leftTriggerDefinition);
+            knownTriggerDefinitions.Add("RT", rightTriggerDefinition);
+            knownTouchpadDefinitions.Add("LeftTouchpad", leftPadDefiniton);
+            knownTouchpadDefinitions.Add("RightTouchpad", rightPadDefinition);
+            knownGyroSensDefinitions.Add("Gyro", gyroSensDefinition);
+
             //ReadFromProfile();
 
             /*CycleButton testCycle = new CycleButton("Weapon Cycle");
@@ -580,25 +596,26 @@ namespace SteamControllerTest
                                     layer.dpadActionDict.Add(tempMeta.Key, dpadNoAction);
                                     break;
                                 case InputBindingMeta.InputControlType.Stick:
-                                    StickNoAction stickNoAct = new StickNoAction();
-                                    stickNoAct.MappingId = tempMeta.Key;
-                                    if (tempMeta.Key == "Stick")
                                     {
-                                        stickNoAct.StickDefinition = lsDefintion;
+                                        StickNoAction stickNoAct = new StickNoAction();
+                                        stickNoAct.MappingId = tempMeta.Key;
+                                        if (knownStickDefinitions.TryGetValue(tempMeta.Key,
+                                                out StickDefinition tempDef))
+                                        {
+                                            stickNoAct.StickDefinition = tempDef;
+                                        }
+                                        layer.stickActionDict.Add(tempMeta.Key, stickNoAct);
                                     }
-                                    layer.stickActionDict.Add(tempMeta.Key, stickNoAct);
+
                                     break;
                                 case InputBindingMeta.InputControlType.Trigger:
                                     {
                                         TriggerNoAction trigNoAct = new TriggerNoAction();
                                         trigNoAct.MappingId = tempMeta.Key;
-                                        if (tempMeta.Key == "LT")
+                                        if (knownTriggerDefinitions.TryGetValue(tempMeta.Key,
+                                            out TriggerDefinition tempDef))
                                         {
-                                            trigNoAct.TriggerDef = leftTriggerDefinition;
-                                        }
-                                        else if (tempMeta.Key == "RT")
-                                        {
-                                            trigNoAct.TriggerDef = rightTriggerDefinition;
+                                            trigNoAct.TriggerDef = tempDef;
                                         }
                                         layer.triggerActionDict.Add(tempMeta.Key, trigNoAct);
                                     }
@@ -608,23 +625,27 @@ namespace SteamControllerTest
                                     {
                                         TouchpadNoAction touchNoAct = new TouchpadNoAction();
                                         touchNoAct.MappingId = tempMeta.Key;
-                                        if (tempMeta.Key == "LeftTouchpad")
+                                        if (knownTouchpadDefinitions.TryGetValue(tempMeta.Key,
+                                            out TouchpadDefinition tempDef))
                                         {
-                                            touchNoAct.TouchDefinition = leftPadDefiniton;
-                                        }
-                                        else if (tempMeta.Key == "RightTouchpad")
-                                        {
-                                            touchNoAct.TouchDefinition = rightPadDefinition;
+                                            touchNoAct.TouchDefinition = tempDef;
                                         }
                                         layer.touchpadActionDict.Add(tempMeta.Key, touchNoAct);
                                     }
 
                                     break;
                                 case InputBindingMeta.InputControlType.Gyro:
-                                    GyroNoMapAction gyroNoMapAct = new GyroNoMapAction();
-                                    gyroNoMapAct.MappingId = tempMeta.Key;
-                                    gyroNoMapAct.GyroSensDefinition = gyroSensDefinition;
-                                    layer.gyroActionDict.Add(tempMeta.Key, gyroNoMapAct);
+                                    {
+                                        GyroNoMapAction gyroNoMapAct = new GyroNoMapAction();
+                                        gyroNoMapAct.MappingId = tempMeta.Key;
+                                        if (knownGyroSensDefinitions.TryGetValue(tempMeta.Key,
+                                                out GyroSensDefinition tempDef))
+                                        {
+                                            gyroNoMapAct.GyroSensDefinition = tempDef;
+                                        }
+                                        layer.gyroActionDict.Add(tempMeta.Key, gyroNoMapAct);
+                                    }
+
                                     break;
                                 default:
                                     break;
@@ -708,9 +729,10 @@ namespace SteamControllerTest
                                             if (tempAction is StickMapAction)
                                             {
                                                 StickMapAction tempStickAction = tempAction as StickMapAction;
-                                                if (tempBind.id == "Stick")
+                                                if (knownStickDefinitions.TryGetValue(tempBind.id,
+                                                    out StickDefinition tempDef))
                                                 {
-                                                    tempStickAction.StickDefinition = lsDefintion;
+                                                    tempStickAction.StickDefinition = tempDef;
                                                 }
 
                                                 //tempAction.DefaultUnbound = false;
@@ -729,13 +751,9 @@ namespace SteamControllerTest
                                             if (tempAction is TriggerMapAction)
                                             {
                                                 TriggerMapAction triggerAct = tempAction as TriggerMapAction;
-                                                if (tempBind.id == "LT")
+                                                if (knownTriggerDefinitions.TryGetValue(tempBind.id, out TriggerDefinition tempDef))
                                                 {
-                                                    triggerAct.TriggerDef = leftTriggerDefinition;
-                                                }
-                                                else if (tempBind.id == "RT")
-                                                {
-                                                    triggerAct.TriggerDef = rightTriggerDefinition;
+                                                    triggerAct.TriggerDef = tempDef;
                                                 }
 
                                                 //tempAction.DefaultUnbound = false;
@@ -753,13 +771,9 @@ namespace SteamControllerTest
                                             if (tempAction is TouchpadMapAction)
                                             {
                                                 TouchpadMapAction touchAct = tempAction as TouchpadMapAction;
-                                                if (tempBind.id == "LeftTouchpad")
+                                                if (knownTouchpadDefinitions.TryGetValue(tempBind.id, out TouchpadDefinition tempDef))
                                                 {
-                                                    touchAct.TouchDefinition = leftPadDefiniton;
-                                                }
-                                                else if (tempBind.id == "RightTouchpad")
-                                                {
-                                                    touchAct.TouchDefinition = rightPadDefinition;
+                                                    touchAct.TouchDefinition = tempDef;
                                                 }
 
                                                 //tempAction.DefaultUnbound = false;
@@ -780,8 +794,9 @@ namespace SteamControllerTest
                                             {
                                                 GyroMapAction gyroAction = tempAction as GyroMapAction;
                                                 //if (tempBind.id == "Gyro")
+                                                if (knownGyroSensDefinitions.TryGetValue(tempBind.id, out GyroSensDefinition tempDef))
                                                 {
-                                                    gyroAction.GyroSensDefinition = gyroSensDefinition;
+                                                    gyroAction.GyroSensDefinition = tempDef;
                                                 }
 
                                                 //tempAction.DefaultUnbound = false;
@@ -890,25 +905,24 @@ namespace SteamControllerTest
                                     layer.dpadActionDict.Add(tempMeta.Key, dpadNoAction);
                                     break;
                                 case InputBindingMeta.InputControlType.Stick:
-                                    StickNoAction stickNoAct = new StickNoAction();
-                                    stickNoAct.MappingId = tempMeta.Key;
-                                    if (tempMeta.Key == "Stick")
                                     {
-                                        stickNoAct.StickDefinition = lsDefintion;
+                                        StickNoAction stickNoAct = new StickNoAction();
+                                        stickNoAct.MappingId = tempMeta.Key;
+                                        if (knownStickDefinitions.TryGetValue(tempMeta.Key, out StickDefinition tempDef))
+                                        {
+                                            stickNoAct.StickDefinition = tempDef;
+                                        }
+                                        layer.stickActionDict.Add(tempMeta.Key, stickNoAct);
                                     }
-                                    layer.stickActionDict.Add(tempMeta.Key, stickNoAct);
+
                                     break;
                                 case InputBindingMeta.InputControlType.Trigger:
                                     {
                                         TriggerNoAction trigNoAct = new TriggerNoAction();
                                         trigNoAct.MappingId = tempMeta.Key;
-                                        if (tempMeta.Key == "LT")
+                                        if (knownTriggerDefinitions.TryGetValue(tempMeta.Key, out TriggerDefinition tempDef))
                                         {
-                                            trigNoAct.TriggerDef = leftTriggerDefinition;
-                                        }
-                                        else if (tempMeta.Key == "RT")
-                                        {
-                                            trigNoAct.TriggerDef = rightTriggerDefinition;
+                                            trigNoAct.TriggerDef = tempDef;
                                         }
                                         layer.triggerActionDict.Add(tempMeta.Key, trigNoAct);
                                     }
@@ -918,23 +932,26 @@ namespace SteamControllerTest
                                     {
                                         TouchpadNoAction touchNoAct = new TouchpadNoAction();
                                         touchNoAct.MappingId = tempMeta.Key;
-                                        if (tempMeta.Key == "LeftTouchpad")
+                                        if (knownTouchpadDefinitions.TryGetValue(tempMeta.Key, out TouchpadDefinition tempDef))
                                         {
-                                            touchNoAct.TouchDefinition = leftPadDefiniton;
-                                        }
-                                        else if (tempMeta.Key == "RightTouchpad")
-                                        {
-                                            touchNoAct.TouchDefinition = rightPadDefinition;
+                                            touchNoAct.TouchDefinition = tempDef;
                                         }
                                         layer.touchpadActionDict.Add(tempMeta.Key, touchNoAct);
                                     }
 
                                     break;
                                 case InputBindingMeta.InputControlType.Gyro:
-                                    GyroNoMapAction gyroNoMapAct = new GyroNoMapAction();
-                                    gyroNoMapAct.MappingId = tempMeta.Key;
-                                    gyroNoMapAct.GyroSensDefinition = gyroSensDefinition;
-                                    layer.gyroActionDict.Add(tempMeta.Key, gyroNoMapAct);
+                                    {
+                                        GyroNoMapAction gyroNoMapAct = new GyroNoMapAction();
+                                        gyroNoMapAct.MappingId = tempMeta.Key;
+                                        if (knownGyroSensDefinitions.TryGetValue(tempMeta.Key, out GyroSensDefinition tempDef))
+                                        {
+                                            gyroNoMapAct.GyroSensDefinition = tempDef;
+                                        }
+
+                                        layer.gyroActionDict.Add(tempMeta.Key, gyroNoMapAct);
+                                    }
+
                                     break;
                                 default:
                                     break;
@@ -1018,9 +1035,9 @@ namespace SteamControllerTest
                                             if (tempAction is StickMapAction)
                                             {
                                                 StickMapAction tempStickAction = tempAction as StickMapAction;
-                                                if (tempBind.id == "Stick")
+                                                if (knownStickDefinitions.TryGetValue(tempBind.id, out StickDefinition tempDef))
                                                 {
-                                                    tempStickAction.StickDefinition = lsDefintion;
+                                                    tempStickAction.StickDefinition = tempDef;
                                                 }
 
                                                 //tempAction.DefaultUnbound = false;
@@ -1039,13 +1056,9 @@ namespace SteamControllerTest
                                             if (tempAction is TriggerMapAction)
                                             {
                                                 TriggerMapAction triggerAct = tempAction as TriggerMapAction;
-                                                if (tempBind.id == "LT")
+                                                if (knownTriggerDefinitions.TryGetValue(tempBind.id, out TriggerDefinition tempDef))
                                                 {
-                                                    triggerAct.TriggerDef = leftTriggerDefinition;
-                                                }
-                                                else if (tempBind.id == "RT")
-                                                {
-                                                    triggerAct.TriggerDef = rightTriggerDefinition;
+                                                    triggerAct.TriggerDef = tempDef;
                                                 }
 
                                                 //tempAction.DefaultUnbound = false;
@@ -1063,13 +1076,9 @@ namespace SteamControllerTest
                                             if (tempAction is TouchpadMapAction)
                                             {
                                                 TouchpadMapAction touchAct = tempAction as TouchpadMapAction;
-                                                if (tempBind.id == "LeftTouchpad")
+                                                if (knownTouchpadDefinitions.TryGetValue(tempBind.id, out TouchpadDefinition tempDef))
                                                 {
-                                                    touchAct.TouchDefinition = leftPadDefiniton;
-                                                }
-                                                else if (tempBind.id == "RightTouchpad")
-                                                {
-                                                    touchAct.TouchDefinition = rightPadDefinition;
+                                                    touchAct.TouchDefinition = tempDef;
                                                 }
 
                                                 //tempAction.DefaultUnbound = false;
@@ -1090,8 +1099,9 @@ namespace SteamControllerTest
                                             {
                                                 GyroMapAction gyroAction = tempAction as GyroMapAction;
                                                 //if (tempBind.id == "Gyro")
+                                                if (knownGyroSensDefinitions.TryGetValue(tempBind.id, out GyroSensDefinition tempDef))
                                                 {
-                                                    gyroAction.GyroSensDefinition = gyroSensDefinition;
+                                                    gyroAction.GyroSensDefinition = tempDef;
                                                 }
 
                                                 //tempAction.DefaultUnbound = false;
@@ -1176,25 +1186,24 @@ namespace SteamControllerTest
                         layer.dpadActionDict.Add(tempMeta.Key, dpadNoAction);
                         break;
                     case InputBindingMeta.InputControlType.Stick:
-                        StickNoAction stickNoAct = new StickNoAction();
-                        stickNoAct.MappingId = tempMeta.Key;
-                        if (tempMeta.Key == "Stick")
                         {
-                            stickNoAct.StickDefinition = lsDefintion;
+                            StickNoAction stickNoAct = new StickNoAction();
+                            stickNoAct.MappingId = tempMeta.Key;
+                            if (knownStickDefinitions.TryGetValue(tempMeta.Key, out StickDefinition tempDef))
+                            {
+                                stickNoAct.StickDefinition = tempDef;
+                            }
+                            layer.stickActionDict.Add(tempMeta.Key, stickNoAct);
                         }
-                        layer.stickActionDict.Add(tempMeta.Key, stickNoAct);
+
                         break;
                     case InputBindingMeta.InputControlType.Trigger:
                         {
                             TriggerNoAction trigNoAct = new TriggerNoAction();
                             trigNoAct.MappingId = tempMeta.Key;
-                            if (tempMeta.Key == "LT")
+                            if (knownTriggerDefinitions.TryGetValue(tempMeta.Key, out TriggerDefinition tempDef))
                             {
-                                trigNoAct.TriggerDef = leftTriggerDefinition;
-                            }
-                            else if (tempMeta.Key == "RT")
-                            {
-                                trigNoAct.TriggerDef = rightTriggerDefinition;
+                                trigNoAct.TriggerDef = tempDef;
                             }
                             layer.triggerActionDict.Add(tempMeta.Key, trigNoAct);
                         }
@@ -1204,23 +1213,26 @@ namespace SteamControllerTest
                         {
                             TouchpadNoAction touchNoAct = new TouchpadNoAction();
                             touchNoAct.MappingId = tempMeta.Key;
-                            if (tempMeta.Key == "LeftTouchpad")
+                            if (knownTouchpadDefinitions.TryGetValue(tempMeta.Key, out TouchpadDefinition tempDef))
                             {
-                                touchNoAct.TouchDefinition = leftPadDefiniton;
-                            }
-                            else if (tempMeta.Key == "RightTouchpad")
-                            {
-                                touchNoAct.TouchDefinition = rightPadDefinition;
+                                touchNoAct.TouchDefinition = tempDef;
                             }
                             layer.touchpadActionDict.Add(tempMeta.Key, touchNoAct);
                         }
 
                         break;
                     case InputBindingMeta.InputControlType.Gyro:
-                        GyroNoMapAction gyroNoMapAct = new GyroNoMapAction();
-                        gyroNoMapAct.MappingId = tempMeta.Key;
-                        gyroNoMapAct.GyroSensDefinition = gyroSensDefinition;
-                        layer.gyroActionDict.Add(tempMeta.Key, gyroNoMapAct);
+                        {
+                            GyroNoMapAction gyroNoMapAct = new GyroNoMapAction();
+                            gyroNoMapAct.MappingId = tempMeta.Key;
+                            if (knownGyroSensDefinitions.TryGetValue(tempMeta.Key, out GyroSensDefinition tempDef))
+                            {
+                                gyroNoMapAct.GyroSensDefinition = tempDef;
+                            }
+
+                            layer.gyroActionDict.Add(tempMeta.Key, gyroNoMapAct);
+                        }
+
                         break;
                     default:
                         break;
@@ -1326,6 +1338,31 @@ namespace SteamControllerTest
 
                 // Check for current output controller and check for desired vibration
                 // status
+                if (outputController != null)
+                {
+                    if (actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
+                        outputControlType == OutputContType.Xbox360 &&
+                        outputForceFeedbackDel == null)
+                    {
+                        Thread.Sleep(100);
+                        EstablishForceFeedback();
+                        if (outputForceFeedbackDel != null)
+                        {
+                            (outputController as IXbox360Controller).FeedbackReceived += outputForceFeedbackDel;
+                        }
+
+                    }
+                    else if (!actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
+                        outputControlType == OutputContType.Xbox360 &&
+                        outputForceFeedbackDel != null)
+                    {
+                        (outputController as IXbox360Controller).FeedbackReceived -= outputForceFeedbackDel;
+                        outputForceFeedbackDel = null;
+                    }
+                }
+
+                // Check for current output controller and check for desired vibration
+                // status
                 //if (outputController != null)
                 //{
                 //    if (actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
@@ -1368,6 +1405,19 @@ namespace SteamControllerTest
                 //        //ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                 //    });
                 //Trace.WriteLine(tempOutJson);
+            }
+        }
+
+        public void EstablishForceFeedback()
+        {
+            if (outputControlType == OutputContType.Xbox360)
+            {
+                outputForceFeedbackDel = (sender, e) =>
+                {
+                    device.currentLeftAmpRatio = e.LargeMotor / 255.0;
+                    device.currentRightAmpRatio = e.SmallMotor / 255.0;
+                    reader.WriteRumbleReport();
+                };
             }
         }
 
