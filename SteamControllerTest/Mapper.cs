@@ -237,29 +237,7 @@ namespace SteamControllerTest
 
         public event EventHandler<RequestOSDArgs> RequestOSD;
 
-        private List<InputBindingMeta> bindingList = new List<InputBindingMeta>()
-        {
-            new InputBindingMeta("A", "A", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("B", "B", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("X", "X", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("Y", "Y", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("Back", "Back", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("Start", "Start", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("LShoulder", "Left Shoulder", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("RShoulder", "Right Shoulder", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("LSClick", "Stick Click", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("LeftGrip", "Left Grip", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("RightGrip", "Right Grip", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("LT", "Left Trigger", InputBindingMeta.InputControlType.Trigger),
-            new InputBindingMeta("RT", "Right Trigger", InputBindingMeta.InputControlType.Trigger),
-            new InputBindingMeta("Steam", "Steam", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("Stick", "Stick", InputBindingMeta.InputControlType.Stick),
-            new InputBindingMeta("LeftTouchpad", "Left Touchpad", InputBindingMeta.InputControlType.Touchpad),
-            new InputBindingMeta("RightTouchpad", "Right Touchpad", InputBindingMeta.InputControlType.Touchpad),
-            new InputBindingMeta("LeftPadClick", "Left Pad Click", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("RightPadClick", "Right Pad Click", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("Gyro", "Gyro", InputBindingMeta.InputControlType.Gyro),
-        };
+        protected List<InputBindingMeta> bindingList = new List<InputBindingMeta>();
         public List<InputBindingMeta> BindingList
         {
             get => bindingList;
@@ -375,6 +353,30 @@ namespace SteamControllerTest
             this.appGlobal = appGlobal;
             this.profileFile = profileFile;
             this.device = device;
+
+            bindingList = new List<InputBindingMeta>()
+            {
+                new InputBindingMeta("A", "A", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("B", "B", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("X", "X", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("Y", "Y", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("Back", "Back", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("Start", "Start", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("LShoulder", "Left Shoulder", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("RShoulder", "Right Shoulder", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("LSClick", "Stick Click", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("LeftGrip", "Left Grip", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("RightGrip", "Right Grip", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("LT", "Left Trigger", InputBindingMeta.InputControlType.Trigger),
+            new InputBindingMeta("RT", "Right Trigger", InputBindingMeta.InputControlType.Trigger),
+            new InputBindingMeta("Steam", "Steam", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("Stick", "Stick", InputBindingMeta.InputControlType.Stick),
+            new InputBindingMeta("LeftTouchpad", "Left Touchpad", InputBindingMeta.InputControlType.Touchpad),
+            new InputBindingMeta("RightTouchpad", "Right Touchpad", InputBindingMeta.InputControlType.Touchpad),
+            new InputBindingMeta("LeftPadClick", "Left Pad Click", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("RightPadClick", "Right Pad Click", InputBindingMeta.InputControlType.Button),
+            new InputBindingMeta("Gyro", "Gyro", InputBindingMeta.InputControlType.Gyro),
+            };
 
             // Populate Input Binding dictionary
             bindingList.ForEach((item) => bindingDict.Add(item.id, item));
