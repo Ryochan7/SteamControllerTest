@@ -31,8 +31,8 @@ namespace SteamControllerTest
         public void Refresh()
         {
             profileListCol.Clear();
-            string[] profiles = Directory.GetFiles(Path.Combine(AppGlobalDataSingleton.Instance.baseProfilesPath,
-                AppGlobalData.STEAM_CONTROLLER_PROFILE_DIR));
+            string[] profiles =
+                Directory.GetFiles(AppGlobalDataSingleton.Instance.GetDeviceProfileFolderLocation(inputDeviceType));
             foreach (string s in profiles)
             {
                 if (s.EndsWith(".json"))
