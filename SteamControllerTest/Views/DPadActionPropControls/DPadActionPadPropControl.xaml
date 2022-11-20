@@ -29,6 +29,21 @@
                 </TextBox>
             </StackPanel>
 
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="DPad Mode" />
+                <ComboBox ItemsSource="{Binding PadModeItems}" SelectedIndex="{Binding SelectedPadModeIndex}" DisplayMemberPath="DisplayName" Width="200" Margin="8,0,0,0">
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightPadMode}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
+                </ComboBox>
+            </StackPanel>
+
 
             <StackPanel Orientation="Horizontal" MinHeight="80" Margin="0,8,0,0">
                 <Label Content="Bindings" />
@@ -96,6 +111,21 @@
 
                 </Grid>
 
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="Delay" />
+                <TextBox Text="{Binding DelayTime, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightDelayTime}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
             </StackPanel>
 
         </StackPanel>

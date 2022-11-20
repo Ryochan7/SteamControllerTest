@@ -234,6 +234,10 @@ namespace SteamControllerTest
                 get => actionDirName;
                 set => actionDirName = value;
             }
+            public bool ShouldSerializeActionDirName()
+            {
+                return !string.IsNullOrEmpty(actionDirName);
+            }
 
             private List<ActionFuncSerializer> actionFuncSerializers =
                 new List<ActionFuncSerializer>();
@@ -275,6 +279,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler DelayTimeChanged;
+            public bool ShouldSerializeDelayTime()
+            {
+                return padAction.DelayTime != 0.0;
+            }
 
             public DpadPadActionSettings(DPadActions.DPadAction padAction)
             {

@@ -37,6 +37,38 @@ namespace SteamControllerTest.ViewModels.DPadActionPropViewModels
         }
         public event EventHandler NameChanged;
 
+        private List<PadModeItem> padModeItems;
+        public List<PadModeItem> PadModeItems => padModeItems;
+
+        private int selectedPadModeIndex = -1;
+        public int SelectedPadModeIndex
+        {
+            get => selectedPadModeIndex;
+            set
+            {
+                if (selectedPadModeIndex == value) return;
+                selectedPadModeIndex = value;
+                SelectedPadModeIndexChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SelectedPadModeIndexChanged;
+
+        public bool ShowDiagonalPad
+        {
+            get => action.CurrentMode == DPadAction.DPadMode.EightWay ||
+                action.CurrentMode == DPadAction.DPadMode.FourWayDiagonal;
+        }
+        public event EventHandler ShowDiagonalPadChanged;
+
+        public bool ShowCardinalPad
+        {
+            get => action.CurrentMode == DPadAction.DPadMode.Standard ||
+                action.CurrentMode == DPadAction.DPadMode.EightWay ||
+                action.CurrentMode == DPadAction.DPadMode.FourWayCardinal;
+        }
+        public event EventHandler ShowCardinalPadChanged;
+
 
         public string ActionUpBtnDisplayBind
         {
@@ -78,13 +110,42 @@ namespace SteamControllerTest.ViewModels.DPadActionPropViewModels
             get => action.EventCodes4[(int)DpadDirections.DownRight].DescribeActions(mapper);
         }
 
+        public string DelayTime
+        {
+            get => action.DelayTime.ToString("N2");
+            set
+            {
+                if (double.TryParse(value, out double temp))
+                {
+                    if (action.DelayTime == temp) return;
+                    action.DelayTime = Math.Clamp(temp, 0.0, 3600.0);
+                    DelayTimeChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+        public event EventHandler DelayTimeChanged;
+
 
         public bool HighlightName
         {
             get => action.ParentAction == null ||
-                action.ChangedProperties.Contains(DPadTranslate.PropertyKeyStrings.NAME);
+                action.ChangedProperties.Contains(DPadAction.PropertyKeyStrings.NAME);
         }
         public event EventHandler HighlightNameChanged;
+
+        public bool HighlightPadMode
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(DPadAction.PropertyKeyStrings.PAD_MODE);
+        }
+        public event EventHandler HighlightPadModeChanged;
+
+        public bool HighlightDelayTime
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(DPadAction.PropertyKeyStrings.DELAY_TIME);
+        }
+        public event EventHandler HighlightDelayTimeChanged;
 
         public event EventHandler ActionPropertyChanged;
         public event EventHandler<DPadMapAction> ActionChanged;
@@ -95,6 +156,7 @@ namespace SteamControllerTest.ViewModels.DPadActionPropViewModels
         {
             this.mapper = mapper;
             this.action = action as DPadAction;
+            padModeItems = new List<PadModeItem>();
             usingRealAction = true;
 
             // Check if base ActionLayer action from composite layer
@@ -121,6 +183,20 @@ namespace SteamControllerTest.ViewModels.DPadActionPropViewModels
             PrepareModel();
 
             NameChanged += DPadActionPropViewModel_NameChanged;
+            SelectedPadModeIndexChanged += ChangeDPadMode;
+            SelectedPadModeIndexChanged += StickPadActionPropViewModel_SelectedPadModeIndexChanged;
+            DelayTimeChanged += DPadActionPadPropViewModel_DelayTimeChanged;
+        }
+
+        private void DPadActionPadPropViewModel_DelayTimeChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(DPadAction.PropertyKeyStrings.DELAY_TIME))
+            {
+                action.ChangedProperties.Add(DPadAction.PropertyKeyStrings.DELAY_TIME);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, DPadAction.PropertyKeyStrings.DELAY_TIME);
+            HighlightNameChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void DPadActionPropViewModel_NameChanged(object sender, EventArgs e)
@@ -132,6 +208,25 @@ namespace SteamControllerTest.ViewModels.DPadActionPropViewModels
 
             action.RaiseNotifyPropertyChange(mapper, DPadAction.PropertyKeyStrings.NAME);
             HighlightNameChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ChangeDPadMode(object sender, EventArgs e)
+        {
+            action.CurrentMode = padModeItems[selectedPadModeIndex].DPadMode;
+
+            ShowCardinalPadChanged?.Invoke(this, EventArgs.Empty);
+            ShowDiagonalPadChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void StickPadActionPropViewModel_SelectedPadModeIndexChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(DPadAction.PropertyKeyStrings.PAD_MODE))
+            {
+                action.ChangedProperties.Add(DPadAction.PropertyKeyStrings.PAD_MODE);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, DPadAction.PropertyKeyStrings.PAD_MODE);
+            HighlightPadModeChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void ReplaceExistingLayerAction(object sender, EventArgs e)
@@ -169,7 +264,19 @@ namespace SteamControllerTest.ViewModels.DPadActionPropViewModels
 
         private void PrepareModel()
         {
+            padModeItems.AddRange(new PadModeItem[]
+            {
+                new PadModeItem("Standard", DPadAction.DPadMode.Standard),
+                new PadModeItem("Eight Way", DPadAction.DPadMode.EightWay),
+                new PadModeItem("Four Way Cardinal", DPadAction.DPadMode.FourWayCardinal),
+                new PadModeItem("Four Way Diagonal", DPadAction.DPadMode.FourWayDiagonal),
+            });
 
+            int index = padModeItems.FindIndex((item) => item.DPadMode == action.CurrentMode);
+            if (index >= 0)
+            {
+                selectedPadModeIndex = index;
+            }
         }
 
         public void UpdateUpDirAction(ButtonAction oldAction, ButtonAction newAction)
@@ -331,6 +438,34 @@ namespace SteamControllerTest.ViewModels.DPadActionPropViewModels
             });
 
             resetEvent.Wait();
+        }
+    }
+
+    public class PadModeItem
+    {
+        private string displayName;
+        public string DisplayName
+        {
+            get => displayName;
+        }
+
+        private DPadAction.DPadMode dpadMode = DPadAction.DPadMode.Standard;
+        public DPadAction.DPadMode DPadMode
+        {
+            get => dpadMode;
+            set
+            {
+                if (dpadMode == value) return;
+                dpadMode = value;
+                DPadModeChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler DPadModeChanged;
+
+        public PadModeItem(string displayName, DPadAction.DPadMode dpadMode)
+        {
+            this.displayName = displayName;
+            this.dpadMode = dpadMode;
         }
     }
 }
