@@ -279,7 +279,20 @@ namespace SteamControllerTest.TouchpadActions
                 }
             }
 
-            active = activeEvent = true;
+            if (xNorm != 0.0 || yNorm != 0.0)
+            {
+                active = activeEvent = true;
+            }
+            //else if (previousXNorm != xNorm || previousYNorm != yNorm)
+            //{
+            //    active = activeEvent = true;
+            //}
+            else
+            {
+                mStickParams.smoothingFilterSettings.filterX.Filter(0.0, mapper.CurrentRate);
+                mStickParams.smoothingFilterSettings.filterY.Filter(0.0, mapper.CurrentRate);
+                active = activeEvent = false;
+            }
         }
 
         public override void Event(Mapper mapper)

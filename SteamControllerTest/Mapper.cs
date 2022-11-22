@@ -357,25 +357,25 @@ namespace SteamControllerTest
             bindingList = new List<InputBindingMeta>()
             {
                 new InputBindingMeta("A", "A", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("B", "B", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("X", "X", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("Y", "Y", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("Back", "Back", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("Start", "Start", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("LShoulder", "Left Shoulder", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("RShoulder", "Right Shoulder", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("LSClick", "Stick Click", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("LeftGrip", "Left Grip", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("RightGrip", "Right Grip", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("LT", "Left Trigger", InputBindingMeta.InputControlType.Trigger),
-            new InputBindingMeta("RT", "Right Trigger", InputBindingMeta.InputControlType.Trigger),
-            new InputBindingMeta("Steam", "Steam", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("Stick", "Stick", InputBindingMeta.InputControlType.Stick),
-            new InputBindingMeta("LeftTouchpad", "Left Touchpad", InputBindingMeta.InputControlType.Touchpad),
-            new InputBindingMeta("RightTouchpad", "Right Touchpad", InputBindingMeta.InputControlType.Touchpad),
-            new InputBindingMeta("LeftPadClick", "Left Pad Click", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("RightPadClick", "Right Pad Click", InputBindingMeta.InputControlType.Button),
-            new InputBindingMeta("Gyro", "Gyro", InputBindingMeta.InputControlType.Gyro),
+                new InputBindingMeta("B", "B", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("X", "X", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("Y", "Y", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("Back", "Back", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("Start", "Start", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("LShoulder", "Left Shoulder", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("RShoulder", "Right Shoulder", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("LSClick", "Stick Click", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("LeftGrip", "Left Grip", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("RightGrip", "Right Grip", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("LT", "Left Trigger", InputBindingMeta.InputControlType.Trigger),
+                new InputBindingMeta("RT", "Right Trigger", InputBindingMeta.InputControlType.Trigger),
+                new InputBindingMeta("Steam", "Steam", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("Stick", "Stick", InputBindingMeta.InputControlType.Stick),
+                new InputBindingMeta("LeftTouchpad", "Left Touchpad", InputBindingMeta.InputControlType.Touchpad),
+                new InputBindingMeta("RightTouchpad", "Right Touchpad", InputBindingMeta.InputControlType.Touchpad),
+                new InputBindingMeta("LeftPadClick", "Left Pad Click", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("RightPadClick", "Right Pad Click", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("Gyro", "Gyro", InputBindingMeta.InputControlType.Gyro),
             };
 
             // Populate Input Binding dictionary
@@ -412,6 +412,7 @@ namespace SteamControllerTest
                 hard_max = 32767,
                 hard_min = -32768,
             };
+            lpadXAxis.PostInit();
 
             TouchpadDefinition.TouchAxisData lpadYAxis = new TouchpadDefinition.TouchAxisData
             {
@@ -422,8 +423,11 @@ namespace SteamControllerTest
                 hard_max = 32767,
                 hard_min = -32768,
             };
+            lpadYAxis.PostInit();
 
-            leftPadDefiniton = new TouchpadDefinition(lpadXAxis, lpadYAxis, TouchpadActionCodes.TouchL);
+            leftPadDefiniton = new TouchpadDefinition(lpadXAxis, lpadYAxis, TouchpadActionCodes.TouchL,
+                elapsedReference: device.BaseElapsedReference, mouseScale: 0.012 * 1.1, mouseOffset: 0.375,
+                trackballScale: 0.000023);
 
             TouchpadDefinition.TouchAxisData rpadXAxis = new TouchpadDefinition.TouchAxisData
             {
@@ -434,6 +438,7 @@ namespace SteamControllerTest
                 hard_max = 32767,
                 hard_min = -32768,
             };
+            rpadXAxis.PostInit();
 
             TouchpadDefinition.TouchAxisData rpadYAxis = new TouchpadDefinition.TouchAxisData
             {
@@ -444,8 +449,11 @@ namespace SteamControllerTest
                 hard_max = 32767,
                 hard_min = -32768,
             };
+            rpadYAxis.PostInit();
 
-            rightPadDefinition = new TouchpadDefinition(rpadXAxis, rpadYAxis, TouchpadActionCodes.TouchR);
+            rightPadDefinition = new TouchpadDefinition(rpadXAxis, rpadYAxis, TouchpadActionCodes.TouchR,
+                elapsedReference: device.BaseElapsedReference, mouseScale: 0.012 * 1.1, mouseOffset: 0.375,
+                trackballScale: 0.000023);
 
             TriggerDefinition.TriggerAxisData ltAxis = new TriggerDefinition.TriggerAxisData
             {

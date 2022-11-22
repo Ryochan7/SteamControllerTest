@@ -19,11 +19,27 @@ namespace SteamControllerTest.TouchpadActions
             // Real hardware limits
             public int hard_max;
             public int hard_min;
+
+            public bool invert;
+
+            public double reciprocalInputResolution;
+            public short outputResolution;
+
+            public void PostInit()
+            {
+                reciprocalInputResolution = 1 / (double)(max - min);
+                outputResolution = (short)(max - min);
+            }
         }
 
         public TouchAxisData xAxis;
         public TouchAxisData yAxis;
         public TouchpadActionCodes touchCode;
+        public double elapsedReference;
+
+        public double mouseScale;
+        public double mouseOffset;
+        public double trackballScale;
 
         public TouchpadDefinition(TouchAxisData xAxis, TouchAxisData yAxis, TouchpadActionCodes touchCode)
         {
@@ -32,11 +48,29 @@ namespace SteamControllerTest.TouchpadActions
             this.touchCode = touchCode;
         }
 
+        public TouchpadDefinition(TouchAxisData xAxis, TouchAxisData yAxis, TouchpadActionCodes touchCode,
+            double elapsedReference, double mouseScale, double mouseOffset, double trackballScale)
+        {
+            this.xAxis = xAxis;
+            this.yAxis = yAxis;
+            this.touchCode = touchCode;
+
+            this.elapsedReference = elapsedReference;
+            this.mouseScale = mouseScale;
+            this.mouseOffset = mouseOffset;
+            this.trackballScale = trackballScale;
+        }
+
         public TouchpadDefinition(TouchpadDefinition other)
         {
             this.xAxis = other.xAxis;
             this.yAxis = other.yAxis;
             this.touchCode = other.touchCode;
+
+            this.elapsedReference = other.elapsedReference;
+            this.mouseScale = other.mouseScale;
+            this.mouseOffset = other.mouseOffset;
+            this.trackballScale = other.trackballScale;
         }
     }
 }

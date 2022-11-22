@@ -210,7 +210,16 @@ namespace SteamControllerTest.TouchpadActions
                 }
             }
 
-            active = activeEvent = true;
+            if (xMotion != 0.0 || yMotion != 0.0)
+            {
+                active = activeEvent = true;
+            }
+            else
+            {
+                smoothingFilterSettings.filterX.Filter(0.0, mapper.CurrentRate);
+                smoothingFilterSettings.filterY.Filter(0.0, mapper.CurrentRate);
+                active = activeEvent = false;
+            }
         }
 
         public override void Event(Mapper mapper)
@@ -399,9 +408,10 @@ namespace SteamControllerTest.TouchpadActions
             if (trackballEnabled)
             {
                 // Fill trackball entry
+                double trackballScale = touchpadDefinition.trackballScale;
                 int iIndex = trackData.trackballBufferTail;
-                trackData.trackballXBuffer[iIndex] = (dx * TRACKBALL_SCALE) / touchFrame.timeElapsed;
-                trackData.trackballYBuffer[iIndex] = (dy * TRACKBALL_SCALE) / touchFrame.timeElapsed;
+                trackData.trackballXBuffer[iIndex] = (dx * trackballScale) / touchFrame.timeElapsed;
+                trackData.trackballYBuffer[iIndex] = (dy * trackballScale) / touchFrame.timeElapsed;
                 trackData.trackballBufferTail = (iIndex + 1) % TRACKBALL_BUFFER_LEN;
                 if (trackData.trackballBufferHead == trackData.trackballBufferTail)
                     trackData.trackballBufferHead = (trackData.trackballBufferHead + 1) % TRACKBALL_BUFFER_LEN;
@@ -424,13 +434,13 @@ namespace SteamControllerTest.TouchpadActions
             int signY = Math.Sign(dy);
 
             double timeElapsed = touchFrame.timeElapsed;
-            double coefficient = TOUCHPAD_COEFFICIENT;
+            double coefficient = touchpadDefinition.mouseScale;
             if (sensitivity != DEFAULT_SENSITIVITY)
             {
                 coefficient = coefficient * sensitivity;
             }
 
-            double offset = TOUCHPAD_MOUSE_OFFSET;
+            double offset = touchpadDefinition.mouseOffset;
             // Base speed 8 ms
             double tempDouble = timeElapsed * 125.0;
 
@@ -503,8 +513,9 @@ namespace SteamControllerTest.TouchpadActions
             double trackYvDecay = Math.Min(Math.Abs(trackData.trackballYVel), trackData.trackballAccel * touchFrame.timeElapsed * normY);
             double xVNew = trackData.trackballXVel - (trackXvDecay * signX);
             double yVNew = trackData.trackballYVel - (trackYvDecay * signY);
-            double xMotion = (xVNew * touchFrame.timeElapsed) / TRACKBALL_SCALE;
-            double yMotion = (yVNew * touchFrame.timeElapsed) / TRACKBALL_SCALE;
+            double trackballScale = touchpadDefinition.trackballScale;
+            double xMotion = (xVNew * touchFrame.timeElapsed) / trackballScale;
+            double yMotion = (yVNew * touchFrame.timeElapsed) / trackballScale;
             if (xMotion != 0.0)
             {
                 xMotion += trackData.trackballDXRemain;
