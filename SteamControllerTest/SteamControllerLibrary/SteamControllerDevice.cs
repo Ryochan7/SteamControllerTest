@@ -127,6 +127,9 @@ namespace SteamControllerTest.SteamControllerLibrary
             get => deviceOptions;
         }
 
+        protected InputDeviceType deviceType;
+        public InputDeviceType DeviceType => deviceType;
+
         public string DevTypeStr
         {
             get => "Steam Controller";
@@ -164,6 +167,7 @@ namespace SteamControllerTest.SteamControllerLibrary
             hidDevice = device;
             conType = DetermineConnectionType(hidDevice);
             baseElapsedReference = 125.0;
+            deviceType = InputDeviceType.SteamController;
 
             deviceOptions = new SteamControllerControllerOptions(InputDeviceType.SteamController);
             if (conType != ConnectionType.SCDongle)
