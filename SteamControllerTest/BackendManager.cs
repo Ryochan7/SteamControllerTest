@@ -213,7 +213,10 @@ namespace SteamControllerTest
                 //}
 
                 string tempProfilePath = string.Empty;
-                if (deviceProfileList.ProfileListCol.Count > 0)
+                if (appGlobal.activeProfiles.TryGetValue(ind, out tempProfilePath))
+                {
+                }
+                else if (deviceProfileList.ProfileListCol.Count > 0)
                 {
                     tempProfilePath = deviceProfileList.ProfileListCol[0].ProfilePath;
                 }
@@ -223,6 +226,12 @@ namespace SteamControllerTest
                 //testMapper.Start(device, reader);
                 testMapper.Start(vigemTestClient, fakerInputHandler, device, reader);
                 testMapper.RequestOSD += TestMapper_RequestOSD;
+
+                int tempInd = ind;
+                testMapper.ProfileChanged += (object sender, string e) => {
+                    appGlobal.activeProfiles[tempInd] = e;
+                    appGlobal.SaveControllerDeviceSettings(device, device.DeviceOptions);
+                };
 
                 controllerList[ind] = device;
                 ind++;
@@ -444,6 +453,9 @@ namespace SteamControllerTest
             //device.Removal += Device_Removal;
 
             string tempProfilePath = string.Empty;
+            if (appGlobal.activeProfiles.TryGetValue(ind, out tempProfilePath))
+            {
+            }
             if (deviceProfileList.ProfileListCol.Count > 0)
             {
                 tempProfilePath = deviceProfileList.ProfileListCol[0].ProfilePath;
@@ -453,6 +465,12 @@ namespace SteamControllerTest
             //testMapper.Start(device, reader);
             testMapper.Start(vigemTestClient, fakerInputHandler, device, reader);
             testMapper.RequestOSD += TestMapper_RequestOSD;
+            int tempInd = ind;
+            testMapper.ProfileChanged += (object sender, string e) => {
+                appGlobal.activeProfiles[tempInd] = e;
+                appGlobal.SaveControllerDeviceSettings(device, device.DeviceOptions);
+            };
+
             mapperDict.Add(ind, testMapper);
 
             controllerList[ind] = device;
@@ -490,7 +508,10 @@ namespace SteamControllerTest
             //}
 
             string tempProfilePath = string.Empty;
-            if (deviceProfileList.ProfileListCol.Count > 0)
+            if (appGlobal.activeProfiles.TryGetValue(ind, out tempProfilePath))
+            {
+            }
+            else if (deviceProfileList.ProfileListCol.Count > 0)
             {
                 tempProfilePath = deviceProfileList.ProfileListCol[0].ProfilePath;
             }
@@ -499,6 +520,12 @@ namespace SteamControllerTest
             //testMapper.Start(device, reader);
             testMapper.Start(vigemTestClient, fakerInputHandler, device, reader);
             testMapper.RequestOSD += TestMapper_RequestOSD;
+            int tempInd = ind;
+            testMapper.ProfileChanged += (object sender, string e) => {
+                appGlobal.activeProfiles[tempInd] = e;
+                appGlobal.SaveControllerDeviceSettings(device, device.DeviceOptions);
+            };
+
             mapperDict.Add(ind, testMapper);
 
             controllerList[ind] = device;

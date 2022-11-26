@@ -13,6 +13,7 @@ using static SteamControllerTest.Util;
 using System.Runtime.InteropServices;
 using WpfScreenHelper;
 using System.Windows;
+using System.Threading;
 
 namespace SteamControllerTest
 {
@@ -76,6 +77,8 @@ namespace SteamControllerTest
         //public Rect absDisplayBounds = new Rect(800, 0, 1024, 768);
         //public Rect fullDesktopBounds = new Rect(0, 0, 3840, 2160);
         public bool absUseAllMonitors = true;
+        public Dictionary<int, string> activeProfiles = new Dictionary<int, string>();
+        private ReaderWriterLockSlim _controllerStoreLocker = new ReaderWriterLockSlim();
 
         public AppGlobalData()
         {
@@ -420,6 +423,8 @@ namespace SteamControllerTest
         public void LoadControllerDeviceSettings(SteamControllerDevice testDev,
             ControllerOptionsStore store)
         {
+            using ReadLocker locker = new ReadLocker(_controllerStoreLocker);
+
             using (StreamReader sreader = new StreamReader(controllerConfigsPath))
             {
                 string json = sreader.ReadToEnd();
@@ -440,6 +445,22 @@ namespace SteamControllerTest
                     JObject controllerObj = token.ToObject<JObject>();
                     string macAddr = testDev.Serial;
                     string devType = store.DeviceType.ToString();
+                    if (controllerObj.TryGetValue("LastProfile", out JToken tempToken) &&
+                        tempToken.Type == JTokenType.String)
+                    //if (activeProfiles.TryGetValue(testDev.Index, out string currentProfile))
+                    {
+                        string lastProfile = tempToken.Value<string>();
+                        if (!string.IsNullOrEmpty(lastProfile))
+                        {
+                            lastProfile = Path.Combine(GetDeviceProfileFolderLocation(store.DeviceType),
+                                $"{lastProfile}.json");
+                        }
+
+                        if (!string.IsNullOrEmpty(lastProfile) && File.Exists(lastProfile))
+                        {
+                            activeProfiles.Add(testDev.Index, lastProfile);
+                        }
+                    }
                     //string settings = controllerObj["Settings"].ToString();
                     store.LoadSettings(controllerObj);
                 }
@@ -455,6 +476,8 @@ namespace SteamControllerTest
         public void SaveControllerDeviceSettings(SteamControllerDevice testDev,
             ControllerOptionsStore store)
         {
+            using WriteLocker locker = new WriteLocker(_controllerStoreLocker);
+
             JObject tempRootJObj = null;
             using (FileStream fs = new FileStream(controllerConfigsPath,
                 FileMode.Open, FileAccess.Read))
@@ -489,10 +512,16 @@ namespace SteamControllerTest
                             // Found existing item. Update properties and replace object
                             JObject controllerObj = token.ToObject<JObject>();
                             string macAddr = testDev.Serial;
-                            string devType = InputDeviceType.SteamController.ToString();
+                            //string devType = InputDeviceType.SteamController.ToString();
+                            string devType = store.DeviceType.ToString();
 
                             controllerObj["Mac"] = macAddr;
                             controllerObj["Type"] = devType;
+                            if (activeProfiles.TryGetValue(testDev.Index, out string currentProfile) &&
+                                !string.IsNullOrEmpty(currentProfile))
+                            {
+                                controllerObj["LastProfile"] = Path.GetFileNameWithoutExtension(currentProfile);
+                            }
                             store.PersistSettings(controllerObj);
                             token.Replace(controllerObj);
                         }
@@ -518,7 +547,8 @@ namespace SteamControllerTest
                             JObject controllerObj = JObject.Parse(controllerJson);
                             //JObject controllerObj = new JObject();
                             string macAddr = testDev.Serial;
-                            string devType = InputDeviceType.SteamController.ToString();
+                            //string devType = InputDeviceType.SteamController.ToString();
+                            string devType = store.DeviceType.ToString();
                             controllerObj["Mac"] = testDev.Serial;
                             controllerObj["Type"] = devType;
 

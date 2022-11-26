@@ -182,6 +182,9 @@ namespace SteamControllerTest
 
         private bool quit = false;
         public bool Quit { get => quit; set => quit = value; }
+
+        public event EventHandler<string> ProfileChanged;
+
         //public OneEuroFilter FilterX { get => filterX; set => filterX = value; }
         //public OneEuroFilter FilterY { get => filterY; set => filterY = value; }
         public double CurrentRate { get => currentRate; set => currentRate = value; }
@@ -268,8 +271,8 @@ namespace SteamControllerTest
             }
         }
 
-        public delegate void ProfileChangeHandler(Mapper sender, string profilePath);
-        public event ProfileChangeHandler ProfileChanged;
+        //public delegate void ProfileChangeHandler(Mapper sender, string profilePath);
+        //public event ProfileChangeHandler ProfileChanged;
 
         private ViGEmClient vigemTestClient = null;
         //private IXbox360Controller outputX360 = null;
@@ -1291,11 +1294,13 @@ namespace SteamControllerTest
                 try
                 {
                     ReadFromProfile();
+                    ProfileChanged?.Invoke(this, profileFile);
                 }
                 catch(JsonException e)
                 {
                     UseBlankProfile();
                     profileFile = string.Empty;
+                    ProfileChanged?.Invoke(this, profileFile);
                     throw e;
                 }
 
