@@ -332,6 +332,10 @@ namespace SteamControllerTest
                 if (device.Index >= 0)
                 {
                     controllerList[device.Index] = null;
+                    if (appGlobal.activeProfiles.ContainsKey(device.Index))
+                    {
+                        appGlobal.activeProfiles.Remove(device.Index);
+                    }
                 }
             });
         }
