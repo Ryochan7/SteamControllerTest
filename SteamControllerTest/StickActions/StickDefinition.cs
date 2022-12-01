@@ -15,10 +15,20 @@ namespace SteamControllerTest.StickActions
             public short max;
             public short mid;
             public short min;
+            public bool invert;
 
             // Real hardware limits
             public int hard_max;
             public int hard_min;
+
+            public double reciprocalInputResolution;
+            public short outputResolution;
+
+            public void PostInit()
+            {
+                reciprocalInputResolution = 1 / (double)(max - min);
+                outputResolution = (short)(max - min);
+            }
         };
 
         /*public int axisMin;
@@ -51,6 +61,16 @@ namespace SteamControllerTest.StickActions
             this.xAxis = other.xAxis;
             this.yAxis = other.yAxis;
             this.stickCode = other.stickCode;
+        }
+
+        public static short AxisScale(int value, bool flip, StickDefinition.StickAxisData axisData)
+        {
+            unchecked
+            {
+                double temp = (value - axisData.min) * axisData.reciprocalInputResolution;
+                if (flip) temp = (temp - 0.5f) * -1.0f + 0.5f;
+                return (short)((axisData.max - axisData.min) * temp + axisData.min);
+            }
         }
     }
 }
