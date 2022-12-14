@@ -87,10 +87,10 @@ namespace SteamControllerTest.Views
             {
                 e.UpdateActHandler?.Invoke(oldAction, newAction);
             };
-            tempControl.PreActionSwitch += (sender, action) =>
-            {
-                e.UpdateActHandler?.Invoke(null, action);
-            };
+            //tempControl.PreActionSwitch += (sender, action) =>
+            //{
+            //    e.UpdateActHandler?.Invoke(null, action);
+            //};
 
             UserControl oldControl = dpadBindEditVM.DisplayControl;
             tempControl.RequestClose += (sender, args) =>
