@@ -214,6 +214,7 @@ namespace SteamControllerTest.StickActions
                 foreach (AxisDirButton tempAction in parentAction.eventCodes4)
                 {
                     usedEventButtonsList[tempDir] = tempAction;
+                    eventCodes4[tempDir] = tempAction;
                     useParentDataDraft2[tempDir] = true;
                     tempDir++;
                 }
