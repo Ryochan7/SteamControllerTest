@@ -442,7 +442,8 @@ namespace SteamControllerTest.TouchpadActions
 
             double offset = touchpadDefinition.mouseOffset;
             // Base speed 8 ms
-            double tempDouble = timeElapsed * 125.0;
+            //double tempDouble = timeElapsed * 125.0;
+            double tempDouble = 1.0;
 
             int deadzoneX = (int)Math.Abs(normX * deadZone);
             int deadzoneY = (int)Math.Abs(normY * deadZone);
