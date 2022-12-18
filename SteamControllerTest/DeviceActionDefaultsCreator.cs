@@ -77,11 +77,26 @@ namespace SteamControllerTest
             }
         }
 
+        public struct TouchDirectionalSwipeActionValues
+        {
+            public int deadZoneX;
+            public int deadZoneY;
+            public int delayTime;
+
+            public void Process(TouchpadDirectionalSwipe action)
+            {
+                action.swipeParams.deadzoneX = deadZoneX;
+                action.swipeParams.deadzoneY = deadZoneY;
+                action.swipeParams.delayTime = delayTime;
+            }
+        }
+
         public abstract TouchJoystickActionValues GrabTouchJoystickDefaults();
         public abstract TouchMouseActionValues GrabTouchMouseDefaults();
         public abstract TouchMouseJoystickActionValues GrabTouchMouseJoystickDefaults();
         public abstract TouchActionPadActionValues GrabTouchActionPadDefaults();
         public abstract TouchCircularActionValues GrabTouchCircularActionDefaults();
+        public abstract TouchDirectionalSwipeActionValues GetTouchDirectionSwipeActionDefaults();
     }
 
     public class SteamControllerActionDefaultsCreator : DeviceActionDefaultsCreator
@@ -133,6 +148,18 @@ namespace SteamControllerTest
             TouchCircularActionValues result = new TouchCircularActionValues()
             {
                 deadZone = 0.25,
+            };
+
+            return result;
+        }
+
+        public override TouchDirectionalSwipeActionValues GetTouchDirectionSwipeActionDefaults()
+        {
+            TouchDirectionalSwipeActionValues result = new TouchDirectionalSwipeActionValues()
+            {
+                deadZoneX = 250,
+                deadZoneY = 250,
+                delayTime = 30,
             };
 
             return result;
