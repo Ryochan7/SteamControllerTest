@@ -320,10 +320,6 @@ namespace SteamControllerTest.SteamControllerLibrary
                             current.Motion.AccelY = (short)((inputReportBuffer[dataIdx + 3] << 8) | inputReportBuffer[dataIdx + 2]);
                             current.Motion.AccelZ = (short)((inputReportBuffer[dataIdx + 5] << 8) | inputReportBuffer[dataIdx + 4]);
 
-                            current.Motion.AccelXG = current.Motion.AccelX / SteamControllerState.SteamControllerMotion.D_ACC_RES_PER_G;
-                            current.Motion.AccelYG = current.Motion.AccelY / SteamControllerState.SteamControllerMotion.D_ACC_RES_PER_G;
-                            current.Motion.AccelZG = current.Motion.AccelZ / SteamControllerState.SteamControllerMotion.D_ACC_RES_PER_G;
-
                             current.Motion.GyroPitch = (short)(-1 * ((inputReportBuffer[dataIdx + 7] << 8) | inputReportBuffer[dataIdx + 6]));
                             current.Motion.GyroPitch = (short)(current.Motion.GyroPitch - device.gyroCalibOffsets[SteamControllerDevice.IMU_PITCH_IDX]);
 
@@ -332,6 +328,22 @@ namespace SteamControllerTest.SteamControllerLibrary
 
                             current.Motion.GyroYaw = (short)(-1 * ((inputReportBuffer[dataIdx + 11] << 8) | inputReportBuffer[dataIdx + 10]));
                             current.Motion.GyroYaw = (short)(current.Motion.GyroYaw - device.gyroCalibOffsets[SteamControllerDevice.IMU_YAW_IDX]);
+
+                            if (gyroCalibrationUtil.gyroAverageTimer.IsRunning)
+                            {
+                                int currentYaw = current.Motion.GyroPitch, currentPitch = current.Motion.GyroRoll, currentRoll = current.Motion.GyroYaw;
+                                int AccelX = current.Motion.AccelX, AccelY = current.Motion.AccelY, AccelZ = current.Motion.AccelZ;
+                                gyroCalibrationUtil.CalcSensorCamples(ref currentYaw, ref currentPitch, ref currentRoll,
+                                    ref AccelX, ref AccelY, ref AccelZ);
+                            }
+
+                            current.Motion.GyroYaw -= (short)gyroCalibrationUtil.gyro_offset_x;
+                            current.Motion.GyroPitch -= (short)gyroCalibrationUtil.gyro_offset_y;
+                            current.Motion.GyroRoll -= (short)gyroCalibrationUtil.gyro_offset_z;
+
+                            current.Motion.AccelXG = current.Motion.AccelX / SteamControllerState.SteamControllerMotion.D_ACC_RES_PER_G;
+                            current.Motion.AccelYG = current.Motion.AccelY / SteamControllerState.SteamControllerMotion.D_ACC_RES_PER_G;
+                            current.Motion.AccelZG = current.Motion.AccelZ / SteamControllerState.SteamControllerMotion.D_ACC_RES_PER_G;
 
                             current.Motion.AngGyroPitch = -1 * current.Motion.GyroPitch * SteamControllerState.SteamControllerMotion.GYRO_RES_IN_DEG_SEC_RATIO;
                             current.Motion.AngGyroRoll = current.Motion.GyroRoll * SteamControllerState.SteamControllerMotion.GYRO_RES_IN_DEG_SEC_RATIO;

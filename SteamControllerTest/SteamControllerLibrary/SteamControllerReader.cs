@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using HidLibrary;
+using SteamControllerTest.Common;
 
 namespace SteamControllerTest.SteamControllerLibrary
 {
@@ -18,6 +19,7 @@ namespace SteamControllerTest.SteamControllerLibrary
         protected byte[] inputReportBuffer;
         protected byte[] outputReportBuffer;
         protected byte[] rumbleReportBuffer;
+        protected GyroCalibration gyroCalibrationUtil = new GyroCalibration();
         private bool started;
 
         public delegate void SteamControllerReportDelegate(SteamControllerReader sender,
@@ -106,6 +108,9 @@ namespace SteamControllerTest.SteamControllerLibrary
             double tempTimeElapsed;
             bool firstReport = true;
 
+            // Run continuous calibration on Gyro when starting input loop
+            gyroCalibrationUtil.ResetContinuousCalibration();
+
             unchecked
             {
                 while (activeInputLoop)
@@ -176,6 +181,9 @@ namespace SteamControllerTest.SteamControllerLibrary
                         else if (firstReport)
                         {
                             Console.WriteLine("CAN READ REPORTS. NICE");
+
+                            // Run continuous calibration on Gyro when starting input loop
+                            gyroCalibrationUtil.ResetContinuousCalibration();
                         }
 
                         //Console.WriteLine("Got unexpected input report id 0x{0:X2}. Try again",
@@ -307,10 +315,6 @@ namespace SteamControllerTest.SteamControllerLibrary
                         current.Motion.AccelY = (short)((inputReportBuffer[32] << 8) | inputReportBuffer[31]);
                         current.Motion.AccelZ = (short)((inputReportBuffer[34] << 8) | inputReportBuffer[33]);
 
-                        current.Motion.AccelXG = current.Motion.AccelX / SteamControllerState.SteamControllerMotion.D_ACC_RES_PER_G;
-                        current.Motion.AccelYG = current.Motion.AccelY / SteamControllerState.SteamControllerMotion.D_ACC_RES_PER_G;
-                        current.Motion.AccelZG = current.Motion.AccelZ / SteamControllerState.SteamControllerMotion.D_ACC_RES_PER_G;
-
                         current.Motion.GyroPitch = (short)(-1 * ((inputReportBuffer[36] << 8) | inputReportBuffer[35]));
                         current.Motion.GyroPitch = (short)(current.Motion.GyroPitch - device.gyroCalibOffsets[SteamControllerDevice.IMU_PITCH_IDX]);
 
@@ -319,6 +323,22 @@ namespace SteamControllerTest.SteamControllerLibrary
 
                         current.Motion.GyroYaw = (short)(-1 * ((inputReportBuffer[40] << 8) | inputReportBuffer[39]));
                         current.Motion.GyroYaw = (short)(current.Motion.GyroYaw - device.gyroCalibOffsets[SteamControllerDevice.IMU_YAW_IDX]);
+
+                        if (gyroCalibrationUtil.gyroAverageTimer.IsRunning)
+                        {
+                            int currentYaw = current.Motion.GyroPitch, currentPitch = current.Motion.GyroRoll, currentRoll = current.Motion.GyroYaw;
+                            int AccelX = current.Motion.AccelX, AccelY = current.Motion.AccelY, AccelZ = current.Motion.AccelZ;
+                            gyroCalibrationUtil.CalcSensorCamples(ref currentYaw, ref currentPitch, ref currentRoll,
+                                ref AccelX, ref AccelY, ref AccelZ);
+                        }
+
+                        current.Motion.GyroYaw -= (short)gyroCalibrationUtil.gyro_offset_x;
+                        current.Motion.GyroPitch -= (short)gyroCalibrationUtil.gyro_offset_y;
+                        current.Motion.GyroRoll -= (short)gyroCalibrationUtil.gyro_offset_z;
+
+                        current.Motion.AccelXG = current.Motion.AccelX / SteamControllerState.SteamControllerMotion.D_ACC_RES_PER_G;
+                        current.Motion.AccelYG = current.Motion.AccelY / SteamControllerState.SteamControllerMotion.D_ACC_RES_PER_G;
+                        current.Motion.AccelZG = current.Motion.AccelZ / SteamControllerState.SteamControllerMotion.D_ACC_RES_PER_G;
 
                         current.Motion.AngGyroPitch = -1 * current.Motion.GyroPitch * SteamControllerState.SteamControllerMotion.GYRO_RES_IN_DEG_SEC_RATIO;
                         current.Motion.AngGyroRoll = current.Motion.GyroRoll * SteamControllerState.SteamControllerMotion.GYRO_RES_IN_DEG_SEC_RATIO;
