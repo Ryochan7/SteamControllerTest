@@ -548,7 +548,6 @@ namespace SteamControllerTest
             }
 
             //reader.Report += Reader_Calibrate_Gyro;
-            reader.Report += ControllerReader_Report;
 
             reader.StartUpdate();
         }
@@ -1272,6 +1271,7 @@ namespace SteamControllerTest
                 // Relay changes to event systems
                 SyncKeyboard();
                 SyncMouseButtons();
+                fakerInputHandler.Sync();
 
                 // Might use this info later. Output controller device switch?
                 EmulatedControllerSettings oldEmuControlSettings =
@@ -1750,13 +1750,14 @@ namespace SteamControllerTest
                     };
 
                     tempTouchAction.Prepare(this, ref eventFrame);
+                    if (tempTouchAction.active) tempTouchAction.Event(this);
+
                     previousTouchFrameLeftPad = eventFrame;
                 }
-                if (tempTouchAction.active) tempTouchAction.Event(this);
 
-                tempTouchAction = currentLayer.touchpadActionDict["RightTouchpad"];
-                //if (currentMapperState.RightPad.Touch || currentMapperState.RightPad.Touch != previousMapperState.RightPad.Touch)
                 {
+                    tempTouchAction = currentLayer.touchpadActionDict["RightTouchpad"];
+                    //if (currentMapperState.RightPad.Touch || currentMapperState.RightPad.Touch != previousMapperState.RightPad.Touch)
                     TouchEventFrame eventFrame = new TouchEventFrame
                     {
                         X = Math.Clamp(currentMapperState.RightPad.X, (short)-32768, (short)32767),
@@ -1768,9 +1769,10 @@ namespace SteamControllerTest
                     };
 
                     tempTouchAction.Prepare(this, ref eventFrame);
+                    if (tempTouchAction.active) tempTouchAction.Event(this);
+
                     previousTouchFrameRightPad = eventFrame;
                 }
-                if (tempTouchAction.active) tempTouchAction.Event(this);
 
                 GyroMapAction gyroAct = currentLayer.gyroActionDict["Gyro"];
                 // Skip if duration is less than 10 ms
@@ -2056,7 +2058,7 @@ namespace SteamControllerTest
         /// <param name="device"></param>
         private void HookReaderEvent(SteamControllerReader reader, SteamControllerDevice device)
         {
-            reader.Report += ControllerReader_Report;
+            //reader.Report += ControllerReader_Report;
         }
 
         public ref TouchEventFrame GetPreviousTouchEventFrame(TouchpadActionCodes padID)
@@ -5003,8 +5005,10 @@ namespace SteamControllerTest
 
             actionProfile.CurrentActionSet.ReleaseActions(this, true);
 
+            // Relay changes to event systems
             SyncKeyboard();
             SyncMouseButtons();
+            fakerInputHandler.Sync();
 
             outputController?.Disconnect();
             outputController = null;
