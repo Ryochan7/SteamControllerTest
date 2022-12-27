@@ -547,7 +547,8 @@ namespace SteamControllerTest
                 UseBlankProfile();
             }
 
-            reader.Report += Reader_Calibrate_Gyro;
+            //reader.Report += Reader_Calibrate_Gyro;
+            reader.Report += ControllerReader_Report;
 
             reader.StartUpdate();
         }
@@ -1259,7 +1260,7 @@ namespace SteamControllerTest
         {
             //if (!inMapperEvent)
             {
-                if (calibrationFinished)
+                //if (calibrationFinished)
                 {
                     // Disconnect event
                     reader.Report -= ControllerReader_Report;
@@ -1400,7 +1401,7 @@ namespace SteamControllerTest
                 //    }
                 //}
 
-                if (calibrationFinished)
+                //if (calibrationFinished)
                 {
                     // Re-connect event
                     reader.Report += ControllerReader_Report;
