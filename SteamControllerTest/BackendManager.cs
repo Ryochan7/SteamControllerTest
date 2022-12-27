@@ -292,7 +292,7 @@ namespace SteamControllerTest
                 {
                     Task tempTask = Task.Run(() =>
                     {
-                        tempMapper.Stop();
+                        tempMapper.Stop(true);
                         tempMapper = null;
                     });
                     //tempTask.Wait();
@@ -322,7 +322,7 @@ namespace SteamControllerTest
             {
                 Task tempTask = Task.Run(() =>
                 {
-                    tempMapper.Stop();
+                    tempMapper.Stop(true);
                     tempMapper = null;
                 });
                 //tempTask.Wait();

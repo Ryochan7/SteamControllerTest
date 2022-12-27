@@ -4997,7 +4997,7 @@ namespace SteamControllerTest
             }
         }
 
-        public void Stop()
+        public void Stop(bool finalSync = false)
         {
             //reader.StopUpdate();
 
@@ -5008,7 +5008,10 @@ namespace SteamControllerTest
             // Relay changes to event systems
             SyncKeyboard();
             SyncMouseButtons();
-            fakerInputHandler.Sync();
+            if (finalSync)
+            {
+                fakerInputHandler.Sync();
+            }
 
             outputController?.Disconnect();
             outputController = null;
