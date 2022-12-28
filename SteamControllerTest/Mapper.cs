@@ -540,7 +540,14 @@ namespace SteamControllerTest
 
             if (!string.IsNullOrEmpty(profileFile))
             {
-                ChangeProfile(profileFile);
+                try
+                {
+                    ChangeProfile(profileFile);
+                }
+                catch (JsonException)
+                {
+                    // Add log message eventually
+                }
             }
             else
             {
