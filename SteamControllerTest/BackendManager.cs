@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -376,7 +377,15 @@ namespace SteamControllerTest
             vigemTestClient = null;
 
             fakerInputHandler.Sync();
-            fakerInputHandler.Disconnect();
+            Thread.Sleep(100);
+            try
+            {
+                fakerInputHandler.Disconnect();
+            }
+            catch (SEHException)
+            {
+                // Ignore
+            }
 
             changingService = false;
 
