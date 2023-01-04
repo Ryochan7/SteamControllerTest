@@ -672,6 +672,10 @@ namespace SteamControllerTest
                                     break;
                             }
                         }
+
+                        ButtonNoAction btnNoActionSet = new ButtonNoAction();
+                        btnNoActionSet.MappingId = $"{ActionSet.ACTION_SET_ACTION_PREFIX}{set.Index}";
+                        layer.actionSetActionDict.Add(btnNoActionSet.MappingId, btnNoActionSet);
                     }
 
                     layerIndex++;
@@ -835,6 +839,30 @@ namespace SteamControllerTest
                                             break;
                                     }
                                 }
+                                else if (layerMapping.InputBinding == $"{ActionSet.ACTION_SET_ACTION_PREFIX}{mapping.ActionSet}" && tempAction is ButtonMapAction)
+                                {
+                                    //if (tempAction is ButtonMapAction)
+                                    {
+                                        //tempAction.DefaultUnbound = false;
+                                        tempAction.MappingId = $"{ActionSet.ACTION_SET_ACTION_PREFIX}{mapping.ActionSet}";
+                                        tempLayer.actionSetActionDict[tempAction.MappingId] = tempAction as ButtonMapAction;
+                                        if (parentLayer != null && parentLayer.actionSetActionDict.TryGetValue(tempAction.MappingId, out ButtonMapAction tempParentBtnAction) &&
+                                            MapAction.IsSameType(tempAction, tempParentBtnAction))
+                                        {
+                                            //(tempAction as ButtonMapAction).SoftCopyFromParent(tempParentBtnAction);
+                                            //(tempAction as ButtonMapAction).CopyAction(tempParentBtnAction);
+                                        }
+
+                                        //if (parentLayer != null && parentLayer.LayerActions[layerMapping.ActionIndex] is ButtonMapAction)
+                                        //{
+                                        //    tempLayer.buttonActionDict[tempBind.id] = (tempAction as ButtonMapAction).DuplicateAction();
+                                        //}
+                                        //else
+                                        //{
+                                        //    tempLayer.buttonActionDict[tempBind.id] = tempAction as ButtonMapAction;
+                                        //}
+                                    }
+                                }
                             }
                         }
 
@@ -978,6 +1006,10 @@ namespace SteamControllerTest
                                     break;
                             }
                         }
+
+                        ButtonNoAction btnNoActionSet = new ButtonNoAction();
+                        btnNoActionSet.MappingId = $"{ActionSet.ACTION_SET_ACTION_PREFIX}{set.Index}";
+                        layer.actionSetActionDict.Add(btnNoActionSet.MappingId, btnNoActionSet);
                     }
 
                     layerIndex++;
@@ -1138,6 +1170,30 @@ namespace SteamControllerTest
                                             break;
                                         default:
                                             break;
+                                    }
+                                }
+                                else if (layerMapping.InputBinding == $"{ActionSet.ACTION_SET_ACTION_PREFIX}{mapping.ActionSet}" && tempAction is ButtonMapAction)
+                                {
+                                    //if (tempAction is ButtonMapAction)
+                                    {
+                                        //tempAction.DefaultUnbound = false;
+                                        tempAction.MappingId = $"{ActionSet.ACTION_SET_ACTION_PREFIX}{mapping.ActionSet}";
+                                        tempLayer.actionSetActionDict[tempAction.MappingId] = tempAction as ButtonMapAction;
+                                        if (parentLayer != null && parentLayer.actionSetActionDict.TryGetValue(tempAction.MappingId, out ButtonMapAction tempParentBtnAction) &&
+                                            MapAction.IsSameType(tempAction, tempParentBtnAction))
+                                        {
+                                            //(tempAction as ButtonMapAction).SoftCopyFromParent(tempParentBtnAction);
+                                            //(tempAction as ButtonMapAction).CopyAction(tempParentBtnAction);
+                                        }
+
+                                        //if (parentLayer != null && parentLayer.LayerActions[layerMapping.ActionIndex] is ButtonMapAction)
+                                        //{
+                                        //    tempLayer.buttonActionDict[tempBind.id] = (tempAction as ButtonMapAction).DuplicateAction();
+                                        //}
+                                        //else
+                                        //{
+                                        //    tempLayer.buttonActionDict[tempBind.id] = tempAction as ButtonMapAction;
+                                        //}
                                     }
                                 }
                             }
