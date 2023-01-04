@@ -202,6 +202,7 @@ namespace SteamControllerTest
         private Profile actionProfile = new Profile();
         public Profile ActionProfile => actionProfile;
         private IntermediateState intermediateState = new IntermediateState();
+        public ref IntermediateState IntermediateStateRef => ref intermediateState;
 
         // Have Mapper make copies of state structs for manipulation. Allow
         // device reader state structs to remain untouched

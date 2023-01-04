@@ -279,18 +279,35 @@ namespace SteamControllerTest.TouchpadActions
                 }
             }
 
-            if (xNorm != 0.0 || yNorm != 0.0)
-            {
-                active = activeEvent = true;
-            }
-            //else if (previousXNorm != xNorm || previousYNorm != yNorm)
+            //if (xNorm != 0.0 || yNorm != 0.0)
             //{
             //    active = activeEvent = true;
             //}
+            ////else if (previousXNorm != xNorm || previousYNorm != yNorm)
+            ////{
+            ////    active = activeEvent = true;
+            ////}
+            //else
+            //{
+            //    mStickParams.smoothingFilterSettings.filterX.Filter(0.0, mapper.CurrentRate);
+            //    mStickParams.smoothingFilterSettings.filterY.Filter(0.0, mapper.CurrentRate);
+            //    active = activeEvent = false;
+            //}
+
+            if (touchFrame.Touch || trackData.trackballActive)
+            {
+                active = activeEvent = true;
+            }
             else
             {
-                mStickParams.smoothingFilterSettings.filterX.Filter(0.0, mapper.CurrentRate);
-                mStickParams.smoothingFilterSettings.filterY.Filter(0.0, mapper.CurrentRate);
+                if (mStickParams.smoothing)
+                {
+                    mStickParams.smoothingFilterSettings.filterX.Filter(0.0, mapper.CurrentRate);
+                    mStickParams.smoothingFilterSettings.filterY.Filter(0.0, mapper.CurrentRate);
+                }
+
+                // No matter what, flag mapper state struct as dirty
+                mapper.IntermediateStateRef.Dirty = true;
                 active = activeEvent = false;
             }
         }
@@ -548,8 +565,8 @@ namespace SteamControllerTest.TouchpadActions
             int deadZone = mStickParams.deadZone;
             //const int maxDeadZoneAxial = 100;
             //const int minDeadZoneAxial = 20;
-            int maxDeadZoneAxial = (int)(mStickParams.maxZone * 0.20);
-            int minDeadZoneAxial = (int)(mStickParams.maxZone * 0.04);
+            int maxDeadZoneAxial = (int)(mStickParams.maxZone * 0.24);
+            int minDeadZoneAxial = (int)(mStickParams.maxZone * 0.02);
 
             //Trace.WriteLine(touchFrame.Y);
 
