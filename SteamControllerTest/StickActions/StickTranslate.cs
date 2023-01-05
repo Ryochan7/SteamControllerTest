@@ -313,6 +313,7 @@ namespace SteamControllerTest.StickActions
 
                 this.parentAction = parentAction;
                 this.parentTranslateAction = tempStickAction;
+                this.stickDefinition = new StickDefinition(tempStickAction.stickDefinition);
                 tempStickAction.hasLayeredAction = true;
                 mappingId = tempStickAction.mappingId;
 
