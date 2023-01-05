@@ -554,6 +554,7 @@ namespace SteamControllerTest.ViewModels
             {
                 int ind = mapper.ActionProfile.CurrentActionSet.ActionLayers.Count;
                 tempLayer = new ActionLayer(ind);
+                tempLayer.Name = $"Layer {ind + 1}";
                 mapper.ActionProfile.CurrentActionSet.ActionLayers.Add(tempLayer);
 
                 resetEvent.Set();
