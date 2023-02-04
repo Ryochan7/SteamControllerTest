@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using NLog;
 using NLog.Targets.Wrappers;
@@ -15,8 +16,12 @@ namespace SteamControllerTest
             var configuration = LogManager.Configuration;
             var wrapTarget = configuration.FindTargetByName<WrapperTargetBase>("logfile") as WrapperTargetBase;
             var fileTarget = wrapTarget.WrappedTarget as NLog.Targets.FileTarget;
-            fileTarget.FileName = $@"{appGlobal.appdatapath}\Logs\sctest_log.txt";
-            fileTarget.ArchiveFileName = $@"{appGlobal.appdatapath}\Logs\sctest_log_{{#}}.txt";
+            fileTarget.FileName = Path.Combine(appGlobal.appdatapath,
+                AppGlobalData.LOGS_FOLDER_NAME,
+                "sctest_log.txt");
+            fileTarget.ArchiveFileName = Path.Combine(appGlobal.appdatapath,
+                AppGlobalData.LOGS_FOLDER_NAME,
+                "sctest_log_{#}.txt");
             LogManager.Configuration = configuration;
             LogManager.ReconfigExistingLoggers();
 
