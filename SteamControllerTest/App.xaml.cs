@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
+using NLog;
 
 namespace SteamControllerTest
 {
@@ -31,6 +32,7 @@ namespace SteamControllerTest
 
         private bool exitApp;
         private string tempProfilePath = string.Empty;
+        private LoggerHolder logHolder;
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -125,6 +127,10 @@ namespace SteamControllerTest
             testThread.Start();
             testThread.Join();
 
+            logHolder = new LoggerHolder(manager, appGlobal);
+            Logger logger = logHolder.Logger;
+            logger.Info($"SteamControllerTest v. {AppGlobalData.exeversion}");
+
             MainWindow window = new MainWindow();
             window.PostInit(appGlobal);
             //window.MainWinVM.ProfilePath = tempProfilePath;
@@ -206,6 +212,9 @@ namespace SteamControllerTest
 
             osdTestWindow.Close();
             osdTestWindow = null;
+
+            LogManager.Flush();
+            LogManager.Shutdown();
 
             // Reset timer
             Util.timeEndPeriod(1);
