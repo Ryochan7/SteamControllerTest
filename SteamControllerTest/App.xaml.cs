@@ -156,9 +156,23 @@ namespace SteamControllerTest
             Exception exp = e.ExceptionObject as Exception;
             bool canAccessMain = Current.Dispatcher.CheckAccess();
             //Trace.WriteLine($"CRASHED {help}");
+            Logger logger = logHolder.Logger;
             if (e.IsTerminating)
             {
-                CleanShutDown();
+                logger.Error($"Thread Crashed with message {exp.Message}");
+                logger.Error(exp.ToString());
+
+                if (canAccessMain)
+                {
+                    CleanShutDown();
+                }
+                else
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        CleanShutDown();
+                    });
+                }
             }
         }
 
