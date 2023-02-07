@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Win32;
 
 namespace SteamControllerTest
 {
@@ -186,6 +187,20 @@ namespace SteamControllerTest
                 Console.WriteLine("{0} {1}", ex.HelpLink, ex.Message);
                 throw;
             }
+        }
+
+        public static string GetOSProductName()
+        {
+            string productName =
+                Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProductName", "").ToString();
+            return productName;
+        }
+
+        public static string GetOSReleaseId()
+        {
+            string releaseId =
+                Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ReleaseId", "").ToString();
+            return releaseId;
         }
 
         public const int GWL_EXSTYLE = -20;

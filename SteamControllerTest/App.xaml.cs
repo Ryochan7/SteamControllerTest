@@ -130,6 +130,9 @@ namespace SteamControllerTest
             logHolder = new LoggerHolder(manager, appGlobal);
             Logger logger = logHolder.Logger;
             logger.Info($"SteamControllerTest v. {AppGlobalData.exeversion}");
+            logger.Info($"OS Version: {Environment.OSVersion}");
+            logger.Info($"OS Product Name: {Util.GetOSProductName()}");
+            logger.Info($"OS Release ID: {Util.GetOSReleaseId()}");
 
             MainWindow window = new MainWindow();
             window.PostInit(appGlobal);
