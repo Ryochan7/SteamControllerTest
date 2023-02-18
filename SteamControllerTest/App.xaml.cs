@@ -217,6 +217,8 @@ namespace SteamControllerTest
         {
             //if (manager.IsRunning)
             {
+                manager?.LogDebug($"Stopping manager");
+
                 Task tempTask = Task.Run(() =>
                 {
                     manager?.PreAppStopDown();
@@ -225,10 +227,14 @@ namespace SteamControllerTest
                 tempTask.Wait();
 
                 manager.ShutDown();
+
+                manager?.LogDebug($"Manager stopped");
             }
 
             osdTestWindow.Close();
             osdTestWindow = null;
+
+            manager?.LogDebug($"Stopping program");
 
             LogManager.Flush();
             LogManager.Shutdown();

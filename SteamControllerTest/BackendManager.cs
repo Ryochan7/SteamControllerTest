@@ -12,6 +12,26 @@ using SteamControllerTest.SteamControllerLibrary;
 
 namespace SteamControllerTest
 {
+    public class DebugEventArgs : EventArgs
+    {
+        protected DateTime m_Time = DateTime.Now;
+        protected string message = string.Empty;
+        protected bool warning = false;
+        //protected bool temporary = false;
+        //public DebugEventArgs(string message, bool warn, bool temporary = false)
+        public DebugEventArgs(string message, bool warn)
+        {
+            this.message = message;
+            warning = warn;
+            //this.temporary = temporary;
+        }
+
+        public DateTime Time => m_Time;
+        public string Message => message;
+        public bool Warning => warning;
+        //public bool Temporary => temporary;
+    }
+
     public class BackendManager
     {
         public const int CONTROLLER_LIMIT = 8;
@@ -84,6 +104,7 @@ namespace SteamControllerTest
         public delegate void HotplugControllerHandler(SteamControllerDevice device, int ind);
         public event HotplugControllerHandler HotplugController;
         public event HotplugControllerHandler UnplugController;
+        public event EventHandler<DebugEventArgs> Debug;
 
         public BackendManager(string profileFile, AppGlobalData appGlobal)
         {
@@ -139,6 +160,8 @@ namespace SteamControllerTest
 
         public void Start()
         {
+            LogDebug("Starting service");
+
             changingService = true;
             bool checkConnect = fakerInputHandler.Connect();
 
@@ -191,6 +214,7 @@ namespace SteamControllerTest
                     // Attempt to run reader early
                     reader.StartUpdate();
 
+                    LogDebug($"Detected unsynced controller ({device.Serial}. Waiting for active status");
                     continue;
                 }
 
@@ -235,6 +259,8 @@ namespace SteamControllerTest
                 };
 
                 controllerList[ind] = device;
+                LogDebug($"Plugged in controller #{ind + 1} ({device.Serial})");
+
                 ind++;
             }
 
@@ -242,6 +268,8 @@ namespace SteamControllerTest
             changingService = false;
 
             ServiceStarted?.Invoke(this, EventArgs.Empty);
+
+            LogDebug("Service started");
         }
 
         private void Device_SyncedChanged(object sender, EventArgs e)
@@ -309,6 +337,7 @@ namespace SteamControllerTest
                         if (appGlobal.activeProfiles.ContainsKey(device.Index))
                         {
                             appGlobal.activeProfiles.Remove(device.Index);
+                            LogDebug($"Desynced controller #{device.Index+1} ({device.Serial})");
                         }
                     }
                 });
@@ -340,6 +369,7 @@ namespace SteamControllerTest
                     if (appGlobal.activeProfiles.ContainsKey(device.Index))
                     {
                         appGlobal.activeProfiles.Remove(device.Index);
+                        LogDebug($"Unplugged controller #{device.Index+1} ({device.Serial})");
                     }
                 }
             });
@@ -352,6 +382,8 @@ namespace SteamControllerTest
 
         public void Stop()
         {
+            LogDebug("Stopping service");
+
             changingService = true;
             isRunning = false;
 
@@ -369,6 +401,8 @@ namespace SteamControllerTest
 
             mapperDict.Clear();
             deviceReadersMap.Clear();
+
+            LogDebug($"Stopping controllers");
             enumerator.StopControllers();
             Array.Clear(controllerList, 0, CONTROLLER_LIMIT);
             //controllerList.Clear();
@@ -390,6 +424,8 @@ namespace SteamControllerTest
             changingService = false;
 
             ServiceStopped?.Invoke(this, EventArgs.Empty);
+
+            LogDebug("Service stopped");
         }
 
         public void ShutDown()
@@ -491,6 +527,7 @@ namespace SteamControllerTest
             mapperDict.Add(ind, testMapper);
 
             controllerList[ind] = device;
+            LogDebug($"Synced controller #{ind+1} ({device.Serial})");
         }
 
         private void PrepareAddInputDevice(SteamControllerDevice device, int ind)
@@ -546,6 +583,13 @@ namespace SteamControllerTest
             mapperDict.Add(ind, testMapper);
 
             controllerList[ind] = device;
+            LogDebug($"Plugged in controller #{ind+1} ({device.Serial})");
+        }
+
+        public void LogDebug(string message, bool warning = false)
+        {
+            DebugEventArgs args = new DebugEventArgs(message, warning);
+            Debug?.Invoke(this, args);
         }
     }
 }
