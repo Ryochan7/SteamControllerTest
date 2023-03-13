@@ -55,7 +55,7 @@ namespace SteamControllerTest.ViewModels
             {
                 if (int.TryParse(value, out int temp))
                 {
-                    func.DurationMs = temp;
+                    func.DelayDurationMs = temp;
                     DelayDurationMsChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
