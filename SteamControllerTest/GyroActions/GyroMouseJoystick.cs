@@ -18,6 +18,8 @@ namespace SteamControllerTest.GyroActions
 
     public struct GyroMouseJoystickParams
     {
+        public const bool JITTER_COMPENSATION_DEFAULT = true;
+
         public int deadZone;
         public int maxZone;
         public double antiDeadzoneX;
@@ -29,6 +31,7 @@ namespace SteamControllerTest.GyroActions
         public GyroMouseXAxisChoice useForXAxis;
         public bool invertX;
         public bool invertY;
+        public bool jitterCompensation;
         public GyroMouseJoystickOuputAxes outputAxes;
         public StickActionCodes outputStick;
         public StickActionCodes OutputStick
@@ -74,6 +77,7 @@ namespace SteamControllerTest.GyroActions
             public const string TRIGGER_ACTIVATE = "TriggersActivate";
             public const string TRIGGER_EVAL_COND = "TriggersEvalCond";
             public const string TOGGLE_ACTION = "ToggleAction";
+            public const string JITTER_COMPENSATION = "JitterCompensation";
             public const string SMOOTHING_ENABLED = "SmoothingEnabled";
             public const string SMOOTHING_FILTER = "SmoothingFilter";
             //public const string SMOOTHING_MINCUTOFF = "SmoothingMinCutoff";
@@ -99,6 +103,7 @@ namespace SteamControllerTest.GyroActions
             PropertyKeyStrings.TRIGGER_ACTIVATE,
             PropertyKeyStrings.TRIGGER_EVAL_COND,
             PropertyKeyStrings.TOGGLE_ACTION,
+            PropertyKeyStrings.JITTER_COMPENSATION,
             PropertyKeyStrings.SMOOTHING_ENABLED,
             PropertyKeyStrings.SMOOTHING_FILTER,
             //PropertyKeyStrings.SMOOTHING_MINCUTOFF,
@@ -138,6 +143,7 @@ namespace SteamControllerTest.GyroActions
                 {
                     JoypadActionCodes.AlwaysOn,
                 },
+                jitterCompensation = GyroMouseParams.JITTER_COMPENSATION_DEFAULT,
                 smoothing = DEFAULT_SMOOTHING_ENABLED,
             };
 
@@ -273,6 +279,25 @@ namespace SteamControllerTest.GyroActions
             else
             {
                 deltaY = 0;
+            }
+
+            if (mStickParams.jitterCompensation)
+            {
+                // Possibly expose threshold later
+                const double threshold = 2;
+                const float thresholdF = (float)threshold;
+
+                double absX = Math.Abs(deltaX);
+                if (absX <= normX * threshold)
+                {
+                    deltaX = (int)(signX * Math.Pow(absX / thresholdF, 1.408) * threshold);
+                }
+
+                double absY = Math.Abs(deltaY);
+                if (absY <= normY * threshold)
+                {
+                    deltaY = (int)(signY * Math.Pow(absY / thresholdF, 1.408) * threshold);
+                }
             }
 
             //deltaX = (int)mapper.MStickFilterX.Filter(deltaX, mapper.CurrentRate);
@@ -494,6 +519,9 @@ namespace SteamControllerTest.GyroActions
                             mStickParams.toggleAction = tempGyroStickAction.mStickParams.toggleAction;
                             ResetToggleActiveState();
                             break;
+                        case PropertyKeyStrings.JITTER_COMPENSATION:
+                            mStickParams.jitterCompensation = tempGyroStickAction.mStickParams.jitterCompensation;
+                            break;
                         case PropertyKeyStrings.SMOOTHING_ENABLED:
                             mStickParams.smoothing = tempGyroStickAction.mStickParams.smoothing;
                             //updateSmoothing = true;
@@ -596,6 +624,9 @@ namespace SteamControllerTest.GyroActions
                 case PropertyKeyStrings.TOGGLE_ACTION:
                     mStickParams.toggleAction = tempGyroStickAction.mStickParams.toggleAction;
                     ResetToggleActiveState();
+                    break;
+                case PropertyKeyStrings.JITTER_COMPENSATION:
+                    mStickParams.jitterCompensation = tempGyroStickAction.mStickParams.jitterCompensation;
                     break;
                 case PropertyKeyStrings.SMOOTHING_ENABLED:
                     mStickParams.smoothing = tempGyroStickAction.mStickParams.smoothing;
