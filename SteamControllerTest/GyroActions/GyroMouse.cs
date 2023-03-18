@@ -117,6 +117,7 @@ namespace SteamControllerTest.GyroActions
             PropertyKeyStrings.TRIGGER_ACTIVATE,
             PropertyKeyStrings.TRIGGER_EVAL_COND,
             PropertyKeyStrings.TOGGLE_ACTION,
+            PropertyKeyStrings.JITTER_COMPENSATION,
             PropertyKeyStrings.SMOOTHING_ENABLED,
             PropertyKeyStrings.SMOOTHING_FILTER,
             //PropertyKeyStrings.SMOOTHING_MINCUTOFF,
