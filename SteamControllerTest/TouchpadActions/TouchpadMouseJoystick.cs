@@ -27,6 +27,7 @@ namespace SteamControllerTest.TouchpadActions
             public const string INVERT_X = "InvertX";
             public const string INVERT_Y = "InvertY";
             public const string VERTICAL_SCALE = "VerticalScale";
+            public const string JITTER_COMPENSATION = "JitterCompensation";
             public const string SMOOTHING_ENABLED = "SmoothingEnabled";
             public const string SMOOTHING_FILTER = "SmoothingFilter";
             //public const string MAX_OUTPUT = "MaxOutput";
@@ -50,6 +51,7 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.INVERT_Y,
             PropertyKeyStrings.ROTATION,
             PropertyKeyStrings.VERTICAL_SCALE,
+            PropertyKeyStrings.JITTER_COMPENSATION,
             PropertyKeyStrings.SMOOTHING_ENABLED,
             PropertyKeyStrings.SMOOTHING_FILTER,
             //PropertyKeyStrings.MAX_OUTPUT_ENABLED,
@@ -100,6 +102,8 @@ namespace SteamControllerTest.TouchpadActions
 
         public struct TouchpadMouseJoystickParams
         {
+            public const bool JITTER_COMPENSATION_DEFAULT = false;
+
             public int deadZone;
             public int maxZone;
             public double antiDeadzoneX;
@@ -134,6 +138,7 @@ namespace SteamControllerTest.TouchpadActions
             public event EventHandler OutputStickChanged;
 
             public int rotation;
+            public bool jitterCompensation;
 
             public bool smoothing;
             public SmoothingFilterSettings smoothingFilterSettings;
@@ -232,6 +237,7 @@ namespace SteamControllerTest.TouchpadActions
                 trackballFriction = TRACKBALL_INIT_FRICTION,
                 verticalScale = DEFAULT_VERTICAL_SCALE,
                 outputCurve = DEFAULT_OUTPUT_CURVE,
+                jitterCompensation = TouchpadMouseJoystickParams.JITTER_COMPENSATION_DEFAULT,
                 smoothing = DEFAULT_SMOOTHING_ENABLED,
             };
 
@@ -726,6 +732,25 @@ namespace SteamControllerTest.TouchpadActions
                 //*/
             }
 
+            if (mStickParams.jitterCompensation)
+            {
+                // Possibly expose threshold later
+                const double threshold = 2;
+                const float thresholdF = (float)threshold;
+
+                double absX = Math.Abs(dx);
+                if (absX <= normX * threshold)
+                {
+                    dx = (int)(signX * Math.Pow(absX / thresholdF, 1.408) * threshold);
+                }
+
+                double absY = Math.Abs(dy);
+                if (absY <= normY * threshold)
+                {
+                    dy = (int)(signY * Math.Pow(absY / thresholdF, 1.408) * threshold);
+                }
+            }
+
             if (dx != 0) xratio = dx / (double)maxValX;
             if (dy != 0) yratio = dy / (double)maxValY;
 
@@ -868,6 +893,9 @@ namespace SteamControllerTest.TouchpadActions
                         case PropertyKeyStrings.ROTATION:
                             mStickParams.rotation = tempMouseJoyAction.mStickParams.rotation;
                             break;
+                        case PropertyKeyStrings.JITTER_COMPENSATION:
+                            mStickParams.jitterCompensation = tempMouseJoyAction.mStickParams.jitterCompensation;
+                            break;
                         case PropertyKeyStrings.SMOOTHING_ENABLED:
                             mStickParams.smoothing = tempMouseJoyAction.mStickParams.smoothing;
                             break;
@@ -953,6 +981,9 @@ namespace SteamControllerTest.TouchpadActions
                     break;
                 case PropertyKeyStrings.ROTATION:
                     mStickParams.rotation = tempMouseJoyAction.mStickParams.rotation;
+                    break;
+                case PropertyKeyStrings.JITTER_COMPENSATION:
+                    mStickParams.jitterCompensation = tempMouseJoyAction.mStickParams.jitterCompensation;
                     break;
                 case PropertyKeyStrings.SMOOTHING_ENABLED:
                     mStickParams.smoothing = tempMouseJoyAction.mStickParams.smoothing;
