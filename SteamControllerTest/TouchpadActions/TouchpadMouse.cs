@@ -477,9 +477,9 @@ namespace SteamControllerTest.TouchpadActions
             }
 
             double throttla = 1.428;
-            //double offman = 10;
+            double offman = 10;
             //double throttla = 1.4;
-            double offman = 12;
+            //double offman = 12;
 
             double absX = Math.Abs(xMotion);
             if (absX <= normX * offman)
