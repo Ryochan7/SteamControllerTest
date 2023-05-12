@@ -458,7 +458,7 @@ namespace SteamControllerTest
 
                         if (!string.IsNullOrEmpty(lastProfile) && File.Exists(lastProfile))
                         {
-                            activeProfiles.Add(testDev.Index, lastProfile);
+                            activeProfiles[testDev.Index] = lastProfile;
                         }
                     }
                     //string settings = controllerObj["Settings"].ToString();

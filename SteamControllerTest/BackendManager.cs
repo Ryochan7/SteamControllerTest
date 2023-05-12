@@ -405,6 +405,7 @@ namespace SteamControllerTest
             LogDebug($"Stopping controllers");
             enumerator.StopControllers();
             Array.Clear(controllerList, 0, CONTROLLER_LIMIT);
+            appGlobal.activeProfiles.Clear();
             //controllerList.Clear();
 
             vigemTestClient?.Dispose();
