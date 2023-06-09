@@ -212,6 +212,22 @@ namespace SteamControllerTest
         private List<OutputActionData> pendingReleaseActions =
             new List<OutputActionData>();
 
+        // Keep reference to current editing action set from GUI
+        // Allows different profile usage from mapper
+        private ActionSet editActionSet;
+        public ActionSet EditActionSet
+        {
+            get => editActionSet; set => editActionSet = value;
+        }
+
+        // Keep reference to current editing action layer from GUI
+        // Allows different profile usage from mapper
+        private ActionLayer editLayer;
+        public ActionLayer EditLayer
+        {
+            get => editLayer; set => editLayer = value;
+        }
+
         // VK, Count
         private static Dictionary<uint, int> keyReferenceCountDict = new Dictionary<uint, int>();
         // VK
@@ -562,6 +578,9 @@ namespace SteamControllerTest
 
         private void ReadFromProfile()
         {
+            editActionSet = null;
+            editLayer = null;
+
             actionProfile = new Profile();
             Profile tempProfile = actionProfile;
 
@@ -5071,6 +5090,9 @@ namespace SteamControllerTest
             quit = true;
 
             actionProfile.CurrentActionSet.ReleaseActions(this, true);
+
+            editActionSet = null;
+            editLayer = null;
 
             // Relay changes to event systems
             SyncKeyboard();
