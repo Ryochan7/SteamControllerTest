@@ -105,10 +105,16 @@ namespace SteamControllerTest.ViewModels
                     if (device != null)
                     {
                         DeviceListItem devItem = new DeviceListItem(device, i, DeviceProfileList);
-                        Mapper map = backendManager.MapperDict[device.Index];
-                        if (map.ProfileFile != string.Empty)
+                        if (backendManager.MapperDict.ContainsKey(device.Index))
                         {
-                            devItem.PostInit(map.ProfileFile);
+                            Mapper map = backendManager.MapperDict[device.Index];
+                            if (map.ProfileFile != string.Empty)
+                            {
+                                devItem.PostInit(map.ProfileFile);
+
+                                devItem.ProfileIndexChanged += DevItem_ProfileIndexChanged;
+                                devItem.EditProfileRequested += DevItem_EditProfileRequested;
+                            }
                         }
 
                         //if (!string.IsNullOrWhiteSpace(backendManager.ProfileFile))
@@ -116,8 +122,6 @@ namespace SteamControllerTest.ViewModels
                         //    devItem.PostInit(backendManager.ProfileFile);
                         //}
 
-                        devItem.ProfileIndexChanged += DevItem_ProfileIndexChanged;
-                        devItem.EditProfileRequested += DevItem_EditProfileRequested;
                         device.Removal += Device_Removal;
                         controllerList.Add(devItem);
 
@@ -137,8 +141,20 @@ namespace SteamControllerTest.ViewModels
             SteamControllerDevice device = sender as SteamControllerDevice;
             using (WriteLocker locker = new WriteLocker(_colListLocker))
             {
-                int ind = controllerList.Where((item) => item.ItemIndex == device.Index)
-                    .Select((item) => item.ItemIndex).DefaultIfEmpty(-1).First();
+                int ind = -1;
+                int findInd = 0;
+                foreach (DeviceListItem devItem in controllerList)
+                {
+                    if (devItem.ItemIndex == device.Index)
+                    {
+                        ind = findInd;
+                        break;
+                    }
+
+                    ind++;
+                }
+                //int ind = controllerList.Where((item) => item.ItemIndex == device.Index)
+                //    .Select((item) => item.ItemIndex).DefaultIfEmpty(-1).First();
                 if (device.Synced && ind >= 0)
                 {
                     controllerList.RemoveAt(ind);
@@ -270,6 +286,11 @@ namespace SteamControllerTest.ViewModels
         public BasicActionCommand EditProfCommand => editProfCommand;
 
         public event EventHandler EditProfileRequested;
+
+        public bool PrimaryDevice
+        {
+            get => device.PrimaryDevice;
+        }
 
         public DeviceListItem(SteamControllerDevice device, int itemIndex, ProfileList profileListHolder)
         {

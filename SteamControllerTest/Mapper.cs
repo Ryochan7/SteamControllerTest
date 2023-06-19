@@ -160,6 +160,9 @@ namespace SteamControllerTest
         //private OneEuroFilter mStickFilterY = new OneEuroFilter(minCutoff: 0.6, beta: 0.7);
         private OneEuroFilter filterX = new OneEuroFilter(minCutoff: 0.4, beta: 0.6);
         private OneEuroFilter filterY = new OneEuroFilter(minCutoff: 0.4, beta: 0.6);
+
+        private bool gamepadSync;
+
         private double currentRate = 1.0; // Expressed in Hz
         private double currentLatency = 1.0; // Expressed in sec
         private TouchEventFrame previousTouchFrameLeftPad;

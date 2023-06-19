@@ -27,6 +27,7 @@ namespace SteamControllerTest
         public const string STEAM_CONTROLLER_PROFILE_DIR = "SteamController";
         public const string DS4_PROFILE_DIR = "DualShock4";
         public const string SWITCH_PRO_PROFILE_DIR = "SwitchPro";
+        public const string JOYCON_PROFILE_DIR = "JoyCon";
         public const string TEMPLATE_PROFILES_DIRNAME = "template_profiles";
 
         public static string exelocation = Process.GetCurrentProcess().MainModule.FileName;
@@ -103,9 +104,10 @@ namespace SteamControllerTest
             {
                 Directory.CreateDirectory(appdatapath);
                 Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME));
-                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, "SteamController"));
-                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, AppGlobalData.DS4_PROFILE_DIR));
-                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, "SwitchPro"));
+                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, STEAM_CONTROLLER_PROFILE_DIR));
+                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, DS4_PROFILE_DIR));
+                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, SWITCH_PRO_PROFILE_DIR));
+                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, JOYCON_PROFILE_DIR));
                 Directory.CreateDirectory(Path.Combine(appdatapath, LOGS_FOLDER_NAME));
             }
             catch (UnauthorizedAccessException)
@@ -122,8 +124,8 @@ namespace SteamControllerTest
             bool result = true;
             try
             {
-                string exampleSCProfilesPath = Path.Combine(exedirpath, TEMPLATE_PROFILES_DIRNAME, "SteamController");
-                string destSCProfilePath = Path.Combine(appdatapath, PROFILES_FOLDER_NAME, "SteamController");
+                string exampleSCProfilesPath = Path.Combine(exedirpath, TEMPLATE_PROFILES_DIRNAME, STEAM_CONTROLLER_PROFILE_DIR);
+                string destSCProfilePath = Path.Combine(appdatapath, PROFILES_FOLDER_NAME, STEAM_CONTROLLER_PROFILE_DIR);
                 //if (!Directory.Exists(destSCProfilePath))
                 // Check if profiles dir is empty
                 if (Directory.Exists(exampleSCProfilesPath) && Directory.Exists(destSCProfilePath) &&
@@ -132,7 +134,7 @@ namespace SteamControllerTest
                     foreach (string file in Directory.EnumerateFiles(exampleSCProfilesPath))
                     {
                         string destFilePath = Path.Combine(appdatapath, PROFILES_FOLDER_NAME,
-                            "SteamController", Path.GetFileName(file));
+                            STEAM_CONTROLLER_PROFILE_DIR, Path.GetFileName(file));
                         File.Copy(file, destFilePath);
                     }
                 }
@@ -766,6 +768,7 @@ namespace SteamControllerTest
         SteamController,
         SwitchPro,
         DS4,
+        JoyCon,
     }
 
     public static class AppGlobalDataSingleton

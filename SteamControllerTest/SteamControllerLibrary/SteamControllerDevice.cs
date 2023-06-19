@@ -135,6 +135,13 @@ namespace SteamControllerTest.SteamControllerLibrary
             get => "Steam Controller";
         }
 
+        protected bool primaryDevice = true;
+        public bool PrimaryDevice
+        {
+            get => primaryDevice;
+            set => primaryDevice = value;
+        }
+
         private int index = -1;
         public int Index
         {

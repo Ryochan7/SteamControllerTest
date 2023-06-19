@@ -39,6 +39,11 @@ namespace SteamControllerTest.MapperUtil
         Btn24, LTFullPull = Btn24,
         Btn25, RTFullPull = Btn25,
 
+        Btn30, BtnLSideL = Btn30,
+        Btn31, BtnLSideR = Btn31,
+        Btn32, BtnRSideL = Btn32,
+        Btn33, BtnRSideR = Btn33,
+
         BtnMax = 255,
 
         Axis1 = 1 << 8, AxisLX = Axis1, X360_LX = Axis1,

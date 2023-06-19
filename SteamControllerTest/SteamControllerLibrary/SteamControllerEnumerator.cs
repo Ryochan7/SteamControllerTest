@@ -29,7 +29,7 @@ namespace SteamControllerTest.SteamControllerLibrary
             IEnumerable<HidDevice> hDevices = HidDevices.Enumerate(STEAM_CONTROLLER_VENDOR_ID,
                 STEAM_CONTROLLER_PRODUCT_ID, STEAM_DONGLE_CONTROLLER_PRODUCT_ID,
                 STEAM_BT_CONTROLLER_PRODUCT_ID);
-            hDevices = hDevices.Where(hDevice => hDevice.Capabilities.Usage == 1);
+            hDevices = hDevices.Where(hDevice => hDevice.IsConnected && hDevice.Capabilities.Usage == 1);
             List<HidDevice> tempList = hDevices.ToList();
 
             using (WriteLocker locker = new WriteLocker(_foundDevlocker))
