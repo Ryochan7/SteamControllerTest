@@ -288,7 +288,7 @@ namespace SteamControllerTest.GyroActions
             if (mouseParams.jitterCompensation)
             {
                 // Possibly expose threshold later
-                const double threshold = 0.26;
+                const double threshold = 0.24;
                 const float thresholdF = (float)threshold;
 
                 double absX = Math.Abs(xMotion);
