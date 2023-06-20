@@ -106,6 +106,7 @@ namespace SteamControllerTest.ViewModels
             using (WriteLocker locker = new WriteLocker(_colListLocker))
             {
                 controllerList.Clear();
+                controllerDict.Clear();
             }
         }
 
