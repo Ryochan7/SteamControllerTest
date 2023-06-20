@@ -84,9 +84,10 @@ namespace SteamControllerTest
         private void ControlListVM_EditProfileRequested(object sender, DeviceListItem e)
         {
             //if (controlListVM.SelectedIndex >= 0)
-            if (e.ItemIndex >= 0)
+            int ind = controlListVM.ControllerList.IndexOf(e);
+            if (ind >= 0)
             {
-                controlListVM.SelectedIndex = e.ItemIndex;
+                controlListVM.SelectedIndex = ind;
                 int selectedIndex = controlListVM.SelectedIndex;
                 Mapper mapper = (App.Current as App).Manager.MapperDict[selectedIndex];
                 //DeviceListItem item = controlListVM.ControllerList[selectedIndex];

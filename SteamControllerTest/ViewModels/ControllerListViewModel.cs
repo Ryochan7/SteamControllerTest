@@ -38,6 +38,19 @@ namespace SteamControllerTest.ViewModels
         {
             get => controllerList;
         }
+        private Dictionary<int, DeviceListItem> controllerDict =
+            new Dictionary<int, DeviceListItem>();
+        public DeviceListItem CurrentItem
+        {
+            get
+            {
+                if (selectedIndex == -1) return null;
+                controllerDict.TryGetValue(selectedIndex, out DeviceListItem item);
+                return item;
+            }
+        }
+
+        public Dictionary<int, DeviceListItem> ControllerDict { get => controllerDict; set => controllerDict = value; }
 
         private BackendManager backendManager;
         private int selectedIndex = -1;
@@ -82,6 +95,7 @@ namespace SteamControllerTest.ViewModels
                 //    .Select((item) => item.ItemIndex).DefaultIfEmpty(-1).First();
                 if (ind >= 0)
                 {
+                    controllerDict.Remove(ind);
                     controllerList.RemoveAt(ind);
                 }
             }
@@ -124,6 +138,7 @@ namespace SteamControllerTest.ViewModels
 
                         device.Removal += Device_Removal;
                         controllerList.Add(devItem);
+                        controllerDict[i] = devItem;
 
                         i++;
                     }
@@ -145,7 +160,7 @@ namespace SteamControllerTest.ViewModels
                 int findInd = 0;
                 foreach (DeviceListItem devItem in controllerList)
                 {
-                    if (devItem.ItemIndex == device.Index)
+                    if (devItem.Device == device)
                     {
                         ind = findInd;
                         break;
@@ -157,6 +172,7 @@ namespace SteamControllerTest.ViewModels
                 //    .Select((item) => item.ItemIndex).DefaultIfEmpty(-1).First();
                 if (device.Synced && ind >= 0)
                 {
+                    controllerDict.Remove(ind);
                     controllerList.RemoveAt(ind);
                 }
             }
@@ -178,6 +194,7 @@ namespace SteamControllerTest.ViewModels
                 devItem.EditProfileRequested += DevItem_EditProfileRequested;
                 device.Removal += Device_Removal;
                 controllerList.Add(devItem);
+                controllerDict[ind] = devItem;
             }
         }
 
