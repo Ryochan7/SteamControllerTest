@@ -91,6 +91,15 @@ namespace SteamControllerTest.ViewModels
                     }
 
                     break;
+                case 4:
+                    {
+                        StickCircular tempAction = new StickCircular();
+                        //var joyDefaults = mapper.DeviceActionDefaults.GrabTouchActionPadDefaults();
+                        //joyDefaults.Process(tempAction);
+                        result = tempAction;
+                    }
+
+                    break;
                 default:
                     break;
             }

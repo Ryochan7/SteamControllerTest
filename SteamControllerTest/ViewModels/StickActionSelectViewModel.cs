@@ -47,6 +47,9 @@ namespace SteamControllerTest.ViewModels
                 case StickMouse:
                     selectedIndex = 3;
                     break;
+                case StickCircular:
+                    selectedIndex = 4;
+                    break;
                 default:
                     selectedIndex = -1;
                     break;

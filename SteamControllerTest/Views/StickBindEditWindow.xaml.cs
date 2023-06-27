@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using SteamControllerTest.Views.StickActionPropControls;
 using SteamControllerTest.ViewModels;
 using SteamControllerTest.StickActions;
+using SteamControllerTest.Views.TouchpadActionPropControls;
 
 namespace SteamControllerTest.Views
 {
@@ -80,6 +81,17 @@ namespace SteamControllerTest.Views
                     }
 
                     break;
+                case StickCircular:
+                    {
+                        StickCircularPropControl propControl = new StickCircularPropControl();
+                        propControl.PostInit(stickBindEditVM.Mapper, stickBindEditVM.Action);
+                        propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged;
+                        propControl.RequestFuncEditor += StickCircularPropControl_RequestFuncEditor;
+                        stickBindEditVM.DisplayControl = propControl;
+                        //stickBindEditVM.ActionBaseDisplayControl = propControl;
+                    }
+
+                    break;
                 default:
                     break;
             }
@@ -136,6 +148,31 @@ namespace SteamControllerTest.Views
                 stickBindEditVM.SwitchAction(tempAction);
                 SetupDisplayControl();
             }
+        }
+
+        private void StickCircularPropControl_RequestFuncEditor(object sender, TouchpadActionPadPropControl.DirButtonBindingArgs e)
+        {
+            FuncBindingControl tempControl = new FuncBindingControl();
+            tempControl.PostInit(stickBindEditVM.Mapper, e.DirBtn);
+            tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+            tempControl.FuncBindVM.IsRealAction = e.RealAction;
+            tempControl.PreActionSwitch += (oldAction, newAction) =>
+            {
+                e.UpdateActHandler?.Invoke(oldAction, newAction);
+            };
+            tempControl.ActionChanged += (sender, action) =>
+            {
+                e.UpdateActHandler?.Invoke(null, action);
+            };
+
+            UserControl oldControl = stickBindEditVM.DisplayControl;
+            tempControl.RequestClose += (sender, args) =>
+            {
+                (oldControl as StickCircularPropControl).RefreshView();
+                stickBindEditVM.DisplayControl = oldControl;
+            };
+
+            stickBindEditVM.DisplayControl = tempControl;
         }
     }
 }
