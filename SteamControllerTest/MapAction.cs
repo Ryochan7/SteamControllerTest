@@ -79,6 +79,18 @@ namespace SteamControllerTest
 
         //protected ActionFuncStateData actionStateData = new ActionFuncStateData();
 
+        protected bool onlyOnPrimary = false;
+        public bool OnlyOnPrimary
+        {
+            get => onlyOnPrimary;
+        }
+
+        protected bool outputOnSecondary = true;
+        public bool OutputOnSecondary
+        {
+            get => outputOnSecondary;
+        }
+
         protected class NotifyPropertyChangeArgs
         {
             private string propertyName;

@@ -191,6 +191,8 @@ namespace SteamControllerTest.GyroActions
             JoypadActionCodes[] tempTriggerButtons = mStickParams.gyroTriggerButtons;
             bool triggerButtonActive = mapper.IsButtonsActiveDraft(tempTriggerButtons, mStickParams.andCond);
             bool triggerActivated = true;
+
+            double currentRate = joystickFrame.CurrentRate;
             //if (tempTriggerButton != JoypadActionCodes.Empty)
             {
                 //bool triggerButtonActive = mapper.IsButtonActive(mStickParms.gyroTriggerButton);
@@ -221,12 +223,17 @@ namespace SteamControllerTest.GyroActions
 
             if (!triggerActivated)
             {
+                if (prevXNorm != 0.0 || prevYNorm != 0.0)
+                {
+                    mapper.IntermediateStateRef.Dirty = true;
+                }
+
                 prevXNorm = xNorm; prevYNorm = yNorm;
                 xNorm = yNorm = 0.0;
                 //mapper.IntermediateStateRef.Dirty = true;
 
-                mStickParams.smoothingFilterSettings.filterX.Filter(0.0, mapper.CurrentRate);
-                mStickParams.smoothingFilterSettings.filterY.Filter(0.0, mapper.CurrentRate);
+                mStickParams.smoothingFilterSettings.filterX.Filter(0.0, currentRate);
+                mStickParams.smoothingFilterSettings.filterY.Filter(0.0, currentRate);
                 active = false;
                 activeEvent = false;
                 return;
@@ -305,8 +312,8 @@ namespace SteamControllerTest.GyroActions
             //deltaY = (int)mapper.MStickFilterY.Filter(deltaY, mapper.CurrentRate);
             if (mStickParams.smoothing)
             {
-                deltaX = (int)mStickParams.smoothingFilterSettings.filterX.Filter(deltaX, mapper.CurrentRate);
-                deltaY = (int)mStickParams.smoothingFilterSettings.filterY.Filter(deltaY, mapper.CurrentRate);
+                deltaX = (int)mStickParams.smoothingFilterSettings.filterX.Filter(deltaX, currentRate);
+                deltaY = (int)mStickParams.smoothingFilterSettings.filterY.Filter(deltaY, currentRate);
             }
 
             if (deltaX != 0) xratio = deltaX / (double)maxValX;
@@ -346,6 +353,16 @@ namespace SteamControllerTest.GyroActions
             {
                 active = true;
                 activeEvent = true;
+            }
+            else if (prevXNorm != 0.0 || prevYNorm != 0.0)
+            {
+                active = true;
+                activeEvent = true;
+            }
+            else
+            {
+                active = false;
+                activeEvent = false;
             }
         }
 
