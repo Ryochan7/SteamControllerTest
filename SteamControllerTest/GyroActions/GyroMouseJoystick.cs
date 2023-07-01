@@ -234,6 +234,9 @@ namespace SteamControllerTest.GyroActions
 
                 mStickParams.smoothingFilterSettings.filterX.Filter(0.0, currentRate);
                 mStickParams.smoothingFilterSettings.filterY.Filter(0.0, currentRate);
+
+                mapper.GamepadFromStickInput(actionData, 0.0, 0.0, force: false);
+
                 active = false;
                 activeEvent = false;
                 return;
@@ -414,7 +417,7 @@ namespace SteamControllerTest.GyroActions
 
             //Trace.WriteLine($"HELP {tempXNorm} {tempYNorm}");
 
-            mapper.GamepadFromStickInput(actionData, tempXNorm, tempYNorm);
+            mapper.GamepadFromStickInput(actionData, tempXNorm, tempYNorm, force: false);
 
             //if (xNorm != 0.0 || yNorm != 0.0)
             //{
