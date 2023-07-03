@@ -36,6 +36,11 @@ namespace SteamControllerTest.ViewModels
         }
         public event EventHandler ServiceBtnTextChanged;
 
+        public string VersionText
+        {
+            get => AppGlobalData.exeversion;
+        }
+
         public MainWindowViewModel()
         {
         }
