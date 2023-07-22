@@ -449,7 +449,7 @@ namespace SteamControllerTest
             lpadYAxis.PostInit();
 
             leftPadDefiniton = new TouchpadDefinition(lpadXAxis, lpadYAxis, TouchpadActionCodes.TouchL,
-                elapsedReference: device.BaseElapsedReference, mouseScale: 0.012 * 1.1, mouseOffset: 0.375,
+                elapsedReference: device.BaseElapsedReference, mouseScale: 0.012 * 1.1, mouseOffset: 0.34,
                 trackballScale: 0.000023);
 
             TouchpadDefinition.TouchAxisData rpadXAxis = new TouchpadDefinition.TouchAxisData
@@ -475,7 +475,7 @@ namespace SteamControllerTest
             rpadYAxis.PostInit();
 
             rightPadDefinition = new TouchpadDefinition(rpadXAxis, rpadYAxis, TouchpadActionCodes.TouchR,
-                elapsedReference: device.BaseElapsedReference, mouseScale: 0.012 * 1.1, mouseOffset: 0.375,
+                elapsedReference: device.BaseElapsedReference, mouseScale: 0.012 * 1.1, mouseOffset: 0.4,
                 trackballScale: 0.000023);
 
             TriggerDefinition.TriggerAxisData ltAxis = new TriggerDefinition.TriggerAxisData
