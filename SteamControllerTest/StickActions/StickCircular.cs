@@ -185,7 +185,7 @@ namespace SteamControllerTest.StickActions
                     diffAngle += 2 * Math.PI;
                 }
 
-                if (sensitivity != 1.0)
+                if (sensitivity != DEFAULT_SENSITIVITY)
                 {
                     diffAngle *= sensitivity;
                 }
