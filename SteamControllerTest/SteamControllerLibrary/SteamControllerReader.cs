@@ -181,7 +181,7 @@ namespace SteamControllerTest.SteamControllerLibrary
                             continue;
                         }
                         */
-                        else if (firstReport)
+                        else if (firstReport && tempByte == SteamControllerDevice.SCPacketType.PT_INPUT)
                         {
                             Console.WriteLine("CAN READ REPORTS. NICE");
 
