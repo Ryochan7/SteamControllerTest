@@ -310,6 +310,12 @@ namespace SteamControllerTest.ViewModels
             get => device.PrimaryDevice;
         }
 
+        public int Battery
+        {
+            get => device.Battery;
+        }
+        public event EventHandler BatteryChanged;
+
         public DeviceListItem(SteamControllerDevice device, int itemIndex, ProfileList profileListHolder)
         {
             this.device = device;
@@ -320,6 +326,13 @@ namespace SteamControllerTest.ViewModels
             {
                 EditProfileRequested?.Invoke(this, EventArgs.Empty);
             });
+
+            device.BatteryChanged += Device_BatteryChanged;
+        }
+
+        private void Device_BatteryChanged(object sender, EventArgs e)
+        {
+            BatteryChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void PostInit(string profilePath)

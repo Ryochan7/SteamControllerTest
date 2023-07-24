@@ -154,9 +154,11 @@ namespace SteamControllerTest.SteamControllerLibrary
 
                             continue;
                         }
-                        else if (tempByte == SteamControllerDevice.SCPacketType.PT_IDLE && !firstReport)
+                        else if (tempByte == SteamControllerDevice.SCPacketType.PT_BATTERY)
                         {
                             //Trace.WriteLine($"IDLE {inputReportBuffer[4]}");
+                            byte batt = inputReportBuffer[15];
+                            device.Battery = batt;
                             continue;
                         }
                         /*

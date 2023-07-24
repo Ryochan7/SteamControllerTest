@@ -15,6 +15,7 @@ namespace SteamControllerTest.SteamControllerLibrary
             public const byte PT_INPUT = 0x01;
             public const byte PT_HOTPLUG = 0x03;
             public const byte PT_IDLE = 0x04;
+            public const byte PT_BATTERY = 0x04;
             public const byte PT_OFF = 0x9F;
             public const byte PT_AUDIO = 0xB6;
             public const byte PT_CLEAR_MAPPINGS = 0x81;
@@ -168,6 +169,19 @@ namespace SteamControllerTest.SteamControllerLibrary
         {
             get => checkForSyncChange;
         }
+
+        private int battery;
+        public int Battery
+        {
+            get => battery;
+            set
+            {
+                if (value == battery) return;
+                battery = Math.Clamp(value, 0, 100);
+                BatteryChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler BatteryChanged;
 
         public SteamControllerDevice(HidDevice device)
         {

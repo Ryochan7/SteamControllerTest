@@ -48,13 +48,13 @@
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
-                                        <!--<GridViewColumn Header="Bat." Width="60"> 
+                                        <GridViewColumn Header="Bat." Width="60"> 
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <TextBlock Text="{Binding Battery}" />
+                                                    <TextBlock Text="{Binding Battery, StringFormat='{}{0}%'}" />
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>-->
+                                        </GridViewColumn>
                                         <GridViewColumn x:Name="profileOptionsColumn" Width="150">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
