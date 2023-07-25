@@ -104,8 +104,8 @@ namespace SteamControllerTest.TouchpadActions
 
         public struct SmoothingFilterSettings
         {
-            public const double DEFAULT_MIN_CUTOFF = 0.4;
-            public const double DEFAULT_BETA = 0.6;
+            public const double DEFAULT_MIN_CUTOFF = 1.0;
+            public const double DEFAULT_BETA = 0.7;
             
             public OneEuroFilter filterX;
             public OneEuroFilter filterY;
