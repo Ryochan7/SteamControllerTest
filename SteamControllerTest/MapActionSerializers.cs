@@ -2731,6 +2731,10 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler ForcedCenterChanged;
+            public bool ShouldSerializeForcedCenter()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.FORCED_CENTER);
+            }
 
             public TouchStickActionSettings(TouchpadStickAction action)
             {
