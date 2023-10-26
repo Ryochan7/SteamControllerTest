@@ -2721,6 +2721,17 @@ namespace SteamControllerTest
                 return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.SQUARE_STICK_ROUNDNESS);
             }
 
+            public bool ForcedCenter
+            {
+                get => touchStickAction.ForcedCenter;
+                set
+                {
+                    touchStickAction.ForcedCenter = true;
+                    ForcedCenterChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler ForcedCenterChanged;
+
             public TouchStickActionSettings(TouchpadStickAction action)
             {
                 this.touchStickAction = action;
@@ -2756,6 +2767,12 @@ namespace SteamControllerTest
             settings.SquareStickEnabledChanged += Settings_SquareStickEnabledChanged;
             settings.SquareStickRoundnessChanged += Settings_SquareStickRoundnessChanged;
             settings.DeadZoneTypeChanged += Settings_DeadZoneTypeChanged;
+            settings.ForcedCenterChanged += Settings_ForcedCenterChanged;
+        }
+
+        private void Settings_ForcedCenterChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.FORCED_CENTER);
         }
 
         private void Settings_DeadZoneTypeChanged(object sender, EventArgs e)

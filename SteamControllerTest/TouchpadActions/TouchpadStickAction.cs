@@ -27,6 +27,7 @@ namespace SteamControllerTest.TouchpadActions
             public const string MAX_OUTPUT_ENABLED = "MaxOutputEnabled";
             public const string SQUARE_STICK_ENABLED = "SquareStickEnabled";
             public const string SQUARE_STICK_ROUNDNESS = "SquareStickRoundness";
+            public const string FORCED_CENTER = "ForcedCenter";
         }
 
         private HashSet<string> fullPropertySet = new HashSet<string>()
@@ -46,6 +47,7 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.MAX_OUTPUT,
             PropertyKeyStrings.SQUARE_STICK_ENABLED,
             PropertyKeyStrings.SQUARE_STICK_ROUNDNESS,
+            PropertyKeyStrings.FORCED_CENTER,
         };
 
         public const string ACTION_TYPE_NAME = "TouchStickTranslateAction";
@@ -53,6 +55,7 @@ namespace SteamControllerTest.TouchpadActions
         private double xNorm = 0.0, yNorm = 0.0;
         private double prevXNorm = 0.0, prevYNorm = 0.0;
         private StickDeadZone deadMod;
+        private bool wasCenterHit;
 
         private bool invertX;
         private bool invertY;
@@ -64,6 +67,9 @@ namespace SteamControllerTest.TouchpadActions
         private bool squareStickEnabled;
         private double squareStickRoundness = 5.0;
         private SquareStick squaredStick = new SquareStick();
+
+        // TODO: Check on state transfer when switching Action Layer instances
+        private bool forcedCenter;
 
         private OutputActionData outputAction;
         public OutputActionData OutputAction
@@ -130,6 +136,12 @@ namespace SteamControllerTest.TouchpadActions
             set => squareStickRoundness = value;
         }
 
+        public bool ForcedCenter
+        {
+            get => forcedCenter;
+            set => forcedCenter = value;
+        }
+
         public TouchpadStickAction()
         {
             this.outputAction = new OutputActionData(OutputActionData.ActionType.GamepadControl, StickActionCodes.X360_LS);
@@ -169,7 +181,26 @@ namespace SteamControllerTest.TouchpadActions
 
             //if (xNegative) xNorm *= -1.0;
             //if (yNegative) yNorm *= -1.0;
-            if (xNorm != 0.0 || yNorm != 0.0)
+            bool inSafeZone = xNorm != 0.0 || yNorm != 0.0;
+            bool touchingActive = touchFrame.Touch;
+            if (touchingActive)
+            {
+                if (forcedCenter)
+                {
+                    wasCenterHit = wasCenterHit || (!wasCenterHit && !inSafeZone);
+                    touchingActive = wasCenterHit;
+                }
+                else
+                {
+                    wasCenterHit = touchingActive = true;
+                }
+            }
+            else
+            {
+                wasCenterHit = false;
+            }
+
+            if (touchingActive && inSafeZone)
             {
                 if (outputCurve != StickOutCurve.Curve.Linear)
                 {
@@ -210,6 +241,10 @@ namespace SteamControllerTest.TouchpadActions
                     yNorm *= verticalScale;
                 }
             }
+            else
+            {
+                xNorm = yNorm = 0.0;
+            }
 
             active = true;
             activeEvent = true;
@@ -245,6 +280,7 @@ namespace SteamControllerTest.TouchpadActions
 
             xNorm = yNorm = 0.0;
             prevXNorm = prevYNorm = 0.0;
+            wasCenterHit = false;
 
             active = false;
             activeEvent = false;
@@ -259,6 +295,7 @@ namespace SteamControllerTest.TouchpadActions
 
             xNorm = yNorm = 0.0;
             prevXNorm = prevYNorm = 0.0;
+            wasCenterHit = false;
 
             active = false;
             activeEvent = false;
@@ -330,6 +367,9 @@ namespace SteamControllerTest.TouchpadActions
                             break;
                         case PropertyKeyStrings.DEAD_ZONE_TYPE:
                             deadMod.DeadZoneType = tempStickAction.deadMod.DeadZoneType;
+                            break;
+                        case PropertyKeyStrings.FORCED_CENTER:
+                            forcedCenter = tempStickAction.forcedCenter;
                             break;
                         default:
                             break;
@@ -404,6 +444,9 @@ namespace SteamControllerTest.TouchpadActions
                     break;
                 case PropertyKeyStrings.DEAD_ZONE_TYPE:
                     deadMod.DeadZoneType = tempStickAction.deadMod.DeadZoneType;
+                    break;
+                case PropertyKeyStrings.FORCED_CENTER:
+                    forcedCenter = tempStickAction.forcedCenter;
                     break;
                 default:
                     break;
