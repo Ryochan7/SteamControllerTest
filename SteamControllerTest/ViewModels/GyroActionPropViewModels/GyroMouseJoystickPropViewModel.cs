@@ -32,7 +32,7 @@ namespace SteamControllerTest.ViewModels.GyroActionPropViewModels
 
                 // TODO: Move to using SelectedValue in XAML rather than SelectedIndex
                 int codeIndex = value >= 0 ? value : 0;
-                action.mStickParams.OutputStick = outputStickHolder.OutputStickItems[value].Code;
+                action.mStickParams.OutputStick = outputStickHolder.OutputStickItems[codeIndex].Code;
                 outputStickIndex = value;
                 OutputStickIndexChanged?.Invoke(this, EventArgs.Empty);
                 ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
