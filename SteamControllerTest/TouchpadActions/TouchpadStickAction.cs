@@ -291,11 +291,30 @@ namespace SteamControllerTest.TouchpadActions
             if (active)
             {
                 mapper.GamepadFromStickInput(outputAction, 0.0, 0.0);
+
+                TouchpadStickAction tempAction = checkAction as TouchpadStickAction;
+                // Check if going back to base action
+                if (parentAction != null && parentAction == tempAction &&
+                    forcedCenter && tempAction.forcedCenter)
+                {
+                    // Copy state variable to child on release
+                    wasCenterHit = tempAction.wasCenterHit;
+                }
+                // Check if switching to an overridden action from base action
+                else if (parentAction == null && tempAction.parentAction == this &&
+                    forcedCenter && tempAction.forcedCenter)
+                {
+                    // Copy state variable from parent on parent release
+                    tempAction.wasCenterHit = wasCenterHit;
+                }
+            }
+            else
+            {
+                wasCenterHit = false;
             }
 
             xNorm = yNorm = 0.0;
             prevXNorm = prevYNorm = 0.0;
-            wasCenterHit = false;
 
             active = false;
             activeEvent = false;
