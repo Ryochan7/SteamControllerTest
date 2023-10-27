@@ -1096,7 +1096,7 @@ namespace SteamControllerTest
 
             private List<ActionFuncSerializer> actionFuncSerializers =
                 new List<ActionFuncSerializer>();
-            [JsonProperty("Functions", Required = Required.Always)]
+            [JsonProperty("Functions")]
             public List<ActionFuncSerializer> ActionFuncSerializers
             {
                 get => actionFuncSerializers;
@@ -1107,6 +1107,8 @@ namespace SteamControllerTest
                 }
             }
             public event EventHandler ActionFuncSerializersChanged;
+            // TODO: Decide whether Functions property should be always required or not.
+            // Conflicting statements here
             public bool ShouldSerializeActionFuncSerializers()
             {
                 return actionFuncSerializers != null &&
