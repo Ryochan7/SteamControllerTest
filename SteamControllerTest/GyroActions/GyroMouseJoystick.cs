@@ -137,6 +137,7 @@ namespace SteamControllerTest.GyroActions
                 antiDeadzoneY = 0.45,
                 verticalScale = 1.0,
                 outputAxes = GyroMouseJoystickOuputAxes.All,
+                outputStick = StickActionCodes.RS,
                 maxOutput = 1.0,
                 andCond = true,
                 gyroTriggerButtons = new JoypadActionCodes[1]
