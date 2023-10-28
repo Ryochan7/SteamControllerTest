@@ -567,6 +567,7 @@ namespace SteamControllerTest
                 catch (JsonException)
                 {
                     // Add log message eventually
+                    // Blank profile will be loaded before exception is rethrown
                 }
             }
             else
@@ -602,6 +603,7 @@ namespace SteamControllerTest
                 }
                 catch (JsonSerializationException)
                 {
+                    UseBlankProfile();
                     return;
                 }
 
