@@ -295,7 +295,7 @@ namespace SteamControllerTest.Views
 
                 PreActionSwitch?.Invoke(oldAction, newAction);
                 funcBindVM.SwitchAction(oldAction, newAction);
-                //ActionChanged?.Invoke(this, newAction);
+                ActionChanged?.Invoke(this, newAction);
 
                 funcBindVM = new FuncBindingControlViewModel(mapper, newAction, defaultPropControl);
                 funcBindVM.IsRealAction = true;
