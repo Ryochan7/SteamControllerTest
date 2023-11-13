@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
-using Nefarius.ViGEm.Client;
 using SteamControllerTest.SteamControllerLibrary;
 
 namespace SteamControllerTest
@@ -63,7 +62,8 @@ namespace SteamControllerTest
         }
         private SteamControllerEnumerator enumerator;
         private Dictionary<SteamControllerDevice, SteamControllerReader> deviceReadersMap;
-        private ViGEmClient vigemTestClient = null;
+        //private ViGEmClient vigemTestClient = null;
+        private X360BusDevice x360BusDevice = null;
         private string profileFile;
         public string ProfileFile
         {
@@ -169,7 +169,9 @@ namespace SteamControllerTest
             // to GUI thread
             vbusThr = new Thread(() =>
             {
-                vigemTestClient = new ViGEmClient();
+                x360BusDevice = new X360BusDevice();
+                x360BusDevice.Open();
+                x360BusDevice.Start();
             });
 
             vbusThr.Priority = ThreadPriority.AboveNormal;
@@ -249,7 +251,7 @@ namespace SteamControllerTest
                 Mapper testMapper = new Mapper(device, tempProfilePath, appGlobal);
                 mapperDict.Add(ind, testMapper);
                 //testMapper.Start(device, reader);
-                testMapper.Start(vigemTestClient, fakerInputHandler, device, reader);
+                testMapper.Start(x360BusDevice, fakerInputHandler, device, reader);
                 testMapper.RequestOSD += TestMapper_RequestOSD;
 
                 int tempInd = ind;
@@ -408,8 +410,8 @@ namespace SteamControllerTest
             appGlobal.activeProfiles.Clear();
             //controllerList.Clear();
 
-            vigemTestClient?.Dispose();
-            vigemTestClient = null;
+            x360BusDevice?.UnplugAll();
+            x360BusDevice = null;
 
             fakerInputHandler.Sync();
             Thread.Sleep(100);
@@ -517,7 +519,7 @@ namespace SteamControllerTest
 
             Mapper testMapper = new Mapper(device, tempProfilePath, appGlobal);
             //testMapper.Start(device, reader);
-            testMapper.Start(vigemTestClient, fakerInputHandler, device, reader);
+            testMapper.Start(x360BusDevice, fakerInputHandler, device, reader);
             testMapper.RequestOSD += TestMapper_RequestOSD;
             int tempInd = ind;
             testMapper.ProfileChanged += (object sender, string e) => {
@@ -573,7 +575,7 @@ namespace SteamControllerTest
 
             Mapper testMapper = new Mapper(device, tempProfilePath, appGlobal);
             //testMapper.Start(device, reader);
-            testMapper.Start(vigemTestClient, fakerInputHandler, device, reader);
+            testMapper.Start(x360BusDevice, fakerInputHandler, device, reader);
             testMapper.RequestOSD += TestMapper_RequestOSD;
             int tempInd = ind;
             testMapper.ProfileChanged += (object sender, string e) => {
