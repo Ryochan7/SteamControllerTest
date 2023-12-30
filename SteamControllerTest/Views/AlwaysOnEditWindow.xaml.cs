@@ -181,7 +181,10 @@ namespace SteamControllerTest.Views
 
         private void Window_Closed(object sender, EventArgs e)
         {
-
+            if (innerViewControl.DataContext != null)
+            {
+                innerViewControl.DataContext = null;
+            }
         }
     }
 }

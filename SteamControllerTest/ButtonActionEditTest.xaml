@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SteamControllerTest"
         mc:Ignorable="d"
-        Title="ButtonActionEditTest" Height="450" Width="800">
+        Title="ButtonActionEditTest" Height="450" Width="800" Closed="Window_Closed">
     <DockPanel LastChildFill="False">
         <StackPanel Orientation="Horizontal" Height="100" DockPanel.Dock="Top">
             <Label Content="Gamepad" />

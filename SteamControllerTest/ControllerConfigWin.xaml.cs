@@ -53,6 +53,8 @@ namespace SteamControllerTest
 
             controlConfigVM.ControlOptions.LeftTouchpadRotationChanged -= ControlOptions_OptionChanged;
             controlConfigVM.ControlOptions.RightTouchpadRotationChanged -= ControlOptions_OptionChanged;
+
+            steamControllerTabItem.DataContext = null;
         }
     }
 }

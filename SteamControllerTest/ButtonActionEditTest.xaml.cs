@@ -35,5 +35,10 @@ namespace SteamControllerTest
 
             DataContext = buttonActionEditVM;
         }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            DataContext = null;
+        }
     }
 }

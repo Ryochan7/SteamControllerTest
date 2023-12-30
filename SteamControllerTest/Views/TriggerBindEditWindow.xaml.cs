@@ -197,6 +197,9 @@ namespace SteamControllerTest.Views
                 default:
                     break;
             }
+
+            DataContext = null;
+            trigBindEditVM.DisplayControl = null;
         }
     }
 }

@@ -79,5 +79,10 @@ namespace SteamControllerTest.Views
                 return;
             }
         }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            DataContext = null;
+        }
     }
 }

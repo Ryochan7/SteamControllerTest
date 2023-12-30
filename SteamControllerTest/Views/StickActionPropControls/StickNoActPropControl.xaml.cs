@@ -32,7 +32,7 @@ namespace SteamControllerTest.Views.StickActionPropControls
         public void PostInit(Mapper mapper, StickMapAction action)
         {
             stickSelectControl.PostInit(mapper, action);
-            stickSelectControl.StickActSelVM.SelectedIndexChanged += StickActSelVM_SelectedIndexChanged; ;
+            stickSelectControl.StickActSelVM.SelectedIndexChanged += StickActSelVM_SelectedIndexChanged;
         }
 
         private void StickActSelVM_SelectedIndexChanged(object sender, EventArgs e)

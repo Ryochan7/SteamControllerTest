@@ -391,6 +391,10 @@ namespace SteamControllerTest.Views
                 default:
                     break;
             }
+
+            DataContext = null;
+            touchBindEditVM.DisplayControl = null;
+            touchBindEditVM.ActionBaseDisplayControl = null;
         }
     }
 }
