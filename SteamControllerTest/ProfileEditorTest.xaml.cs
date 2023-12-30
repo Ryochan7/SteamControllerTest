@@ -366,6 +366,7 @@ namespace SteamControllerTest
         private void Window_Closed(object sender, EventArgs e)
         {
             DataContext = null;
+            editorTestVM?.UnregisterEvents();
         }
     }
 }

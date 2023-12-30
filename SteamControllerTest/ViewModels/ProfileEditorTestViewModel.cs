@@ -644,6 +644,11 @@ namespace SteamControllerTest.ViewModels
             mapper.EditActionSet = null;
             mapper.EditLayer = null;
         }
+
+        public void UnregisterEvents()
+        {
+            tempProfile.DirtyChanged -= TempProfile_DirtyChanged;
+        }
     }
 
     public class ActionLayerItemsTest
