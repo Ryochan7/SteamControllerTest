@@ -186,6 +186,18 @@ namespace SteamControllerTest
             {
                 innerViewControl.DataContext = null;
             }
+
+            if (btnActionEditVM != null)
+            {
+                btnActionEditVM.DisplayControl = null;
+                btnActionEditVM = null;
+            }
+
+            if (btnNoActVM != null)
+            {
+                btnNoActVM.DisplayControl = null;
+                btnNoActVM = null;
+            }
         }
     }
 }
