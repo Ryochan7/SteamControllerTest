@@ -19,7 +19,6 @@ namespace SteamControllerTest.TouchpadActions
             // Real hardware limits
             public int hard_max;
             public int hard_min;
-
             public bool invert;
 
             public double reciprocalInputResolution;
@@ -40,6 +39,9 @@ namespace SteamControllerTest.TouchpadActions
         public double mouseScale;
         public double mouseOffset;
         public double trackballScale;
+        public bool throttleRelMouse;
+        public double throttleRelMousePower = 1.0;
+        public double throttleRelMouseZone = 1.0;
 
         public TouchpadDefinition(TouchAxisData xAxis, TouchAxisData yAxis, TouchpadActionCodes touchCode)
         {
@@ -71,6 +73,9 @@ namespace SteamControllerTest.TouchpadActions
             this.mouseScale = other.mouseScale;
             this.mouseOffset = other.mouseOffset;
             this.trackballScale = other.trackballScale;
+            this.throttleRelMouse = other.throttleRelMouse;
+            this.throttleRelMousePower = other.throttleRelMousePower;
+            this.throttleRelMouseZone = other.throttleRelMouseZone;
         }
     }
 }

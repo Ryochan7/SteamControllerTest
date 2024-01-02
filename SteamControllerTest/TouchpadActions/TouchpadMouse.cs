@@ -216,6 +216,7 @@ namespace SteamControllerTest.TouchpadActions
             }
             else
             {
+                // Add smoothing even when finger is not touching
                 smoothingFilterSettings.filterX.Filter(0.0, mapper.CurrentRate);
                 smoothingFilterSettings.filterY.Filter(0.0, mapper.CurrentRate);
                 active = activeEvent = false;
@@ -476,27 +477,32 @@ namespace SteamControllerTest.TouchpadActions
                 yMotion *= verticalScale;
             }
 
-            double throttla = 1.428;
-            double offman = 10;
-            //double throttla = 1.4;
-            //double offman = 12;
-
-            double absX = Math.Abs(xMotion);
-            if (absX <= normX * offman)
+            if (touchpadDefinition.throttleRelMouse)
             {
-                //double before = xMotion;
-                //double adjOffman = normX != 0.0 ? normX * offman : offman;
-                xMotion = signX * Math.Pow(absX / offman, throttla) * offman;
-                //Console.WriteLine("Before: {0} After {1}", before, xMotion);
-                //Console.WriteLine(absX / adjOffman);
-            }
+                double throttla = touchpadDefinition.throttleRelMousePower;
+                double offman = touchpadDefinition.throttleRelMouseZone;
+                //double throttla = 1.428;
+                //double offman = 10;
+                //double throttla = 1.4;
+                //double offman = 12;
 
-            double absY = Math.Abs(yMotion);
-            if (absY <= normY * offman)
-            {
-                //double adjOffman = normY != 0.0 ? normY * offman : offman;
-                yMotion = signY * Math.Pow(absY / offman, throttla) * offman;
-                //Console.WriteLine(absY / adjOffman);
+                double absX = Math.Abs(xMotion);
+                if (absX <= normX * offman)
+                {
+                    //double before = xMotion;
+                    //double adjOffman = normX != 0.0 ? normX * offman : offman;
+                    xMotion = signX * Math.Pow(absX / offman, throttla) * offman;
+                    //Console.WriteLine("Before: {0} After {1}", before, xMotion);
+                    //Console.WriteLine(absX / adjOffman);
+                }
+
+                double absY = Math.Abs(yMotion);
+                if (absY <= normY * offman)
+                {
+                    //double adjOffman = normY != 0.0 ? normY * offman : offman;
+                    yMotion = signY * Math.Pow(absY / offman, throttla) * offman;
+                    //Console.WriteLine(absY / adjOffman);
+                }
             }
 
             this.xMotion = xMotion; this.yMotion = yMotion;
