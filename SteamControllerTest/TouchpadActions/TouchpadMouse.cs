@@ -152,7 +152,11 @@ namespace SteamControllerTest.TouchpadActions
         public bool TrackballEnabled
         {
             get => trackballEnabled;
-            set => trackballEnabled = value;
+            set
+            {
+                trackballEnabled = value;
+                CalcTrackAccel();
+            }
         }
         //private bool useParentTrackball;
 
@@ -160,7 +164,11 @@ namespace SteamControllerTest.TouchpadActions
         public int TrackballFriction
         {
             get => trackballFriction;
-            set => trackballFriction = value;
+            set
+            {
+                trackballFriction = value;
+                CalcTrackAccel();
+            }
         }
 
         private double sensitivity = DEFAULT_SENSITIVITY;
