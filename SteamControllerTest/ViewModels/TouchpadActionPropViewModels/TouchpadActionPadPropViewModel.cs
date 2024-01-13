@@ -576,7 +576,7 @@ namespace SteamControllerTest.ViewModels.TouchpadActionPropViewModels
 
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
             //ExecuteInMapperThread(() =>
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 if (oldAction != null)
                 {

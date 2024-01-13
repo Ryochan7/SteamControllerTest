@@ -370,6 +370,11 @@ namespace SteamControllerTest
         private ReaderWriterLockSlim eventQueueLocker = new ReaderWriterLockSlim();
         private Queue<Action> eventQueue = new Queue<Action>();
 
+        protected ReaderWriterLockSlim mapperActiveEditLock = new ReaderWriterLockSlim();
+        protected bool mapperActionActive;
+        protected bool pauseMapper;
+        protected bool skipMapping;
+
         public Mapper(SteamControllerDevice device, string profileFile,
             AppGlobalData appGlobal)
         {
@@ -2079,6 +2084,31 @@ namespace SteamControllerTest
             {
                 eventQueue.Enqueue(tempAct);
                 hasInputEvts = true;
+            }
+        }
+
+        /// <summary>
+        /// Wait for mapping routine to be finished and then call passed Action.
+        /// Action will run in called thread
+        /// </summary>
+        /// <param name="tempAct">Action to call when mapping routine is not running.</param>
+        public void ProcessMappingChangeAction(Action tempAct)
+        {
+            using (WriteLocker locker = new WriteLocker(mapperActiveEditLock))
+            {
+                while (mapperActionActive)
+                {
+                    Thread.SpinWait(500);
+                }
+
+                // Mapping is not active. Set flag to halt mapper when entered
+                pauseMapper = true;
+
+                // Run call
+                tempAct.Invoke();
+
+                // Let mapper continue
+                pauseMapper = false;
             }
         }
 

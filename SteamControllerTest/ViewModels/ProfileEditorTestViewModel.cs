@@ -438,7 +438,7 @@ namespace SteamControllerTest.ViewModels
             actionSetItems[ind].ItemActive = true;
 
             actionResetEvent.Reset();
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 mapper.ActionProfile.SwitchSets(ind, mapper);
                 mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
@@ -457,7 +457,7 @@ namespace SteamControllerTest.ViewModels
             layerItems[layerInd].ItemActive = true;
 
             actionResetEvent.Reset();
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 mapper.ActionProfile.CurrentActionSet.SwitchActionLayer(mapper, layerInd);
                 actionResetEvent.Set();
@@ -471,7 +471,7 @@ namespace SteamControllerTest.ViewModels
             string tempOutJson = string.Empty;
             actionResetEvent.Reset();
 
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 ProfileSerializer profileSerializer = new ProfileSerializer(tempProfile);
                 tempOutJson = JsonConvert.SerializeObject(profileSerializer, Formatting.Indented,
@@ -512,7 +512,7 @@ namespace SteamControllerTest.ViewModels
             string tempOutJson = string.Empty;
             actionResetEvent.Reset();
 
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 ProfileSerializer profileSerializer = new ProfileSerializer(tempProfile);
                 tempOutJson = JsonConvert.SerializeObject(profileSerializer, Formatting.Indented,
@@ -550,7 +550,7 @@ namespace SteamControllerTest.ViewModels
         {
             ActionLayer tempLayer = null;
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 int ind = mapper.ActionProfile.CurrentActionSet.ActionLayers.Count;
                 tempLayer = new ActionLayer(ind);
@@ -571,7 +571,7 @@ namespace SteamControllerTest.ViewModels
             if (selectedActionLayerIndex <= 0) return;
 
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 ActionLayer tempLayer = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer;
                 tempLayer.ReleaseActions(mapper, ignoreReleaseActions: true);
@@ -590,7 +590,7 @@ namespace SteamControllerTest.ViewModels
         {
             ActionSet tempSet = null;
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 int ind = mapper.ActionProfile.ActionSets.Count;
                 tempSet = new ActionSet(ind, $"Set {ind+1}");
@@ -614,7 +614,7 @@ namespace SteamControllerTest.ViewModels
             if (selectedActionSetIndex <= 0) return;
 
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 ActionSet tempSet = mapper.ActionProfile.CurrentActionSet;
                 tempSet.ReleaseActions(mapper, ignoreReleaseActions: true);

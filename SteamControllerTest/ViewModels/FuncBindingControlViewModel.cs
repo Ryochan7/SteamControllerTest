@@ -98,7 +98,7 @@ namespace SteamControllerTest.ViewModels
             NormalPressFunc tempFunc =
                 new NormalPressFunc(new OutputActionData(OutputActionData.ActionType.Empty, 0));
 
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 action.Release(mapper, ignoreReleaseActions: true);
                 action.ActionFuncs.Add(tempFunc);
@@ -127,7 +127,7 @@ namespace SteamControllerTest.ViewModels
 
             thing.RemoveAt(ind);
             int removeInd = ind;
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 action.Release(mapper, ignoreReleaseActions: true);
                 action.ActionFuncs.RemoveAt(removeInd);
@@ -155,7 +155,7 @@ namespace SteamControllerTest.ViewModels
             item.Func = func;
             item.RaiseDisplayNameChanged();
 
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 action.Release(mapper, ignoreReleaseActions: true);
                 action.ActionFuncs.RemoveAt(ind);
@@ -288,7 +288,7 @@ namespace SteamControllerTest.ViewModels
 
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 action.Release(mapper, ignoreReleaseActions: true);
 

@@ -197,7 +197,7 @@ namespace SteamControllerTest.ViewModels.TriggerActionPropViewModels
             {
                 ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
-                mapper.QueueEvent(() =>
+                mapper.ProcessMappingChangeAction(() =>
                 {
                     this.action.ParentAction?.Release(mapper, ignoreReleaseActions: true);
 
