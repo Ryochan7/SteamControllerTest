@@ -22,6 +22,7 @@ namespace SteamControllerTest.TouchpadActions
             public const string VERTICAL_SCALE = "VerticalScale";
             public const string SMOOTHING_ENABLED = "SmoothingEnabled";
             public const string SMOOTHING_FILTER = "SmoothingFilter";
+            public const string FEEDBACK = "Feedback";
         }
 
         private HashSet<string> fullPropertySet = new HashSet<string>()
@@ -33,6 +34,7 @@ namespace SteamControllerTest.TouchpadActions
             PropertyKeyStrings.SENSITIVITY,
             PropertyKeyStrings.SMOOTHING_ENABLED,
             PropertyKeyStrings.SMOOTHING_FILTER,
+            PropertyKeyStrings.FEEDBACK,
         };
 
         public const string ACTION_TYPE_NAME = "TouchMouseAction";
@@ -185,9 +187,18 @@ namespace SteamControllerTest.TouchpadActions
             set => verticalScale = value;
         }
 
+        private HapticsIntensity feedbackChoice;
+        public HapticsIntensity FeedbackChoice
+        {
+            get => feedbackChoice;
+            set => feedbackChoice = value;
+        }
+
         private bool useParentTrackFriction;
 
         private bool useParentSmoothingFilter;
+
+        private Stopwatch hapticWatch = new Stopwatch();
 
         public TouchpadMouse()
         {
@@ -245,11 +256,46 @@ namespace SteamControllerTest.TouchpadActions
                 }
                 else
                 {
+                    mapper.GenerateMouseMoveEvent();
+                    mapper.MouseEventFired = true;
                     // Allow mapper to handle event
-                    mapper.MouseSync = true;
+                    //mapper.MouseSync = true;
                 }
 
                 active = true;
+                if (feedbackChoice != HapticsIntensity.Off)
+                {
+                    if (Math.Abs(mapper.MouseX) >= 2.0 || Math.Abs(mapper.MouseY) >= 2.0 ||
+                    trackData.trackballActive)
+                    {
+                        double ampRatio = 0.0;
+                        switch(feedbackChoice)
+                        {
+                            case HapticsIntensity.Light:
+                                ampRatio = 0.1;
+                                break;
+                            case HapticsIntensity.Medium:
+                                ampRatio = 0.4;
+                                break;
+                            case HapticsIntensity.Heavy:
+                                ampRatio = 0.7;
+                                break;
+                            default: break;
+                        }
+                        long checkElapsed = (long)((20L - 40L) *
+                            (Math.Sqrt(Math.Pow(mapper.MouseX, 2.0) + Math.Pow(mapper.MouseY, 2.0)) / 20.0) + 40L);
+                        if (!hapticWatch.IsRunning)
+                        {
+                            mapper.SetFeedback(mappingId, ampRatio);
+                            hapticWatch.Restart();
+                        }
+                        else if (hapticWatch.ElapsedMilliseconds >= checkElapsed)
+                        {
+                            mapper.SetFeedback(mappingId, ampRatio);
+                            hapticWatch.Restart();
+                        }
+                    }
+                }
             }
             else
             {
@@ -262,6 +308,36 @@ namespace SteamControllerTest.TouchpadActions
                     mapper.GenerateMouseEventFiltered(smoothingFilterSettings.filterX,
                         smoothingFilterSettings.filterY);
                     mapper.MouseEventFired = true;
+
+                    if (feedbackChoice != HapticsIntensity.Off)
+                    {
+                        if (Math.Abs(mapper.MouseX) >= 2.0 || Math.Abs(mapper.MouseY) >= 2.0 ||
+                        trackData.trackballActive)
+                        {
+                            double ampRatio = 0.0;
+                            switch (feedbackChoice)
+                            {
+                                case HapticsIntensity.Light:
+                                    ampRatio = 0.1;
+                                    break;
+                                case HapticsIntensity.Medium:
+                                    ampRatio = 0.4;
+                                    break;
+                                case HapticsIntensity.Heavy:
+                                    ampRatio = 0.7;
+                                    break;
+                                default: break;
+                            }
+
+                            long checkElapsed = (long)((20L - 40L) *
+                                Math.Sqrt(Math.Pow(mapper.MouseX, 2.0) + Math.Pow(mapper.MouseY, 2.0) / 20.0) + 40L);
+                            if (!hapticWatch.IsRunning || hapticWatch.ElapsedMilliseconds > checkElapsed)
+                            {
+                                mapper.SetFeedback(mappingId, ampRatio);
+                                hapticWatch.Reset();
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -623,6 +699,9 @@ namespace SteamControllerTest.TouchpadActions
                             smoothingFilterSettings = tempMouseAction.smoothingFilterSettings;
                             useParentSmoothingFilter = true;
                             break;
+                        case PropertyKeyStrings.FEEDBACK:
+                            feedbackChoice = tempMouseAction.feedbackChoice;
+                            break;
                         default:
                             break;
                     }
@@ -696,6 +775,9 @@ namespace SteamControllerTest.TouchpadActions
                 case PropertyKeyStrings.SMOOTHING_FILTER:
                     smoothingFilterSettings = tempMouseAction.smoothingFilterSettings;
                     useParentSmoothingFilter = true;
+                    break;
+                case PropertyKeyStrings.FEEDBACK:
+                    feedbackChoice = tempMouseAction.feedbackChoice;
                     break;
                 default:
                     break;

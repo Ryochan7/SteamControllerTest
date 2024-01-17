@@ -106,6 +106,21 @@
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Label Content="Feedback" />
+                    <ComboBox ItemsSource="{Binding FeedbackChoiceItems}" SelectedValue="{Binding FeedbackChoice}" DisplayMemberPath="DisplayName" SelectedValuePath="ChoiceValue" MinWidth="200">
+                        <ComboBox.Style>
+                            <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource ComboBoxBaseStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HighlightFeedbackChoice}" Value="False">
+                                        <Setter Property="Opacity" Value="0.7" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ComboBox.Style>
+                    </ComboBox>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                     <GroupBox MinWidth="200">
                         <GroupBox.Header>
                             <CheckBox IsChecked="{Binding SmoothingEnabled}"

@@ -18,6 +18,7 @@ namespace SteamControllerTest.StickActions
             public const string SCROLL_BUTTON_1 = "ScrollButton1";
             public const string SCROLL_BUTTON_2 = "ScrollButton2";
             public const string SENSITIVITY = "Sensitivity";
+            public const string FEEDBACK = "Feedback";
         }
 
         private HashSet<string> fullPropertySet = new HashSet<string>()
@@ -26,6 +27,7 @@ namespace SteamControllerTest.StickActions
             PropertyKeyStrings.SCROLL_BUTTON_1,
             PropertyKeyStrings.SCROLL_BUTTON_2,
             PropertyKeyStrings.SENSITIVITY,
+            PropertyKeyStrings.FEEDBACK,
         };
 
         private enum ClickDirection
@@ -75,6 +77,13 @@ namespace SteamControllerTest.StickActions
         {
             get => sensitivity;
             set => sensitivity = value;
+        }
+
+        private HapticsIntensity feedbackChoice;
+        public HapticsIntensity FeedbackChoice
+        {
+            get => feedbackChoice;
+            set => feedbackChoice = value;
         }
 
         private double xNorm = 0.0, yNorm = 0.0;
@@ -267,6 +276,26 @@ namespace SteamControllerTest.StickActions
                 tempBtn.PrepareCircular(mapper, ticksSpeed);
                 tempBtn.Event(mapper);
                 activeCircBtn = tempBtn;
+                if (feedbackChoice != HapticsIntensity.Off)
+                {
+                    double ampRatio = 0.0;
+                    switch(feedbackChoice)
+                    {
+                        case HapticsIntensity.Light:
+                            ampRatio = 0.2;
+                            break;
+                        case HapticsIntensity.Medium:
+                            ampRatio = 0.5;
+                            break;
+                        case HapticsIntensity.Heavy:
+                        case HapticsIntensity.Full:
+                            ampRatio = 1.0;
+                            break;
+                        default: break;
+                    }
+
+                    mapper.SetFeedback(mappingId, ampRatio);
+                }
 
                 travelAngleChangeRad = travelAngleChangeRad > 0 ?
                     travelAngleChangeRad - (ticksSpeed * CLICK_RAD_THRESHOLD) : travelAngleChangeRad + (ticksSpeed * CLICK_RAD_THRESHOLD);
@@ -332,6 +361,9 @@ namespace SteamControllerTest.StickActions
                         case PropertyKeyStrings.SENSITIVITY:
                             sensitivity = tempCirleAction.sensitivity;
                             break;
+                        case PropertyKeyStrings.FEEDBACK:
+                            feedbackChoice = tempCirleAction.feedbackChoice;
+                            break;
                         default:
                             break;
                     }
@@ -372,6 +404,9 @@ namespace SteamControllerTest.StickActions
                     break;
                 case PropertyKeyStrings.SENSITIVITY:
                     sensitivity = tempCirleAction.sensitivity;
+                    break;
+                case PropertyKeyStrings.FEEDBACK:
+                    feedbackChoice = tempCirleAction.feedbackChoice;
                     break;
                 default:
                     break;

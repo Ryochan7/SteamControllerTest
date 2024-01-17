@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SteamControllerTest.StickActions;
 using SteamControllerTest.ButtonActions;
+using SteamControllerTest.ViewModels.Common;
 
 namespace SteamControllerTest.ViewModels.StickActionPropViewModels
 {
@@ -58,6 +59,27 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
         }
         public event EventHandler SensitivityChanged;
 
+        private List<EnumChoiceSelection<MapAction.HapticsIntensity>> feedbackChoiceItems = new List<EnumChoiceSelection<MapAction.HapticsIntensity>>()
+        {
+            new EnumChoiceSelection<MapAction.HapticsIntensity>("Off", MapAction.HapticsIntensity.Off),
+            new EnumChoiceSelection<MapAction.HapticsIntensity>("Light", MapAction.HapticsIntensity.Light),
+            new EnumChoiceSelection<MapAction.HapticsIntensity>("Medium", MapAction.HapticsIntensity.Medium),
+            new EnumChoiceSelection<MapAction.HapticsIntensity>("Heavy", MapAction.HapticsIntensity.Heavy),
+        };
+        public List<EnumChoiceSelection<MapAction.HapticsIntensity>> FeedbackChoiceItems => feedbackChoiceItems;
+
+        public MapAction.HapticsIntensity FeedbackChoice
+        {
+            get => action.FeedbackChoice;
+            set
+            {
+                action.FeedbackChoice = value;
+                FeedbackChoiceChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler FeedbackChoiceChanged;
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||
@@ -71,6 +93,13 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
                 action.ChangedProperties.Contains(StickCircular.PropertyKeyStrings.SENSITIVITY);
         }
         public event EventHandler HighlightSensitivityChanged;
+
+        public bool HighlightFeedbackChoice
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(StickCircular.PropertyKeyStrings.FEEDBACK);
+        }
+        public event EventHandler HighlightFeedbackChoiceChanged;
 
         public event EventHandler ActionPropertyChanged;
         public event EventHandler<StickMapAction> ActionChanged;
@@ -107,6 +136,18 @@ namespace SteamControllerTest.ViewModels.StickActionPropViewModels
 
             NameChanged += StickCircularPropViewModel_NameChanged;
             SensitivityChanged += StickCircularPropViewModel_SensitivityChanged;
+            FeedbackChoiceChanged += StickCircularPropViewModel_FeedbackChoiceChanged;
+        }
+
+        private void StickCircularPropViewModel_FeedbackChoiceChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickCircular.PropertyKeyStrings.FEEDBACK))
+            {
+                action.ChangedProperties.Add(StickCircular.PropertyKeyStrings.FEEDBACK);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, StickCircular.PropertyKeyStrings.FEEDBACK);
+            HighlightFeedbackChoiceChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void StickCircularPropViewModel_SensitivityChanged(object sender, EventArgs e)

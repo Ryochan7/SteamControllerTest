@@ -19,6 +19,7 @@ namespace SteamControllerTest.SteamControllerLibrary
         protected byte[] inputReportBuffer;
         protected byte[] outputReportBuffer;
         protected byte[] rumbleReportBuffer;
+        protected byte[] hapticsReportBuffer;
         protected GyroCalibration gyroCalibrationUtil = new GyroCalibration();
         private bool started;
 
@@ -33,6 +34,7 @@ namespace SteamControllerTest.SteamControllerLibrary
             inputReportBuffer = new byte[device.InputReportLen];
             outputReportBuffer = new byte[device.OutputReportLen];
             rumbleReportBuffer = new byte[SteamControllerDevice.FEATURE_REPORT_LEN];
+            hapticsReportBuffer = new byte[SteamControllerDevice.FEATURE_REPORT_LEN];
         }
 
         public virtual void PrepareDevice()
@@ -371,6 +373,11 @@ namespace SteamControllerTest.SteamControllerLibrary
 
         public void WriteRumbleReport()
         {
+            if (device.hapticInfo.dirty)
+            {
+                return;
+            }
+
             // Send Left Haptic rumble
             device.PrepareRumbleData(rumbleReportBuffer, SteamControllerDevice.HAPTIC_POS_LEFT);
             device.SendRumbleReport(rumbleReportBuffer);
@@ -378,6 +385,20 @@ namespace SteamControllerTest.SteamControllerLibrary
             // Send Right Haptic rumble
             device.PrepareRumbleData(rumbleReportBuffer, SteamControllerDevice.HAPTIC_POS_RIGHT);
             device.SendRumbleReport(rumbleReportBuffer);
+        }
+
+        public void WriteHapticsReport()
+        {
+            // Send Left Haptic rumble
+            device.PrepareHapticsData(hapticsReportBuffer, SteamControllerDevice.HAPTIC_POS_LEFT);
+            device.SendRumbleReport(hapticsReportBuffer);
+
+            // Send Right Haptic rumble
+            device.PrepareHapticsData(hapticsReportBuffer, SteamControllerDevice.HAPTIC_POS_RIGHT);
+            device.SendRumbleReport(hapticsReportBuffer);
+
+            device.hapticInfo.dirty = false;
+            device.hapticInfo = new SteamControllerDevice.HapticFeedbackInfo();
         }
     }
 }

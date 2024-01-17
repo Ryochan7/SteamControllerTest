@@ -1760,6 +1760,21 @@ namespace SteamControllerTest
                 return touchMouseAct.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.SMOOTHING_FILTER);
             }
 
+            public MapAction.HapticsIntensity Feedback
+            {
+                get => touchMouseAct.FeedbackChoice;
+                set
+                {
+                    touchMouseAct.FeedbackChoice = value;
+                    FeedbackChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler FeedbackChanged;
+            public bool ShouldSerializeFeedback()
+            {
+                return touchMouseAct.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.FEEDBACK);
+            }
+
             public TouchpadMouseSettings(TouchpadMouse action)
             {
                 touchMouseAct = action;
@@ -1794,6 +1809,12 @@ namespace SteamControllerTest
             settings.SmoothingEnabledChanged += Settings_SmoothingEnabledChanged;
             settings.SmoothingMinCutoffChanged += Settings_SmoothingMinCutoffChanged;
             settings.SmoothingBetaChanged += Settings_SmoothingBetaChanged;
+            settings.FeedbackChanged += Settings_FeedbackChanged;
+        }
+
+        private void Settings_FeedbackChanged(object sender, EventArgs e)
+        {
+            touchMouseAction.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.FEEDBACK);
         }
 
         private void Settings_SmoothingBetaChanged(object sender, EventArgs e)
@@ -5118,6 +5139,20 @@ namespace SteamControllerTest
                 return stickCircAct.ChangedProperties.Contains(StickCircular.PropertyKeyStrings.SENSITIVITY);
             }
 
+            public MapAction.HapticsIntensity Feedback
+            {
+                get => stickCircAct.FeedbackChoice;
+                set
+                {
+                    stickCircAct.FeedbackChoice = value;
+                    FeedbackChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler FeedbackChanged;
+            public bool ShouldSerializeFeedback()
+            {
+                return stickCircAct.ChangedProperties.Contains(StickCircular.PropertyKeyStrings.FEEDBACK);
+            }
 
             public StickCircularSettings(StickCircular action)
             {
@@ -5168,6 +5203,12 @@ namespace SteamControllerTest
             ClockwiseChanged += StickCircularSerializer_ClockwiseChanged;
             CounterClockwiseChanged += StickCircularSerializer_CounterClockwiseChanged;
             settings.SensitivityChanged += Settings_SensitivityChanged;
+            settings.FeedbackChanged += Settings_FeedbackChanged;
+        }
+
+        private void Settings_FeedbackChanged(object sender, EventArgs e)
+        {
+            stickCircAct.ChangedProperties.Add(StickCircular.PropertyKeyStrings.FEEDBACK);
         }
 
         private void Settings_SensitivityChanged(object sender, EventArgs e)

@@ -9,6 +9,16 @@ namespace SteamControllerTest
 {
     public abstract class MapAction
     {
+        public enum HapticsIntensity : ushort
+        {
+            Off,
+            Light,
+            Medium,
+            Heavy,
+            Full,
+            //Custom,
+        }
+
         public const int DEFAULT_UNBOUND_ID = -1;
         protected int id = DEFAULT_UNBOUND_ID;
         public int Id

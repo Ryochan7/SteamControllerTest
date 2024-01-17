@@ -375,6 +375,8 @@ namespace SteamControllerTest
         protected bool pauseMapper;
         protected bool skipMapping;
 
+        protected bool hapticsEvent;
+
         public Mapper(SteamControllerDevice device, string profileFile,
             AppGlobalData appGlobal)
         {
@@ -2052,6 +2054,12 @@ namespace SteamControllerTest
                     */
                 }
 
+                if (hapticsEvent)
+                {
+                    reader.WriteHapticsReport();
+                    hapticsEvent = false;
+                }
+
                 // Make copy of state data as the previous state
                 previousMapperState = currentMapperState;
 
@@ -3637,7 +3645,7 @@ namespace SteamControllerTest
         //         mouseX = mouseY = 0.0;
         //     }
 
-        private void GenerateMouseMoveEvent()
+        public void GenerateMouseMoveEvent()
         {
             if (mouseX != 0.0 || mouseY != 0.0)
             {
@@ -3746,7 +3754,7 @@ namespace SteamControllerTest
                 filterY.Filter(mouseY, currentRate);
             }
 
-            mouseX = mouseY = 0.0;
+            //mouseX = mouseY = 0.0;
         }
 
         private double remainderCutoff(double dividend, double divisor)
@@ -5150,6 +5158,67 @@ namespace SteamControllerTest
 
                 processCycleList.Add(testCycle);
                 processCycle = true;
+            }
+        }
+
+        public void SetFeedback(string mappingId, double ratio)
+        {
+            unchecked
+            {
+                switch (mappingId)
+                {
+                    case "Stick":
+                        device.hapticInfo.leftActuatorAmpRatio = ratio;
+                        device.hapticInfo.countLeft = 1;
+                        device.hapticInfo.dirty = true;
+                        //hapticAmps[0] = 1.0;
+                        //device.hapticsLeftAmpRatio = ratio;
+                        //device.hapticsPeriodLeftRatio = 1.0;
+                        //device.hapticsDurationLeft = 0.004;
+                        hapticsEvent = true;
+                        break;
+                    case "LeftTouchpad":
+                        device.hapticInfo.leftActuatorAmpRatio = ratio;
+                        device.hapticInfo.countLeft = 1;
+                        device.hapticInfo.dirty = true;
+                        hapticsEvent = true;
+                        break;
+                    case "RightTouchpad":
+                        device.hapticInfo.rightActuatorAmpRatio = ratio;
+                        device.hapticInfo.countRight = 1;
+                        device.hapticInfo.dirty = true;
+                        hapticsEvent = true;
+                        break;
+                    case "A":
+                    case "B":
+                    case "X":
+                    case "Y":
+                    case "Back":
+                    case "Start":
+                        device.hapticInfo.leftActuatorAmpRatio = ratio;
+                        device.hapticInfo.rightActuatorAmpRatio = ratio;
+                        device.hapticInfo.countLeft = 1;
+                        device.hapticInfo.countRight = 1;
+                        device.hapticInfo.dirty = true;
+                        hapticsEvent = true;
+                        break;
+                    case "LB":
+                    case "LT":
+                        device.hapticInfo.leftActuatorAmpRatio = ratio;
+                        device.hapticInfo.countLeft = 1;
+                        device.hapticInfo.dirty = true;
+                        hapticsEvent = true;
+                        break;
+                    case "RB":
+                    case "RT":
+                        device.hapticInfo.rightActuatorAmpRatio = ratio;
+                        device.hapticInfo.countRight = 1;
+                        device.hapticInfo.dirty = true;
+                        hapticsEvent = true;
+                        break;
+
+                    default: break;
+                }
             }
         }
 
